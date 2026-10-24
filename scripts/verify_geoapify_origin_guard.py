@@ -35,8 +35,11 @@ def verify():
         status=exc.code
     except urllib.error.URLError:
         raise RuntimeError('Geoapify foreign-origin test unavailable')
-    if status==403:
-        print('GEOAPIFY FOREIGN-ORIGIN REJECTED: HTTP 403 on fixed synthetic query.')
+    if status in (401,403):
+        # Both 401 and 403 are provider authorization rejections. This
+        # negative result must be paired with successful real hosted-origin
+        # requests; it is NOT proof of dashboard quota/spending limits.
+        print('GEOAPIFY FOREIGN-ORIGIN REQUEST REJECTED: HTTP '+str(status))
         return
     if status==200:
         raise RuntimeError('Geoapify public key accepted an unapproved browser origin; protect key in MyProjects.')
