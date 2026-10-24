@@ -50,3 +50,6 @@
 .masthead nav{min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
 .masthead nav a{flex-shrink:0}
 .workspace,.map-panel,.map-toolbar{min-width:0}
+
+/* Paragraph links must be distinguishable without relying on color alone. */
+main p a, main .footnote a {text-decoration:underline;text-underline-offset:.16em}
