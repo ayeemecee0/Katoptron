@@ -1,7 +1,8 @@
 /* Live acceptance check: fixed, public Sacramento/Folsom fixtures only.
  * Runs against hosted GitHub Pages so Geoapify's allowed-origin restriction
  * can be checked in the same browser context as real visitors.
- * No key/query strings are emitted into logs. Maximum one route planning
+ * No key/query strings are emitted into logs. Successful authorized-origin
+ * requests are not proof of dashboard quota controls; test separately. Maximum one route planning
  * action (2 free-plan routing requests) + one geocoding request. */
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
