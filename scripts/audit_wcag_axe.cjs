@@ -13,7 +13,8 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
  const host='http://127.0.0.1:8765/';
  try{
   for(const width of [390,1280]){
-   const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'reduce'});
+   const context=await browser.newContext({viewport:{width,height:850},reducedMotion:'reduce'});
+   const page=await context.newPage();
    for(const file of pages){
     const r=await page.goto(host+file,{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(r?.status(),200,'Missing audited page '+file);
@@ -31,7 +32,7 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
     console.log('WCAG SCAN',file,width,'violations',
       JSON.stringify(problems));
    }
-   await page.close();
+   await context.close();
   }
   console.log('WCAG AUTOMATED SUMMARY: serious_or_critical='+severe+
     ' moderate_or_minor='+moderate);
