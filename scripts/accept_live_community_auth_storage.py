@@ -103,9 +103,9 @@ def cleanup_recent_orphaned_qa_photo(secret):
             except ValueError:continue
             age=datetime.now(timezone.utc)-stamp
             if not timedelta(seconds=0)<=age<=timedelta(minutes=60):continue
-            registered=query("flock_community_submissions","submission_id",
-                "submission_id=eq."+caseid,secret)
-            if registered:continue
+            # service_role has intentionally NO SELECT on private
+            # submissions. Never widen it for QA. The foreign key to
+            # auth.users is ON DELETE CASCADE; require the owner gone.
             try:
                 call("GET","/auth/v1/admin/users/"+name,secret)
                 continue
@@ -230,12 +230,16 @@ def run():
                 except Exception:failures.append("reviewer grant cleanup")
             try:call("DELETE","/auth/v1/admin/users/"+u["id"],secret,expect=(200,204))
             except Exception:failures.append("Auth user cleanup")
-        if case:
+        # The private submissions table intentionally denies server API
+        # direct SELECT. Auth user deletion cascades its reports; confirm
+        # absence of both test user accounts via Auth admin instead.
+        for u in users:
             try:
-                records=query("flock_community_submissions","submission_id",
-                              "submission_id=eq."+case,secret)
-                if records:failures.append("private report persists")
-            except Exception:failures.append("private report cleanup verification")
+                call("GET","/auth/v1/admin/users/"+u["id"],secret)
+                failures.append("temporary Auth user persists")
+            except CheckFailed as ex:
+                if "HTTP 404" not in str(ex):
+                    failures.append("Auth user cleanup verification")
         if path:
             try:
                 files=call("POST","/storage/v1/object/list/"+BUCKET,secret,
