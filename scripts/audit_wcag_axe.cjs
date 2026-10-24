@@ -23,7 +23,8 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
       .withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa'])
       .analyze();
     const problems=audit.violations.map(x=>({
-      id:x.id,impact:x.impact,count:x.nodes.length
+      id:x.id,impact:x.impact,count:x.nodes.length,
+      targets:x.nodes.slice(0,5).map(node=>node.target)
     }));
     for(const item of problems){
       if(item.impact==='critical'||item.impact==='serious')severe+=item.count;
