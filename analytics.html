@@ -51,7 +51,7 @@ a{color:#9cdeee}:focus-visible{outline:3px solid #93d9ed;outline-offset:3px}
 <select id="sort"><option value="points">Verified exact points</option><option value="programs">Government program records</option><option value="name">State A–Z</option></select></label>
 <button type="button" id="download" disabled>Export state summary CSV</button>
 </div>
-<div class="scroller"><table aria-label="Source-documented government evidence by state">
+<div class="scroller" role="region" aria-label="Scrollable state evidence table" tabindex="0"><table aria-label="Source-documented government evidence by state">
 <thead><tr><th scope="col">State</th><th scope="col" class="num">Exact points</th><th scope="col">Relative count</th><th scope="col" class="num">Dated programs</th><th scope="col" class="num">Terminated at source date</th><th scope="col" class="num">Accountability records</th></tr></thead>
 <tbody id="stateRows"></tbody></table></div>
 </section>
