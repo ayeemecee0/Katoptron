@@ -60,6 +60,28 @@ def call(method,path,key,payload=None,mime="application/json",expect=(200,201,20
     except urllib.error.URLError:
         raise CheckFailed("API unavailable") from None
 
+
+def download_private_image(path,key):
+    """Download one exact private QA byte fixture as its owner, never log it."""
+    expected_prefix="/storage/v1/object/authenticated/"+BUCKET+"/"
+    url=BASE+expected_prefix+path
+    require(path.count("/") == 2 and path.endswith("/evidence.png"),
+            "Unexpected private QA object path")
+    request=urllib.request.Request(url,method="GET",headers={
+      "apikey":PUBLISHABLE,"Authorization":"Bearer "+key,
+      "User-Agent":"Katoptron-private-acceptance/1.0","Accept":"image/png"
+    })
+    try:
+        with urllib.request.urlopen(request,timeout=20) as response:
+            if response.status!=200 or response.geturl()!=url:
+                raise CheckFailed("Private photo content unavailable")
+            data=response.read(4096)
+            require(len(data)<=2048 and data==PIXEL,
+                    "Private restored photo differs from original fixture")
+            return data
+    except urllib.error.HTTPError as exc:
+        raise CheckFailed("Private photo download rejected HTTP "+str(exc.code)) from None
+
 def require(value,reason):
     if not value:raise CheckFailed(reason)
 
@@ -186,6 +208,16 @@ def run():
         path=owner["id"]+"/"+case+"/evidence.png"
         call("POST","/storage/v1/object/"+BUCKET+"/"+path,
             owner["token"],PIXEL,mime="image/png",expect=(200,201))
+        # Storage restore drill uses a disposable PRIVATE photo, not any
+        # reporter's content. Verify authenticated bytes, remove, re-upload
+        # identical bytes, and verify again before continuing the review.
+        original=download_private_image(path,owner["token"])
+        call("DELETE","/storage/v1/object/"+BUCKET,secret,
+             {"prefixes":[path]},expect=(200,204))
+        call("POST","/storage/v1/object/"+BUCKET+"/"+path,
+             owner["token"],original,mime="image/png",expect=(200,201))
+        restored=download_private_image(path,owner["token"])
+        require(original==restored,"Restored synthetic Storage bytes changed")
         own=call("POST","/storage/v1/object/list/"+BUCKET,owner["token"],
             {"prefix":owner["id"]+"/"+case,"limit":20})
         require(any(x.get("name")=="evidence.png" for x in own),
@@ -211,7 +243,7 @@ def run():
         require(all(case not in str(x) for x in public),
                 "Synthetic private case linked to a public camera")
         print("LIVE AUTH/STORAGE ACCEPTANCE PASS: two actual Auth JWTs; RLS; "
-              "private report; reviewer grant/decision; real photo upload; "
+              "private report; reviewer grant/decision; real photo upload/restore; "
               "withdrawal and reviewer cutoff. Email delivery untested.")
     finally:
         # Fail closed. Cleanup uses known exact test-created identifiers only.
