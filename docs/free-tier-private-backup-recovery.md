@@ -46,3 +46,20 @@ The example assumes Docker/CLI support, working database access and adequate pro
 ## Owners and status
 
 Current state: owner generated non-empty roles, schema and data SQL files locally and verified basic content checks; no encrypted off-device archive, complete Auth/Storage backup or restore drill of those files. [CI application restore rehearsal #454](https://github.com/ayeemecee0/Katoptron/actions/runs/40112397254) passed against a disposable synthetic database, not the owner files. These operations require the project owner to handle credentials, access-controlled Storage evidence, encrypted retention and local capacity. Do not create a paid Supabase branch to run restore tests merely for convenience.
+
+
+## October 24, 2026: synthetic recovery evidence and owner-held backup
+
+**Private Storage restore passed:** [Real Auth + Storage acceptance #6](https://github.com/ayeemecee0/Katoptron/actions/runs/40139404172) used two disposable Auth users, an explicitly non-public synthetic report and a 1-by-1 PNG. It uploaded private data through the real Storage API, downloaded it as its authenticated owner, deleted the image, restored the same bytes and verified byte equality. It also tested restricted reviewer access and withdrawal. The run confirmed deletion of its temporary users, reviewer grant, report and image.
+
+**Synthetic database recovery previously passed:** [CI recovery rehearsal #454](https://github.com/ayeemecee0/Katoptron/actions/runs/40112397254) exercised a disposable PostgreSQL database dump/restore, synthetic Auth foreign keys and RLS. It does **not** restore any real owner backup.
+
+The new [owner-local recovery verifier](../scripts/verify_owner_private_backup_restore.ps1) provides a guarded PowerShell acceptance procedure. Its **syntax only** was verified by [check #1](https://github.com/ayeemecee0/Katoptron/actions/runs/40139635738), with no private file access.
+
+To finish the confidential backup gate, the project owner must use an already encrypted Windows drive containing roles.sql, schema.sql and data.sql; prepare a clean disposable local PostgreSQL 17 or compatible self-hosted Supabase recovery database; set locally held PGHOST=127.0.0.1, PGDATABASE=katoptron_recovery_<unique>, PGUSER, PGPASSWORD and KATOPTRON_RESTORE_CONFIRM=LOCAL_DISPOSABLE_ONLY; then run the PowerShell verifier with -EncryptedBackupFolder. The script refuses remote/production hosts, verifies non-empty SHA-256-readable files, imports with official roles/schema/data order, and tests recovered Auth rows, minimum 293 verified camera records and private RLS grants. A failed restore cannot pass.
+
+Real Storage photographs are not in Supabase DB dumps, so the owner must additionally export encrypted real Storage bytes if any exist, restore a sample only into a private isolated test Storage instance, and validate owner/reviewer access and deletion. Keep archival encryption keys apart from the archive and set recovery point/time goals.
+
+**This final owner backup gate remains NOT VERIFIED.** The three private Windows exports, encrypted offsite archive, and actual isolated restore instance are not accessible through the connected services. Never copy private files or credentials to GitHub Actions or chat. Testing a synthetic 1-pixel image and a synthetic DB is not proof that the owner's original Auth, schema, data, or Storage backups recover.
+
+Official references: [Supabase platform restore](https://supabase.com/docs/guides/self-hosting/restore-from-platform) and [Supabase backup guidance](https://supabase.com/docs/guides/platform/backups). The official platform restore guide specifies that Storage bytes, Auth provider configuration, SMTP settings and JWT secrets require separate setup.
