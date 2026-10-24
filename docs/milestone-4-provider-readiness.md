@@ -52,3 +52,14 @@ A dedicated nationwide managed routing/geocoding provider **or** securely operat
 - Existing `README` and public `methodology.html` continue to label simulations as hypothetical and public camera coverage as incomplete.
 
 **Source:** [Photon project demo policy](https://github.com/komoot/photon); [OSRM routing API](https://project-osrm.org/docs/v26.6.1/http).
+
+
+## October 24 live Geoapify acceptance
+
+The configured public provider is Geoapify, not the inactive shared Photon and OSRM demo hosts. [Live hosted Chromium test #119](https://github.com/ayeemecee0/Katoptron/actions/runs/40139131159) successfully requested two driving-route alternatives and one geocoding result from the real GitHub Pages origin, checked the source-evidence route UI and required provider attribution. Another [routing health workflow #10](https://github.com/ayeemecee0/Katoptron/actions/runs/40139131213) passed.
+
+An intentional request using a foreign Origin and Referer was rejected with HTTP 401 by Geoapify. [Origin guard #2](https://github.com/ayeemecee0/Katoptron/actions/runs/40139258373) passed. This *paired positive and negative* test is evidence of configured access restrictions in the tested request context, not proof against forged HTTP request headers or unrestricted credits.
+
+**Only Geoapify MyProjects project owners can sign off provider settings.** Confirm Allowed HTTP referrers and/or Allowed origins explicitly name the GitHub Pages deployment; make sure CORS settings are not mistakenly treated as API-key access restrictions. Verify current plan quota, per-project credit usage, any overage/upgrade billing configuration and alerts in the owner dashboard. Other API keys in the same Geoapify project share its quota. Zero paid infrastructure was added. No contractual uptime or usage cap has been independently authenticated.
+
+Original vendor documentation: [Geoapify MyProjects API key restrictions](https://myprojects.geoapify.com/help/api-keys/) and [Geoapify provider troubleshooting](https://myprojects.geoapify.com/help/troubleshooting/).
