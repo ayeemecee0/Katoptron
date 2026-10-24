@@ -1,0 +1,35 @@
+name: Check owner-only recovery script syntax
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verify_owner_private_backup_restore.ps1'
+      - '.github/workflows/check_private_restore_syntax.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  parse-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Parse PowerShell recovery script without executing or touching any backup
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            'scripts/verify_owner_private_backup_restore.ps1',
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -ne 0) {
+            throw 'Confidential recovery script contains PowerShell syntax errors.'
+          }
+          Write-Output 'OWNER BACKUP SCRIPT SYNTAX PASS: no backup data accessed'
