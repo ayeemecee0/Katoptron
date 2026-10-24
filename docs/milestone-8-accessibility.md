@@ -24,3 +24,10 @@ Static checks and browser smoke tests cannot establish full WCAG 2.2 AA conforma
 ## October 24 keyboard map update
 
 The interactive map is tabbable with `tabindex=0`; its ARIA description points to visible instructions explaining arrow-key pan and +/- zoom. Source records remain available in a separate accessible page for non-map users. The public footer now identifies Geoapify as the configured provider rather than inaccurately presenting the shared OSRM/Photon demos as the current routing source. Keyboard-focus and link bypass were exercised by [Browser release smoke #114](https://github.com/ayeemecee0/Katoptron/actions/runs/40108637053), which passed. This does not establish full accessibility, screen-reader interaction quality or WCAG 2.2 AA conformance.
+
+
+## October 24: new automated WCAG A/AA test and remediation
+
+The new [axe-core WCAG 2.2 acceptance workflow](../.github/workflows/audit_wcag_accessibility.yml) audits eight anonymous public screens at 390- and 1280-pixel viewport widths. Its initial test reported 13 rule findings across both widths (inline links indistinguishable except by color; main page brand's accessible name did not include visible text; and horizontally scrollable analytics table lacked keyboard access). These are now corrected in map.css, index.html and analytics.html. The final [axe test #6](https://github.com/ayeemecee0/Katoptron/actions/runs/40139222366) showed **zero violations on all 16 combinations**, and the independent [release acceptance test #1](https://github.com/ayeemecee0/Katoptron/actions/runs/40139603794) passed. The regular [Chromium browser smoke #122](https://github.com/ayeemecee0/Katoptron/actions/runs/40139222394) also passed for map, route, keyboard, mobile layouts and zoom-equivalent reflow.
+
+Automated success is NOT a WCAG 2.2 AA certification. Signoff still needs real NVDA/VoiceOver/JAWS screen-reader tests, actual browser 200% zoom, high contrast, touch devices and tabbing through rendered Leaflet map interactions by a human tester. None of those require a paid platform, but they cannot be honestly marked complete from browser automation alone.
