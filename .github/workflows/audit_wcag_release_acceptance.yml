@@ -1,0 +1,44 @@
+name: WCAG 2.2 independent release acceptance
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_wcag_axe.cjs'
+      - '.github/workflows/audit_wcag_release_acceptance.yml'
+      - 'index.html'
+      - 'submit.html'
+      - 'community-review.html'
+      - 'records.html'
+      - 'accountability.html'
+      - 'analytics.html'
+      - 'privacy.html'
+      - 'methodology.html'
+      - 'map.css'
+      - 'a11y.css'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: katoptron-wcag-release-acceptance
+  cancel-in-progress: true
+
+jobs:
+  wcag:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Install pinned accessible-browser audit dependencies
+        run: npm install --no-save --no-package-lock playwright@1.56.1 @axe-core/playwright@4.14.0
+      - name: Run local static site without Auth credentials
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-wcag-http.log 2>&1 &
+      - name: Audit anonymous pages at desktop and mobile widths
+        run: node scripts/audit_wcag_axe.cjs
