@@ -1,0 +1,27 @@
+name: Verify browser key origin guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verify_geoapify_origin_guard.py'
+      - '.github/workflows/verify_geoapify_origin_guard.yml'
+      - 'config.js'
+
+permissions:
+  contents: read
+
+jobs:
+  negative-origin:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check that unapproved browser origin is refused
+        run: python scripts/verify_geoapify_origin_guard.py
