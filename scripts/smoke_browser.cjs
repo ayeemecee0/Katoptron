@@ -277,7 +277,7 @@ const assert=require('node:assert/strict');
   assert.ok((await page.locator('#providerStatus').textContent()).includes('DEGRADED'));
   assert.equal(await page.locator('#routeComparisonList li').count(),0);
   await page.locator('#planRoute').click();
-  await page.waitForFunction(()=>document.querySelector('#routeStatus')?.textContent?.includes('temporarily unavailable'),{timeout:12000});
+  await page.waitForFunction(()=>document.querySelector('#routeStatus')?.textContent?.includes('quota/rate limit active'),{timeout:12000});
   assert.equal(throttledCalls,1,'Cooldown must not hammer shared demos');
   assert.deepEqual(errors,[]);
   console.log('BROWSER SMOKE PASSED: 6 GIS sources, sourced programs, map filters/search, public history, route evidence, replay and reset');
