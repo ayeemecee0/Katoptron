@@ -24,6 +24,22 @@ MAX_FOLDERS=35
 # the entire catalog because it exceeds 240 services hides valid sources.
 MAX_SERVICES=2500
 PER_DAY=32
+# Audit likely ALPR/Flock service *names* every day, but never treat name
+# alone as government evidence or a verified individual camera location.
+SERVICE_HINT=re.compile(r'(?:^|[/_-])(?:flock|alpr|lpr|license[_-]?plates?|camera|surveillance)(?:$|[/_-])',re.I)
+
+def catalog_daily_slice(services,day):
+    """Prioritize likely camera services while fairly rotating unknown names."""
+    priority=[url for url in services if SERVICE_HINT.search(url.rsplit('/MapServer',1)[0].rsplit('/FeatureServer',1)[0])]
+    ordinary=[url for url in services if url not in set(priority)]
+    reserve=min(len(priority),PER_DAY//2)
+    first=priority[(day%max(1,(len(priority)+max(1,reserve)-1)//max(1,reserve)))*reserve:
+                   (day%max(1,(len(priority)+max(1,reserve)-1)//max(1,reserve))+1)*reserve] if reserve else []
+    space=PER_DAY-len(first)
+    pages=max(1,(len(ordinary)+space-1)//space)
+    rest=ordinary[(day%pages)*space:((day%pages)+1)*space]
+    return first+rest
+
 
 
 def verified_roots():
@@ -128,8 +144,7 @@ def scan(dry_run=False,day=None):
             catalog=catalog_services(root)
             counts["catalog_services_total"]+=len(catalog)
             if not catalog:continue
-            pages=(len(catalog)+PER_DAY-1)//PER_DAY
-            batch=catalog[(day%pages)*PER_DAY:((day%pages)+1)*PER_DAY]
+            batch=catalog_daily_slice(catalog,day)
             for url in batch:
                 try:
                     meta=get_official_json(url+"?f=json")
