@@ -9,12 +9,33 @@ function base(input){
  return u.href.replace(/\/$/,'');
 }
 function client(fetcher=(...args)=>fetch(...args),clock=()=>Date.now(),delay=ms=>new Promise(r=>setTimeout(r,ms))){
- const health={routing:{failures:0,until:0},geocoding:{failures:0,until:0}};
- function status(kind){const h=health[kind];if(!h)throw Error('Unrecognized provider');return {available:clock()>=h.until,failures:h.failures};}
- function failed(kind,limited=false){const h=health[kind];h.failures++;if(limited||h.failures>=2)h.until=clock()+45000;}
- function succeeded(kind){health[kind]={failures:0,until:0};}
+ const health={routing:{failures:0,until:0,reason:null},geocoding:{failures:0,until:0,reason:null}};
+ function status(kind){
+  const h=health[kind];if(!h)throw Error('Unrecognized provider');
+  const remaining=Math.max(0,h.until-clock());
+  return {available:remaining===0,failures:h.failures,
+    retryAfterSeconds:Math.ceil(remaining/1000),reason:remaining?h.reason:null};
+ }
+ function retryAfterMs(raw){
+  if(typeof raw!=='string'||raw.length>100)return 0;
+  let ms=0;
+  if(/^\\d{1,8}$/.test(raw.trim()))ms=Number(raw.trim())*1000;
+  else{const date=Date.parse(raw);if(Number.isFinite(date))ms=Math.max(0,date-clock());}
+  return Number.isFinite(ms)?Math.min(60*60*1000,Math.max(0,ms)):0;
+ }
+ function failed(kind,reason='unavailable',delayMs=0){
+  const h=health[kind];h.failures++;
+  if(reason==='quota'||h.failures>=2){
+   h.until=Math.max(h.until,clock()+Math.min(3600000,Math.max(45000,delayMs)));
+   h.reason=reason;
+  }
+ }
+ function succeeded(kind){health[kind]={failures:0,until:0,reason:null};}
  async function json(kind,url,timeout,signal){
-  if(!status(kind).available)throw Error('Location service temporarily unavailable; try later.');
+  const healthNow=status(kind);
+  if(!healthNow.available)throw Error(
+    (healthNow.reason==='quota'?'Location service quota/rate limit active; ':'Location service temporarily unavailable; ')+
+    'retry in approximately '+healthNow.retryAfterSeconds+' seconds. Routes remain unknown.');
   const u=new URL(url);
   base(u.origin);
   if(u.username||u.password)throw Error('Provider URL credentials disallowed');
@@ -31,10 +52,14 @@ function client(fetcher=(...args)=>fetch(...args),clock=()=>Date.now(),delay=ms=
      const r=await fetcher(u.href,{signal:controller.signal,cache:'no-store',
       credentials:'omit',redirect:'error',referrerPolicy:'no-referrer',
       headers:{Accept:'application/json'}});
-     if(r.status===429){failed(kind,true);throw Error('Location service rate limited; try later.');}
+     if(r.status===429){
+      failed(kind,'quota',retryAfterMs(r.headers.get('retry-after')));
+      throw Error('Location service rate limited or quota exhausted; no more provider requests until cooldown.');
+     }
      if(r.status>=500&&r.status<600){
       if(attempt===0){await delay(350);continue;}
-      failed(kind);throw Error('Location service unavailable (HTTP '+r.status+').');
+      failed(kind,'unavailable',retryAfterMs(r.headers.get('retry-after')));
+      throw Error('Location service unavailable (HTTP '+r.status+').');
      }
      if(!r.ok){failed(kind);throw Error('Location provider rejected request (HTTP '+r.status+').');}
      if(!/\bjson\b/i.test(r.headers.get('content-type')||''))throw Error('Location provider returned invalid format');
