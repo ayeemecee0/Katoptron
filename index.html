@@ -99,6 +99,8 @@
    <section class="route-compare" aria-labelledby="comparisonHeading">
      <h3 id="comparisonHeading">Compare published camera evidence</h3>
      <p id="comparisonStatus" class="micro" role="status">Plan a route to compare independently checked alternatives. Camera inventory remains incomplete.</p>
+     <label class="toggle"><input id="compareCommunityRoute" type="checkbox"><span class="dot" style="background:#b94b83"></span> Compare community-reported cameras for selected route</label>
+     <p id="communityRouteStatus" class="micro" role="status">Off by default. OSM observations are not confirmed active cameras and do not enter the simulation.</p>
      <ol id="routeComparisonList" aria-label="Driving-route evidence comparison"></ol>
      <p class="micro">Each route is independently searched across its full corridor. Counts describe documented points within 120 meters of the road, not read range, detection likelihood, active cameras, or surveillance-free travel.</p>
    </section>
@@ -149,5 +151,6 @@
 <script src="./routing-routes.js"></script>
 <script src="./route-comparison.js"></script>
 <script src="./community-overlay.js"></script>
+<script src="./community-route.js"></script>
 <script src="./map.js"></script>
 </body></html>
