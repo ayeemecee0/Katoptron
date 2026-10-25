@@ -15,6 +15,7 @@ from auto_verify_flock_agenda import api_request
 from paged_supabase import fetch_all
 from audit_external_arcgis_candidates import (candidate_inputs,
     inspect_arcgis_publisher,check_external,LAYER_URL)
+from auto_verify_camera_gis import get_official_json
 from discover_government_gis_links import (
     fetch_government_page,get_seed_pages,normalized_url)
 from government_domain_registry import load_approved_domains
@@ -22,7 +23,487 @@ from government_domain_registry import load_approved_domains
 MAX_PAGES=65
 MAX_EXTERNAL=35
 ORG_ID=re.compile(r'^[A-Za-z0-9]{8,48}$')
-URL_KEY=re.compile(r'^[A-Za-z0-9-]{3,90}$')
+URL_KEY=re.compile(r'^[A-Za-z0-9-]{3,90}
+
+
+def is_exact_esri_org_link(url,identity):
+    """No generic Esri account/item name is sufficient organization evidence."""
+    if not isinstance(identity,dict):
+        return False
+    orgid=identity.get('org_id')
+    if not isinstance(orgid,str) or not ORG_ID.fullmatch(orgid):
+        return False
+    target=normalized_url(url)
+    if not target:
+        return False
+    parsed=urlsplit(target)
+    hostname=parsed.hostname
+    if hostname in ('www.arcgis.com','arcgis.com'):
+        if parsed.path.rstrip('/').lower() in ('/home/organization.html',
+             '/apps/mapviewer/index.html'):
+            ids=[value for k,values in parse_qs(parsed.query).items()
+                 if k.lower()=='orgid' for value in values]
+            return len(ids)==1 and ids[0]==orgid
+        return False
+    # Government pages sometimes link the agency-branded ArcGIS Online
+    # homepage, not an individual Esri layer. Only the EXACT Esri-owned
+    # first-party maps.arcgis.com root and matching portal key may qualify.
+    key=identity.get('portal_url_key')
+    base=identity.get('portal_base_url')
+    if (isinstance(key,str) and URL_KEY.fullmatch(key)
+        and base=='maps.arcgis.com'
+        and hostname==key.lower()+'.maps.arcgis.com'
+        and not parsed.query):
+        return True
+    return False
+
+
+def independently_owned_arcgis_application(url,identity,fetch=None):
+    """Check exact linked ArcGIS app ITEM ownership, never its mutable title.
+
+    The independent original-agency webpage supplies the link; the original
+    ArcGIS item/owner resources supply the organization binding. This result
+    is only a PRIVATE publisher-association lead, not camera verification.
+    """
+    if not isinstance(identity,dict):
+        return False
+    orgid=identity.get('org_id')
+    key=identity.get('portal_url_key')
+    if (not isinstance(orgid,str) or not ORG_ID.fullmatch(orgid) or
+        not isinstance(key,str) or not URL_KEY.fullmatch(key) or
+        identity.get('portal_base_url')!='maps.arcgis.com'):
+        return False
+    original=normalized_url(url)
+    if not original:
+        return False
+    parsed=urlsplit(original)
+    if (parsed.hostname!=key.lower()+'.maps.arcgis.com' or
+        not APP_PATH.fullmatch(parsed.path)):
+        return False
+    params=parse_qs(parsed.query,keep_blank_values=True)
+    if len(params)!=1 or not set(params).issubset({'appid','id'}):
+        return False
+    field,next_values=next(iter(params.items()))
+    if len(next_values)!=1 or not APP_ID.fullmatch(next_values[0]):
+        return False
+    fetch=fetch or get_official_json
+    item_id=next_values[0]
+    details=fetch('https://www.arcgis.com/sharing/rest/content/items/'+item_id+'?f=json')
+    if (not isinstance(details,dict) or
+        str(details.get('id','')).lower()!=item_id.lower() or
+        details.get('type') not in APP_TYPES or
+        not isinstance(details.get('owner'),str)):
+        return False
+    if details.get('orgId')==orgid:
+        return True
+    # The item details may omit orgId; require the exact ArcGIS owner profile.
+    if details.get('orgId') is not None:
+        return False
+    owner=details['owner']
+    if not re.fullmatch(r'[A-Za-z0-9_.-]{3,90}',owner):
+        return False
+    profile=fetch('https://www.arcgis.com/sharing/rest/community/users/'+owner+'?f=json')
+    return (isinstance(profile,dict) and profile.get('username')==owner
+            and profile.get('orgId')==orgid)
+
+
+def linked_government_org(document,page,identity,fetch=None):
+    # A government link to an independently authenticated Esri map item is
+    # stronger than merely matching a city-sounding profile name, while not
+    # certifying any layer's individual points or current installation.
+    examined=0
+    for href,label in document.anchors:
+        if not isinstance(href,str) or len(href)>1500:
+            continue
+        url=urljoin(page,href)
+        if is_exact_esri_org_link(url,identity):
+            return True
+        candidate=urlsplit(url)
+        if (candidate.hostname and candidate.hostname.endswith('.maps.arcgis.com') and
+            APP_PATH.fullmatch(candidate.path)):
+            if examined>=MAX_APP_LINK_CHECKS:
+                break
+            examined+=1
+            try:
+                if independently_owned_arcgis_application(url,identity,fetch):
+                    return True
+            except (ValueError,TypeError,KeyError,TimeoutError,OSError):
+                continue
+    return False
+
+
+def government_pages():
+    approved=load_approved_domains()
+    seeded,_=get_seed_pages(approved)
+    pages={url for url,label in seeded}
+    gis=fetch_all(api_request,
+        'government_gis_search_queue?select=page_url,candidate_status&limit=100',
+        'page_url',max_records=500)
+    for row in gis:
+        url=row.get('page_url')
+        normalized=normalized_url(url) if isinstance(url,str) else None
+        parsed=urlsplit(normalized) if normalized else None
+        # A bare search-page lead is only independently authoritative if it
+        # is at an actual .gov hostname. Custom domains require a previously
+        # owner-reviewed government source, already in the seed pages.
+        if parsed and parsed.hostname and parsed.hostname.endswith('.gov'):
+            pages.add(normalized)
+    return sorted(pages)[:MAX_PAGES]
+
+
+def run():
+    candidates,receipts,verified=candidate_inputs()
+    direct={x['gis_layer_url'] for x in receipts if x.get('discovery_method') in (
+         'government_page_direct_anchor_v1','government_page_direct_service_v1')}
+    trusted={x['gis_layer_url'] for x in verified}
+    externally=[c for c in candidates
+        if LAYER_URL.fullmatch(c.get('gis_layer_url') or '')]
+    if len(externally)>MAX_EXTERNAL:
+        raise ValueError('Too many external ArcGIS candidates for a bounded agency endorsement search')
+    if not externally:
+        print('ESRI GOV ORGANIZATION PROOF: no external candidates to investigate')
+        return Counter()
+    agency=government_pages()
+    if not agency:
+        raise ValueError('No independently governed original pages available')
+    docs=[]
+    skipped=0
+    # Cache original pages once per audit, not once per each Esri candidate.
+    for page in agency:
+        try:
+            document,digest=fetch_government_page(page)
+            docs.append((page,document,digest))
+        except Exception:
+            skipped+=1
+    if not docs:
+        raise ValueError('Every original agency evidence page is unavailable')
+    counts=Counter()
+    counts['original_pages_checked']=len(docs)
+    counts['original_pages_unavailable']=skipped
+    for candidate in externally:
+        url=candidate['gis_layer_url']
+        marker=hashlib.sha256(url.encode()).hexdigest()[:12]
+        if url in trusted:
+            counts['already_verified']+=1
+            continue
+        # Require the actual service and per-feature point metadata to match
+        # before even using an Esri organization association as a lead.
+        try:
+            status=check_external(candidate,direct,trusted)
+            if status not in ('verified_arcgis_metadata_only_missing_original_government_link',
+                              'candidate_government_link_needs_full_attestation'):
+                counts['original_service_incomplete']+=1
+                continue
+            identity=inspect_arcgis_publisher(url,return_identity=True)
+            if not isinstance(identity,dict):
+                counts['arcgis_org_not_attributed']+=1
+                continue
+            counts['esri_org_exactly_identified']+=1
+            matches=[hashlib.sha256(page.encode()).hexdigest()[:12]
+                for page,document,digest in docs
+                if linked_government_org(document,page,identity)]
+            if matches:
+                counts['gov_page_links_exact_esri_organization']+=1
+                # A matched link is original-government *publisher association*
+                # only, not yet an individually reviewed Flock camera location.
+                print('ESRI GOV PUBLISHER MATCH',marker,'gov_page_sha',matches[0])
+            else:
+                counts['original_government_organization_link_missing']+=1
+                print('ESRI GOV PUBLISHER HELD',marker,'no reviewed agency org hyperlink')
+        except Exception as exc:
+            counts['inspection_unavailable']+=1
+            print('ESRI GOV PUBLISHER HELD',marker,type(exc).__name__)
+    for label in sorted(counts):
+        print('ESRI GOV PUBLISHER SUMMARY',label,counts[label])
+    print('ESRI GOV PUBLISHER camera locations automatically verified: 0')
+    print('ESRI GOV PUBLISHER source authorities automatically approved: 0')
+    return counts
+
+
+if __name__=='__main__':
+    run()
+)
+# Exact ArcGIS Online web applications are common on municipal GIS pages.
+# Independently verify the application's ESRI ITEM owner and organization
+# before treating the original government anchor as publisher-association
+# research evidence; a lookalike host or arbitrary item URL is insufficient.
+APP_ID=re.compile(r'^[0-9a-fA-F]{32}
+
+
+def is_exact_esri_org_link(url,identity):
+    """No generic Esri account/item name is sufficient organization evidence."""
+    if not isinstance(identity,dict):
+        return False
+    orgid=identity.get('org_id')
+    if not isinstance(orgid,str) or not ORG_ID.fullmatch(orgid):
+        return False
+    target=normalized_url(url)
+    if not target:
+        return False
+    parsed=urlsplit(target)
+    hostname=parsed.hostname
+    if hostname in ('www.arcgis.com','arcgis.com'):
+        if parsed.path.rstrip('/').lower() in ('/home/organization.html',
+             '/apps/mapviewer/index.html'):
+            ids=[value for k,values in parse_qs(parsed.query).items()
+                 if k.lower()=='orgid' for value in values]
+            return len(ids)==1 and ids[0]==orgid
+        return False
+    # Government pages sometimes link the agency-branded ArcGIS Online
+    # homepage, not an individual Esri layer. Only the EXACT Esri-owned
+    # first-party maps.arcgis.com root and matching portal key may qualify.
+    key=identity.get('portal_url_key')
+    base=identity.get('portal_base_url')
+    if (isinstance(key,str) and URL_KEY.fullmatch(key)
+        and base=='maps.arcgis.com'
+        and hostname==key.lower()+'.maps.arcgis.com'
+        and not parsed.query):
+        return True
+    return False
+
+
+def linked_government_org(document,page,identity):
+    found=False
+    for href,label in document.anchors:
+        if not isinstance(href,str) or len(href)>1500:
+            continue
+        url=urljoin(page,href)
+        if is_exact_esri_org_link(url,identity):
+            found=True
+    return found
+
+
+def government_pages():
+    approved=load_approved_domains()
+    seeded,_=get_seed_pages(approved)
+    pages={url for url,label in seeded}
+    gis=fetch_all(api_request,
+        'government_gis_search_queue?select=page_url,candidate_status&limit=100',
+        'page_url',max_records=500)
+    for row in gis:
+        url=row.get('page_url')
+        normalized=normalized_url(url) if isinstance(url,str) else None
+        parsed=urlsplit(normalized) if normalized else None
+        # A bare search-page lead is only independently authoritative if it
+        # is at an actual .gov hostname. Custom domains require a previously
+        # owner-reviewed government source, already in the seed pages.
+        if parsed and parsed.hostname and parsed.hostname.endswith('.gov'):
+            pages.add(normalized)
+    return sorted(pages)[:MAX_PAGES]
+
+
+def run():
+    candidates,receipts,verified=candidate_inputs()
+    direct={x['gis_layer_url'] for x in receipts if x.get('discovery_method') in (
+         'government_page_direct_anchor_v1','government_page_direct_service_v1')}
+    trusted={x['gis_layer_url'] for x in verified}
+    externally=[c for c in candidates
+        if LAYER_URL.fullmatch(c.get('gis_layer_url') or '')]
+    if len(externally)>MAX_EXTERNAL:
+        raise ValueError('Too many external ArcGIS candidates for a bounded agency endorsement search')
+    if not externally:
+        print('ESRI GOV ORGANIZATION PROOF: no external candidates to investigate')
+        return Counter()
+    agency=government_pages()
+    if not agency:
+        raise ValueError('No independently governed original pages available')
+    docs=[]
+    skipped=0
+    # Cache original pages once per audit, not once per each Esri candidate.
+    for page in agency:
+        try:
+            document,digest=fetch_government_page(page)
+            docs.append((page,document,digest))
+        except Exception:
+            skipped+=1
+    if not docs:
+        raise ValueError('Every original agency evidence page is unavailable')
+    counts=Counter()
+    counts['original_pages_checked']=len(docs)
+    counts['original_pages_unavailable']=skipped
+    for candidate in externally:
+        url=candidate['gis_layer_url']
+        marker=hashlib.sha256(url.encode()).hexdigest()[:12]
+        if url in trusted:
+            counts['already_verified']+=1
+            continue
+        # Require the actual service and per-feature point metadata to match
+        # before even using an Esri organization association as a lead.
+        try:
+            status=check_external(candidate,direct,trusted)
+            if status not in ('verified_arcgis_metadata_only_missing_original_government_link',
+                              'candidate_government_link_needs_full_attestation'):
+                counts['original_service_incomplete']+=1
+                continue
+            identity=inspect_arcgis_publisher(url,return_identity=True)
+            if not isinstance(identity,dict):
+                counts['arcgis_org_not_attributed']+=1
+                continue
+            counts['esri_org_exactly_identified']+=1
+            matches=[hashlib.sha256(page.encode()).hexdigest()[:12]
+                for page,document,digest in docs
+                if linked_government_org(document,page,identity)]
+            if matches:
+                counts['gov_page_links_exact_esri_organization']+=1
+                # A matched link is original-government *publisher association*
+                # only, not yet an individually reviewed Flock camera location.
+                print('ESRI GOV PUBLISHER MATCH',marker,'gov_page_sha',matches[0])
+            else:
+                counts['original_government_organization_link_missing']+=1
+                print('ESRI GOV PUBLISHER HELD',marker,'no reviewed agency org hyperlink')
+        except Exception as exc:
+            counts['inspection_unavailable']+=1
+            print('ESRI GOV PUBLISHER HELD',marker,type(exc).__name__)
+    for label in sorted(counts):
+        print('ESRI GOV PUBLISHER SUMMARY',label,counts[label])
+    print('ESRI GOV PUBLISHER camera locations automatically verified: 0')
+    print('ESRI GOV PUBLISHER source authorities automatically approved: 0')
+    return counts
+
+
+if __name__=='__main__':
+    run()
+)
+APP_PATH=re.compile(r'^/apps/(?:webappviewer/index[.]html|Shortlist/index[.]html|instant/[A-Za-z0-9_-]{2,35}/index[.]html)
+
+
+def is_exact_esri_org_link(url,identity):
+    """No generic Esri account/item name is sufficient organization evidence."""
+    if not isinstance(identity,dict):
+        return False
+    orgid=identity.get('org_id')
+    if not isinstance(orgid,str) or not ORG_ID.fullmatch(orgid):
+        return False
+    target=normalized_url(url)
+    if not target:
+        return False
+    parsed=urlsplit(target)
+    hostname=parsed.hostname
+    if hostname in ('www.arcgis.com','arcgis.com'):
+        if parsed.path.rstrip('/').lower() in ('/home/organization.html',
+             '/apps/mapviewer/index.html'):
+            ids=[value for k,values in parse_qs(parsed.query).items()
+                 if k.lower()=='orgid' for value in values]
+            return len(ids)==1 and ids[0]==orgid
+        return False
+    # Government pages sometimes link the agency-branded ArcGIS Online
+    # homepage, not an individual Esri layer. Only the EXACT Esri-owned
+    # first-party maps.arcgis.com root and matching portal key may qualify.
+    key=identity.get('portal_url_key')
+    base=identity.get('portal_base_url')
+    if (isinstance(key,str) and URL_KEY.fullmatch(key)
+        and base=='maps.arcgis.com'
+        and hostname==key.lower()+'.maps.arcgis.com'
+        and not parsed.query):
+        return True
+    return False
+
+
+def linked_government_org(document,page,identity):
+    found=False
+    for href,label in document.anchors:
+        if not isinstance(href,str) or len(href)>1500:
+            continue
+        url=urljoin(page,href)
+        if is_exact_esri_org_link(url,identity):
+            found=True
+    return found
+
+
+def government_pages():
+    approved=load_approved_domains()
+    seeded,_=get_seed_pages(approved)
+    pages={url for url,label in seeded}
+    gis=fetch_all(api_request,
+        'government_gis_search_queue?select=page_url,candidate_status&limit=100',
+        'page_url',max_records=500)
+    for row in gis:
+        url=row.get('page_url')
+        normalized=normalized_url(url) if isinstance(url,str) else None
+        parsed=urlsplit(normalized) if normalized else None
+        # A bare search-page lead is only independently authoritative if it
+        # is at an actual .gov hostname. Custom domains require a previously
+        # owner-reviewed government source, already in the seed pages.
+        if parsed and parsed.hostname and parsed.hostname.endswith('.gov'):
+            pages.add(normalized)
+    return sorted(pages)[:MAX_PAGES]
+
+
+def run():
+    candidates,receipts,verified=candidate_inputs()
+    direct={x['gis_layer_url'] for x in receipts if x.get('discovery_method') in (
+         'government_page_direct_anchor_v1','government_page_direct_service_v1')}
+    trusted={x['gis_layer_url'] for x in verified}
+    externally=[c for c in candidates
+        if LAYER_URL.fullmatch(c.get('gis_layer_url') or '')]
+    if len(externally)>MAX_EXTERNAL:
+        raise ValueError('Too many external ArcGIS candidates for a bounded agency endorsement search')
+    if not externally:
+        print('ESRI GOV ORGANIZATION PROOF: no external candidates to investigate')
+        return Counter()
+    agency=government_pages()
+    if not agency:
+        raise ValueError('No independently governed original pages available')
+    docs=[]
+    skipped=0
+    # Cache original pages once per audit, not once per each Esri candidate.
+    for page in agency:
+        try:
+            document,digest=fetch_government_page(page)
+            docs.append((page,document,digest))
+        except Exception:
+            skipped+=1
+    if not docs:
+        raise ValueError('Every original agency evidence page is unavailable')
+    counts=Counter()
+    counts['original_pages_checked']=len(docs)
+    counts['original_pages_unavailable']=skipped
+    for candidate in externally:
+        url=candidate['gis_layer_url']
+        marker=hashlib.sha256(url.encode()).hexdigest()[:12]
+        if url in trusted:
+            counts['already_verified']+=1
+            continue
+        # Require the actual service and per-feature point metadata to match
+        # before even using an Esri organization association as a lead.
+        try:
+            status=check_external(candidate,direct,trusted)
+            if status not in ('verified_arcgis_metadata_only_missing_original_government_link',
+                              'candidate_government_link_needs_full_attestation'):
+                counts['original_service_incomplete']+=1
+                continue
+            identity=inspect_arcgis_publisher(url,return_identity=True)
+            if not isinstance(identity,dict):
+                counts['arcgis_org_not_attributed']+=1
+                continue
+            counts['esri_org_exactly_identified']+=1
+            matches=[hashlib.sha256(page.encode()).hexdigest()[:12]
+                for page,document,digest in docs
+                if linked_government_org(document,page,identity)]
+            if matches:
+                counts['gov_page_links_exact_esri_organization']+=1
+                # A matched link is original-government *publisher association*
+                # only, not yet an individually reviewed Flock camera location.
+                print('ESRI GOV PUBLISHER MATCH',marker,'gov_page_sha',matches[0])
+            else:
+                counts['original_government_organization_link_missing']+=1
+                print('ESRI GOV PUBLISHER HELD',marker,'no reviewed agency org hyperlink')
+        except Exception as exc:
+            counts['inspection_unavailable']+=1
+            print('ESRI GOV PUBLISHER HELD',marker,type(exc).__name__)
+    for label in sorted(counts):
+        print('ESRI GOV PUBLISHER SUMMARY',label,counts[label])
+    print('ESRI GOV PUBLISHER camera locations automatically verified: 0')
+    print('ESRI GOV PUBLISHER source authorities automatically approved: 0')
+    return counts
+
+
+if __name__=='__main__':
+    run()
+,re.I)
+APP_TYPES={'Web Mapping Application','Web Experience','Dashboard','StoryMap'}
+MAX_APP_LINK_CHECKS=12
+
 
 
 def is_exact_esri_org_link(url,identity):
