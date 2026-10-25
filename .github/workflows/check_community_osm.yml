@@ -8,6 +8,7 @@ on:
       - 'scripts/smoke_community_osm.cjs'
       - 'scripts/smoke_community_overlay.cjs'
       - 'scripts/smoke_community_route.cjs'
+      - 'scripts/smoke_dense_community_corridor.cjs'
       - 'community-route.js'
       - 'community-overlay.js'
       - 'index.html'
@@ -39,3 +40,4 @@ jobs:
           node scripts/smoke_community_osm.cjs
           node scripts/smoke_community_overlay.cjs
           node scripts/smoke_community_route.cjs
+          node scripts/smoke_dense_community_corridor.cjs
