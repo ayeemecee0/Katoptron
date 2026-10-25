@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Katoptron | Flock Safety Transparency Portal Disclosures</title>
+<meta name="description" content="Dated, source-linked Flock Safety agency transparency disclosures, separate from verified camera locations.">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0a1018;color:#ebf3fa}
+*{box-sizing:border-box}body{margin:0}a{color:#a9d9ee}a:hover{text-decoration:underline}
+header{border-bottom:1px solid #294051;padding:22px max(20px,4vw);background:#0d1722}
+.brand{font-size:1.2rem;font-weight:800;letter-spacing:.12em;text-decoration:none;color:inherit}
+nav{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:.83rem}
+main{max-width:1190px;margin:auto;padding:36px 20px 64px}
+h1{font-size:clamp(1.65rem,3.5vw,2.5rem);margin:0 0 12px}
+h2{font-size:1.1rem;margin:4px 0 9px}
+p{line-height:1.6;color:#bccbd7}
+.lead{max-width:920px}
+.explain{border-left:3px solid #8ec7d5;background:#142330;padding:16px 19px;margin:20px 0;font-size:.94rem}
+label{display:block;margin-bottom:8px;font-weight:650;font-size:.82rem}
+input{font:inherit;background:#172636;border:1px solid #567286;border-radius:8px;color:#fff;padding:12px;width:min(100%,480px)}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}
+.stat{border:1px solid #344b5d;background:#111f2c;border-radius:10px;padding:14px 20px;min-width:190px}
+.stat strong{display:block;font-size:1.6rem}.stat span{color:#adbdca;font-size:.76rem}
+#results{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:15px;margin-top:20px}
+.card{border:1px solid #354e62;border-radius:12px;background:#101e2b;padding:19px}
+.eyebrow{font-size:.73rem;letter-spacing:.07em;text-transform:uppercase;color:#9db7c8}
+.hero{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0}
+.camera strong{font-size:2.15rem;font-variant-numeric:tabular-nums}
+.camera small{display:block;color:#adc1ce}
+dl{display:grid;grid-template-columns:1fr auto;gap:8px;border-top:1px solid #365064;padding-top:14px}
+dt{color:#b4c6d4}dd{margin:0;font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
+.foot{font-size:.79rem;color:#aec1ce;margin-top:16px}
+#status{min-height:25px}
+:focus-visible{outline:3px solid #92dce8;outline-offset:3px}
+</style><link rel="stylesheet" href="./a11y.css"></head>
+<body><a class="skip-link" href="#main-content">Skip to main content</a>
+<header><a href="./index.html" class="brand">KATOPTRON</a><nav aria-label="Main navigation">
+<a href="./index.html">CAMERA MAP</a><a href="./records.html">GOVERNMENT RECORDS</a>
+<a href="./portals.html" aria-current="page">FLOCK DISCLOSURES</a>
+<a href="./accountability.html">ACCOUNTABILITY</a><a href="./methodology.html">METHODOLOGY</a>
+</nav></header>
+<main id="main-content"><h1>Flock's own transparency disclosures</h1>
+<p class="lead">Original Flock Safety-hosted agency portal statistics, recorded exactly as dated vendor reports. These are primary-source <strong>vendor claims</strong> and do not require duplicate government verification.</p>
+<div class="explain" role="note"><strong>What the figures mean:</strong> “Total cameras” includes license plate readers <em>and other cameras</em>; it is not a count of verified individual ALPR map pins. Missing figures mean <strong>not reported</strong>, never zero. “Last 30 days” describes the period preceding each original portal update, not the last 30 days today. Counts from different dates or agencies are not added together. Portal figures are not proof of current operation.</div>
+<section class="stats" aria-label="Portal coverage">
+ <div class="stat"><strong id="snapshotCount">—</strong><span>Published dated snapshots</span></div>
+ <div class="stat"><strong id="agencyCount">—</strong><span>Agencies with vendor disclosures</span></div>
+ <div class="stat"><strong id="coverageDate">—</strong><span>Most recent source update</span></div>
+</section>
+<label for="search">Find an agency or state</label>
+<input id="search" type="search" maxlength="90" placeholder="Search e.g. Menifee, Folsom, CA">
+<p id="status" role="status" aria-live="polite">Loading first-party source snapshots…</p>
+<section id="results" aria-live="polite"></section>
+<p class="foot">The snapshot list is selective, not a census of participating agencies. New information requires an exact original Flock portal citation and a dated reviewed snapshot. Individual camera locations are verified separately. <a href="./methodology.html">Read the evidence policy</a>.</p>
+</main><script src="./config.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let rows=[];
+function text(tag,value,klass){const el=document.createElement(tag);el.textContent=value===null||value===undefined?'Not reported':String(value);if(klass)el.className=klass;return el;}
+function safePortal(url){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='transparency.flocksafety.com'&&!u.username&&!u.password&&/^\/[a-z0-9-]+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
+function number(n){return n==null?'Not reported':Number(n).toLocaleString('en-US')}
+function metric(dl,label,value,suffix){dl.append(text('dt',label),text('dd',value===null||value===undefined?'Not reported':number(value)+(suffix||'')))}
+function card(row){
+ const el=text('article',null,'card');
+ el.append(text('div','Flock Safety · Original vendor snapshot','eyebrow'),text('h2',row.agency_label),
+           text('div','Source last updated: '+row.source_date,'eyebrow'));
+ const hero=text('div',null,'hero'),count=text('div',null,'camera');
+ count.append(text('strong',number(row.reported_total_cameras)),text('small','LPR and other cameras'));
+ hero.append(count);el.append(hero);
+ const dl=document.createElement('dl');
+ metric(dl,'Data retention',row.retention_days,' days');
+ metric(dl,'Search sessions · prior 30 days',row.reported_search_sessions_30d);
+ metric(dl,'Hotlist hits · prior 30 days',row.reported_hotlist_hits_30d);
+ metric(dl,'Vehicle detections · prior 30 days',row.reported_vehicle_detections_30d);
+ el.append(dl);
+ const url=safePortal(row.portal_url);
+ if(url){const link=text('a','Open original Flock portal ↗');link.href=url;link.target='_blank';link.rel='noopener noreferrer';el.append(link)}
+ el.append(text('p','Vendor-reported and source-dated. No camera coordinates are implied.','foot'));
+ return el;
+}
+function render(){
+ const q=$('search').value.trim().toLowerCase();
+ const result=rows.filter(x=>(x.agency_label+' '+x.state_code).toLowerCase().includes(q));
+ $('results').replaceChildren(...result.map(card));
+ $('status').textContent=result.length+' dated source snapshot'+(result.length===1?'':'s')+' matching this search.';
+}
+async function load(){
+ const cfg=window.KATOPTRON_CONFIG;
+ if(!cfg?.supabaseUrl||!cfg?.supabasePublishableKey){$('status').textContent='Public evidence service is not configured.';return}
+ try{
+  const params=new URLSearchParams({select:'agency_key,agency_label,state_code,portal_url,source_date,reported_total_cameras,retention_days,reported_search_sessions_30d,reported_hotlist_hits_30d,reported_vehicle_detections_30d',disclosure_status:'eq.verified_source_snapshot',order:'source_date.desc,agency_label.asc',limit:'500'});
+  const res=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/flock_vendor_portal_snapshots?'+params,
+    {headers:{apikey:cfg.supabasePublishableKey},cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!res.ok)throw new Error('Published portal source service returned HTTP '+res.status);
+  const data=await res.json();
+  if(!Array.isArray(data)||data.length>=500)throw Error('Snapshot inventory unavailable or truncated');
+  rows=data;
+  $('snapshotCount').textContent=number(rows.length);
+  $('agencyCount').textContent=number(new Set(rows.map(x=>x.agency_key)).size);
+  $('coverageDate').textContent=rows.length?rows[0].source_date:'—';
+  render();
+ }catch(e){$('status').textContent='Unable to load vendor disclosures: '+e.message;$('results').replaceChildren()}
+}
+$('search').addEventListener('input',render);
+load();
+</script></body></html>
