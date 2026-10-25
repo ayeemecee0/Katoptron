@@ -93,6 +93,10 @@ on:
       - 'supabase/migrations/089_multistate_vendor_portal_snapshots.sql'
       - 'supabase/migrations/090_public_state_vendor_evidence_footprint.sql'
       - 'supabase/migrations/091_private_government_linked_vendor_portal_leads.sql'
+      - 'supabase/migrations/092_separate_osm_community_flock_camera_layer.sql'
+      - 'scripts/test_osm_community_layer.sql'
+      - 'scripts/test_import_osm_community_flock.py'
+      - 'community-map.html'
       - 'scripts/test_private_vendor_portal_discovery.sql'
       - 'scripts/test_public_state_vendor_footprint.sql'
       - 'scripts/test_multistate_vendor_portals.sql'
@@ -570,6 +574,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_private_vendor_portal_discovery.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/092_separate_osm_community_flock_camera_layer.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_osm_community_layer.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_first_party_agency_gis_rechecks.sql
@@ -975,6 +983,7 @@ jobs:
           python scripts/test_public_accessibility.py
           python scripts/test_vendor_portal_static.py
           python scripts/test_discover_official_vendor_portals.py
+          python scripts/test_import_osm_community_flock.py
           python scripts/test_static_release_security.py
           node --check route-comparison.js
           node scripts/test_route_comparison.js
