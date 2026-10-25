@@ -17,6 +17,7 @@ on:
       - 'methodology.html'
       - 'portals.html'
       - 'community-map.html'
+      - 'nearby.html'
       - 'map.css'
       - 'a11y.css'
 
