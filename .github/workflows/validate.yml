@@ -103,6 +103,8 @@ on:
       - 'supabase/migrations/099_bounded_osm_viewport_density.sql'
       - 'supabase/migrations/100_government_linked_flock_vendor_directory.sql'
       - 'supabase/migrations/101_live_oak_exact_police_flock_map_source.sql'
+      - 'supabase/migrations/102_private_government_arcgis_camera_app_discovery.sql'
+      - 'scripts/test_government_camera_map_app_leads.sql'
       - 'scripts/test_live_oak_exact_police_source.sql'
       - 'scripts/test_government_vendor_directory.sql'
       - 'scripts/sync_government_vendor_directory.py'
@@ -638,6 +640,10 @@ jobs:
             -f supabase/migrations/101_live_oak_exact_police_flock_map_source.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_live_oak_exact_police_source.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/102_private_government_arcgis_camera_app_discovery.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_government_camera_map_app_leads.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
