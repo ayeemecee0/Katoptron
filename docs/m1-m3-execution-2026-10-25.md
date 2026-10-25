@@ -39,7 +39,7 @@
 - [Discovery triage and lifecycle reconciliation passed](https://github.com/ayeemecee0/Katoptron/actions/runs/40236091640)
 - [Eight-source public map health passed](https://github.com/ayeemecee0/Katoptron/actions/runs/40236409546)
 - [Browser smoke passed](https://github.com/ayeemecee0/Katoptron/actions/runs/40236303719)
-- [Full validation passed with migration/source changes before final RPC-allowlist adjustment](https://github.com/ayeemecee0/Katoptron/actions/runs/40236409549)
+- [Full disposable PostgreSQL migration, RLS and regression validation passed](https://github.com/ayeemecee0/Katoptron/actions/runs/40236750949)
 
 ## Non-software acceptance dependencies
 1. **Agency-specific proof:** Shelbyville's 12 source-attributed map observations and Menifee's privately held 27 GIS features still lack independent police endorsement of their exact individual camera-layer status. Do not inflate manufacturer-certified or verified camera totals.
