@@ -19,6 +19,13 @@ const assert=require('node:assert/strict');
   const r=await page.goto(new URL('index.html',base).href,{waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(r?.status(),200);
   await page.waitForFunction(()=>document.querySelector('#nationalStats')?.textContent?.includes('verified camera points'),null,{timeout:30000});
+  await page.waitForFunction(()=>{
+    const c=Number((document.querySelector('#nationalCommunityCount')?.textContent||'').replaceAll(',',''));
+    const o=Number((document.querySelector('#nationalVerifiedCount')?.textContent||'').replaceAll(',',''));
+    return c>=100000&&o>=293;
+  },null,{timeout:25000});
+  assert.ok((await page.locator('#nationalCommunityStatus').textContent()).includes('not independently confirmed active cameras'));
+  assert.ok((await page.locator('#nationalStats').textContent()).includes('verified camera points'));
   assert.equal(await page.locator('#compareCommunityRoute').isChecked(),false);
   const source=await page.evaluate(async()=>{
     const c=window.KATOPTRON_CONFIG;
