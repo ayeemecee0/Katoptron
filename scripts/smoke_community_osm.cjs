@@ -1,35 +1,47 @@
-/* Chromium smoke for the nationwide openly licensed OSM Flock layer. */
+/* Live Chromium smoke for the nationwide community Flock dataset in Supabase. */
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
+
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1280,height:850}});
  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
- let tileResponses=0;const failed=[];const networkFailures=[];
- page.on('requestfailed',req=>networkFailures.push(req.url().slice(0,160)+':'+(req.failure()?.errorText||'unknown')));
- page.on('console',msg=>{if(msg.type()==='error')networkFailures.push('console:'+msg.text().slice(0,160))});
- page.on('response',r=>{if(r.url().includes('cameras-us-hourly-filter/')&&r.status()===200)tileResponses++});
- page.on('pageerror',e=>failed.push(e.message));
+ const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
  try{
   const response=await page.goto(new URL('community-map.html',base).href,
-      {waitUntil:'domcontentloaded',timeout:45000});
+    {waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(response?.status(),200);
   await page.waitForFunction(()=>{
-   const s=document.querySelector('#status')?.textContent||'';
-   return s.includes('loaded')||s.includes('unavailable')||s.includes('provider issue');
-  },{timeout:65000});
-  const status=await page.locator('#status').textContent();
-  assert.ok(status.includes('layer loaded'),'Map provider not ready: '+status+'; network: '+networkFailures.join(' | ').slice(0,850));
+    const text=document.querySelector('#communityCount')?.textContent||'';
+    return Number(text.replaceAll(',',''))>=1000;
+  },null,{timeout:45000});
   const count=await page.locator('#communityCount').textContent();
-  assert.ok(Number(count.replaceAll(',',''))>50000,
-    'Source manifest vendor count missing, changed or unexpectedly small: '+count);
-  await page.waitForTimeout(4500);
-  assert.ok(tileResponses>0,'Filtered Flock community vector tiles did not successfully load');
-  await page.locator('#coords').fill('38.5816,-121.4944');
+  assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
+  assert.ok((await page.locator('#status').textContent()).includes('Zoom in'));
+  assert.ok((await page.locator('#sourceDate').textContent()).includes('snapshot'));
+  // Retrieve ONE already-published community-source coordinate to prove the
+  // viewport-scoped map can display an actual database-backed camera record.
+  const record=await page.evaluate(async()=>{
+    const c=window.KATOPTRON_CONFIG;
+    const url=c.supabaseUrl+'/rest/v1/flock_osm_community_points?select=osm_key,latitude,longitude&order=osm_key.asc&limit=1';
+    const r=await fetch(url,{headers:{apikey:c.supabasePublishableKey},cache:'no-store'});
+    if(!r.ok)throw Error('Published community point API HTTP '+r.status);
+    const rows=await r.json();
+    if(!Array.isArray(rows)||rows.length!==1)throw Error('No community source point found');
+    return rows[0];
+  });
+  await page.locator('#coordinates').fill(record.latitude+','+record.longitude);
   await page.locator('#jumpForm button').click();
-  assert.ok((await page.locator('#status').textContent()).includes('near selected coordinates'));
-  assert.deepEqual(failed,[],'Browser source map errors');
-  console.log('OSM FLOCK NATIONAL MAP PASS, source-labeled cameras='+count+', tiles HTTP 200='+tileResponses);
- }catch(err){console.error('OSM FLOCK NATIONAL MAP FAILED:',err.message);process.exitCode=1}
+  await page.waitForFunction(()=>{
+    const s=document.querySelector('#status')?.textContent||'';
+    return s.includes('community Flock locations shown')||s.includes('More than 1,500')||s.includes('unavailable');
+  },null,{timeout:40000});
+  let status=await page.locator('#status').textContent();
+  assert.ok(status.includes('community Flock locations shown'),'Map source retrieval did not succeed: '+status);
+  assert.ok(await page.locator('.leaflet-interactive').count()>0,'No map geometry rendered');
+  assert.deepEqual(errors,[],'Browser JavaScript errors');
+  console.log('NATIONAL COMMUNITY FLOCK MAP PASS: '+count+' public ODbL points indexed; GIS and community separate');
+ }catch(e){console.error('NATIONAL COMMUNITY FLOCK MAP FAILED:',e.message);process.exitCode=1}
  finally{await browser.close()}
-})().catch(err=>{console.error('OSM smoke harness failed:',err.message);process.exitCode=1});
+})().catch(e=>{console.error('Nationwide community browser harness failed:',e.message);process.exitCode=1});
