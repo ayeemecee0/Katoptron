@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'community-map.html'
+      - 'nearby.html'
+      - 'scripts/smoke_nearby.cjs'
       - 'scripts/smoke_community_osm.cjs'
       - 'scripts/smoke_community_overlay.cjs'
       - 'scripts/smoke_community_route.cjs'
@@ -38,6 +40,7 @@ jobs:
         env:
           KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
         run: |
+          node scripts/smoke_nearby.cjs
           node scripts/smoke_community_osm.cjs
           node scripts/smoke_community_overlay.cjs
           node scripts/smoke_community_route.cjs
