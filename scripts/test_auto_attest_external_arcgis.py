@@ -27,6 +27,7 @@ LAYER={"name":"Flock Cameras","type":"Feature Layer",
            {"name":"CameraID","type":"esriFieldTypeString"}]}
 POINTS={"features":[{"attributes":{"OBJECTID":7,"CameraID":"P-7"},
           "geometry":{"x":-112.2,"y":33.6}}]}
+IDS={"objectIdFieldName":"OBJECTID","objectIds":[7]}
 def doc():
  p=Anchors()
  p.feed('<h1>Peoria Flock Safety ALPR cameras</h1>'
@@ -55,7 +56,7 @@ class OfficialExternal(unittest.TestCase):
  def test_metadata_point_only_and_live_original_government_link(self):
   with (patch.object(v,"fetch_government_page",return_value=(doc(),'a'*64)),
         patch.object(v,"arcgis_original_org",return_value=(ORGID,"City of Peoria GIS")),
-        patch.object(v,"get_official_json",side_effect=[SERVICE,LAYER,POINTS])):
+        patch.object(v,"get_official_json",side_effect=[SERVICE,LAYER,IDS,POINTS,IDS])):
    result=v.source_payload(SOURCE,ROOT,LINK,CANDIDATE)
   self.assertEqual(result["p_locations"],[{"id":7,"lat":33.6,"lon":-112.2}])
   self.assertEqual(result["p_org_id"],ORGID)
@@ -64,6 +65,27 @@ class OfficialExternal(unittest.TestCase):
    with self.assertRaises(ValueError):
     v.source_payload(SOURCE,ROOT,LINK,CANDIDATE)
   org.assert_not_called()
+
+ def test_unstable_or_truncated_original_inventory_is_held(self):
+  with (patch.object(v,"fetch_government_page",return_value=(doc(),'a'*64)),
+        patch.object(v,"arcgis_original_org",return_value=(ORGID,"City of Peoria GIS")),
+        patch.object(v,"get_official_json",side_effect=[
+           SERVICE,LAYER,IDS,{"features":[]},IDS])):
+   with self.assertRaisesRegex(ValueError,"missing or truncated"):
+    v.source_payload(SOURCE,ROOT,LINK,CANDIDATE)
+  with (patch.object(v,"fetch_government_page",return_value=(doc(),'a'*64)),
+        patch.object(v,"arcgis_original_org",return_value=(ORGID,"City of Peoria GIS")),
+        patch.object(v,"get_official_json",side_effect=[
+           SERVICE,LAYER,IDS,POINTS,
+           {"objectIdFieldName":"OBJECTID","objectIds":[8]}])):
+   with self.assertRaisesRegex(ValueError,"changed"):
+    v.source_payload(SOURCE,ROOT,LINK,CANDIDATE)
+  with (patch.object(v,"fetch_government_page",return_value=(doc(),'a'*64)),
+        patch.object(v,"arcgis_original_org",return_value=(ORGID,"City of Peoria GIS")),
+        patch.object(v,"get_official_json",side_effect=[
+           SERVICE,LAYER,{"objectIdFieldName":"OBJECTID","objectIds":[7,7]}])):
+   with self.assertRaisesRegex(ValueError,"incomplete"):
+    v.source_payload(SOURCE,ROOT,LINK,CANDIDATE)
  def test_service_root_government_link_keeps_exact_layer_binding(self):
   service=URL.rsplit("/",1)[0]
   p=Anchors()
@@ -72,7 +94,7 @@ class OfficialExternal(unittest.TestCase):
   link={**LINK,"discovery_method":"government_page_direct_service_v1"}
   with (patch.object(v,"fetch_government_page",return_value=(p,'a'*64)),
         patch.object(v,"arcgis_original_org",return_value=(ORGID,"City of Peoria GIS")),
-        patch.object(v,"get_official_json",side_effect=[SERVICE,LAYER,POINTS])):
+        patch.object(v,"get_official_json",side_effect=[SERVICE,LAYER,IDS,POINTS,IDS])):
    result=v.source_payload(SOURCE,ROOT,link,CANDIDATE)
   self.assertEqual(result["p_gis_layer_url"],URL)
   self.assertEqual(len(result["p_locations"]),1)
