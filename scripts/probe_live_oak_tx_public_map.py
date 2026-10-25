@@ -68,7 +68,7 @@ def inspect_mapped_point_inventory(layer, fetch):
     if (not isinstance(metadata, dict) or metadata.get('type') != 'Feature Layer'
         or metadata.get('geometryType') != 'esriGeometryPoint'
         or not (re.search('flock|license.?plate|live oak cameras', str(metadata.get('name','')), re.I)
-          or (layer.get('title')=='Live Oak Cameras' and metadata.get('name')=='Cameras')))::
+          or (layer.get('title')=='Live Oak Cameras' and metadata.get('name')=='Cameras'))):
         raise ValueError('Original map layer not a named Flock point source')
     fields=metadata.get('fields')
     if isinstance(fields,list):
