@@ -117,6 +117,38 @@ def private_records(points,org_id,page_hash,police_hash):
     return cases,evidence
 
 
+
+def hold_conflicting_staged_evidence(cases,evidence,api):
+    """Fail closed if an append-only staged record no longer matches the source.
+
+    Ignore-duplicates is safe only for byte-equivalent evidence. Changed
+    geometry or source receipts must not silently retain a stale private case.
+    This check cannot approve or publish anything.
+    """
+    case_keys=','.join(row['case_key'] for row in cases)
+    evidence_keys=','.join(row['evidence_key'] for row in evidence)
+    existing_cases=api('flock_point_evidence_cases?select=case_key,latitude,longitude,source_url'
+                       '&case_key=in.('+case_keys+')')
+    existing_proofs=api('flock_point_evidence_attestations?select=evidence_key,evidence_sha256,'
+                        'source_url,latitude,longitude&evidence_key=in.('+evidence_keys+')')
+    if not isinstance(existing_cases,list) or not isinstance(existing_proofs,list):
+        raise InventoryHeld('Cannot reconcile existing private source receipts')
+    expected_cases={row['case_key']:row for row in cases}
+    expected_proofs={row['evidence_key']:row for row in evidence}
+    if (len(existing_cases)>len(expected_cases) or len(existing_proofs)>len(expected_proofs)):
+        raise InventoryHeld('Unexpected private source receipt inventory')
+    for old in existing_cases:
+        new=expected_cases.get(old.get('case_key'))
+        if (new is None or any(old.get(k)!=new[k] for k in
+                               ('latitude','longitude','source_url'))):
+            raise InventoryHeld('Private source case changed; independent review required')
+    for old in existing_proofs:
+        new=expected_proofs.get(old.get('evidence_key'))
+        if (new is None or any(old.get(k)!=new[k] for k in
+                               ('evidence_sha256','source_url','latitude','longitude'))):
+            raise InventoryHeld('Private source proof changed; independent review required')
+
+
 def run(stage_private=False,api=api_request,fetch_page=fetch_government_page,
         arcgis=get_official_json,publisher=inspect_arcgis_publisher):
     candidate,org,page_hash,police_hash=approved_research_preconditions(
@@ -128,6 +160,7 @@ def run(stage_private=False,api=api_request,fetch_page=fetch_government_page,
     if len(cases)!=proof['features'] or len(evidence)!=proof['features']:
         raise InventoryHeld('Complete original inventory and private cases do not match')
     if stage_private:
+        hold_conflicting_staged_evidence(cases,evidence,api)
         # Both inserts are append-only. On partial network failure, the next
         # run fills missing evidence. A crawler cannot update reviewed status.
         result=api('flock_point_evidence_cases?on_conflict=case_key',
