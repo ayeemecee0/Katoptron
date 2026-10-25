@@ -55,6 +55,8 @@
     <p class="micro">Teal pins: original GIS checked within 72 hours. Amber pins: check overdue or timestamp unavailable. Neither color establishes that a camera is active or has recorded any vehicle.</p>
     <label class="toggle"><input id="showApprox" type="checkbox" checked><span class="dot approx"></span> Approximate deployment areas</label>
     <label class="toggle"><input id="showProvisional" type="checkbox"><span class="dot provisional"></span> Independently corroborated · provisional</label>
+    <label class="toggle"><input id="showCommunity" type="checkbox"><span class="dot" style="background:#b94b83"></span> Show community-mapped Flock cameras (OpenStreetMap)</label>
+    <p id="communityOverlayStatus" class="micro" role="status">Off by default. Community locations are unconfirmed and never enter route simulations.</p>
     <p class="micro">Off by default. Corroborated locations require multiple separately reviewed sources, but are not government-verified and never count toward the default camera encounter simulation. Candidate reports remain private.</p>
     <p class="micro" id="coverageStatus" role="status">Loading verified location data from Supabase…</p>
     <button class="text-button" id="viewPilot" type="button">Explore Monroe, WA verified cameras →</button><button class="text-button" id="viewColorado" type="button" style="margin-left:12px">Explore El Paso County, CO →</button><button class="text-button" id="viewPeoria" type="button" style="margin-left:12px">Explore Peoria, AZ →</button><button class="text-button" id="viewLawrenceville" type="button">Explore Lawrenceville, GA →</button><button class="text-button" id="viewWebster" type="button" style="margin-left:12px">Explore Webster, TX →</button><button class="text-button" id="viewNewportBeach" type="button" style="margin-left:12px">Explore Newport Beach, CA →</button>
@@ -146,5 +148,6 @@
 <script src="./geoapify-adapter.js"></script>
 <script src="./routing-routes.js"></script>
 <script src="./route-comparison.js"></script>
+<script src="./community-overlay.js"></script>
 <script src="./map.js"></script>
 </body></html>
