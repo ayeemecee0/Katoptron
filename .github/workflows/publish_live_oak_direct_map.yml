@@ -1,0 +1,39 @@
+name: Publish revalidated Live Oak police Flock camera-map points
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/publish_live_oak_direct_map.py'
+      - 'scripts/test_publish_live_oak_direct_map.py'
+      - '.github/workflows/publish_live_oak_direct_map.yml'
+  schedule:
+    - cron: '23 16 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-approved-live-oak-publish
+  cancel-in-progress: false
+jobs:
+  verify-original-police-published-map:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test narrow original police map authority
+        run: python -m unittest discover -s scripts -p 'test_verify_live_oak_direct_map.py' -v
+      - name: Test geographic overlap and fail-closed complete inventory
+        run: python -m unittest discover -s scripts -p 'test_publish_live_oak_direct_map.py' -v
+      - name: Confirm server-only source verification credentials
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Recheck government map and write only individually verified positions
+        run: python scripts/publish_live_oak_direct_map.py --publish
