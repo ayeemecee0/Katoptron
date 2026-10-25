@@ -193,6 +193,15 @@
       }
       item.append(title,status,description);
       if(original)item.append(evidence);
+      // Static, original-government map documents are separate evidence:
+      // they show the agency's cartography, not verified lat/lon camera pins.
+      const mapUrl=safeUrl(program.official_camera_map_url);
+      if(mapUrl && original && new URL(mapUrl).host===new URL(original).host) {
+        const link=document.createElement('a');
+        link.textContent='Official camera map (illustrative positions) ↗';
+        link.href=mapUrl; link.target='_blank'; link.rel='noopener noreferrer';
+        item.append(document.createTextNode(' · '),link);
+      }
       list.append(item);
     }
     setText('programStatus',(found.length>60 ? 'Showing first 60 of ' : '')+
@@ -361,7 +370,7 @@
     try {
       for(let offset=0;offset<capacity;offset+=pageSize){
         const query=new URLSearchParams({
-          select:'program_key,jurisdiction_label,state_code,program_status,official_evidence_url,official_claim_summary,source_date,reported_camera_count',
+          select:'program_key,jurisdiction_label,state_code,program_status,official_evidence_url,official_camera_map_url,official_claim_summary,source_date,reported_camera_count',
           record_status:'eq.verified',order:'program_key.asc',
           limit:String(pageSize),offset:String(offset)
         });
