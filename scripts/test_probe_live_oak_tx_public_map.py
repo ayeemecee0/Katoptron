@@ -9,7 +9,7 @@ PAGE=source.CITY
 def original(with_map=True):
     d=Anchors()
     d.feed('<h1>Flock Safety Cameras</h1><a href="'+
-           (source.APP if with_map else 'https://unrelated.example/')+'">City map</a>')
+           (source.APP if with_map else 'https://unrelated.example/')+'">Live Oak Camera Map</a>')
     return d,'b'*64
 
 def item(url):
