@@ -78,6 +78,48 @@ def inspect_mapped_point_inventory(layer, fetch):
     values = answer.get('objectIds') if isinstance(answer,dict) else None
     if not isinstance(values,list) or not 1 <= len(values) <= 500 or len(set(values)) != len(values) or any(type(x) is not int or x <= 0 for x in values):
         raise ValueError('Original camera layer feature ID list incomplete')
+    identity=metadata.get('objectIdField')
+    if identity!='OBJECTID' or not isinstance(fields,list) or not any(
+       x.get('name')=='Device_Type' for x in fields if isinstance(x,dict)):
+        raise ValueError('Original GIS camera manufacturer field or source ID unavailable')
+    fetched=fetch(url+'/query?'+urlencode({
+        'f':'json','objectIds':','.join(map(str,sorted(values))),
+        'outFields':'OBJECTID,Device_Type','returnGeometry':'true',
+        'outSR':'4326'}))
+    rows=fetched.get('features') if isinstance(fetched,dict) else None
+    if not isinstance(rows,list) or len(rows)!=len(values) or fetched.get('exceededTransferLimit'):
+        raise ValueError('Original GIS camera geometry inventory truncated')
+    ids=set()
+    manufacturer_counts={'flock':0,'other':0,'unknown':0}
+    for item in rows:
+        attr=item.get('attributes') if isinstance(item,dict) else None
+        point=item.get('geometry') if isinstance(item,dict) else None
+        if not isinstance(attr,dict) or not isinstance(point,dict):
+            raise ValueError('Original GIS point record missing source geometry')
+        oid=attr.get('OBJECTID')
+        lat,lon=point.get('y'),point.get('x')
+        if (type(oid) is not int or oid in ids or
+            type(lat) not in (int,float) or type(lon) not in (int,float)
+            or not 29<=lat<=31 or not -99.5<=lon<=-97.0):
+            raise ValueError('Source ID duplication or camera point outside city region')
+        ids.add(oid)
+        vendor=str(attr.get('Device_Type') or '').strip().lower()
+        if 'flock' in vendor:
+            manufacturer_counts['flock']+=1
+        elif vendor:
+            manufacturer_counts['other']+=1
+        else:
+            manufacturer_counts['unknown']+=1
+    if ids!=set(values):
+        raise ValueError('Source layer feature identities differ from original inventory')
+    confirmation=fetch(url+'/query?'+urlencode({
+        'f':'json','where':'1=1','returnIdsOnly':'true'}))
+    if sorted(confirmation.get('objectIds',[]))!=sorted(values):
+        raise ValueError('Government linked ArcGIS point inventory changed during audit')
+    print('LIVE OAK point_inventory_complete',len(values))
+    print('LIVE OAK Flock_labeled_exact_points',manufacturer_counts['flock'])
+    print('LIVE OAK non_Flock_labeled_exact_points',manufacturer_counts['other'])
+    print('LIVE OAK unknown_manufacturer_exact_points',manufacturer_counts['unknown'])
     return len(values)
 
 def audit(fetch=get_official_json,page_fetch=fetch_government_page):
