@@ -217,7 +217,7 @@ def run():
         except CheckFailed as rejection:
             require(any(code in str(rejection) for code in
                         ("HTTP 401", "HTTP 403", "HTTP 404")),
-                    "Private Storage bystander test returned unexpected error")
+                    "Private Storage bystander response classification: "+str(rejection))
         else:
             raise CheckFailed("Private Storage allowed unprivileged third-party access")
         original=download_private_image(path,owner["token"])
