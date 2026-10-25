@@ -58,6 +58,7 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 </main>
 <script src="./config.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="./osm-viewport-density.js"></script>
 <script>
 'use strict';
 const cfg=window.KATOPTRON_CONFIG;
@@ -67,7 +68,7 @@ const community=L.map('map',{preferCanvas:true}).setView([39.83,-98.58],4);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© OpenStreetMap contributors'
 }).addTo(community);
-let points=L.layerGroup().addTo(community),densityPoints=L.layerGroup().addTo(community),requestNumber=0,abort=null;
+let points=L.layerGroup().addTo(community),densityPoints=L.layerGroup().addTo(community),crowdedPoints=L.layerGroup(),requestNumber=0,abort=null;
 const sourceLink=key=>{
  if(!/^(node|way)\/[1-9][0-9]{0,17}$/.test(key||''))return null;
  return 'https://www.openstreetmap.org/'+key;
@@ -184,6 +185,8 @@ async function loadVisible(){
  if(abort)abort.abort();
  abort=new AbortController();
  points.clearLayers();
+ crowdedPoints.clearLayers();
+ if(community.hasLayer(crowdedPoints))community.removeLayer(crowdedPoints);
  if(community.getZoom()<10){
   if(!community.hasLayer(densityPoints))densityPoints.addTo(community);
   status('National view shows approximate 3-degree reporting-density cells, not exact camera locations. Zoom in for individual points.');
@@ -199,7 +202,25 @@ async function loadVisible(){
  try{
   const result=await apiCounted('flock_osm_community_points',search,abort.signal);
   if(seq!==requestNumber)return;
-  if(result.total>result.rows.length){status(result.total.toLocaleString()+' community observations in view. Zoom closer for a complete view; no truncated subset is shown.');return}
+  if(result.total>result.rows.length){
+   const grid=await window.KatoptronViewportDensity.fetchCells(cfg,{
+    south:b.getSouth(),north:b.getNorth(),west:b.getWest(),east:b.getEast()
+   },community.getZoom(),result.total,abort.signal);
+   if(seq!==requestNumber)return;
+   for(const cell of grid.rows){
+    const count=Number(cell.community_report_count);
+    L.circleMarker([cell.cell_latitude,cell.cell_longitude],{
+     radius:Math.min(22,Math.max(4,Math.log10(count+1)*6)),
+     weight:1,color:'#eec7d4',fillColor:'#a43061',fillOpacity:.65
+    }).bindTooltip(count.toLocaleString()+
+     ' reported OSM points in a '+grid.cell+'° region. Center is not a camera location.')
+     .addTo(crowdedPoints);
+   }
+   if(!community.hasLayer(crowdedPoints))crowdedPoints.addTo(community);
+   status(result.total.toLocaleString()+' community observations grouped into '+grid.rows.length+
+    ' approximate reporting cells. Zoom closer for original OSM camera points.');
+   return;
+  }
   for(const row of result.rows){
    const lat=Number(row.latitude),lon=Number(row.longitude);
    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
