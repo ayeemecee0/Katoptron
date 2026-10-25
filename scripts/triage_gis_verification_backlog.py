@@ -6,6 +6,7 @@ already verified original-government points to isolate possible duplicate
 datasets from genuinely new coverage. Never print candidate URLs/coordinates.
 """
 import collections
+import datetime as dt
 import hashlib
 import math
 import re
@@ -118,6 +119,24 @@ def inputs():
         return candidates,trusted,roots,points,reviewed
     return candidates,trusted,roots,points,reviewed
 
+def read_lifecycle():
+    rows=fetch_all(api_request,
+      'flock_gis_candidate_lifecycle?select=gis_layer_url,disposition,next_review_after'
+      '&limit=100','gis_layer_url',max_records=CANDIDATE_LIMIT)
+    return {row['gis_layer_url']:row for row in rows}
+
+def needs_research(row,now=None):
+    if row is None:return True
+    state=row.get('disposition')
+    if state in ('resolved_existing_trusted','rejected_source'):
+        return False
+    due=row.get('next_review_after')
+    if not isinstance(due,str):return True
+    try:date=dt.datetime.fromisoformat(due.replace('Z','+00:00'))
+    except ValueError:return True
+    if date.tzinfo is None:return True
+    return date <= (now or dt.datetime.now(dt.timezone.utc))
+
 def run():
     candidates,trusted,roots,points,reviewed=inputs()
     verified_urls={row['gis_layer_url'] for row in trusted}
@@ -130,11 +149,15 @@ def run():
         url=candidate['gis_layer_url']
         if url not in matches:
             matches[url]=(parent,root,candidate)
+    lifecycle=read_lifecycle()
     categories=collections.Counter()
     total_features=0
     possible_overlaps=0
     for candidate in sorted(candidates,key=lambda c:c['gis_layer_url']):
         url=candidate['gis_layer_url']
+        if not needs_research(lifecycle.get(url)):
+            categories['already_dispositioned_or_parked_not_due']+=1
+            continue
         kind,total,overlap=classify(candidate,verified_urls,verified_hosts,
                                     matches,points)
         categories[kind]+=1
@@ -152,6 +175,8 @@ def run():
     print('GIS TRIAGE OWNER-REVIEWED GOVERNMENT SOURCE ROOTS',len(approved_urls))
     print('GIS TRIAGE NEW PUBLIC CAMERA LOCATIONS 0')
     print('GIS TRIAGE PRIVATE CANDIDATES RETAINED',len(candidates))
+    print('GIS TRIAGE sources skipped because lifecycle holds remain current',
+          categories['already_dispositioned_or_parked_not_due'])
     return categories
 
 if __name__=='__main__':
