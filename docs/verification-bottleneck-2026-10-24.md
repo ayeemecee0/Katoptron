@@ -196,3 +196,12 @@ evidence leads investigated. No search-engine snippet authorizes a camera pin.
 
 Production readiness remains explicitly **beta**, not an assertion of complete
 nationwide coverage or current live camera operation.
+
+
+## October 24: original-agency Flock-name false-positive and deduplication audit
+
+A targeted public-web original-government GIS investigation checked the **City of Casa Grande, Arizona**, which runs a source-described Flock Safety camera program on its [Safe City Initiative](https://www.casagrandeaz.gov/698/Safe-City-Initiative) page. Its [original city-controlled ArcGIS REST folder](https://rogue.casagrandeaz.gov/arcgis/rest/services/Flock) is labeled `Flock`, but inspection listed only two services, **`Flock/City_Limits`** and **`Flock/Police_Districts`**. The inspected `Police_Districts` service exposes police boundaries, not a Flock camera point inventory. This is a useful official **program** evidence source but cannot qualify any **exact source-verified camera coordinates**; reject automatic first-party source authorization based merely on the parent service folder name. No camera points were published.
+
+A second original municipal source, [Seabrook, Texas's official LPR FAQ](https://www.seabrooktx.gov/m/faq), explicitly names Flock Safety and claims eight fixed city-owned installations at eight named road locations with camera directions. The current production `flock_documented_programs` already contains `seabrook_tx`, so no duplicate program insert was made. The intersection descriptions alone are **not a source-published georeferenced ArcGIS point inventory**, and no exact canonical pins may be generated from guessed road-center coordinates or from unrelated community maps. The municipality's dated installation/operation status still needs periodic recheck.
+
+**Operational impact:** zero new authoritative GIS point datasets; the 293 exact-camera baseline is unchanged. First-party, self-hosted `Flock` paths may expose administrative base layers instead of camera positions. Prioritize finding a **Flock-specific, complete government-controlled point layer**, proving the underlying legal source and stable feature IDs, rather than merely finding Flock program websites or folders.
