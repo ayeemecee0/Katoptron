@@ -25,6 +25,15 @@ const assert=require('node:assert/strict');
     return c>=100000&&o>=293;
   },null,{timeout:25000});
   assert.ok((await page.locator('#nationalCommunityStatus').textContent()).includes('not independently confirmed active cameras'));
+  await page.waitForFunction(()=>{
+    const v=document.querySelector('#nationalCommunityQuality')?.textContent||'';
+    return v.includes('mapped coordinate positions')||v.includes('unavailable');
+  },null,{timeout:22000});
+  const quality=await page.locator('#nationalCommunityQuality').textContent();
+  assert.ok(quality.includes('mapped coordinate positions')&&
+    quality.includes('old edits prove duplicate or inactive cameras')===false,quality);
+  assert.ok(quality.includes('Neither co-location nor old edits prove duplicate or inactive cameras.'),quality);
+
   assert.ok((await page.locator('#nationalStats').textContent()).includes('verified camera points'));
   assert.equal(await page.locator('#compareCommunityRoute').isChecked(),false);
   const source=await page.evaluate(async()=>{
