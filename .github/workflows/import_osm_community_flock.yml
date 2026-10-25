@@ -1,12 +1,8 @@
-name: Import Flock-labeled OSM community camera points
+name: Reconcile nationwide Flock OSM community source
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/import_osm_community_flock.py'
-      - 'scripts/test_import_osm_community_flock.py'
-      - '.github/workflows/import_osm_community_flock.yml'
+  schedule:
+    - cron: '17 8 * * 1,4'
 permissions:
   contents: read
 concurrency:
@@ -30,5 +26,5 @@ jobs:
         run: PYTHONPATH=scripts python -m unittest scripts/test_import_osm_community_flock.py -v
       - name: Require existing private research credential
         run: test -n "$SUPABASE_SERVICE_ROLE_KEY" || { echo '::error::Research credential unavailable'; exit 1; }
-      - name: Import complete eligible public OSM community Flock inventory without touching verified government camera records
+      - name: Safely upsert full OSM source then retire only missing community observations
         run: python scripts/import_osm_community_flock.py --max-points 200000
