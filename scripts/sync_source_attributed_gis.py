@@ -98,6 +98,10 @@ SAFE_INVENTORY_REASONS = {
     'feature lacks valid US point geometry': 'source_geometry_invalid',
     'original layer omitted or duplicated requested features': 'source_page_inconsistent',
     'original camera inventory changed during audit': 'source_inventory_drift',
+    'Cannot reconcile existing private source receipts': 'private_receipts_unavailable',
+    'Unexpected private source receipt inventory': 'private_receipts_invalid',
+    'Private source case changed; independent review required': 'private_case_drift',
+    'Private source proof changed; independent review required': 'private_provenance_drift',
 }
 
 def safe_held_reason(error):
