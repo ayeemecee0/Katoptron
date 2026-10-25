@@ -1,0 +1,90 @@
+"""Publish only original city-associated GIS observations in a LOW-CONFIDENCE tier.
+
+This does not verify any individual Flock device, installation or uptime.
+It never changes canonical government-camera rows, private reviews or their
+trust status. The original city-page -> independently identified Esri org,
+full twice-checked point inventory, immutable private attestation, canonical
+deduplication and private write guards must all pass on EVERY refresh.
+"""
+import argparse
+from auto_verify_flock_agenda import api_request
+from paged_supabase import fetch_all
+from probe_shelbyville_overlap import audited_private_points
+from stage_shelbyville_gis_candidates import make_receipts
+from stage_reviewed_publisher_camera_candidates import hold_conflicting_staged_evidence
+from probe_peoria_overlap import summarize
+
+SOURCE_KEY='shelbyville_arcgis_affiliation'
+MAX_CANONICAL=5000
+DISCLAIMER=(
+ 'Source-attributed municipal ArcGIS publisher Flock-labeled MAP OBSERVATION. '
+ 'The original city linked an ArcGIS map owned by the layer publisher, but '
+ 'police approval of this exact layer, individual installed device, current '
+ 'camera operation and manufacturer identity are NOT established. '
+ 'This lower-confidence layer is separate from government-verified cameras '
+ 'and is excluded from verified-route detections.'
+)
+
+def run(publish=False,api=api_request,auditor=audited_private_points):
+    proof=auditor(include_evidence=True)
+    pts=proof.get('private_original_points')
+    cases,evidence=make_receipts(proof)
+    if (not isinstance(pts,list) or len(pts)!=12
+        or len(cases)!=len(evidence) or len(cases)!=len(pts)):
+        raise ValueError('Source-attributed point inventory no longer matches documented 12')
+    hold_conflicting_staged_evidence(cases,evidence,api)
+    canonical=fetch_all(api,
+        'flock_camera_locations?select=record_key,jurisdiction_label,latitude,longitude'
+        '&verification_status=eq.verified&location_accuracy=eq.exact&limit=100',
+        'record_key',max_records=MAX_CANONICAL)
+    if len(canonical)<316:
+        raise ValueError('Public baseline unexpectedly incomplete')
+    nearby=summarize([(x['lat'],x['lon']) for x in pts],
+        [p for p in canonical if p['jurisdiction_label']=='Shelbyville, TN'])
+    if nearby['possible_existing_nearby']!=0:
+        raise ValueError('Published government camera overlap; lower tier held')
+    previous=api('flock_source_attributed_map_points?select=case_key,latitude,longitude,'
+          'evidence_sha256,publication_status&source_key=eq.'+SOURCE_KEY+'&limit=100')
+    if not isinstance(previous,list) or len(previous)>len(cases):
+        raise ValueError('Prior public source tier incomplete')
+    current={r['case_key']:(r,e) for r,e in zip(cases,evidence)}
+    for row in previous:
+        expected=current.get(row['case_key'])
+        if expected is None:
+            raise ValueError('Prior source point missing in latest government-associated inventory')
+        c,e=expected
+        if (row['latitude']!=c['latitude'] or row['longitude']!=c['longitude']
+                or row['evidence_sha256']!=e['evidence_sha256']):
+            raise ValueError('Original source fingerprint drift; public refresh held')
+    rows=[{
+        'case_key':c['case_key'],'source_key':SOURCE_KEY,
+        'label':'City-associated GIS Flock map observation (not device verified)',
+        'jurisdiction_label':c['jurisdiction_label'],
+        'latitude':c['latitude'],'longitude':c['longitude'],
+        'source_url':c['source_url'],'evidence_sha256':e['evidence_sha256'],
+        'source_checked_at':None, 'publication_status':'active',
+        'caveat':DISCLAIMER
+    } for c,e in zip(cases,evidence)]
+    # Use server-owned verified time, not a local untrusted clock.
+    if publish:
+        from datetime import datetime,timezone
+        checked=datetime.now(timezone.utc).isoformat(timespec='seconds')
+        for r in rows:r['source_checked_at']=checked
+        response=api('flock_source_attributed_map_points?on_conflict=case_key',
+           method='POST',payload=rows,
+           prefer='resolution=merge-duplicates,return=minimal')
+        if response is not None:raise ValueError('Unexpected attributed map publication response')
+    print('ATTRIBUTED GIS complete original source positions',len(rows))
+    print('ATTRIBUTED GIS original publisher proof rechecked',True)
+    print('ATTRIBUTED GIS public lower-confidence points refreshed',len(rows) if publish else 0)
+    print('ATTRIBUTED GIS government verified cameras newly published',0)
+    return len(rows)
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--publish-source-attributed',action='store_true')
+    opts=p.parse_args()
+    try:run(opts.publish_source_attributed)
+    except Exception as e:
+        # Withheld private layer coordinates, responses and source details.
+        raise SystemExit('Source-attributed GIS publication held: '+type(e).__name__) from None
