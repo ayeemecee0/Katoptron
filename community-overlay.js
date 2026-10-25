@@ -1,11 +1,11 @@
 /* Optional ODbL community overlay. Never enters official evidence, route
  * proximity comparison, replay, or verified-point source arrays.
  * Off by default. Sparse regional density at z<10; exact OSM observations
- * queried only at zoom 10+, bounded by 1,500 results per viewport.
+ * queried only at zoom 10+, bounded by 1,000 confirmed-complete results per viewport.
  */
 (() => {
  'use strict';
- const MAX_POINTS=1500;
+ const MAX_POINTS=1000;
  const get=id=>document.getElementById(id);
  function install(map,cfg){
   const toggle=get('showCommunity');
@@ -19,17 +19,22 @@
    return typeof key==='string'&&/^(node|way)\/[1-9][0-9]{0,17}$/.test(key)
      ?'https://www.openstreetmap.org/'+key:null;
   }
-  async function query(table,params,signal){
+  async function query(table,params,signal,counted=false){
    if(!cfg?.supabaseUrl||!cfg?.supabasePublishableKey)
     throw Error('Public community database not configured');
    const root=cfg.supabaseUrl.replace(/\/$/,'');
    const response=await fetch(root+'/rest/v1/'+table+'?'+params.toString(),{
-    headers:{apikey:cfg.supabasePublishableKey},
+    headers:{apikey:cfg.supabasePublishableKey,...(counted?{Prefer:'count=exact'}:{})},
     cache:'no-store',referrerPolicy:'no-referrer',signal});
    if(!response.ok)throw Error('Community source HTTP '+response.status);
    const rows=await response.json();
    if(!Array.isArray(rows))throw Error('Invalid community source response');
-   return rows;
+   if(!counted)return rows;
+   const match=/^(?:[0-9]+-[0-9]+|[*])\/([0-9]+)$/.exec(response.headers.get('content-range')||'');
+   if(!match)throw Error('Community viewport completeness unknown: missing source count');
+   const total=Number(match[1]);
+   if(!Number.isSafeInteger(total)||total<rows.length)throw Error('Invalid exact viewport count');
+   return {rows,total};
   }
   async function loadDensity(id,signal){
    const rows=await query('flock_public_osm_community_density',
@@ -37,7 +42,7 @@
    if(id!==revision||!active)return;
    if(rows.length>=500)throw Error('Incomplete national density results');
    regions.clearLayers();
-   for(const r of rows){
+   for(const r of page.rows){
     const lat=Number(r.cell_latitude),lon=Number(r.cell_longitude),
       count=Number(r.community_report_count);
     if(!Number.isFinite(lat)||!Number.isFinite(lon)||
@@ -61,16 +66,16 @@
    }
    const q=new URLSearchParams({
     select:'osm_key,latitude,longitude,source_timestamp',
-    order:'osm_key.asc',limit:String(MAX_POINTS+1)});
+    order:'osm_key.asc',limit:String(MAX_POINTS)});
    q.append('latitude','gte.'+south.toFixed(7));
    q.append('latitude','lte.'+north.toFixed(7));
    q.append('longitude','gte.'+west.toFixed(7));
    q.append('longitude','lte.'+east.toFixed(7));
-   const rows=await query('flock_osm_community_points',q,signal);
+   const page=await query('flock_osm_community_points',q,signal,true);
    if(id!==revision||!active)return;
-   if(rows.length>MAX_POINTS){
+   if(page.total>page.rows.length){
     dots.clearLayers();
-    note('More than 1,500 OSM observations in view. Zoom closer to avoid displaying a truncated sample.');
+    note(page.total.toLocaleString()+' OSM observations in view. Zoom closer; no truncated camera sample is displayed.');
     return;
    }
    dots.clearLayers();
@@ -94,9 +99,14 @@
      a.rel='noopener noreferrer';a.textContent='Original OSM record';
      popup.append(a);
     }
+    if(r.source_timestamp){
+      const edited=document.createElement('small');
+      edited.textContent='OSM record last edited: '+String(r.source_timestamp).slice(0,10)+'. This is not a device inspection date.';
+      popup.append(edited);
+    }
     marker.bindPopup(popup).addTo(dots);
    }
-   note(rows.length.toLocaleString()+' community-reported camera observations shown in view. Not confirmed active cameras.');
+   note(page.total.toLocaleString()+' community-reported camera observations shown in view (complete query). Not confirmed active cameras.');
   }
   async function refresh(){
    const id=++revision;
@@ -135,7 +145,7 @@
    if(!active)return;
    clearTimeout(delay);delay=setTimeout(refresh,250);
   });
-  note('Off by default. Community locations are unconfirmed and excluded from all route comparisons.');
+  note('Off by default. Community locations are unconfirmed and excluded from official route simulation and plate-detection modeling.');
  }
  window.KatoptronCommunityOverlay={install};
 })();
