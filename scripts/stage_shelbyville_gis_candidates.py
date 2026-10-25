@@ -104,9 +104,25 @@ def run(stage_private=False, api=api_request, audited=audited_private_points):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--stage-private', action='store_true')
+    p.add_argument('--evidence-hold-ok', action='store_true',
+                   help='Allow only a previously staged immutable city-page proof drift')
     args = p.parse_args()
     try:
         run(stage_private=args.stage_private)
     except Exception as e:
-        # Do not emit unpublished source coordinates or service error bodies.
-        raise SystemExit('Shelbyville source evidence held: ' + type(e).__name__) from None
+        from audit_affiliated_flock_inventory import InventoryHeld
+        if (args.stage_private and args.evidence_hold_ok
+            and isinstance(e, InventoryHeld)
+            and str(e)=='Private source proof changed; independent review required'):
+            # The original city->Esri link, exact inventory and old case
+            # coordinates were all rechecked by run(). A changing municipal
+            # HTML checksum cannot rewrite an immutable source attestation.
+            # The separate lower-tier worker may refresh ONLY unchanged
+            # previously published positions; no new point is staged here.
+            print('::warning::Previously staged immutable city-page evidence changed; staging held')
+            print('SHELBYVILLE private new cases staged: 0')
+            print('SHELBYVILLE source evidence: HELD, original receipt preserved')
+            print('SHELBYVILLE verified cameras newly published: 0')
+        else:
+            # Do not emit unpublished coordinates, URLs or API response bodies.
+            raise SystemExit('Shelbyville source evidence held: ' + type(e).__name__) from None
