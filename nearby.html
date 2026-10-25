@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Search Possible Nearby Camera Records</title>
+<meta name="description" content="Search archived OpenStreetMap source records that occur within 15 meters, without treating them as confirmed duplicate cameras.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font-family:Inter,system-ui,sans-serif;color-scheme:dark;background:#0c1420;color:#edf3f8}
+*{box-sizing:border-box}body{margin:0}a{color:#a9e0ee}
+header{display:flex;align-items:center;flex-wrap:wrap;gap:1.5rem;padding:1rem max(1rem,4vw);border-bottom:1px solid #456170;background:#101e2b}
+header .brand{font-weight:800;letter-spacing:.12em;text-decoration:none;color:inherit;font-size:1.12rem}
+nav{display:flex;flex-wrap:wrap;gap:1rem;font-size:.84rem}
+main{max-width:1080px;margin:auto;padding:1.5rem max(1rem,3vw) 4rem}
+h1{font-size:clamp(1.7rem,3vw,2.4rem);margin:0 0 .75rem}p{color:#d0e0e8;line-height:1.55;max-width:76ch}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:1.2rem 0}
+.stat{border:1px solid #415e6d;border-radius:8px;background:#142636;padding:1rem}
+.stat strong{display:block;font-size:1.85rem;font-variant-numeric:tabular-nums}
+.stat span,.small{font-size:.82rem;color:#d0e0e8}
+.notice{padding:.85rem 1rem;border-left:3px solid #a9e0ee;background:#193142}
+form{display:flex;gap:.8rem;align-items:flex-end;flex-wrap:wrap;margin:1rem 0}
+form>div{min-width:170px;flex:1}label{display:block;font-weight:650;font-size:.86rem;margin-bottom:.35rem}
+input,select,button{font:inherit;min-height:44px;border-radius:5px}
+input,select{width:100%;background:#1b3444;border:1px solid #8eaebb;color:#fff;padding:.65rem}
+button{border:0;padding:.62rem 1.05rem;background:#b9e8ef;color:#102936;font-weight:700;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}button:hover:not(:disabled){background:#d8f5f9}
+:focus-visible{outline:3px solid #b9e8ef;outline-offset:3px}
+.table-wrap{max-width:100%;overflow-x:auto;border:1px solid #496777;border-radius:7px}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{text-align:left;padding:.85rem;border-bottom:1px solid #385469;font-size:.89rem}
+thead{background:#172d3b}tbody tr:nth-child(even){background:#122536}
+small{color:#c6dce6}
+footer{padding-top:1.5rem;font-size:.8rem;color:#c6dce6}
+#resultStatus{min-height:1.5rem}.pager{display:flex;align-items:center;gap:1rem;margin:1rem 0;flex-wrap:wrap}
+@media(max-width:600px){.table-wrap{font-size:.88rem}th,td{padding:.6rem}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head><body><a href="#main-content" class="skip-link">Skip to main content</a>
+<header>
+<a class="brand" href="./index.html">KATOPTRON</a>
+<nav aria-label="Main navigation"><a href="./index.html">OFFICIAL MAP</a><a href="./community-map.html">COMMUNITY MAP</a><a href="./nearby.html" aria-current="page">NEARBY SOURCE RECORDS</a><a href="./portals.html">FLOCK DISCLOSURES</a></nav>
+</header>
+<main id="main-content">
+<h1>Possible nearby camera observations</h1>
+<p>Search community-reported OpenStreetMap source records whose <strong>different recorded coordinates</strong> are within 15 meters of one another. These are <strong>possible geographic overlaps</strong>, not confirmed duplicate devices. Adjacent hardware, uncertain mapper positions, and multiple observations can legitimately occur close together.</p>
+<div class="stats" aria-label="Latest full OSM source audit">
+<div class="stat"><strong id="pairCount">—</strong><span>Near-coordinate OSM pairs (not confirmed duplicates)</span></div>
+<div class="stat"><strong id="involvedCount">—</strong><span>Distinct source observations in pairs</span></div>
+<div class="stat"><strong id="shortCount">—</strong><span>Pair distances up to 5 meters</span></div>
+<div class="stat"><strong id="longCount">—</strong><span>Pairs more than 5 through 15 meters apart</span></div>
+</div>
+<p id="snapshotStatus" role="status" aria-live="polite">Loading the most recent complete public source audit…</p>
+<div class="notice"><strong>Source-based comparison only.</strong> Each link opens the original OSM node or way. These are not confirmed active cameras, vehicle detections, or agency-verified installation positions. No records are merged automatically. Audit snapshots preserve source dates and are distributed under the Open Database License (ODbL 1.0).</div>
+<h2>Search published candidate pairs</h2>
+<form id="filterForm">
+<div><label for="osmKey">OSM source ID (optional)</label><input id="osmKey" maxlength="40" autocomplete="off" placeholder="node/123456 or way/123456"></div>
+<div><label for="distanceBand">Separation distance</label><select id="distanceBand"><option value="all">All distances (0–15 m)</option><option value="near">Up to 5 m</option><option value="other">Above 5 through 15 m</option></select></div>
+<button type="submit">Search</button>
+</form>
+<p id="resultStatus" role="status" aria-live="polite">Loading nearby observations…</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">OSM observation A</th><th scope="col">OSM observation B</th><th scope="col">Distance</th><th scope="col">Classification</th></tr></thead><tbody id="results"><tr><td colspan="4">Loading records…</td></tr></tbody></table></div>
+<div class="pager">
+<button type="button" id="previous" disabled>Previous</button>
+<span id="pagination">Page 1</span>
+<button type="button" id="next" disabled>Next</button>
+</div>
+<footer>
+<p>Original observations © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>, ODbL 1.0. Source data from the openly available DeFlock ALPR inventory. The latest count is calculated from a completed snapshot; unsuccessful imports are not displayed as published audits.</p>
+<p><a href="./methodology.html">Evidence methodology</a> · <a href="./community-map.html">Nationwide community map</a></p>
+</footer>
+</main>
+<script src="./config.js"></script>
+<script>
+'use strict';
+const config=window.KATOPTRON_CONFIG;
+const el=id=>document.getElementById(id);
+let pageNumber=0,snapshot=null,total=0,request=null;
+const PAGE=30;
+const sourceKey=key=>/^(node|way)\/[1-9][0-9]{0,17}$/.test(key)?'https://www.openstreetmap.org/'+key:null;
+async function source(table,query,signal,count=false){
+ if(!config?.supabaseUrl||!config?.supabasePublishableKey)throw Error('Public data configuration missing');
+ const url=config.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+table+'?'+query.toString();
+ const res=await fetch(url,{headers:{apikey:config.supabasePublishableKey,...(count?{Prefer:'count=exact'}:{})},
+   signal,cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Published candidate source HTTP '+res.status);
+ const rows=await res.json();
+ if(!Array.isArray(rows))throw Error('Malformed public candidate response');
+ if(!count)return {rows};
+ const match=/^(?:[0-9]+-[0-9]+|[*])\/([0-9]+)$/.exec(res.headers.get('content-range')||'');
+ if(!match)throw Error('Missing exact searchable result count');
+ const found=Number(match[1]);
+ if(!Number.isSafeInteger(found)||found<rows.length)throw Error('Invalid source result count');
+ return {rows,total:found};
+}
+function linkNode(key){
+ const a=document.createElement('a');
+ a.textContent=key;
+ a.href=sourceKey(key)||'https://www.openstreetmap.org/copyright';
+ a.target='_blank';a.rel='noopener noreferrer';
+ return a;
+}
+async function loadSnapshot(){
+ const data=await source('flock_public_osm_nearby_latest',new URLSearchParams({
+  select:'snapshot_id,source_snapshot_date,source_observations,pair_count,source_records_in_pairs,pairs_within_5m,pairs_5_to_15m,source_license,published_at',limit:'1'}));
+ if(data.rows.length!==1)throw Error('No complete published proximity audit yet');
+ const row=data.rows[0];
+ for(const key of ['source_observations','pair_count','source_records_in_pairs','pairs_within_5m','pairs_5_to_15m'])
+  if(!Number.isSafeInteger(row[key])||row[key]<0)throw Error('Invalid audit source counters');
+ if(!/^[0-9a-f]{64}$/.test(row.snapshot_id))throw Error('Invalid audit snapshot ID');
+ snapshot=row;
+ el('pairCount').textContent=row.pair_count.toLocaleString();
+ el('involvedCount').textContent=row.source_records_in_pairs.toLocaleString();
+ el('shortCount').textContent=row.pairs_within_5m.toLocaleString();
+ el('longCount').textContent=row.pairs_5_to_15m.toLocaleString();
+ el('snapshotStatus').textContent='Completed '+row.source_snapshot_date+' OSM source audit: '+
+  row.source_observations.toLocaleString()+' community reports examined. Published at '+new Date(row.published_at).toLocaleString()+
+  '. Latest published evidence only; source records are not confirmed cameras.';
+}
+async function loadPage(){
+ if(!snapshot)return;
+ request?.abort();const controller=new AbortController();request=controller;
+ const key=el('osmKey').value.trim();
+ if(key&&!sourceKey(key)){
+  el('resultStatus').textContent='Use an exact OSM ID such as node/123 or way/123.';
+  el('results').replaceChildren();
+  el('next').disabled=true;el('previous').disabled=true;
+  return;
+ }
+ const band=el('distanceBand').value;
+ const q=new URLSearchParams({
+  select:'osm_key_a,osm_key_b,distance_m,source_snapshot_date',
+  order:'distance_m.asc,osm_key_a.asc,osm_key_b.asc',
+  limit:String(PAGE),offset:String(pageNumber*PAGE)
+ });
+ if(key)q.append('or',`(osm_key_a.eq.${key},osm_key_b.eq.${key})`);
+ if(band==='near')q.append('distance_m','lte.5');
+ if(band==='other')q.append('distance_m','gt.5');
+ el('resultStatus').textContent='Checking published source pairs…';
+ try{
+  const result=await source('flock_public_osm_nearby_search',q,controller.signal,true);
+  if(controller.signal.aborted)return;
+  total=result.total;
+  const body=el('results');
+  body.replaceChildren();
+  for(const r of result.rows){
+   if(!sourceKey(r.osm_key_a)||!sourceKey(r.osm_key_b)||
+      !(r.distance_m>0&&r.distance_m<=15))throw Error('Invalid source pair received');
+   const tr=document.createElement('tr');
+   const a=document.createElement('td');a.append(linkNode(r.osm_key_a));
+   const b=document.createElement('td');b.append(linkNode(r.osm_key_b));
+   const m=document.createElement('td');m.textContent=Number(r.distance_m).toFixed(2)+' m';
+   const c=document.createElement('td');c.textContent='Possible geographic overlap only';
+   tr.append(a,b,m,c);body.append(tr);
+  }
+  if(!result.rows.length){
+   const tr=document.createElement('tr'),td=document.createElement('td');
+   td.colSpan=4;td.textContent='No records match these filters in the published snapshot.';
+   tr.append(td);body.append(tr);
+  }
+  el('resultStatus').textContent=total.toLocaleString()+' source-pair result(s) found. Camera identity is unconfirmed.';
+  el('pagination').textContent='Page '+(pageNumber+1)+' of '+Math.max(1,Math.ceil(total/PAGE));
+  el('previous').disabled=pageNumber===0;
+  el('next').disabled=(pageNumber+1)*PAGE>=total;
+ }catch(err){
+  if(controller.signal.aborted)return;
+  el('resultStatus').textContent='Candidate search unavailable: '+err.message+'. Do not interpret this as zero nearby reports.';
+  el('results').replaceChildren();el('previous').disabled=true;el('next').disabled=true;
+ }
+}
+el('filterForm').addEventListener('submit',event=>{event.preventDefault();pageNumber=0;loadPage()});
+el('previous').addEventListener('click',()=>{if(pageNumber>0){pageNumber--;loadPage()}});
+el('next').addEventListener('click',()=>{if((pageNumber+1)*PAGE<total){pageNumber++;loadPage()}});
+loadSnapshot().then(loadPage).catch(err=>{
+ el('snapshotStatus').textContent='Nearby evidence unavailable: '+err.message+'. Unknown is not zero.';
+ el('resultStatus').textContent='No completed source snapshot could be loaded.';
+ el('results').replaceChildren();
+});
+</script>
+</body></html>
