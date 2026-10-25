@@ -30,8 +30,7 @@ const assert=require('node:assert/strict');
     return v.includes('mapped coordinate positions')||v.includes('unavailable');
   },null,{timeout:22000});
   const quality=await page.locator('#nationalCommunityQuality').textContent();
-  assert.ok(quality.includes('mapped coordinate positions')&&
-    quality.includes('old edits prove duplicate or inactive cameras')===false,quality);
+  assert.ok(quality.includes('mapped coordinate positions'),quality);
   assert.ok(quality.includes('Neither co-location nor old edits prove duplicate or inactive cameras.'),quality);
 
   assert.ok((await page.locator('#nationalStats').textContent()).includes('verified camera points'));
