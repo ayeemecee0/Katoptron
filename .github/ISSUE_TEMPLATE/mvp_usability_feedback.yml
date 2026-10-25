@@ -1,0 +1,65 @@
+name: Public beta usability feedback
+description: Tell us whether the public camera map and route simulator were understandable. GitHub issues are public.
+title: "[Beta usability] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This report is public.** Do not include a home/work address, precise personal route, license plate, travel history, camera photo, email, phone number, username, or other personal information. Do not report private evidence here; use the private contributor interface instead.
+        Use the Sacramento-to-Folsom sample route or public landmark examples, not your personal trips.
+  - type: dropdown
+    id: task
+    attributes:
+      label: What were you trying to do?
+      options:
+        - Understand documented camera coverage on the map
+        - Try the built-in sample driving route
+        - Compare two driving-route alternatives
+        - Open an official government evidence source
+        - Understand what is simulated versus source-verified
+        - Understand what empty or uncovered areas mean
+        - Other public-site navigation
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Could you finish the task?
+      options:
+        - Yes, without assistance
+        - Yes, but with difficulty
+        - No
+    validations:
+      required: true
+  - type: dropdown
+    id: coverage
+    attributes:
+      label: Does an empty map or zero nearby points establish a camera-free road?
+      description: This question tests whether we explain incomplete coverage clearly.
+      options:
+        - No, absence of public records is not evidence of no cameras
+        - Yes, the road must be camera-free
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: What confused you or failed?
+      description: Describe page labels and generic actions only, without sensitive location information.
+      placeholder: "The route comparison label was unclear..."
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device type (optional)
+      placeholder: "Chrome on Windows, Safari on iPhone, etc."
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Public privacy check
+      options:
+        - label: I have excluded personal locations, identifying data, and private evidence.
+          required: true
