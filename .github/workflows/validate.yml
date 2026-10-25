@@ -111,6 +111,8 @@ on:
       - 'supabase/migrations/107_source_attribution_immediate_revocation.sql'
       - 'supabase/migrations/109_m1_m3_source_fk_indexes.sql'
       - 'supabase/migrations/110_restrict_unused_public_definer_rpcs.sql'
+      - 'supabase/migrations/111_evidence_driven_gis_source_reactivation.sql'
+      - 'scripts/test_source_evidence_reactivation.sql'
       - 'scripts/test_m1_m3_acceptance.sql'
       - 'scripts/test_source_reset_and_attributed_publication.sql'
       - 'vendor-agency-layer.js'
@@ -676,6 +678,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/110_restrict_unused_public_definer_rpcs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/111_evidence_driven_gis_source_reactivation.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -691,6 +695,8 @@ jobs:
             -f scripts/test_release_security_invariants.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_m1_m3_acceptance.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_source_evidence_reactivation.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_analytics_m7.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
