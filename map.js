@@ -171,6 +171,7 @@
     loadVisibleLocations();
     loadDocumentedPrograms();
     loadNationalSummary();
+    loadCommunityNationalSummary();
     loadStateEvidenceIndex();
     loadVerifiedAgendaMentions();
   }
@@ -297,6 +298,7 @@
         'verified_area_polygons','documented_government_programs'];
       if(keys.some(key=>!Number.isInteger(Number(metrics[key]))||Number(metrics[key])<0))
         throw new Error('National source counts invalid');
+      setText('nationalVerifiedCount',Number(metrics.verified_camera_points).toLocaleString());
       setText('nationalStats',
         Number(metrics.verified_camera_points).toLocaleString()+
         ' verified camera points in '+Number(metrics.verified_point_jurisdictions)+
@@ -307,6 +309,36 @@
     }catch(error) {
       setText('nationalStats','National published evidence totals unavailable: '+
         error.message+'. Missing counts do not mean no cameras.');
+    }
+  }
+  async function loadCommunityNationalSummary() {
+    if(!CFG?.supabaseUrl||!CFG?.supabasePublishableKey){
+      setText('nationalCommunityStatus','Community nationwide count unavailable.');
+      return;
+    }
+    try{
+      const query=new URLSearchParams({
+        select:'reported_flock_points,last_dataset_snapshot_date',limit:'2'
+      });
+      const response=await fetch(CFG.supabaseUrl.replace(/\/$/,'')+
+        '/rest/v1/flock_public_osm_community_stats?'+query.toString(),{
+         headers:{apikey:CFG.supabasePublishableKey},
+         cache:'no-store',referrerPolicy:'no-referrer'
+        });
+      if(!response.ok)throw new Error('Community evidence HTTP '+response.status);
+      const rows=await response.json();
+      if(!Array.isArray(rows)||rows.length!==1||
+        !Number.isSafeInteger(rows[0].reported_flock_points)||
+        rows[0].reported_flock_points<0||
+        rows[0].reported_flock_points>200000)
+        throw new Error('Community coverage total invalid');
+      setText('nationalCommunityCount',rows[0].reported_flock_points.toLocaleString());
+      setText('nationalCommunityStatus',
+        'Community source snapshot '+(rows[0].last_dataset_snapshot_date||'date unavailable')+
+        '. OpenStreetMap observations are not independently confirmed active cameras.');
+    }catch(error){
+      setText('nationalCommunityStatus','Community source count unavailable: '+
+        error.message+'. Unknown is not zero.');
     }
   }
   function renderVerifiedAgendaMentions() {
