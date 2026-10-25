@@ -152,9 +152,9 @@ def main():
     if args.dry_run:
         print('COMMUNITY FLOCK IMPORT dry_run_no_writes')
         return
-    if not 0<args.max_points<=len(rows):
-        raise SystemExit('Requested import size exceeds source inventory')
-    import_rows(rows,args.max_points)
+    if not 0<args.max_points<=MAX_FLOCK:
+        raise SystemExit('Requested import ceiling is invalid')
+    import_rows(rows,min(args.max_points,len(rows)))
 
 if __name__=='__main__':
     try:main()
