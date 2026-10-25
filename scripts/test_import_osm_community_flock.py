@@ -76,6 +76,48 @@ class ImportTests(unittest.TestCase):
   self.assertEqual(collected[0]['last_seen_sync_at'],'2026-10-25T03:00:00+00:00')
   self.assertEqual(collected[0]['osm_key'],'node/123')
   self.assertNotIn('evidence_tier',collected[0])
+ def test_quality_snapshot_tracks_exact_colocations_and_edited_age(self):
+  stamp='2026-10-25T05:00:00+00:00'
+  with patch.object(m,'MIN_FLOCK',2):
+   a=m.normalize(f(osm_id=101), '2026-10-25')
+   b=m.normalize(f(osm_id=102), '2026-10-25')
+   c=m.normalize(f(osm_id=103), '2026-10-25')
+   a['source_timestamp']='2025-01-01T00:00:00Z'
+   b['source_timestamp']='2026-10-24T03:00:00Z'
+   c['source_timestamp']=None
+   c['latitude']=a['latitude'];c['longitude']=a['longitude']
+   snap=m.build_quality_snapshot([a,b,c],stamp,'2026-10-25')
+  self.assertEqual(snap['osm_observations'],3)
+  self.assertEqual(snap['distinct_coordinates'],1)
+  self.assertEqual(snap['colocated_extra_observations'],2)
+  self.assertEqual(snap['colocated_coordinate_groups'],1)
+  self.assertEqual(snap['osm_edits_older_365d'],1)
+  self.assertEqual(snap['osm_edit_timestamp_missing'],1)
+  self.assertEqual(len(snap['measurement_receipt_sha256']),64)
+ def test_snapshot_rejects_partial_and_future_source(self):
+  with patch.object(m,'MIN_FLOCK',2):
+   with self.assertRaisesRegex(ValueError,'Incomplete'):
+    m.build_quality_snapshot([m.normalize(f(),DAY)],
+      '2026-10-25T05:00:00+00:00','2026-10-25')
+   a=m.normalize(f(osm_id=100),DAY);b=m.normalize(f(osm_id=101),DAY)
+   a['source_timestamp']='2030-01-01T00:00:00Z'
+   with self.assertRaisesRegex(ValueError,'Future OSM'):
+    m.build_quality_snapshot([a,b],'2026-10-25T05:00:00+00:00','2026-10-25')
+ def test_quality_snapshot_append_is_private_only(self):
+  r=MagicMock()
+  r.__enter__.return_value.status=204
+  r.__enter__.return_value.read.return_value=b''
+  item={'sync_at':'2026-10-25T05:00:00+00:00',
+        'osm_observations':3,'distinct_coordinates':2,
+        'colocated_extra_observations':1,'osm_edits_older_365d':0}
+  with patch.dict(m.os.environ,{
+   'SUPABASE_URL':'https://bpvkapswslmgfazbzpsv.supabase.co',
+   'SUPABASE_SERVICE_ROLE_KEY':'only-a-test-secret'
+  }):
+   with patch.object(m.urllib.request,'urlopen',return_value=r) as request:
+    m.publish_quality_snapshot(item)
+    self.assertEqual(request.call_args.args[0].get_method(),'POST')
+    self.assertIn('flock_osm_quality_snapshots',request.call_args.args[0].full_url)
  def test_unexpected_count_held(self):
   with self.assertRaisesRegex(ValueError,'outside bounds'):
    m.prepare_rows([f()],DAY)
