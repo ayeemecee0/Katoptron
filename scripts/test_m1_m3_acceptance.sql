@@ -75,8 +75,12 @@ begin
  select count(*) into total from pg_proc
  where pronamespace='public'::regnamespace and prosecdef
    and has_function_privilege('authenticated',oid,'EXECUTE');
- if total <> 13 then
-    raise exception 'M1: authenticated privileged RPC allowlist changed';
+ if total > 13 or total <> (
+   select count(distinct proname) from pg_proc
+   where pronamespace='public'::regnamespace and prosecdef
+     and has_function_privilege('authenticated',oid,'EXECUTE')
+ ) then
+    raise exception 'M1: unreviewed or overloaded authenticated privileged RPC';
  end if;
  for fn in
    select proname, pg_get_function_identity_arguments(oid) as args, prosrc,
