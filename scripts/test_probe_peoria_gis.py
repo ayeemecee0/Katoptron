@@ -13,7 +13,7 @@ class TestPeoriaInventory(unittest.TestCase):
             if url == LAYER + '?f=json':
                 return {'name': 'Flock Cameras', 'geometryType': 'esriGeometryPoint',
                         'type': 'Feature Layer', 'objectIdField': 'OBJECTID',
-                        'fields': [{'name': name} for name in ('OBJECTID', 'CameraID', 'Location')]}
+                        'fields': [{'name': name, 'type': 'esriFieldTypeOID' if name == 'OBJECTID' else 'esriFieldTypeString'} for name in ('OBJECTID', 'CameraID', 'Location')]}
             if url == SERVICE + '?f=json':
                 return {'layers': [{'id': 286, 'name': 'Flock Cameras'}]}
             q = parse_qs(urlsplit(url).query)
