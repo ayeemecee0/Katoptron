@@ -56,7 +56,7 @@ dt{color:#b4c6d4}dd{margin:0;font-weight:650;text-align:right;font-variant-numer
 'use strict';
 const $=id=>document.getElementById(id);
 let rows=[];
-function text(tag,value,klass){const el=document.createElement(tag);el.textContent=value===null||value===undefined?'Not reported':String(value);if(klass)el.className=klass;return el;}
+function text(tag,value,klass){const el=document.createElement(tag);if(value!==null&&value!==undefined)el.textContent=String(value);if(klass)el.className=klass;return el;}
 function safePortal(url){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='transparency.flocksafety.com'&&!u.username&&!u.password&&/^\/[a-z0-9-]+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
 function number(n){return n==null?'Not reported':Number(n).toLocaleString('en-US')}
 function metric(dl,label,value,suffix){dl.append(text('dt',label),text('dd',value===null||value===undefined?'Not reported':number(value)+(suffix||'')))}
