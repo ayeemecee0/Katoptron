@@ -97,6 +97,45 @@
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
     }
+    if(!record.evidence_tier && typeof record.record_key==='string') {
+      const btn=add('button','Compare nearby community reports');
+      btn.type='button';btn.className='history-button';
+      btn.addEventListener('click',async ()=>{
+        btn.disabled=true;
+        const params=new URLSearchParams({
+          select:'government_record_key,matching_status,nearest_osm_key,separation_m,osm_observations_within_30m',
+          government_record_key:'eq.'+record.record_key,limit:'2'
+        });
+        try {
+          const response=await fetch(CFG.supabaseUrl.replace(/\/$/,'')+
+            '/rest/v1/flock_public_cross_source_proximity?'+params.toString(),{
+            headers:{apikey:CFG.supabasePublishableKey},
+            cache:'no-store',referrerPolicy:'no-referrer'
+          });
+          if(!response.ok)throw Error('Source comparison HTTP '+response.status);
+          const rows=await response.json();
+          if(!Array.isArray(rows)||rows.length!==1||
+             rows[0].government_record_key!==record.record_key)
+            throw Error('Source comparison incomplete');
+          const item=rows[0];
+          const n=Number(item.osm_observations_within_30m);
+          if(!Number.isSafeInteger(n)||n<0)
+            throw Error('Source comparison count invalid');
+          add('small',n+' community-mapped OSM observation(s) within 30 meters of this government-source point. Proximity does NOT prove one device or two; never add these counts.');
+          if(typeof item.nearest_osm_key==='string'&&
+             /^(node|way)\/[1-9][0-9]{0,17}$/.test(item.nearest_osm_key)){
+            const link=add('a','Inspect nearest original OSM record');
+            link.href='https://www.openstreetmap.org/'+item.nearest_osm_key;
+            link.target='_blank';link.rel='noopener noreferrer';
+          }
+          btn.textContent='Community proximity checked';
+        }catch(e){
+          btn.disabled=false;
+          btn.textContent='Retry community overlap check';
+          add('small','Community cross-source comparison unavailable. Missing evidence does not mean zero cameras.');
+        }
+      });
+    }
     if(!record.evidence_tier) {
     const historyButton=add('button','View evidence history');
     historyButton.type='button';
