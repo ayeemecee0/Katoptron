@@ -40,7 +40,7 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 <div class="stat"><strong>293</strong><span>Government-source camera records in Katoptron's last audited official baseline, separate from these observations</span></div>
 <p id="sourceDate" class="small" role="status">Loading open-data snapshot date…</p>
 <p id="status" role="status" aria-live="polite">Loading nationwide community data…</p>
-<div class="note"><strong>Zoom in to level 10 or closer to load individual mapped cameras.</strong> National counts do not mean all source points are simultaneously displayed. The official and community counts overlap and cannot be added.</div>
+<div class="note"><strong>National circles summarize community reports in coarse 3° geographic grid cells. They are not camera pins at the circle centers.</strong> Zoom in to level 10 or closer for individual OpenStreetMap locations. Official and community records overlap and cannot be added.</div>
 <form id="jumpForm"><label for="coordinates">Find latitude,longitude</label><input id="coordinates" autocomplete="off" maxlength="60" placeholder="38.5816,-121.4944" required><button type="submit">Go to location</button></form>
 <p class="small">Original records © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>, ODbL 1.0. Camera observations originate with OpenStreetMap and are distributed through <a href="https://github.com/flockhopper3/deflock-data" target="_blank" rel="noopener noreferrer">DeFlock's open-data feed</a>. Data can be incomplete. Map and routing simulations remain separated from privately submitted reports.</p>
 </aside>
@@ -57,7 +57,7 @@ const community=L.map('map',{preferCanvas:true}).setView([39.83,-98.58],4);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© OpenStreetMap contributors'
 }).addTo(community);
-let points=L.layerGroup().addTo(community),requestNumber=0,abort=null;
+let points=L.layerGroup().addTo(community),densityPoints=L.layerGroup().addTo(community),requestNumber=0,abort=null;
 const sourceLink=key=>{
  if(!/^(node|way)\/[1-9][0-9]{0,17}$/.test(key||''))return null;
  return 'https://www.openstreetmap.org/'+key;
@@ -73,6 +73,24 @@ async function api(table,params,signal){
  if(!Array.isArray(data))throw Error('Malformed community data response');
  return data;
 }
+async function loadDensity(){
+ try{
+  const rows=await api('flock_public_osm_community_density',
+    new URLSearchParams({select:'cell_latitude,cell_longitude,community_report_count',limit:'500'}));
+  if(rows.length>=500)throw Error('Coarse community grid unexpectedly truncated');
+  densityPoints.clearLayers();
+  for(const row of rows){
+   const lat=Number(row.cell_latitude),lon=Number(row.cell_longitude);
+   const n=Number(row.community_report_count);
+   if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isInteger(n)||n<=0)continue;
+   const marker=L.circleMarker([lat,lon],{radius:Math.min(24,Math.max(4,Math.log10(n+1)*7)),
+      weight:1,color:'#eec7d4',fillColor:'#a43061',fillOpacity:.65});
+   marker.bindTooltip(n.toLocaleString()+
+      ' community-reported records in this approximate 3-degree grid cell. Not an exact camera position.');
+   densityPoints.addLayer(marker);
+  }
+ }catch(err){status('Coarse regional coverage unavailable: '+err.message)}
+}
 async function loadSummary(){
  try{
   const rows=await api('flock_public_osm_community_stats',
@@ -81,6 +99,7 @@ async function loadSummary(){
     throw Error('Community count unavailable');
   $('communityCount').textContent=rows[0].reported_flock_points.toLocaleString();
   $('sourceDate').textContent='OpenStreetMap source snapshot imported: '+(rows[0].last_dataset_snapshot_date||'Unknown');
+  loadDensity();
   loadVisible();
  }catch(err){status('Community summary unavailable: '+err.message)}
 }
@@ -89,7 +108,12 @@ async function loadVisible(){
  if(abort)abort.abort();
  abort=new AbortController();
  points.clearLayers();
- if(community.getZoom()<10){status('Zoom in to see community-mapped Flock locations. Nationwide counts remain visible at left.');return}
+ if(community.getZoom()<10){
+  if(!community.hasLayer(densityPoints))densityPoints.addTo(community);
+  status('National view shows approximate 3-degree reporting-density cells, not exact camera locations. Zoom in for individual points.');
+  return;
+ }
+ if(community.hasLayer(densityPoints))community.removeLayer(densityPoints);
  const b=community.getBounds();
  const search=new URLSearchParams({select:'osm_key,latitude,longitude,source_timestamp',
    'latitude':'gte.'+b.getSouth().toFixed(6),'longitude':'gte.'+b.getWest().toFixed(6),
