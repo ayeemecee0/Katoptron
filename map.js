@@ -13,6 +13,7 @@
   const MAX_VISIBLE = 1200;
   const CAMERA_NEAR_ROUTE_M = 120; // Demonstration proximity threshold, NOT a device read range.
   const USA_CENTER = [39, -98];
+  let communityRouteCompare=null;
   const state = {
     map: null, pointLayer: null, areaLayer: null, routeLayer: null, simLayer: null,
     visible: [], tiered: [], tieredUnavailable: false, areas: [], programs: [], agendaMentions: [], route: null, routeRecords: [], routeCoverage: 'unchecked',
@@ -157,6 +158,7 @@
     state.pointLayer = L.layerGroup().addTo(map);
     state.routeLayer = L.featureGroup().addTo(map);
     state.simLayer = L.layerGroup().addTo(map);
+    communityRouteCompare=window.KatoptronCommunityRoute?.install({cfg:CFG,geo:Geo})||null;
     // Optional, independently queried ODbL community observations never enter
     // state.visible, route comparisons, or simulated encounters.
     window.KatoptronCommunityOverlay?.install(map,CFG);
@@ -592,7 +594,11 @@
         if(controller.signal.aborted || request!==state.routeRequest ||
           state.routeChoices[index]!==route)return;
         state.routeComparisons[index]=outcome;
-        if(state.route===route)displaySelectedRouteEvidence();
+        if(state.route===route){
+          displaySelectedRouteEvidence();
+          if(communityRouteCompare?.isEnabled())
+            communityRouteCompare.choose(route,outcome);
+        }
         renderRouteComparisons();
       }
     }
@@ -1111,6 +1117,8 @@
       trip.from+' → '+trip.to);
     displaySelectedRouteEvidence();
     renderRouteComparisons();
+    if(communityRouteCompare?.isEnabled())
+      communityRouteCompare.choose(trip,state.routeComparisons[index]);
   }
   async function planRoute(ev) {
     if (ev) ev.preventDefault();
@@ -1119,6 +1127,7 @@
     if (!from || !to) return;
     const request=++state.routeRequest;
     state.routeProviderAbort?.abort();
+    communityRouteCompare?.cancel();
     const providerController=new AbortController();
     state.routeProviderAbort=providerController;
     $('planRoute').disabled=true;
@@ -1237,6 +1246,10 @@
     $('showExact').addEventListener('change',drawLocations);
     $('showApprox').addEventListener('change',drawLocations);
     $('showProvisional').addEventListener('change',drawLocations);
+    $('compareCommunityRoute').addEventListener('change',()=>{
+      if($('compareCommunityRoute').checked&&state.route)
+        communityRouteCompare?.choose(state.route,state.routeComparisons[state.routeChoices.indexOf(state.route)]);
+    });
     $('hypothetical').addEventListener('change',()=>{
       state.simLayer?.clearLayers();
       if (state.routeCoverage==='complete') computeObservations();
