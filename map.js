@@ -215,7 +215,7 @@
     }
     try {
       const q=new URLSearchParams({
-        select:'state_code,verified_camera_points,verified_camera_jurisdictions,dated_program_records,terminated_program_records',
+        select:'state_code,verified_camera_points,verified_camera_jurisdictions,dated_program_records,terminated_program_records,vendor_disclosed_agencies',
         order:'verified_camera_points.desc,state_code.asc',limit:'65'
       });
       const response=await fetch(CFG.supabaseUrl.replace(/\/$/,'')+
@@ -229,7 +229,7 @@
       list.replaceChildren();
       for(const item of rows){
         const fields=['verified_camera_points','verified_camera_jurisdictions',
-          'dated_program_records','terminated_program_records'];
+          'dated_program_records','terminated_program_records','vendor_disclosed_agencies'];
         if(!/^[A-Z]{2}$/.test(item.state_code) ||
             fields.some(key=>!Number.isInteger(Number(item[key]))||Number(item[key])<0) ||
             Number(item.terminated_program_records)>Number(item.dated_program_records))
@@ -253,12 +253,19 @@
             '. These records do not locate individual cameras.';
           li.append(history);
         }
+        const vendorCount=Number(item.vendor_disclosed_agencies);
+        if(vendorCount>0){
+          const report=document.createElement('p');
+          report.textContent=vendorCount+' agency/agency group(s) with dated Flock Safety first-party portal reports. '+
+            'Vendor camera totals are not georeferenced camera pins.';
+          li.append(report);
+        }
         list.append(li);
       }
       const withoutGeometry=rows.filter(item=>Number(item.verified_camera_points)===0).length;
       setText('stateEvidenceStatus',rows.length+
-        ' states with published GIS points or dated government program evidence; '+
-        withoutGeometry+' state(s) have only non-georeferenced program records. '+
+        ' states with published GIS points, government program evidence or Flock vendor disclosures; '+
+        withoutGeometry+' state(s) have no verified GIS camera points. '+
         'No listed records for a state means evidence unknown, not no Flock cameras.');
     }catch(error){
       setText('stateEvidenceStatus','State evidence index unavailable: '+
