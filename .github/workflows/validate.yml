@@ -572,7 +572,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from pg_constraint where conrelid='public.flock_documented_coverage_areas'::regclass and conname='coverage_one_original_source_only'" | grep -qx 1
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(distinct state_code) from public.flock_documented_programs where record_status='verified'" | grep -qx 12
+            "select count(distinct state_code) from public.flock_documented_programs where record_status='verified'" | grep -qx 13
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_function_privilege('anon','public.confirm_gis_camera_withdrawals(text,text[])','EXECUTE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
@@ -604,7 +604,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.flock_public_state_evidence_index where terminated_program_records>0" | grep -qx 3
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 20
+            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 22
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.flock_documented_programs where program_status='terminated_at_source_date' and record_status='verified'" | grep -qx 5
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
@@ -712,7 +712,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('service_role','public.gis_verification_profiles','UPDATE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 20
+            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 22
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('anon','public.flock_documented_programs','SELECT')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
