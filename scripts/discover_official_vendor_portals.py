@@ -46,6 +46,9 @@ def reviewed_original_pages(api=api_request):
     # Original Live Oak police Flock page was independently live-checked and links
     # its municipal camera map and first-party Flock vendor portal directly.
     pages.add('https://www.liveoaktx.net/departments/police/flock-safety')
+    # Bexar County's official Sheriff Flock page directly discloses its portal.
+    # Its source is a program link, not proof of any exact camera positions.
+    pages.add('https://www.bexar.org/4072/Flock-Safety')
     for item in rows:
         original=normalized_url(item.get('official_evidence_url') or '')
         if original:pages.add(original)
