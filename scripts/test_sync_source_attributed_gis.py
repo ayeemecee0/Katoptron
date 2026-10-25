@@ -23,6 +23,59 @@ class SourceAttribution(unittest.TestCase):
         self.assertEqual(m.safe_held_reason(ValueError('private response text')),
                          'ValueError')
 
+    def test_source_page_html_drift_can_refresh_only_existing_unchanged_pins(self):
+        from audit_affiliated_flock_inventory import InventoryHeld
+        cases, current = m.make_receipts(proof())
+        original_hash = 'b'*64
+        old = [dict(e, evidence_sha256=original_hash, evidence_status='staged')
+               for e in current]
+        prior = [dict(case_key=c['case_key'], latitude=c['latitude'],
+                      longitude=c['longitude'], evidence_sha256=original_hash,
+                      publication_status='active') for c in cases]
+        writes = []
+        def api(path, method=None, payload=None, prefer=None):
+            if method=='POST':
+                writes.extend(payload)
+                return None
+            if path.startswith('flock_source_attributed_map_points?'):
+                return prior
+            if path.startswith('flock_point_evidence_attestations?'):
+                return old
+            raise AssertionError('Unexpected source '+path)
+        with (patch.object(m, 'hold_conflicting_staged_evidence',
+                           side_effect=InventoryHeld(
+                              'Private source proof changed; independent review required')),
+              patch.object(m, 'fetch_all', return_value=[
+                 {'latitude':38.5,'longitude':-121.5,
+                  'jurisdiction_label':'Elsewhere'} for _ in range(316)])):
+            self.assertEqual(m.run(True,api,lambda **kw:proof()),12)
+        self.assertEqual(len(writes),12)
+        self.assertEqual({w['evidence_sha256'] for w in writes},{original_hash})
+        self.assertEqual({w['publication_status'] for w in writes},{'active'})
+
+    def test_provenance_drift_never_refreshes_withdrawn_or_changed_receipt(self):
+        cases, current = m.make_receipts(proof())
+        old = [dict(e, evidence_sha256='b'*64, evidence_status='staged')
+               for e in current]
+        prior = [dict(case_key=c['case_key'], latitude=c['latitude'],
+                      longitude=c['longitude'], evidence_sha256='b'*64,
+                      publication_status='active') for c in cases]
+        def api(path, **kw):
+            if path.startswith('flock_point_evidence_attestations?'):
+                return old
+            return prior
+        old[0]['evidence_status']='withdrawn'
+        with self.assertRaisesRegex(ValueError,'revoked'):
+            m.retain_immutable_provenance_if_page_changed(cases,current,prior,api)
+        old[0]['evidence_status']='staged'
+        prior[0]['longitude']+=0.001
+        with self.assertRaisesRegex(ValueError,'no longer matches'):
+            m.retain_immutable_provenance_if_page_changed(cases,current,prior,api)
+        prior[0]['longitude']=cases[0]['longitude']
+        prior[0]['publication_status']='withdrawn'
+        with self.assertRaisesRegex(ValueError,'withdrawn'):
+            m.retain_immutable_provenance_if_page_changed(cases,current,prior,api)
+
     def test_dry_run_never_writes_government_or_lower_tier(self):
         def api(path,method=None,payload=None,prefer=None):
             self.assertNotEqual(method,'POST')
