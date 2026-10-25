@@ -79,7 +79,7 @@
     return;
    }
    dots.clearLayers();
-   for(const r of rows){
+   for(const r of page.rows){
     const lat=Number(r.latitude),lon=Number(r.longitude);
     if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
     const marker=L.circleMarker([lat,lon],{
