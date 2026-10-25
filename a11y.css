@@ -16,3 +16,7 @@ button,input,select,textarea,a{touch-action:manipulation}
  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
  transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* Map attribution must stay legible on mobile and remain distinguishable as links. */
+.leaflet-container .leaflet-control-attribution{background:#f5f8fa!important;color:#173746!important;opacity:1!important}
+.leaflet-container .leaflet-control-attribution a{color:#00517a!important;background:transparent!important;text-decoration:underline!important;text-underline-offset:2px;font-weight:650}
