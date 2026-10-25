@@ -39,6 +39,7 @@ MAX_APP_LINK_CHECKS=12
 ORIGINAL_GOV_GIS_RESEARCH_PAGES=(
     'https://www.cityofmenifee.us/maps',
     'https://test.shelbyvilletn.org/planning-community-development/',
+    'https://www.liveoaktx.net/departments/police/flock-safety',
 )
 
 
