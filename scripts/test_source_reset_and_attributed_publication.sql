@@ -8,7 +8,7 @@ begin
  then raise exception 'Source reset private/public ledgers not protected by RLS';end if;
  if has_table_privilege('anon','public.flock_gis_candidate_lifecycle','SELECT')
    or has_table_privilege('authenticated','public.flock_gis_point_case_dispositions','SELECT')
-   or has_table_privilege('anon','public.flock_attributed_source_policies','SELECT')
+   or has_table_privilege('anon','public.flock_attributed_source_policies','INSERT')
    or has_table_privilege('service_role','public.flock_attributed_source_policies','UPDATE')
  then raise exception 'GIS source authority or evidence queue disclosed or writable';end if;
  if has_function_privilege('anon','public.reconcile_flock_gis_candidate_lifecycle()','EXECUTE')
@@ -65,4 +65,20 @@ begin
  then raise exception 'Stale source-attributed point did not automatically expire';end if;
 end $$;
 reset role;
+-- Immediate source-policy suspension must withdraw map visibility even
+-- while the original geospatial evidence and publication row still exist.
+update public.flock_attributed_source_policies
+ set policy_status='suspended' where source_key='shelbyville_arcgis_affiliation';
+set local role anon;
+do $
+begin
+ if exists(select 1 from public.flock_public_tiered_camera_points
+            where case_key='tier_test_source_ledger_001')
+ then raise exception 'Suspended municipal publisher authority leaked exact map points';end if;
+end $;
+reset role;
+-- Once source evidence is invalidated, workflows MUST still be able to
+-- withdraw the stale published observation without original proof.
+update public.flock_source_attributed_map_points
+ set publication_status='withdrawn' where case_key='tier_test_source_ledger_001';
 rollback;
