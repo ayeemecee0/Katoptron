@@ -49,7 +49,7 @@ def verified_item_org(item,fetch):
     return profile['orgId']
 
 
-def inspect_mapped_point_inventory(layer, fetch):
+def inspect_mapped_point_inventory(layer, fetch, private_points=False):
     url = layer.get('url') if isinstance(layer, dict) else None
     if not isinstance(url, str):
         raise ValueError('Original app map lacks an exact source URL')
@@ -90,6 +90,7 @@ def inspect_mapped_point_inventory(layer, fetch):
     if not isinstance(rows,list) or len(rows)!=len(values) or fetched.get('exceededTransferLimit'):
         raise ValueError('Original GIS camera geometry inventory truncated')
     ids=set()
+    private=[]
     manufacturer_counts={'flock':0,'other':0,'unknown':0}
     for item in rows:
         attr=item.get('attributes') if isinstance(item,dict) else None
@@ -103,6 +104,8 @@ def inspect_mapped_point_inventory(layer, fetch):
             or not 29<=lat<=31 or not -99.5<=lon<=-97.0):
             raise ValueError('Source ID duplication or camera point outside city region')
         ids.add(oid)
+        if private_points:
+            private.append({'id':oid,'lat':round(lat,7),'lon':round(lon,7)})
         vendor=str(attr.get('Device_Type') or '').strip().lower()
         if 'flock' in vendor:
             manufacturer_counts['flock']+=1
@@ -124,9 +127,13 @@ def inspect_mapped_point_inventory(layer, fetch):
     print('LIVE OAK Flock_labeled_exact_points',manufacturer_counts['flock'])
     print('LIVE OAK non_Flock_labeled_exact_points',manufacturer_counts['other'])
     print('LIVE OAK unknown_manufacturer_exact_points',manufacturer_counts['unknown'])
+    if private_points:
+        return {'original_points':sorted(private,key=lambda x:x['id']),
+                'layer_url':url,'source_count':len(values),
+                'manufacturer_labeled_flock':manufacturer_counts['flock']}
     return len(values)
 
-def audit(fetch=get_official_json,page_fetch=fetch_government_page):
+def audit(fetch=get_official_json,page_fetch=fetch_government_page,private_points=False):
     doc,page_digest=page_fetch(CITY)
     anchors={normalized_url(urljoin(CITY,href)) for href,label in doc.anchors
              if isinstance(href,str) and len(href)<1500}
@@ -161,9 +168,13 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
                   'kind',repr(str(layer.get('layerType') or '')[:40]))
     matched=[x for x in layers if isinstance(x,dict) and
           re.search(r'flock|license.?plate|live oak cameras',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
+    private_proof=None
     for layer in matched:
         try:
-            n=inspect_mapped_point_inventory(layer,fetch)
+            n=inspect_mapped_point_inventory(layer,fetch,private_points=private_points)
+            if private_points:
+                private_proof=n
+                n=n['source_count']
             print('LIVE OAK original_source_camera_ids_count',n)
         except ValueError as exc:
             reasons={'Original app map lacks an exact source URL','Original app layer has unapproved source locator','Original map layer not a named Flock point source','Original camera layer feature ID list incomplete'}
@@ -175,6 +186,11 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     print('LIVE OAK explicitly_named_Flock_or_ALPR_layers',len(matched))
     print('LIVE OAK original map source status', 'further_original_layer_verification_required')
     print('LIVE OAK newly published verified camera points',0)
+    if private_points:
+        if private_proof is None or len(matched)!=1:
+            raise ValueError('Incomplete original city map private inventory')
+        private_proof['government_page_sha256']=page_digest
+        return private_proof
     return len(matched)
 
 if __name__=='__main__':
