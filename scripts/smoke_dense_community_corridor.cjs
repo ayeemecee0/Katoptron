@@ -27,7 +27,7 @@ const assert=require('node:assert/strict');
     q.append('latitude','lte.'+b.north.toFixed(7));
     q.append('longitude','gte.'+b.west.toFixed(7));
     q.append('longitude','lte.'+b.east.toFixed(7));
-    const r=await fetch(c.supabaseUrl.replace(/\\/$/,'')+
+    const r=await fetch(c.supabaseUrl.replace(/\/$/,'')+
      '/rest/v1/flock_osm_community_points?'+q.toString(),{
      headers:{apikey:c.supabasePublishableKey},signal,cache:'no-store'
     });
