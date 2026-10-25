@@ -2,6 +2,14 @@
 
 Katoptron is a **nationwide Flock Safety camera-map and route-surveillance education project**. Its primary product combines an evidence-backed map, an optional planned-driving-route simulator, and separately linked government records. The map NEVER invents camera coordinates: exact pins and approximate areas require distinct source verification. All simulated detections are hypothetical; the site never accesses private Flock plate reads or tracks actual vehicles. The legacy synthetic simulator remains available separately.
 
+## Searchable published OSM nearby evidence and routing sample health (October 25, 2026)
+
+- **[Search nearby community camera records](./nearby.html)** queries the latest complete persisted [OSM 15m proximity audit](./supabase/migrations/097_published_osm_nearby_candidates.sql) with exact OSM source-ID matching, distance bands and pagination. Each source link opens the original OSM node/way. The labels **possible geographic overlap** and **not confirmed same hardware** must never be promoted to active-camera or deployment claims.
+- The first completed national published snapshot includes **4,935 near-coordinate source pairs**, **8,412 source records involved**, **1,927 pairs up to 5m**, and **3,008 pairs over 5m through 15m**, sourced from **116,159 community observations**. The earlier read-only CSV produced 4,929 pairs from a different 116,128-row download; these are distinct dated audits.
+- Publication is fail-closed: the weekly worker stages source-key candidates privately, verifies the **exact count** against PostgREST, and only then marks the snapshot published. RLS blocks anonymous reads of incomplete snapshots. The underlying government camera list and original OSM report table remain unmodified. GitHub Actions also retains a short-lived CSV backup.
+- The [hosted-origin Geoapify health monitor](./.github/workflows/monitor_route_providers.yml) now saves **daily fixed public fixture** routing and geocoding checks in an append-only [public health table](./supabase/migrations/098_public_fixed_route_provider_health.sql). The map presents the check date and separates passed, provider-error, inconclusive and stale states. It **does not** know remaining account-wide Geoapify credits or guarantee user route reliability.
+- Both public-source systems use private worker credentials **only in GitHub Actions Node/Python steps**, never in static client code. They do not collect vehicle plate reads, private route history, or actual vehicle movements.
+
 ## National proximity audit and source freshness (October 25, 2026)
 
 - A read-only nationwide scan of **116,128 OSM community observations** found **4,929 pairs at different coordinates within 15m**, involving **8,403 OSM records**. **1,924** pairs are within 5m, and **3,005** are 5–15m apart. These are potential overlaps, not proven identical cameras.
