@@ -22,6 +22,13 @@ class National(unittest.TestCase):
   next_q=' '.join(q for name,q in another if name!='National')
   self.assertNotEqual(first_q,next_q)
   self.assertTrue(('Flock cameras' in first_q) != ('Flock cameras' in next_q))
+ def test_nationwide_queries_cover_original_gis_services(self):
+  import datetime as dt
+  plan=d.query_plan(dt.datetime(2026,10,24,tzinfo=dt.timezone.utc))
+  general=' '.join(q for name,q in plan if name=='National')
+  self.assertIn('FeatureServer',general)
+  self.assertIn('license plate reader',general)
+  self.assertEqual(len([name for name,_ in plan if name!='National']),5)
  def test_only_original_government_urls(self):
   self.assertIsNone(d.gov_url("https://example.com/notice"))
   self.assertIsNone(d.gov_url("http://city.example.gov/notice"))
