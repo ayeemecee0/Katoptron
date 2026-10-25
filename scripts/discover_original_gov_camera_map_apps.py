@@ -15,6 +15,7 @@ from auto_verify_flock_agenda import api_request
 from discover_government_gis_links import (
     fetch_government_page,original_camera_disclosure,normalized_url)
 from discover_official_vendor_portals import reviewed_original_pages
+from paged_supabase import fetch_all
 
 ITEM='https://www.arcgis.com/sharing/rest/content/items/'
 ID=re.compile(r'^[a-fA-F0-9]{32}$')
@@ -119,10 +120,32 @@ def sync_original_page(page,records,api=api_request):
             stats['removed_links_held']+=1
     return stats
 
+def all_reviewed_pages(api=api_request,partial=reviewed_original_pages):
+    # Include ALL recorded official deployment and GIS source pages each
+    # cycle, not just the vendor registry's rotating 20-page window.
+    programmes=fetch_all(api,
+      'flock_documented_programs?select=program_key,official_evidence_url'
+      '&record_status=eq.verified&limit=100',
+      'program_key',max_records=1000)
+    source_roots=fetch_all(api,
+      'trusted_flock_gis_sources?select=source_key,government_evidence_url'
+      '&source_status=eq.verified&limit=100',
+      'source_key',max_records=500)
+    pages=[*EXACT_CITY_PAGES,*partial()]
+    pages.extend(row['official_evidence_url'] for row in programmes)
+    pages.extend(row['government_evidence_url'] for row in source_roots)
+    dedup=sorted({page for page in pages if isinstance(page,str)
+                  and normalized_url(page)==page})
+    if len(dedup)>1000:raise ValueError('Unbounded vetted camera-map search pages')
+    if len(dedup)<=MAX_PAGES:return dedup
+    start=(dt.datetime.now(dt.timezone.utc).date().toordinal()*MAX_PAGES)%len(dedup)
+    return [dedup[(start+i)%len(dedup)] for i in range(MAX_PAGES)]
+
+
 def run(dry_run=False,pages=None,fetch=fetch_government_page,
         fetch_item=get_official_json,api=api_request):
     page_list=list(dict.fromkeys(pages if pages is not None
-        else [*EXACT_CITY_PAGES,*reviewed_original_pages()]))[:MAX_PAGES]
+        else all_reviewed_pages(api)))[:MAX_PAGES]
     stats=Counter()
     for page in page_list:
         try:
