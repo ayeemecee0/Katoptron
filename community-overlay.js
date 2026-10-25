@@ -12,7 +12,7 @@
   const status=get('communityOverlayStatus');
   if(!map||!toggle||!status)return;
   const L=window.L;
-  const dots=L.layerGroup(),regions=L.layerGroup();
+  const dots=L.layerGroup(),regions=L.layerGroup(),crowded=L.layerGroup();
   let active=toggle.checked,revision=0,abort=null,densityLoaded=false,delay=null;
   function note(message){status.textContent=message;}
   function link(key){
@@ -75,9 +75,26 @@
    if(id!==revision||!active)return;
    if(page.total>page.rows.length){
     dots.clearLayers();
-    note(page.total.toLocaleString()+' OSM observations in view. Zoom closer; no truncated camera sample is displayed.');
+    const grids=await window.KatoptronViewportDensity.fetchCells(cfg,
+      {south,north,west,east},map.getZoom(),page.total,signal);
+    if(id!==revision||!active)return;
+    if(!map.hasLayer(crowded))crowded.addTo(map);
+    crowded.clearLayers();
+    for(const cell of grids.rows){
+      const count=Number(cell.community_report_count);
+      L.circleMarker([cell.cell_latitude,cell.cell_longitude],{
+        radius:Math.min(22,Math.max(4,Math.log10(count+1)*6)),
+        color:'#f3d1df',fillColor:'#9a3565',fillOpacity:.65,weight:1
+      }).bindTooltip(count.toLocaleString()+
+        ' OSM reports in a '+grids.cell+'° area; circle center is NOT a camera position.')
+        .addTo(crowded);
+    }
+    note(grids.total.toLocaleString()+' community observations grouped into '+
+      grids.rows.length+' approximate reporting cells. Zoom closer for source-linked points.');
     return;
    }
+   crowded.clearLayers();
+   if(map.hasLayer(crowded))map.removeLayer(crowded);
    dots.clearLayers();
    for(const r of page.rows){
     const lat=Number(r.latitude),lon=Number(r.longitude);
@@ -128,6 +145,8 @@
    if(abort)abort.abort();
    abort=new AbortController();
    dots.clearLayers();
+   crowded.clearLayers();
+   if(map.hasLayer(crowded))map.removeLayer(crowded);
    if(!active)return;
    if(map.getZoom()<10){
     if(map.hasLayer(dots))map.removeLayer(dots);
@@ -153,6 +172,7 @@
      revision++;if(abort)abort.abort();
      if(map.hasLayer(dots))map.removeLayer(dots);
      if(map.hasLayer(regions))map.removeLayer(regions);
+     if(map.hasLayer(crowded))map.removeLayer(crowded);
      note('Community OpenStreetMap overlay off. Official and route-simulation evidence unchanged.');
    }else{refresh()}
   });
