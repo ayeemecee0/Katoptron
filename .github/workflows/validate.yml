@@ -92,6 +92,8 @@ on:
       - 'supabase/migrations/088_vendor_first_party_portal_snapshots.sql'
       - 'supabase/migrations/089_multistate_vendor_portal_snapshots.sql'
       - 'supabase/migrations/090_public_state_vendor_evidence_footprint.sql'
+      - 'supabase/migrations/091_private_government_linked_vendor_portal_leads.sql'
+      - 'scripts/test_private_vendor_portal_discovery.sql'
       - 'scripts/test_public_state_vendor_footprint.sql'
       - 'scripts/test_multistate_vendor_portals.sql'
       - 'scripts/test_vendor_portal_snapshots.sql'
@@ -564,6 +566,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_public_state_vendor_footprint.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/091_private_government_linked_vendor_portal_leads.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_private_vendor_portal_discovery.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_first_party_agency_gis_rechecks.sql
@@ -968,6 +974,7 @@ jobs:
           python scripts/test_community_frontend_syntax.py
           python scripts/test_public_accessibility.py
           python scripts/test_vendor_portal_static.py
+          python scripts/test_discover_official_vendor_portals.py
           python scripts/test_static_release_security.py
           node --check route-comparison.js
           node scripts/test_route_comparison.js
