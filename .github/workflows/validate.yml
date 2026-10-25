@@ -100,6 +100,8 @@ on:
       - 'supabase/migrations/096_osm_quality_snapshots.sql'
       - 'supabase/migrations/097_published_osm_nearby_candidates.sql'
       - 'supabase/migrations/098_public_fixed_route_provider_health.sql'
+      - 'supabase/migrations/099_bounded_osm_viewport_density.sql'
+      - 'scripts/test_bounded_osm_viewport_density.sql'
       - 'scripts/test_public_provider_health.sql'
       - 'scripts/publish_provider_health.cjs'
       - 'scripts/test_publish_provider_health.cjs'
@@ -620,6 +622,10 @@ jobs:
             -f supabase/migrations/098_public_fixed_route_provider_health.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_public_provider_health.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/099_bounded_osm_viewport_density.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_bounded_osm_viewport_density.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
