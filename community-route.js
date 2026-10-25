@@ -83,15 +83,15 @@
     });
     const found=new Map();
     let offset=0;
+    const signal=controller.signal;
     async function worker(){
      while(offset<boxes.length){
-      if(controller.signal.aborted)throw Error('Canceled');
+      if(signal.aborted)throw Error('Canceled');
       const box=boxes[offset++];
-      const rows=await fetchRows(box,controller.signal);
+      const rows=await fetchRows(box,signal);
       for(const row of rows)found.set(row.osm_key,row);
      }
     }
-    const signal=controller.signal;
     await Promise.all(Array.from({length:Math.min(3,boxes.length)},()=>worker()));
     if(id!==sequence||signal.aborted||!toggle.checked)return;
     const officialComplete=officialEvidence?.status==='complete';
@@ -105,7 +105,7 @@
      ' These are unconfirmed locations, not detected vehicles or active-device counts. No counts are added together.');
     if(typeof showStatus==='function')showStatus(result);
    }catch(error){
-    if(id!==sequence||controller.signal.aborted)return;
+    if(id!==sequence||signal.aborted)return;
     say('Community route evidence UNKNOWN: '+(error?.message||'source unavailable')+
       '. A partial corridor must never be counted as zero cameras.');
    }
