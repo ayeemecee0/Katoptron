@@ -31,8 +31,8 @@ const assert=require('node:assert/strict');
   // National community density must load on FIRST render, without any click.
   await page.waitForFunction(()=>{
     const s=document.querySelector('#communityOverlayStatus')?.textContent||'';
-    return s.includes('National community-report density')||s.includes('national community density')||
-      s.includes('Community density unavailable');
+    const normalized=s.toLowerCase();
+    return normalized.includes('community-report density')||normalized.includes('community density unavailable');
   },null,{timeout:30000});
   const density=await page.locator('#communityOverlayStatus').textContent();
   assert.ok(!density.includes('unavailable'),'Community density was inaccessible: '+density);
