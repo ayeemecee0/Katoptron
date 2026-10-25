@@ -17,7 +17,7 @@ const assert=require('node:assert/strict');
    return s.includes('loaded')||s.includes('unavailable')||s.includes('provider issue');
   },{timeout:65000});
   const status=await page.locator('#status').textContent();
-  assert.ok(status.includes('layer loaded'),'Map provider not ready: '+status);
+  assert.ok(status.includes('layer loaded'),'Map provider not ready: '+status+'; network: '+networkFailures.join(' | ').slice(0,850));
   const count=await page.locator('#communityCount').textContent();
   assert.ok(Number(count.replaceAll(',',''))>50000,
     'Source manifest vendor count missing, changed or unexpectedly small: '+count);
