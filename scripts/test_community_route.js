@@ -21,12 +21,12 @@ assert.equal(r.possibleOverlaps,0,'Non-proximate government point does not match
 assert.throws(()=>community.summarize(route,[osm('bad',38.5,-121.495)],[],Geo,true),/Malformed/);
 assert.throws(()=>community.summarize(null,[first],[],Geo,false),/incomplete/);
 async function runAdaptiveTests(){
- const dense=Array.from({length:1001},()=>first);
+ const dense=Array.from({length:1000},()=>first);
  const visited=[];
  const filled=await community.scanRoute(route,Geo,async box=>{
   visited.push(box);
-  if(visited.length===1)return dense; // A full bounded page must be subdivided
-  return [first,second]; // Duplicate OSM IDs dedupe across adjacent boxes
+  if(visited.length===1)return {rows:dense,total:1001}; // HTTP row cap hides one original item
+  return {rows:[first,second],total:2}; // Duplicate OSM IDs dedupe across adjacent boxes
  },new AbortController().signal);
  assert.ok(visited.length>=3,'Dense cell should be split into complete smaller boxes');
  assert.equal(filled.records.length,2);
@@ -38,9 +38,15 @@ async function runAdaptiveTests(){
  }),/too dense/);
  let calls=0;
  await assert.rejects(()=>community.scanRoute(route,Geo,async()=>{
-  calls++;return dense;
+  calls++;return {rows:dense,total:1001};
  },new AbortController().signal),/dense|budget/i);
  assert.ok(calls<250,'Dense unresolvable corridor should fail closed at budget');
+ await assert.rejects(()=>community.scanRoute(route,Geo,
+  async()=>({rows:[first],total:null}),new AbortController().signal),
+  /exact-count proof/);
+ await assert.rejects(()=>community.scanRoute(route,Geo,
+  async()=>({rows:[first],total:0}),new AbortController().signal),
+  /exact-count proof/);
  const controller=new AbortController();controller.abort();
  await assert.rejects(()=>community.scanRoute(route,Geo,
   async()=>{throw Error('Should never fetch when canceled')},controller.signal),/cancelled/);
