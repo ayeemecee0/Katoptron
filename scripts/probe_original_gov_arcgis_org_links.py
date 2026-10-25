@@ -31,6 +31,11 @@ APP_ID=re.compile(r'^[0-9a-fA-F]{32}$')
 APP_PATH=re.compile(r'^/apps/(?:webappviewer/index[.]html|Shortlist/index[.]html|instant/[A-Za-z0-9_-]{2,35}/index[.]html)$',re.I)
 APP_TYPES={'Web Mapping Application','Web Experience','Dashboard','StoryMap'}
 MAX_APP_LINK_CHECKS=12
+# Individually researched ORIGINAL city-government mapping directory, not an
+# ArcGIS publisher approval. This adds an independent agency proof lead to the
+# read-only probe; a matching app never approves or publishes a camera point.
+ORIGINAL_GOV_GIS_RESEARCH_PAGES=('https://www.cityofmenifee.us/maps',)
+
 
 
 
@@ -150,6 +155,7 @@ def government_pages():
         # owner-reviewed government source, already in the seed pages.
         if parsed and parsed.hostname and parsed.hostname.endswith('.gov'):
             pages.add(normalized)
+    pages.update(ORIGINAL_GOV_GIS_RESEARCH_PAGES)
     return sorted(pages)[:MAX_PAGES]
 
 
