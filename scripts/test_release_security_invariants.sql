@@ -63,8 +63,7 @@ begin
      and prosecdef and has_function_privilege('anon',oid,'EXECUTE')
  loop
    if p.proname not in ('gis_camera_authority_current',
-     'is_current_flock_polygon_camera_gis_source',
-     'is_current_government_document_url','official_flock_area_source_is_current')
+     'is_current_flock_polygon_camera_gis_source')
      or p.provolatile<>'s'
      or p.prorettype<>'boolean'::regtype
      or not (p.proconfig @> array['search_path=""']::text[]) then
@@ -72,6 +71,19 @@ begin
    end if;
  end loop;
 end $readonly$;
+-- Helper RPCs not needed by public map RLS remain inaccessible to clients.
+do $restricted_helpers$
+begin
+ if has_function_privilege('anon',
+      'public.is_current_government_document_url(text,text,text)'::regprocedure,'EXECUTE')
+   or has_function_privilege('authenticated',
+      'public.is_current_government_document_url(text,text,text)'::regprocedure,'EXECUTE')
+   or has_function_privilege('anon',
+      'public.official_flock_area_source_is_current(text)'::regprocedure,'EXECUTE')
+   or has_function_privilege('authenticated',
+      'public.official_flock_area_source_is_current(text)'::regprocedure,'EXECUTE')
+ then raise exception 'Non-RLS internal source authority function exposed';end if;
+end $restricted_helpers$;
 -- Reconcile the public map solely to independently source-verified records.
 begin;set local role anon;
 do $anon$
