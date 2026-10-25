@@ -94,6 +94,8 @@ on:
       - 'supabase/migrations/090_public_state_vendor_evidence_footprint.sql'
       - 'supabase/migrations/091_private_government_linked_vendor_portal_leads.sql'
       - 'supabase/migrations/092_separate_osm_community_flock_camera_layer.sql'
+      - 'supabase/migrations/093_osm_community_nationwide_density.sql'
+      - 'scripts/test_osm_community_density.sql'
       - 'scripts/test_osm_community_layer.sql'
       - 'scripts/test_import_osm_community_flock.py'
       - 'community-map.html'
@@ -577,6 +579,10 @@ jobs:
             -f supabase/migrations/092_separate_osm_community_flock_camera_layer.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_community_layer.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/093_osm_community_nationwide_density.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_osm_community_density.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
