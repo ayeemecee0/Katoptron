@@ -766,7 +766,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('anon','public.trusted_flock_gis_sources','SELECT')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select has_function_privilege('anon','public.official_flock_area_source_is_current(text)','EXECUTE')" | grep -qx t
+            "select has_function_privilege('anon','public.official_flock_area_source_is_current(text)','EXECUTE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "begin; set local role anon; select count(*) from public.flock_public_coverage_stats; rollback;" | grep -qx 1
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
