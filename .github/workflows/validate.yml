@@ -90,6 +90,8 @@ on:
       - 'supabase/migrations/086_original_government_camera_map_documents.sql'
       - 'supabase/migrations/087_menifee_government_program_without_approved_camera_points.sql'
       - 'supabase/migrations/088_vendor_first_party_portal_snapshots.sql'
+      - 'supabase/migrations/089_multistate_vendor_portal_snapshots.sql'
+      - 'scripts/test_multistate_vendor_portals.sql'
       - 'scripts/test_vendor_portal_snapshots.sql'
       - 'scripts/test_vendor_portal_static.py'
       - 'portals.html'
@@ -551,6 +553,10 @@ jobs:
             -f supabase/migrations/088_vendor_first_party_portal_snapshots.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_vendor_portal_snapshots.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/089_multistate_vendor_portal_snapshots.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_multistate_vendor_portals.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
