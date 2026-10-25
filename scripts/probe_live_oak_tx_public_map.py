@@ -111,6 +111,12 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
                   'kind',repr(str(layer.get('layerType') or '')[:40]))
     matched=[x for x in layers if isinstance(x,dict) and
           re.search(r'flock|license.?plate|live oak cameras',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
+    for layer in matched:
+        try:
+            n=inspect_mapped_point_inventory(layer,fetch)
+            print('LIVE OAK original_source_camera_ids_count',n)
+        except ValueError:
+            print('LIVE OAK original_source_layer_held',True)
     print('LIVE OAK original_city_page_link',True)
     print('LIVE OAK application_and_webmap_same_organization',
           app_org is not None and app_org==map_org)
