@@ -11,14 +11,19 @@ const assert=require('node:assert/strict');
   const r=await page.goto(new URL('community-map.html',base).href,{waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(r?.status(),200);
   await page.waitForFunction(()=>document.querySelector('#communityCount')?.textContent?.includes(','),null,{timeout:30000});
-  await page.evaluate(()=>community.fitBounds([[33.747,-84.503],[34.003,-84.247]]));
-  await page.waitForFunction(()=>{
-    const status=document.querySelector('#status')?.textContent||'';
-    return status.includes('no truncated subset is shown')||status.includes('unavailable');
-  },null,{timeout:35000});
-  const big=await page.locator('#status').textContent();
-  assert.ok(big.includes('no truncated subset is shown'),big);
-  assert.ok(Number.parseInt(big.replaceAll(',',''),10)>1000,big);
+  await page.evaluate(()=>{
+    community.fitBounds([[33.747,-84.503],[34.003,-84.247]]);
+    if(community.getZoom()<10)community.setView([33.875,-84.375],10);
+  });
+  await page.waitForTimeout(7000);
+  const overview=await page.evaluate(()=>({
+    zoom:community.getZoom(),
+    bounds:community.getBounds().toBBoxString(),
+    status:document.querySelector('#status')?.textContent||''
+  }));
+  assert.ok(overview.zoom>=10&&overview.status.includes('no truncated subset is shown'),
+    'Dense city viewport did not confirm completeness: '+JSON.stringify(overview));
+  assert.ok(Number.parseInt(overview.status.replaceAll(',',''),10)>1000,overview.status);
   // A closer view must display only a completely returned result.
   const point=await page.evaluate(async()=>{
    const cfg=window.KATOPTRON_CONFIG;
