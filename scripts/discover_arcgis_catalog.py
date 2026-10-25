@@ -19,6 +19,9 @@ QUERIES=(
     'title:"Flock Cameras" AND type:"Feature Service"',
     'title:"Flock Camera" AND type:"Feature Service"',
     'tags:"Flock Safety" AND type:"Feature Service"',
+    # Some original police GIS inventories group Flock points in a generic
+    # service rather than mentioning Flock in the service title.
+    'title:"PeregrineWebLayers" AND type:"Feature Service"',
 )
 SERVICE_URL=re.compile(
     r'^https://services[0-9]*\.arcgis\.com/[A-Za-z0-9]+/'
@@ -50,7 +53,9 @@ def vetted_service_url(item):
     url=item.get("url","")
     if not isinstance(title,str) or not isinstance(url,str):
         return None
-    if not FLOCK.search(title) and not FLOCK.search(" ".join(item.get("tags") or [])):
+    if (not FLOCK.search(title) and
+        not FLOCK.search(" ".join(item.get("tags") or [])) and
+        title!="PeregrineWebLayers"):
         return None
     if not SERVICE_URL.fullmatch(url):
         return None
