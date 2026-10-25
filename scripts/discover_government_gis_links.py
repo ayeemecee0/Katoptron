@@ -26,7 +26,7 @@ FLOCK=re.compile(r'\bflock\s+safety\b|\bflock\s+cameras?\b|\bflock\b.{0,40}\b(?:
 GIS_LINK=re.compile(r'/(?:FeatureServer|MapServer)/\d+/?$',re.I)
 GIS_SERVICE_ROOT=re.compile(r'/(?:FeatureServer|MapServer)/?$',re.I)
 LINK_LABEL=re.compile(r'\b(flock|alpr|cameras?|gis|map|location)\b',re.I)
-WORTH_FOLLOWING=re.compile(r'\b(flock|alpr|camera|mapping)\b',re.I)
+WORTH_FOLLOWING=re.compile(r'\b(flock|alpr|cameras?|mapping|gis|maps?|geospatial)\b',re.I)
 CAMERAS=re.compile(r'\b(camera|license plate|alpr|lpr)\b',re.I)
 
 
@@ -171,16 +171,23 @@ def gis_candidate_links(document,page,scope,method,jurisdiction,sha):
 
 
 def same_site_page_links(document,page,host):
-    selected=[]
+    """Follow bounded agency-owned map navigation from a known Flock disclosure.
+
+    Generic "GIS" / "map" links are research paths only: scan() requires a
+    fresh, independent Flock camera disclosure on the child page before it can
+    queue any source. Prefer specifically named Flock/camera pages when the
+    agency's navigation lists many generic maps first.
+    """
+    ranked={}
     for raw,label in document.anchors:
-        if not WORTH_FOLLOWING.search(label):
+        if not WORTH_FOLLOWING.search(label or ''):
             continue
         target=normalized_url(urllib.parse.urljoin(page,raw or ''))
-        if target and urllib.parse.urlsplit(target).hostname==host and target!=page and target not in selected:
-            selected.append(target)
-        if len(selected)>=3:
-            break
-    return selected
+        if not target or urllib.parse.urlsplit(target).hostname!=host or target==page:
+            continue
+        priority=0 if re.search(r'\b(flock|alpr|cameras?)\b',label or '',re.I) else 1
+        ranked[target]=min(priority,ranked.get(target,priority))
+    return sorted(ranked,key=lambda url:(ranked[url],url))[:3]
 
 
 def stage(rows):
