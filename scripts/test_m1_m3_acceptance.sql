@@ -70,7 +70,7 @@ end $m1m3$;
 -- the two source-status booleans intentionally serve public RLS.
 do $privileged_authenticated$
 declare fn record;
-declare total integer;
+ total integer;
 begin
  select count(*) into total from pg_proc
  where pronamespace='public'::regnamespace and prosecdef
