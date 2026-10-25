@@ -8,3 +8,13 @@ node_modules/
 .vercel/
 candidates.json
 .DS_Store
+
+# Owner-only Supabase backups and restoration logs must never enter public Git.
+/roles.sql
+/schema.sql
+/data.sql
+/KatoptronBackup/
+/KatoptronFreshExport/
+/KatoptronRestoreTest/
+restore-*.log
+fresh-restore.log
