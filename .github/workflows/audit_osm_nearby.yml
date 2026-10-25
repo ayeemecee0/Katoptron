@@ -1,0 +1,35 @@
+name: Audit nationwide nearby OSM camera observations
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/osm_nearby_candidates.py'
+      - 'scripts/test_osm_nearby_candidates.py'
+      - '.github/workflows/audit_osm_nearby.yml'
+  schedule:
+    - cron: '47 10 * * 1'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate geodesic proximity candidate isolation
+        run: PYTHONPATH=scripts python -m unittest scripts/test_osm_nearby_candidates.py -v
+      - name: Read-only nationwide source audit
+        run: PYTHONPATH=scripts python scripts/osm_nearby_candidates.py --output /tmp/katoptron-osm-possible-overlaps.csv
+      - name: Retain source-labeled candidate audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: katoptron-osm-possible-overlaps
+          path: /tmp/katoptron-osm-possible-overlaps.csv
+          retention-days: 7
+          if-no-files-found: error
