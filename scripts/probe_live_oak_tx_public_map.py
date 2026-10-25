@@ -64,8 +64,12 @@ def inspect_mapped_point_inventory(layer, fetch):
     metadata = fetch(url+'?f=json')
     if (not isinstance(metadata, dict) or metadata.get('type') != 'Feature Layer'
         or metadata.get('geometryType') != 'esriGeometryPoint'
-        or not re.search('flock|license.?plate', str(metadata.get('name','')), re.I)):
+        or not re.search('flock|license.?plate|live oak cameras', str(metadata.get('name','')), re.I)):
         raise ValueError('Original map layer not a named Flock point source')
+    fields=metadata.get('fields')
+    if isinstance(fields,list):
+        print('LIVE OAK published_camera_layer_schema',
+              [str(x.get('name',''))[:50] for x in fields[:25] if isinstance(x,dict)])
     answer = fetch(url+'/query?'+urlencode({'f':'json','where':'1=1','returnIdsOnly':'true'}))
     values = answer.get('objectIds') if isinstance(answer,dict) else None
     if not isinstance(values,list) or not 1 <= len(values) <= 500 or len(set(values)) != len(values) or any(type(x) is not int or x <= 0 for x in values):
@@ -106,7 +110,7 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
                   repr(str(layer.get('title') or '')[:55]),
                   'kind',repr(str(layer.get('layerType') or '')[:40]))
     matched=[x for x in layers if isinstance(x,dict) and
-          re.search(r'flock|license.?plate',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
+          re.search(r'flock|license.?plate|live oak cameras',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
     print('LIVE OAK original_city_page_link',True)
     print('LIVE OAK application_and_webmap_same_organization',
           app_org is not None and app_org==map_org)
