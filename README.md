@@ -2,6 +2,14 @@
 
 Katoptron is a **nationwide Flock Safety camera-map and route-surveillance education project**. Its primary product combines an evidence-backed map, an optional planned-driving-route simulator, and separately linked government records. The map NEVER invents camera coordinates: exact pins and approximate areas require distinct source verification. All simulated detections are hypothetical; the site never accesses private Flock plate reads or tracks actual vehicles. The legacy synthetic simulator remains available separately.
 
+## National proximity audit and source freshness (October 25, 2026)
+
+- A read-only nationwide scan of **116,128 OSM community observations** found **4,929 pairs at different coordinates within 15m**, involving **8,403 OSM records**. **1,924** pairs are within 5m, and **3,005** are 5–15m apart. These are potential overlaps, not proven identical cameras.
+- [Audit results and candidate source-ID CSV](https://github.com/ayeemecee0/Katoptron/actions/runs/40164365899). The ODbL-derived artifact is retained for seven days by the workflow. The bounded [nearby candidate algorithm](./scripts/osm_nearby_candidates.py) runs weekly, makes **no database writes or merges**, and is separately validated across grid boundaries and high latitudes. Its public source is a different download from the earlier 116,159-row production snapshot.
+- Individual OSM map popups now distinguish when the observation was last edited by an OSM mapper from when it was last included in an imported dataset. An edit older than a year is *not* evidence of inactivity or camera removal.
+- The [routing-provider transport](./routing-provider.js) honors a bounded HTTP 429 `Retry-After` interval and will not repeat quota-limited requests during that browser's cooldown. Geocoding and routing failure state are separate. A failed route is **unknown**, not camera-free.
+- Per-browser cooldowns **cannot establish account-wide quota usage**, which must be monitored with Geoapify's own dashboard. An existing scheduled hosted-origin check uses fixed public test routes; it does not collect private user routes.
+
 ## Independent community comparisons across driving alternatives (October 24–25, 2026)
 
 - **Main map:** Opt-in `Compare community-reported cameras` checks **each supplied driving alternative**, not merely the selected route. Each route card independently displays the number of OSM observations within an **illustrative 120 m roadway proximity band**, and possible **30 m spatial overlaps** with government-verified locations when its official evidence scan completes. These are mapping comparisons only: no actual license-plate detections, estimated capture odds, safe-route ranking, or claim of current camera operation.
