@@ -39,6 +39,8 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 <div class="stat"><strong id="communityCount">—</strong><span>Publicly mapped community-reported Flock locations, not confirmed active cameras</span></div>
 <div class="stat"><strong>293</strong><span>Government-source camera records in Katoptron's last audited official baseline, separate from these observations</span></div>
 <p id="sourceDate" class="small" role="status">Loading open-data snapshot date…</p>
+<div class="stat"><strong id="overlapCount">—</strong><span>Official-source locations with at least one OSM observation within 30m (possible overlap only)</span></div>
+<p id="crossSourceStatus" class="small" role="status">Checking possible proximity matches across sources…</p>
 <p id="status" role="status" aria-live="polite">Loading nationwide community data…</p>
 <div class="note"><strong>National circles summarize community reports in coarse 3° geographic grid cells. They are not camera pins at the circle centers.</strong> Zoom in to level 10 or closer for individual OpenStreetMap locations. Official and community records overlap and cannot be added.</div>
 <form id="jumpForm"><label for="coordinates">Find latitude,longitude</label><input id="coordinates" autocomplete="off" maxlength="60" placeholder="38.5816,-121.4944" required><button type="submit">Go to location</button></form>
@@ -91,6 +93,21 @@ async function loadDensity(){
   }
  }catch(err){status('Coarse regional coverage unavailable: '+err.message)}
 }
+async function loadPossibleOverlaps(){
+ try{
+  const rows=await api('flock_public_cross_source_proximity',new URLSearchParams({
+   select:'government_record_key,matching_status,osm_observations_within_30m',limit:'500'
+  }));
+  if(rows.length>=500)throw Error('Cross-source proximity incomplete');
+  const one=rows.filter(r=>r.matching_status==='possible_spatial_overlap').length;
+  const ambiguous=rows.filter(r=>r.matching_status==='ambiguous_nearby_osm').length;
+  $('overlapCount').textContent=(one+ambiguous).toLocaleString();
+  $('crossSourceStatus').textContent=one+' single-source proximity candidate(s) · '+
+   ambiguous+' ambiguous multi-observation location(s) · '+rows.length+
+   ' government-source records assessed. These are possible overlaps, not confirmed identical cameras.';
+ }catch(err){$('crossSourceStatus').textContent=
+   'Proximity comparison unavailable: '+err.message+'; overlaps remain unknown.'}
+}
 async function loadSummary(){
  try{
   const rows=await api('flock_public_osm_community_stats',
@@ -100,6 +117,7 @@ async function loadSummary(){
   $('communityCount').textContent=rows[0].reported_flock_points.toLocaleString();
   $('sourceDate').textContent='OpenStreetMap source snapshot imported: '+(rows[0].last_dataset_snapshot_date||'Unknown');
   loadDensity();
+  loadPossibleOverlaps();
   loadVisible();
  }catch(err){status('Community summary unavailable: '+err.message)}
 }
