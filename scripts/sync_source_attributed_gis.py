@@ -80,11 +80,42 @@ def run(publish=False,api=api_request,auditor=audited_private_points):
     print('ATTRIBUTED GIS government verified cameras newly published',0)
     return len(rows)
 
+# Public diagnostic allowlist: messages below originate only from our own
+# InventoryHeld checks, never from API bodies, HTTP exceptions or map points.
+# A new failure reason remains opaque until its wording is manually reviewed.
+SAFE_INVENTORY_REASONS = {
+    'layer URL not allowlisted public ArcGIS FeatureServer': 'invalid_source_url',
+    'unreviewed Flock layer name': 'layer_name_not_allowlisted',
+    'invalid original ObjectID field': 'invalid_id_field',
+    'Flock original point-layer metadata or parent changed': 'source_layer_metadata_changed',
+    'original typed ObjectID absent': 'typed_object_id_missing',
+    'declared ObjectID identity mismatch': 'declared_object_id_changed',
+    'original ObjectID inventory unavailable': 'source_inventory_unavailable',
+    'empty, duplicate, truncated or malformed original inventory': 'source_inventory_invalid',
+    'original geometry page missing or incomplete': 'source_geometry_unavailable',
+    'original feature missing metadata or point': 'source_feature_malformed',
+    'original individual ObjectID missing': 'source_object_id_missing',
+    'feature lacks valid US point geometry': 'source_geometry_invalid',
+    'original layer omitted or duplicated requested features': 'source_page_inconsistent',
+    'original camera inventory changed during audit': 'source_inventory_drift',
+}
+
+def safe_held_reason(error):
+    """Classify a known internal inventory exception without logging raw data."""
+    from audit_affiliated_flock_inventory import InventoryHeld
+    if isinstance(error, InventoryHeld):
+        code = SAFE_INVENTORY_REASONS.get(str(error))
+        if code:
+            return 'InventoryHeld:'+code
+    return type(error).__name__
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--publish-source-attributed',action='store_true')
     opts=p.parse_args()
     try:run(opts.publish_source_attributed)
     except Exception as e:
-        # Withheld private layer coordinates, responses and source details.
-        raise SystemExit('Source-attributed GIS publication held: '+type(e).__name__) from None
+        # Only literal, reviewed audit reason codes may reach public CI logs.
+        # Never stringify a network exception, unexpected error, URL or GPS value.
+        raise SystemExit('Source-attributed GIS publication held: ' +
+                         safe_held_reason(e)) from None
