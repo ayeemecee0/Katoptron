@@ -1,0 +1,76 @@
+"""Read-only original city published map provenance audit (Live Oak TX).
+
+Follow exactly the application's ArcGIS item metadata and its Web Map.
+Never infer an individual camera point from a rendered map; never print source
+coordinates, feature identities or unpublished GIS layer URLs.
+"""
+import re
+from urllib.parse import urljoin
+from auto_verify_camera_gis import get_official_json
+from discover_government_gis_links import fetch_government_page,normalized_url
+
+CITY='https://www.liveoaktx.net/departments/police/flock-safety'
+APP='https://liveoaktx.maps.arcgis.com/apps/instant/basic/index.html?appid=1fe4ad954b3346b9a7e2a3a337c5cfbf'
+APPID='1fe4ad954b3346b9a7e2a3a337c5cfbf'
+ID=re.compile(r'^[0-9a-fA-F]{32}$')
+ITEM='https://www.arcgis.com/sharing/rest/content/items/'
+WEBMAP_FIELDS={'webmap','webmapid','mapid','mapitemid'}
+
+def map_identifiers(app_data):
+    found=set()
+    def walk(value,depth=0):
+        if depth>6:return
+        if isinstance(value,dict):
+            if len(value)>500:raise ValueError('Unbounded original ArcGIS application config')
+            for key,sub in value.items():
+                if not isinstance(key,str):continue
+                if key.lower() in WEBMAP_FIELDS and isinstance(sub,str) and ID.fullmatch(sub):
+                    found.add(sub.lower())
+                elif isinstance(sub,(dict,list)):
+                    walk(sub,depth+1)
+        elif isinstance(value,list):
+            if len(value)>150:raise ValueError('Unbounded original application config list')
+            for v in value:walk(v,depth+1)
+    walk(app_data)
+    return sorted(found)
+
+def audit(fetch=get_official_json,page_fetch=fetch_government_page):
+    doc,page_digest=page_fetch(CITY)
+    anchors={normalized_url(urljoin(CITY,href)) for href,label in doc.anchors
+             if isinstance(href,str) and len(href)<1500}
+    if APP not in anchors or not isinstance(page_digest,str) or len(page_digest)!=64:
+        raise ValueError('Current original police source no longer links its published map')
+    application=fetch(ITEM+APPID+'?f=json')
+    if (not isinstance(application,dict) or application.get('id')!=APPID
+            or application.get('type') not in ('Web Mapping Application','Web Experience')):
+        raise ValueError('Original city-linked ArcGIS application identity changed')
+    app_org=application.get('orgId')
+    if not isinstance(app_org,str) or len(app_org)<8:
+        raise ValueError('Original ArcGIS application organization unproven')
+    config=fetch(ITEM+APPID+'/data?f=json')
+    maps=map_identifiers(config)
+    if len(maps)!=1:raise ValueError('City camera app does not identify exactly one Web Map')
+    mapid=maps[0]
+    item=fetch(ITEM+mapid+'?f=json')
+    if (not isinstance(item,dict) or item.get('type')!='Web Map'
+        or item.get('id','').lower()!=mapid or item.get('orgId')!=app_org):
+        raise ValueError('App Web Map publisher differs from original city app')
+    data=fetch(ITEM+mapid+'/data?f=json')
+    layers=data.get('operationalLayers') if isinstance(data,dict) else None
+    if not isinstance(layers,list) or not 1<=len(layers)<=100:
+        raise ValueError('Original Web Map operational layer catalogue unavailable')
+    matched=[x for x in layers if isinstance(x,dict) and
+          re.search(r'flock|license.?plate',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
+    print('LIVE OAK original_city_page_link',True)
+    print('LIVE OAK application_and_webmap_same_organization',True)
+    print('LIVE OAK webmap_operational_layer_count',len(layers))
+    print('LIVE OAK explicitly_named_Flock_or_ALPR_layers',len(matched))
+    print('LIVE OAK original map source status', 'further_original_layer_verification_required')
+    print('LIVE OAK newly published verified camera points',0)
+    return len(matched)
+
+if __name__=='__main__':
+    try:audit()
+    except Exception as exc:
+        print('LIVE OAK original map inspection held',type(exc).__name__)
+        raise
