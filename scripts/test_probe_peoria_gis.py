@@ -12,7 +12,8 @@ class TestPeoriaInventory(unittest.TestCase):
         def fetch(url):
             if url == LAYER + '?f=json':
                 return {'name': 'Flock Cameras', 'geometryType': 'esriGeometryPoint',
-                        'type': 'Feature Layer', 'objectIdField': 'OBJECTID',
+                        'type': 'Feature Layer',
+                        **({} if mode == 'missing_oid_property' else {'objectIdField': 'OBJECTID'}),
                         'fields': [{'name': name, 'type': 'esriFieldTypeOID' if name == 'OBJECTID' else 'esriFieldTypeString'} for name in ('OBJECTID', 'CameraID', 'Location')]}
             if url == SERVICE + '?f=json':
                 return {'layers': [{'id': 286, 'name': 'Flock Cameras'}]}
@@ -37,6 +38,9 @@ class TestPeoriaInventory(unittest.TestCase):
 
     def test_complete_inventory(self):
         self.assertEqual(inventory(self.fixture())['point_count'], 2)
+
+    def test_missing_optional_oid_property_uses_typed_field(self):
+        self.assertEqual(inventory(self.fixture('missing_oid_property'))['point_count'], 2)
 
     def test_truncation_is_held(self):
         with self.assertRaisesRegex(ValueError, 'truncated'):
