@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
 const AxeBuilder=require('@axe-core/playwright').default;
 const assert=require('node:assert/strict');
 const pages=['index.html','records.html','accountability.html','analytics.html',
-  'submit.html','community-review.html','privacy.html','methodology.html','portals.html'];
+  'submit.html','community-review.html','privacy.html','methodology.html','portals.html','community-map.html'];
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  let severe=0,moderate=0;
