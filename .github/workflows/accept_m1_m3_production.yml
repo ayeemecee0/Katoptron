@@ -1,0 +1,37 @@
+name: M1-M3 production evidence acceptance
+on:
+  schedule:
+    - cron: '43 17 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_m1_m3_production.py'
+      - 'scripts/test_audit_m1_m3_production.py'
+      - '.github/workflows/accept_m1_m3_production.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-m1-m3-production-acceptance
+  cancel-in-progress: false
+jobs:
+  read-only-evidence-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Regress evidence misclassification, overlap and privacy-safe lifecycle
+        run: python -m unittest discover -s scripts -p 'test_audit_m1_m3_production.py' -v
+      - name: Check server-only data-access capability
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Verify production original camera source and distinct provisional evidence
+        run: python scripts/audit_m1_m3_production.py --min-official-points 316
