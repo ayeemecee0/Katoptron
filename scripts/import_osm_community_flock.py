@@ -7,6 +7,8 @@ Free-tier bounded batches; no mass vendor API requests. Reruns are idempotent.
 import argparse
 import datetime as dt
 import gzip
+import hashlib
+from collections import Counter
 import json
 import math
 import os
@@ -192,6 +194,72 @@ def reconcile(previous_count,expected_count,stamp):
     print('COMMUNITY FLOCK RECONCILE verified government rows changed: 0')
 
 
+def build_quality_snapshot(rows,stamp,day):
+    """Compute source-edit freshness and co-location, never physical uptime."""
+    if not rows or not MIN_FLOCK<=len(rows)<=MAX_FLOCK:
+        raise ValueError('Incomplete source cannot become quality snapshot')
+    observed=dt.datetime.fromisoformat(stamp)
+    if observed.tzinfo is None:
+        raise ValueError('Quality snapshot timestamp must have timezone')
+    cutoff=observed-dt.timedelta(days=365)
+    coords=Counter((r['latitude'],r['longitude']) for r in rows)
+    missing=0
+    old=0
+    for r in rows:
+        raw=r.get('source_timestamp')
+        if not raw:
+            missing+=1
+            continue
+        try:
+            changed=dt.datetime.fromisoformat(raw.replace('Z','+00:00'))
+            if changed.tzinfo is None:
+                missing+=1
+                continue
+            if changed>observed+dt.timedelta(days=1):
+                raise ValueError('Future OSM edit timestamp not credible')
+            if changed<cutoff:
+                old+=1
+        except (TypeError,ValueError) as exc:
+            if 'Future OSM edit' in str(exc):
+                raise
+            missing+=1
+    unique=len(coords)
+    data={
+        'sync_at':stamp,'source_snapshot_date':day,
+        'osm_observations':len(rows),
+        'distinct_coordinates':unique,
+        'colocated_extra_observations':len(rows)-unique,
+        'colocated_coordinate_groups':sum(1 for n in coords.values() if n>1),
+        'osm_edits_older_365d':old,
+        'osm_edit_timestamp_missing':missing
+    }
+    receipt=json.dumps(data,sort_keys=True,separators=(',',':'))
+    data['measurement_receipt_sha256']=hashlib.sha256(receipt.encode()).hexdigest()
+    return data
+
+
+def publish_quality_snapshot(item):
+    """Append dated aggregates ONLY after successful full-source reconciliation."""
+    base=os.environ['SUPABASE_URL'].rstrip('/')
+    if base!='https://bpvkapswslmgfazbzpsv.supabase.co':
+        raise ValueError('Unexpected quality destination')
+    key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
+    req=urllib.request.Request(
+        base+'/rest/v1/flock_osm_quality_snapshots?on_conflict=sync_at',
+        method='POST',data=json.dumps([item],separators=(',',':')).encode(),
+        headers={
+            'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json',
+            'Prefer':'resolution=ignore-duplicates,return=minimal'
+        })
+    with urllib.request.urlopen(req,timeout=40) as response:
+        if response.status not in (200,201,204) or response.read(1024):
+            raise ValueError('Cannot confirm dated community quality snapshot')
+    print('COMMUNITY FLOCK QUALITY observations',item['osm_observations'])
+    print('COMMUNITY FLOCK QUALITY distinct mapped coordinates',item['distinct_coordinates'])
+    print('COMMUNITY FLOCK QUALITY co-located extras',item['colocated_extra_observations'])
+    print('COMMUNITY FLOCK QUALITY OSM edits older than one year',item['osm_edits_older_365d'])
+
+
 def import_rows(rows,max_points,api=post_batch,run_stamp=None):
     if max_points<=0 or max_points>200_000:raise ValueError('Invalid bounded import batch size')
     if run_stamp is None:
@@ -236,6 +304,7 @@ def main():
     import_rows(rows,min(args.max_points,len(rows)),run_stamp=stamp)
     if whole:
         reconcile(prior,len(rows),stamp)
+        publish_quality_snapshot(build_quality_snapshot(rows,stamp,day))
     else:
         print('COMMUNITY FLOCK RECONCILE skipped: deliberately partial import')
 
