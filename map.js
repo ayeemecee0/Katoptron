@@ -157,6 +157,9 @@
     state.pointLayer = L.layerGroup().addTo(map);
     state.routeLayer = L.featureGroup().addTo(map);
     state.simLayer = L.layerGroup().addTo(map);
+    // Optional, independently queried ODbL community observations never enter
+    // state.visible, route comparisons, or simulated encounters.
+    window.KatoptronCommunityOverlay?.install(map,CFG);
     map.on('moveend', () => {
       clearTimeout(state.viewportTimer);
       state.viewportTimer = setTimeout(loadVisibleLocations, 250);
