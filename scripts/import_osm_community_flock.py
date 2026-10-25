@@ -16,6 +16,9 @@ import urllib.error
 import urllib.request
 from urllib.parse import urlencode
 
+# Fail closed before removing a material fraction of a previously published source.
+MAX_SOURCE_SHRINK_FRACTION=0.03
+
 SOURCE='https://data.dontgetflocked.com/cameras.geojson.gz'
 MAX_SOURCE_BYTES=50_000_000
 MAX_DECODED_BYTES=140_000_000
@@ -110,7 +113,7 @@ def post_batch(batch):
         base+'/rest/v1/flock_osm_community_points?on_conflict=osm_key',
         data=body,method='POST',headers={
             'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json',
-            'Prefer':'resolution=ignore-duplicates,return=minimal'})
+            'Prefer':'resolution=merge-duplicates,return=minimal'})
     for attempt in range(3):
         try:
             with urllib.request.urlopen(req,timeout=40) as response:
@@ -125,9 +128,74 @@ def post_batch(batch):
             time.sleep(2**attempt)
 
 
-def import_rows(rows,max_points,api=post_batch):
+def read_count(query=None):
+    """Exact PostgREST count from RLS-publicly readable OSM community table."""
+    base=os.environ['SUPABASE_URL'].rstrip('/')
+    if base!='https://bpvkapswslmgfazbzpsv.supabase.co':
+        raise ValueError('Unexpected data destination')
+    key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
+    endpoint='flock_osm_community_points?select=osm_key&limit=1'
+    if query:
+        endpoint+='&'+urlencode(query)
+    req=urllib.request.Request(
+        base+'/rest/v1/'+endpoint,
+        headers={'apikey':key,'Authorization':'Bearer '+key,
+                 'Prefer':'count=exact','Accept':'application/json'})
+    with urllib.request.urlopen(req,timeout=45) as response:
+        if response.status!=200:
+            raise ValueError('Community row-count request failed')
+        content_range=response.headers.get('Content-Range','')
+        if len(response.read(4000))>4000:
+            raise ValueError('Count query returned excessive data')
+    match=re.fullmatch(r'(?:\\d+-\\d+|\\*)/(\\d+)',content_range)
+    if not match:
+        raise ValueError('Community exact count missing: refusing reconciliation')
+    return int(match.group(1))
+
+
+def reconcile(previous_count,expected_count,stamp):
+    """Only retire OSM IDs absent from a verified COMPLETE source snapshot.
+
+    No deletion can happen if upload stopped early, an exact current-run
+    source count differs, or a large number of original records disappeared.
+    """
+    if (not isinstance(previous_count,int) or previous_count<0
+        or expected_count<MIN_FLOCK
+        or (previous_count and expected_count <
+            previous_count*(1-MAX_SOURCE_SHRINK_FRACTION))):
+        raise ValueError('Unexpected source shrink; community removal held')
+    complete=read_count([('last_seen_sync_at','eq.'+stamp)])
+    if complete!=expected_count:
+        raise ValueError('Full-source import count mismatch; stale rows retained')
+    base=os.environ['SUPABASE_URL'].rstrip('/')
+    key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
+    query=urlencode([('last_seen_sync_at','neq.'+stamp)])
+    req=urllib.request.Request(
+        base+'/rest/v1/flock_osm_community_points?'+query,
+        method='DELETE',
+        headers={'apikey':key,'Authorization':'Bearer '+key,
+                 'Prefer':'return=minimal'})
+    with urllib.request.urlopen(req,timeout=90) as response:
+        if response.status not in (200,204):
+            raise ValueError('Unexpected community retirement response')
+        if response.read(1024):
+            raise ValueError('Unexpected community retirement body')
+    if read_count()!=expected_count:
+        raise ValueError('Community sync post-check failed; manual investigation required')
+    print('COMMUNITY FLOCK RECONCILE previous_count',previous_count)
+    print('COMMUNITY FLOCK RECONCILE current_count',expected_count)
+    print('COMMUNITY FLOCK RECONCILE retired_absent_records',
+          max(0,previous_count-expected_count))
+    print('COMMUNITY FLOCK RECONCILE verified government rows changed: 0')
+
+
+def import_rows(rows,max_points,api=post_batch,run_stamp=None):
     if max_points<=0 or max_points>200_000:raise ValueError('Invalid bounded import batch size')
-    subset=rows[:max_points]
+    if run_stamp is None:
+        run_stamp=dt.datetime.now(dt.timezone.utc).isoformat(timespec='microseconds')
+    if not isinstance(run_stamp,str) or not run_stamp.endswith('+00:00'):
+        raise ValueError('Only UTC source sync markers are accepted')
+    subset=[dict(row,last_seen_sync_at=run_stamp) for row in rows[:max_points]]
     for offset in range(0,len(subset),MAX_BATCH):
         api(subset[offset:offset+MAX_BATCH])
         if (offset//MAX_BATCH)%25==0:
@@ -154,7 +222,19 @@ def main():
         return
     if not 0<args.max_points<=MAX_FLOCK:
         raise SystemExit('Requested import ceiling is invalid')
-    import_rows(rows,min(args.max_points,len(rows)))
+    # In a partial manual run, do not retire anything. Only a validated
+    # complete source run can reconcile removals, moves and brand changes.
+    whole=(args.max_points>=len(rows))
+    prior=read_count() if whole else None
+    if (whole and prior and
+        len(rows)<prior*(1-MAX_SOURCE_SHRINK_FRACTION)):
+        raise ValueError('Suspiciously large Flock source contraction')
+    stamp=dt.datetime.now(dt.timezone.utc).isoformat(timespec='microseconds')
+    import_rows(rows,min(args.max_points,len(rows)),run_stamp=stamp)
+    if whole:
+        reconcile(prior,len(rows),stamp)
+    else:
+        print('COMMUNITY FLOCK RECONCILE skipped: deliberately partial import')
 
 if __name__=='__main__':
     try:main()
