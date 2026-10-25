@@ -43,6 +43,9 @@ def reviewed_original_pages(api=api_request):
         'program_key',max_records=1000)
     seeds,_=get_seed_pages(load_approved_domains())
     pages={url for url,_ in seeds}
+    # Original Live Oak police Flock page was independently live-checked and links
+    # its municipal camera map and first-party Flock vendor portal directly.
+    pages.add('https://www.liveoaktx.net/departments/police/flock-safety')
     for item in rows:
         original=normalized_url(item.get('official_evidence_url') or '')
         if original:pages.add(original)
