@@ -45,7 +45,7 @@ def inventory(fetch=read):
             or meta.get('type') != 'Feature Layer'
             or oid_field != 'OBJECTID'
             or not {'OBJECTID', 'CameraID', 'Location'}.issubset(names)):
-        raise ValueError('Not an identifiable government Flock camera point layer')
+        raise ValueError('Peoria layer schema mismatch: name=' + repr(meta.get('name'))\n                         + ' type=' + repr(meta.get('type'))\n                         + ' geometry=' + repr(meta.get('geometryType'))\n                         + ' oid=' + repr(oid_field)\n                         + ' missing_fields=' + repr(sorted({'OBJECTID', 'CameraID', 'Location'} - names)))
     if not any(isinstance(x, dict) and x.get('id') == 286
                and x.get('name') == 'Flock Cameras'
                for x in service.get('layers', [])):
