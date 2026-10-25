@@ -74,8 +74,10 @@ def summarize(pairs):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--output',required=True,help='Local artifact CSV destination')
+    parser.add_argument('--publish',action='store_true',help='Stage only into the separately labeled ODbL Supabase audit; publish after full count')
     args=parser.parse_args()
-    rows=prepare_rows(download_source(),dt.datetime.now(dt.timezone.utc).date().isoformat())
+    source_day=dt.datetime.now(dt.timezone.utc).date().isoformat()
+    rows=prepare_rows(download_source(),source_day)
     pairs=candidates(rows)
     stats=summarize(pairs)
     with open(args.output,'w',newline='',encoding='utf-8') as f:
@@ -87,6 +89,9 @@ def main():
     for k,v in stats.items():print('OSM NATIONAL POSSIBLE OVERLAP AUDIT',k,v)
     print('OSM NATIONAL POSSIBLE OVERLAP AUDIT no records merged/deleted or promoted')
     print('OSM NATIONAL POSSIBLE OVERLAP AUDIT ODbL 1.0 © OpenStreetMap contributors')
+    if args.publish:
+        from publish_osm_nearby import publish
+        publish(source_day,len(rows),pairs)
 
 
 if __name__=='__main__':main()
