@@ -18,6 +18,7 @@ from urllib.parse import urlencode
 
 # Fail closed before removing a material fraction of a previously published source.
 MAX_SOURCE_SHRINK_FRACTION=0.03
+MAX_SOURCE_ID_CHURN_FRACTION=0.05
 
 SOURCE='https://data.dontgetflocked.com/cameras.geojson.gz'
 MAX_SOURCE_BYTES=50_000_000
@@ -167,6 +168,9 @@ def reconcile(previous_count,expected_count,stamp):
     complete=read_count([('last_seen_sync_at','eq.'+stamp)])
     if complete!=expected_count:
         raise ValueError('Full-source import count mismatch; stale rows retained')
+    stale=read_count([('last_seen_sync_at','neq.'+stamp)])
+    if previous_count and stale>previous_count*MAX_SOURCE_ID_CHURN_FRACTION:
+        raise ValueError('Excessive OSM identity churn; stale rows retained')
     base=os.environ['SUPABASE_URL'].rstrip('/')
     key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
     query=urlencode([('last_seen_sync_at','neq.'+stamp)])
@@ -184,8 +188,7 @@ def reconcile(previous_count,expected_count,stamp):
         raise ValueError('Community sync post-check failed; manual investigation required')
     print('COMMUNITY FLOCK RECONCILE previous_count',previous_count)
     print('COMMUNITY FLOCK RECONCILE current_count',expected_count)
-    print('COMMUNITY FLOCK RECONCILE retired_absent_records',
-          max(0,previous_count-expected_count))
+    print('COMMUNITY FLOCK RECONCILE retired_absent_records',stale)
     print('COMMUNITY FLOCK RECONCILE verified government rows changed: 0')
 
 
