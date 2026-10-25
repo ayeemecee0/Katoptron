@@ -1,0 +1,37 @@
+name: Recheck and refresh source-attributed municipal map layer
+on:
+  schedule:
+    - cron: '37 13 * * 2,5'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync_source_attributed_gis.py'
+      - 'scripts/test_sync_source_attributed_gis.py'
+      - '.github/workflows/refresh_source_attributed_gis.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-source-attributed-original-proof
+  cancel-in-progress: false
+jobs:
+  refresh-source-attributed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test source fingerprint drift and no verification-tier escalation
+        run: python -m unittest discover -s scripts -p 'test_sync_source_attributed_gis.py' -v
+      - name: Require private original-source recheck capability
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Recheck agency-to-ArcGIS source and refresh only attributed GIS tier
+        run: python scripts/sync_source_attributed_gis.py --publish-source-attributed
