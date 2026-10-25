@@ -13,6 +13,12 @@ assert.equal(r.communityNearRoute,2,'OSM IDs must deduplicate across corridor bo
 assert.equal(r.possibleOverlaps,2,'Two community observations close to government coordinate remain ambiguous');
 assert.equal(r.proximityMeters,120);
 assert.equal(r.overlapMeters,30);
+assert.equal(r.uniqueMappedCoordinates,2);
+assert.equal(r.colocatedExtraObservations,0);
+const same=community.summarize(route,[first,osm(7,38.50,-121.495)],[],Geo,false);
+assert.equal(same.communityNearRoute,2);
+assert.equal(same.uniqueMappedCoordinates,1);
+assert.equal(same.colocatedExtraObservations,1,'Same coordinate OSM IDs are observations, not two confirmed cameras');
 r=community.summarize(route,[first],[],Geo,false);
 assert.equal(r.communityNearRoute,1);
 assert.equal(r.possibleOverlaps,null,'Unavailable official evidence must remain unknown, not zero');
