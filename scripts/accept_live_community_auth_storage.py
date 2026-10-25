@@ -211,6 +211,17 @@ def run():
         # Storage restore drill uses a disposable PRIVATE photo, not any
         # reporter's content. Verify authenticated bytes, remove, re-upload
         # identical bytes, and verify again before continuing the review.
+        # A different authenticated contributor must not read another user's
+        # private photo even if the exact object path is known. This check
+        # uses ONLY the disposable synthetic fixture created above.
+        try:
+            download_private_image(path,reviewer["token"])
+        except CheckFailed as denied:
+            require(any(code in str(denied) for code in
+                        ("HTTP 401","HTTP 403","HTTP 404")),
+                    "Non-owner private Storage read failed for unexpected reason")
+        else:
+            raise CheckFailed("CRITICAL: separate user can download private QA photo")
         original=download_private_image(path,owner["token"])
         call("DELETE","/storage/v1/object/"+BUCKET,secret,
              {"prefixes":[path]},expect=(200,204))
