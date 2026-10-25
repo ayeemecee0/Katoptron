@@ -67,6 +67,14 @@ class SourceTierAcceptance(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'overlaps'):
             audit.check(sample,1)
 
+    def test_manually_reopened_source_is_actionable_without_fake_certification(self):
+        sample=list(copy.deepcopy(snapshot()))
+        sample[5][0]['disposition']='needs_review'
+        sample[5][0]['next_review_after']=None
+        result=audit.check(sample,1)
+        self.assertEqual(result['research_remaining'],1)
+        self.assertEqual(result['trusted_source_count'],1)
+
     def test_missing_lifecycle_state_held(self):
         sample=list(copy.deepcopy(snapshot()))
         sample[5].clear()
