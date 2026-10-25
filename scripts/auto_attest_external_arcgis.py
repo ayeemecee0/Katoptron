@@ -219,7 +219,8 @@ def run(dry_run=False):
             args=source_payload(source,root,link,candidate)
             counts["independently_qualified"]+=1
             print("Verified government-endorsed external ArcGIS Flock layer:",
-                  root["jurisdiction_label"],url,"cameras",len(args["p_locations"]))
+                  root["jurisdiction_label"],hashlib.sha256(url.encode()).hexdigest()[:12],
+                  "cameras",len(args["p_locations"]))
             if dry_run:continue
             proof={k:args[k] for k in (
               "p_parent_source_key","p_disclosure_url","p_gis_layer_url","p_page_sha256"
@@ -244,14 +245,19 @@ def run(dry_run=False):
             if not ("Potential duplicate already verified camera" in reason):
                 counts["unexpected_errors"]+=1
             print("Government-endorsed GIS registration refused:",
-                  url,"HTTP",exc.code,reason[:400])
+                  hashlib.sha256(url.encode()).hexdigest()[:12],
+                  "HTTP",exc.code,"reason",
+                  "possible_duplicate_hold" if "Potential duplicate already verified camera" in reason
+                  else "registration_error")
         except ValueError as exc:
             counts["held"]+=1
-            print("External source withheld:",url,str(exc)[:250])
+            print("External source withheld:",
+                  hashlib.sha256(url.encode()).hexdigest()[:12],type(exc).__name__)
         except Exception as exc:
             counts["held"]+=1;counts["unexpected_errors"]+=1
             print("Unexpected external GIS source verifier error:",
-                  url,type(exc).__name__,str(exc)[:220])
+                  hashlib.sha256(url.encode()).hexdigest()[:12],
+                  type(exc).__name__)
     if counts["registered"] and not dry_run:
         refreshed=refresh_verified()
         counts["published_camera_points"]=refreshed["published"]
