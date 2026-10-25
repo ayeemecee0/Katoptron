@@ -34,6 +34,12 @@
   <section class="sidebar-section" aria-labelledby="coverage-heading">
     <div class="section-heading"><h2 id="coverage-heading">Camera coverage</h2><span id="coverageSpinner" class="muted tiny">Loading…</span></div>
     <div class="stats"><div><strong id="exactCount">—</strong><span>Exact camera pins in view</span></div><div><strong id="areaCount">—</strong><span>Approximate areas in view</span></div><div><strong id="provisionalCount">—</strong><span>Provisional points shown</span></div></div>
+    <div class="stats" aria-label="Nationwide Flock location counts by evidence category">
+      <div><strong id="nationalCommunityCount">—</strong><span>OpenStreetMap community-reported Flock locations</span></div>
+      <div><strong id="nationalVerifiedCount">—</strong><span>Government-verified camera locations</span></div>
+    </div>
+    <p id="nationalCommunityStatus" class="micro" role="status">Loading separately sourced nationwide community data…</p>
+    <p class="micro">These evidence categories overlap. They are not an additive total of unique or currently active cameras.</p>
     <p id="nationalStats" class="micro" role="status">Loading national published evidence totals…</p>
     <details class="state-evidence-index">
       <summary>Published evidence by state</summary>
