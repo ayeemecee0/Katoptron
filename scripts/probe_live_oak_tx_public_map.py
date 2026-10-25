@@ -62,6 +62,9 @@ def inspect_mapped_point_inventory(layer, fetch):
     if p.scheme != 'https' or p.username or p.password or p.port or p.query or p.fragment or not valid_host or not valid_path:
         raise ValueError('Original app layer has unapproved source locator')
     metadata = fetch(url+'?f=json')
+    if isinstance(metadata,dict):
+        print('LIVE OAK layer geometry class',repr(metadata.get('geometryType')),
+              'name category',repr(str(metadata.get('name',''))[:50]))
     if (not isinstance(metadata, dict) or metadata.get('type') != 'Feature Layer'
         or metadata.get('geometryType') != 'esriGeometryPoint'
         or not re.search('flock|license.?plate|live oak cameras', str(metadata.get('name','')), re.I)):
