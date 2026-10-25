@@ -24,6 +24,28 @@ async function main(){
  await assert.rejects(()=>large.json('routing','https://example.com/route',3000),/too large/);
  const ac=new AbortController();ac.abort();
  await assert.rejects(()=>c.json('routing','https://example.com/route',3000,ac.signal),e=>e.name==='AbortError');
+ // 429 must honor provider Retry-After without retrying or disclosing route URLs.
+ let now=100000,attempts=0;
+ const quota=P.client(async()=>{
+  attempts++;
+  return new Response('quota',{status:429,headers:{'retry-after':'120'}});
+ },()=>now,async()=>{});
+ await assert.rejects(()=>quota.json('routing','https://example.com/route?test=1',4000),
+   /rate limited/);
+ assert.equal(attempts,1);
+ assert.equal(quota.status('routing').reason,'quota');
+ assert.equal(quota.status('routing').retryAfterSeconds,120);
+ assert.equal(quota.status('geocoding').available,true,'Routing quota must not disable geocoding');
+ await assert.rejects(()=>quota.json('routing','https://example.com/route',4000),
+   /retry in approximately 120 seconds/);
+ assert.equal(attempts,1,'Do not spend provider credits during rate-limit window');
+ now+=120000;
+ assert.equal(quota.status('routing').available,true);
+ // Retry-After is bounded, never permits arbitrary years of disabled service.
+ const future=P.client(async()=>new Response('quota',{status:429,
+   headers:{'retry-after':'99999999'}}),()=>now,async()=>{});
+ await assert.rejects(()=>future.json('routing','https://example.com/route',4000),/rate limited/);
+ assert.equal(future.status('routing').retryAfterSeconds,3600);
  console.log('Provider transport, privacy and reliability tests passed');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
