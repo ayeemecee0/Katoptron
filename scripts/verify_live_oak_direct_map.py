@@ -30,8 +30,9 @@ def authorize(s,p):
         raise ValueError('Live Oak municipality source does not match reviewed exact map authority')
     return True
 
-def qualify(s,p,auditor=audit):
+def qualify(s,p,auditor=None):
     authorize(s,p)
+    auditor=auditor or audit
     proof=auditor(private_points=True)
     if (not isinstance(proof,dict) or proof.get('layer_url')!=LAYER or
         not isinstance(proof.get('government_page_sha256'),str)
