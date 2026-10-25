@@ -59,7 +59,8 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     if (not isinstance(application,dict) or application.get('id')!=APPID
             or application.get('type') not in ('Web Mapping Application','Web Experience')):
         raise ValueError('Original city-linked ArcGIS application identity changed')
-    app_org=verified_item_org(application,fetch)
+    try:app_org=verified_item_org(application,fetch)
+    except ValueError:app_org=None  # Attribution hold, not evidence authorization.
     config=fetch(ITEM+APPID+'/data?f=json')
     maps=map_identifiers(config)
     if len(maps)!=1:raise ValueError('City camera app does not identify exactly one Web Map')
@@ -68,7 +69,9 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     if (not isinstance(item,dict) or item.get('type')!='Web Map'
         or item.get('id','').lower()!=mapid):
         raise ValueError('App Web Map identity changed')
-    if verified_item_org(item,fetch)!=app_org:
+    try:map_org=verified_item_org(item,fetch)
+    except ValueError:map_org=None
+    if app_org is not None and map_org is not None and map_org!=app_org:
         raise ValueError('App Web Map publisher differs from original city app')
     data=fetch(ITEM+mapid+'/data?f=json')
     layers=data.get('operationalLayers') if isinstance(data,dict) else None
@@ -77,7 +80,8 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     matched=[x for x in layers if isinstance(x,dict) and
           re.search(r'flock|license.?plate',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
     print('LIVE OAK original_city_page_link',True)
-    print('LIVE OAK application_and_webmap_same_organization',True)
+    print('LIVE OAK application_and_webmap_same_organization',
+          app_org is not None and app_org==map_org)
     print('LIVE OAK webmap_operational_layer_count',len(layers))
     print('LIVE OAK explicitly_named_Flock_or_ALPR_layers',len(matched))
     print('LIVE OAK original map source status', 'further_original_layer_verification_required')
