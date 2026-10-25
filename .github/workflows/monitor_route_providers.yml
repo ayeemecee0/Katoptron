@@ -11,6 +11,8 @@ on:
       - 'scripts/monitor_route_providers.py'
       - 'scripts/test_monitor_route_providers.py'
       - 'scripts/smoke_geoapify_live.cjs'
+      - 'scripts/publish_provider_health.cjs'
+      - 'scripts/test_publish_provider_health.cjs'
       - '.github/workflows/monitor_route_providers.yml'
 
 permissions:
@@ -52,7 +54,11 @@ jobs:
           persist-credentials: false
       - name: Install pinned Playwright
         run: npm install --no-save --no-package-lock playwright@1.56.1
-      - name: Check live free Geoapify routing and geocoding
+      - name: Unit-check public-only health receipts
+        run: node scripts/test_publish_provider_health.cjs
+      - name: Check live Geoapify fixed public route, geocode and publish health receipt
         env:
           KATOPTRON_SMOKE_BASE: https://ayeemecee0.github.io/Katoptron/
+          SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
         run: node scripts/smoke_geoapify_live.cjs
