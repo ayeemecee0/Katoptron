@@ -152,4 +152,9 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--stage-private',action='store_true')
     args=p.parse_args()
-    run(stage_private=args.stage_private)
+    try:
+        run(stage_private=args.stage_private)
+    except Exception as exc:
+        # A public CI log must not print a response body, private case row,
+        # camera coordinate, candidate URL, or bearer token on failure.
+        raise SystemExit('Government publisher research held: '+type(exc).__name__) from None
