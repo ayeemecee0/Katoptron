@@ -1,0 +1,53 @@
+name: Stage privately authenticated municipal GIS research points
+
+on:
+  workflow_run:
+    workflows: ["Find independent government ArcGIS organization endorsements"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '11 16 * * 3'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/stage_reviewed_publisher_camera_candidates.py'
+      - 'scripts/test_stage_reviewed_publisher_camera_candidates.py'
+      - 'scripts/audit_affiliated_flock_inventory.py'
+      - '.github/workflows/stage_reviewed_publisher_camera_candidates.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: katoptron-municipal-private-point-staging
+  cancel-in-progress: false
+
+jobs:
+  private-research:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify private staging cannot publish or bypass GIS evidence requirements
+        run: |
+          python -m unittest discover -s scripts -p 'test_stage_reviewed_publisher_camera_candidates.py' -v
+          python -m unittest discover -s scripts -p 'test_audit_affiliated_flock_inventory.py' -v
+      - name: Require existing owner-only research credential
+        run: |
+          test -n "$SUPABASE_SERVICE_ROLE_KEY" || {
+            echo "::error::Existing source research secret unavailable"
+            exit 1
+          }
+      - name: Fetch original city and police authority, recheck all original IDs and stage privately
+        run: python scripts/stage_reviewed_publisher_camera_candidates.py --stage-private
