@@ -99,6 +99,10 @@ on:
       - 'supabase/migrations/095_possible_cross_source_osm_proximity.sql'
       - 'supabase/migrations/096_osm_quality_snapshots.sql'
       - 'supabase/migrations/097_published_osm_nearby_candidates.sql'
+      - 'supabase/migrations/098_public_fixed_route_provider_health.sql'
+      - 'scripts/test_public_provider_health.sql'
+      - 'scripts/publish_provider_health.cjs'
+      - 'scripts/test_publish_provider_health.cjs'
       - 'scripts/test_osm_nearby_publication.sql'
       - 'scripts/publish_osm_nearby.py'
       - 'scripts/test_publish_osm_nearby.py'
@@ -613,6 +617,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_nearby_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/098_public_fixed_route_provider_health.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_public_provider_health.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_first_party_agency_gis_rechecks.sql
@@ -1014,6 +1022,7 @@ jobs:
           node --check geoapify-adapter.js
           node scripts/test_geoapify_adapter.js
           node scripts/test_routing_provider.js
+          node scripts/test_publish_provider_health.cjs
           python scripts/test_community_frontend_syntax.py
           python scripts/test_public_accessibility.py
           python scripts/test_vendor_portal_static.py
