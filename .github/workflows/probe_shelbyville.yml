@@ -1,0 +1,23 @@
+name: Probe Shelbyville public Flock GIS authority
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/probe_shelbyville_public_flock.py'
+      - '.github/workflows/probe_shelbyville.yml'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify publicly documented municipal GIS and stable Flock point inventory
+        run: python scripts/probe_shelbyville_public_flock.py
