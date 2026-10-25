@@ -9,7 +9,7 @@ import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
 PAGES=["index.html","records.html","accountability.html","analytics.html",
-       "submit.html","community-review.html","privacy.html","methodology.html"]
+       "submit.html","community-review.html","privacy.html","methodology.html","portals.html"]
 
 class Page(HTMLParser):
     def __init__(self):
@@ -47,6 +47,7 @@ class AccessibilityShellTests(unittest.TestCase):
             "analytics.html":["unknown","source-dated","not deployment","id=\"stateRows\""],
             "accountability.html":["does not prove","Original evidence","role=\"tablist\""],
             "index.html":["unknown coverage","aria-label=\"Main navigation\""],
+            "portals.html":["vendor claims","not a count of verified individual alpr map pins","source last updated"],
         }.items():
             source=(ROOT/name).read_text(encoding="utf8").lower()
             for phrase in phrases:
