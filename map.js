@@ -213,6 +213,9 @@
     // Default-on community observations are visually primary but never enter
     // state.visible, government comparisons, or official modeled encounters.
     window.KatoptronCommunityOverlay?.install(map,CFG);
+    // City/agency centers derived from public Flock transparency portals are
+    // NOT individual cameras and never enter state.visible or route matches.
+    window.KatoptronVendorAgencyLayer?.install(map,$('showVendorAgencies'),$('vendorAgencyStatus'));
     map.on('moveend', () => {
       clearTimeout(state.viewportTimer);
       state.viewportTimer = setTimeout(loadVisibleLocations, 250);
