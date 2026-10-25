@@ -20,6 +20,9 @@ const assert=require('node:assert/strict');
   assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
   assert.ok((await page.locator('#status').textContent()).includes('density cells'));
   assert.ok((await page.locator('#sourceDate').textContent()).includes('snapshot'));
+  await page.waitForFunction(()=>/^\\d+$/.test((document.querySelector('#overlapCount')?.textContent||'').replaceAll(',','')),null,{timeout:30000});
+  const matchStatus=await page.locator('#crossSourceStatus').textContent();
+  assert.ok(matchStatus.includes('government-source records assessed')&&matchStatus.includes('not confirmed identical cameras'),matchStatus);
   const density=await page.evaluate(async()=>{
     const c=window.KATOPTRON_CONFIG;
     const url=c.supabaseUrl+'/rest/v1/flock_public_osm_community_density?select=community_report_count&limit=1';
