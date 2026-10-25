@@ -22,6 +22,13 @@ BEGIN
   IF camera_count<>0 THEN
     RAISE EXCEPTION 'Static map symbols must not be auto-promoted as exact GIS camera points';
   END IF;
+  IF (SELECT count(*) FROM public.flock_documented_programs
+      WHERE program_key IN ('apache_junction_az','alexandria_va')
+        AND official_camera_map_url IS NOT NULL
+        AND split_part(official_camera_map_url,'/',3)=
+            split_part(official_evidence_url,'/',3)) <> 2 THEN
+    RAISE EXCEPTION 'Original agency camera-map links missing or offsite';
+  END IF;
   IF NOT (SELECT relrowsecurity FROM pg_class
     WHERE oid='public.flock_documented_programs'::regclass) THEN
     RAISE EXCEPTION 'Documented program RLS disabled';
