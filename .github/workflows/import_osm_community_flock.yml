@@ -1,0 +1,34 @@
+name: Import Flock-labeled OSM community camera points
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_osm_community_flock.py'
+      - 'scripts/test_import_osm_community_flock.py'
+      - '.github/workflows/import_osm_community_flock.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-osm-community-source-import
+  cancel-in-progress: false
+jobs:
+  ingest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test bounded original OSM source normalization and source-tier separation
+        run: PYTHONPATH=scripts python -m unittest scripts/test_import_osm_community_flock.py -v
+      - name: Require existing private research credential
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY" || { echo '::error::Research credential unavailable'; exit 1; }
+      - name: Import first source-labeled community batch without touching verified government camera records
+        run: python scripts/import_osm_community_flock.py --max-points 1000
