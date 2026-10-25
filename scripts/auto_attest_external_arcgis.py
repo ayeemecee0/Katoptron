@@ -164,17 +164,50 @@ def source_payload(source,root,link,candidate):
         raise ValueError("ArcGIS metadata does not independently identify Flock cameras")
     temp_source={**source,"gis_layer_url":url,"expected_id_field":"OBJECTID"}
     check_metadata(temp_source,temp_policy,service,layer)
-    query=urllib.parse.urlencode({
-      "where":"1=1",
-      "outFields":",".join(sorted({"OBJECTID",identity}|({vendor} if vendor else set()))),
-      "returnGeometry":"true","outSR":"4326","resultRecordCount":MAX_FEATURES+1,
-      "orderByFields":"OBJECTID ASC","f":"json"
-    })
-    rows=get_official_json(url+"/query?"+query)
-    features=rows.get("features") if isinstance(rows,dict) else None
-    if (not isinstance(features,list) or not 1<=len(features)<=MAX_FEATURES
-        or rows.get("error") or rows.get("exceededTransferLimit")):
-        raise ValueError("Original candidate GIS data incomplete or ambiguous")
+    # ArcGIS services may enforce maxRecordCount silently without
+    # exceededTransferLimit. Only a full twice-rechecked source ObjectID
+    # snapshot can establish a complete and stable source inventory.
+    def full_original_ids():
+        response=get_official_json(url+"/query?"+urllib.parse.urlencode({
+            "f":"json","where":"1=1","returnIdsOnly":"true"}))
+        ids=response.get("objectIds") if isinstance(response,dict) else None
+        field=response.get("objectIdFieldName") if isinstance(response,dict) else None
+        if (not isinstance(response,dict) or response.get("error")
+            or field not in (None,"OBJECTID")
+            or not isinstance(ids,list) or not 1<=len(ids)<=MAX_FEATURES
+            or len(set(ids))!=len(ids)
+            or any(type(x) is not int or x<=0 for x in ids)):
+            raise ValueError("Original external GIS identity snapshot incomplete")
+        return sorted(ids)
+
+    original_ids=full_original_ids()
+    fields=sorted({"OBJECTID",identity}|({vendor} if vendor else set()))
+    features=[]
+    for offset in range(0,len(original_ids),50):
+        requested=original_ids[offset:offset+50]
+        query=urllib.parse.urlencode({
+            "objectIds":",".join(map(str,requested)),
+            "outFields":",".join(fields),
+            "returnGeometry":"true","outSR":"4326","f":"json"})
+        result=get_official_json(url+"/query?"+query)
+        batch=result.get("features") if isinstance(result,dict) else None
+        if (not isinstance(batch,list) or result.get("error")
+            or result.get("exceededTransferLimit")
+            or len(batch)!=len(requested)):
+            raise ValueError("Original external GIS ID batch missing or truncated")
+        observed=[x.get("attributes",{}).get("OBJECTID")
+                  for x in batch if isinstance(x,dict)]
+        if (len(observed)!=len(requested) or
+            any(type(oid) is not int for oid in observed) or
+            sorted(observed)!=requested):
+            raise ValueError("Original external GIS ObjectID identity mismatch")
+        features.extend(batch)
+    if full_original_ids()!=original_ids:
+        raise ValueError("Original external GIS inventory changed during audit")
+    if len(features)!=len(original_ids):
+        raise ValueError("Original external GIS inventory incomplete")
+    features.sort(key=lambda x:x["attributes"]["OBJECTID"])
+    rows={"features":features}
     records,held,n=verify_points(temp_source,temp_policy,rows)
     if held or len(records)!=n:
         raise ValueError("Original source has non-Flock or ambiguous camera features; no partial publication")
