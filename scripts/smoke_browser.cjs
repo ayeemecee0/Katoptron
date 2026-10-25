@@ -5,6 +5,22 @@ const assert=require('node:assert/strict');
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1440,height:960}});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ // Most of this legacy suite passed Playwright timeout options as the argument
+ // instead of the third parameter. Correct them centrally and report the
+ // failed predicate so we can distinguish stale assertions from source outages.
+ const nativeWait=page.waitForFunction.bind(page);
+ let assertionWait=0;
+ page.waitForFunction=async (fn,arg,options)=>{
+  const nth=++assertionWait;
+  const legacyOptions=arg&&typeof arg==='object'&&Object.prototype.hasOwnProperty.call(arg,'timeout')&&!options;
+  try{
+   return await nativeWait(fn,legacyOptions?null:arg,legacyOptions?arg:options);
+  }catch(e){
+   throw Error('Browser condition #'+nth+': '+String(fn).slice(0,145)+
+     ' failed: '+e.message);
+  }
+ };
+
  try{
   // The legacy smoke intentionally mocks demo endpoints, independent of
   // which real provider production uses. No real Geoapify credits are spent.
