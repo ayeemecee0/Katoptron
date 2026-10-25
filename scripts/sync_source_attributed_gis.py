@@ -14,6 +14,8 @@ from stage_shelbyville_gis_candidates import make_receipts
 from stage_reviewed_publisher_camera_candidates import hold_conflicting_staged_evidence
 from probe_peoria_overlap import summarize
 
+from audit_affiliated_flock_inventory import InventoryHeld
+
 SOURCE_KEY='shelbyville_arcgis_affiliation'
 MAX_CANONICAL=5000
 DISCLAIMER=(
@@ -25,6 +27,56 @@ DISCLAIMER=(
  'and is excluded from verified-route detections.'
 )
 
+def retain_immutable_provenance_if_page_changed(cases, evidence, previous, api):
+    """Only refresh EXISTING low-confidence pins after a fresh semantic proof.
+
+    Called solely after the live original-city ArcGIS organization check,
+    twice-snapshotted exact inventory, coordinate reconciliation, and
+    hold_conflicting_staged_evidence's case-identity check all passed.
+    If the full city HTML checksum changed, preserve the old immutable
+    attestation SHA, never overwrite/review/upgrade the evidence, and
+    never add a newly inferred point using this exception.
+    """
+    if not isinstance(previous, list) or len(previous) != len(cases):
+        raise ValueError('Changed government page cannot approve new map locations')
+    old_by_case = {p['case_key']: p for p in previous}
+    if len(old_by_case) != len(cases) or any(
+        p.get('publication_status') != 'active' for p in previous
+    ):
+        raise ValueError('Previously withdrawn or duplicated source point')
+    evidence_keys = ','.join(row['evidence_key'] for row in evidence)
+    old = api(
+        'flock_point_evidence_attestations?select=evidence_key,case_key,'
+        'source_kind,source_family,source_url,authority_url,latitude,longitude,'
+        'evidence_sha256,evidence_status&evidence_key=in.(' + evidence_keys + ')'
+    )
+    if not isinstance(old, list) or len(old) != len(evidence):
+        raise ValueError('Unchanged original source receipts not all present')
+    by_key = {p['evidence_key']: p for p in old}
+    if len(by_key) != len(evidence):
+        raise ValueError('Duplicate immutable original receipt')
+    retained = {}
+    for c, current in zip(cases, evidence):
+        existing = by_key.get(current['evidence_key'])
+        published = old_by_case.get(c['case_key'])
+        if existing is None or published is None:
+            raise ValueError('Original receipt or prior public record absent')
+        for field in ('evidence_key', 'case_key', 'source_kind', 'source_family',
+                      'source_url', 'authority_url', 'latitude', 'longitude'):
+            if existing.get(field) != current.get(field):
+                raise ValueError('Original source identity or point geometry changed')
+        if existing.get('evidence_status') not in ('staged', 'reviewed'):
+            raise ValueError('Original private source receipt revoked')
+        sha = existing.get('evidence_sha256')
+        if (not isinstance(sha, str) or len(sha) != 64
+            or published.get('evidence_sha256') != sha
+            or published.get('latitude') != c['latitude']
+            or published.get('longitude') != c['longitude']):
+            raise ValueError('Published point no longer matches original evidence')
+        retained[c['case_key']] = sha
+    return retained
+
+
 def run(publish=False,api=api_request,auditor=audited_private_points):
     proof=auditor(include_evidence=True)
     pts=proof.get('private_original_points')
@@ -32,7 +84,6 @@ def run(publish=False,api=api_request,auditor=audited_private_points):
     if (not isinstance(pts,list) or len(pts)!=12
         or len(cases)!=len(evidence) or len(cases)!=len(pts)):
         raise ValueError('Source-attributed point inventory no longer matches documented 12')
-    hold_conflicting_staged_evidence(cases,evidence,api)
     canonical=fetch_all(api,
         'flock_camera_locations?select=record_key,jurisdiction_label,latitude,longitude'
         '&verification_status=eq.verified&location_accuracy=eq.exact&limit=100',
@@ -47,6 +98,18 @@ def run(publish=False,api=api_request,auditor=audited_private_points):
           'evidence_sha256,publication_status&source_key=eq.'+SOURCE_KEY+'&limit=100')
     if not isinstance(previous,list) or len(previous)>len(cases):
         raise ValueError('Prior public source tier incomplete')
+    retained={}
+    try:
+        hold_conflicting_staged_evidence(cases,evidence,api)
+    except InventoryHeld as exc:
+        if str(exc)!='Private source proof changed; independent review required':
+            raise
+        # City page bytes may change while its live exact ArcGIS link,
+        # original publisher, geometry and old attestation remain the same.
+        # Only previously published, unchanged, unrevoked lower-tier cases
+        # can be rechecked; no new row or evidence tier can be promoted.
+        retained=retain_immutable_provenance_if_page_changed(
+            cases,evidence,previous,api)
     current={r['case_key']:(r,e) for r,e in zip(cases,evidence)}
     for row in previous:
         expected=current.get(row['case_key'])
@@ -54,14 +117,14 @@ def run(publish=False,api=api_request,auditor=audited_private_points):
             raise ValueError('Prior source point missing in latest government-associated inventory')
         c,e=expected
         if (row['latitude']!=c['latitude'] or row['longitude']!=c['longitude']
-                or row['evidence_sha256']!=e['evidence_sha256']):
+                or row['evidence_sha256']!=retained.get(row['case_key'],e['evidence_sha256'])):
             raise ValueError('Original source fingerprint drift; public refresh held')
     rows=[{
         'case_key':c['case_key'],'source_key':SOURCE_KEY,
         'label':'City-associated GIS Flock map observation (not device verified)',
         'jurisdiction_label':c['jurisdiction_label'],
         'latitude':c['latitude'],'longitude':c['longitude'],
-        'source_url':c['source_url'],'evidence_sha256':e['evidence_sha256'],
+        'source_url':c['source_url'],'evidence_sha256':retained.get(c['case_key'],e['evidence_sha256']),
         'source_checked_at':None, 'publication_status':'active',
         'caveat':DISCLAIMER
     } for c,e in zip(cases,evidence)]
@@ -76,6 +139,7 @@ def run(publish=False,api=api_request,auditor=audited_private_points):
         if response is not None:raise ValueError('Unexpected attributed map publication response')
     print('ATTRIBUTED GIS complete original source positions',len(rows))
     print('ATTRIBUTED GIS original publisher proof rechecked',True)
+    print('ATTRIBUTED GIS immutable original receipt preserved after harmless HTML drift',bool(retained))
     print('ATTRIBUTED GIS public lower-confidence points refreshed',len(rows) if publish else 0)
     print('ATTRIBUTED GIS government verified cameras newly published',0)
     return len(rows)
