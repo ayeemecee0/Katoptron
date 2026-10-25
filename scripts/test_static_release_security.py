@@ -9,7 +9,7 @@ import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
 PAGES=['index.html','submit.html','community-review.html','review.html',
-       'records.html','accountability.html','analytics.html','privacy.html','methodology.html','portals.html']
+       'records.html','accountability.html','analytics.html','privacy.html','methodology.html','portals.html','community-map.html']
 SDK='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js'
 LEAFLET='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 DANGEROUS=[
