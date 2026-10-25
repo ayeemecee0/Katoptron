@@ -70,12 +70,12 @@ reset role;
 update public.flock_attributed_source_policies
  set policy_status='suspended' where source_key='shelbyville_arcgis_affiliation';
 set local role anon;
-do $
+do $suspension_test$
 begin
  if exists(select 1 from public.flock_public_tiered_camera_points
             where case_key='tier_test_source_ledger_001')
  then raise exception 'Suspended municipal publisher authority leaked exact map points';end if;
-end $;
+end $suspension_test$;
 reset role;
 -- Once source evidence is invalidated, workflows MUST still be able to
 -- withdraw the stale published observation without original proof.
