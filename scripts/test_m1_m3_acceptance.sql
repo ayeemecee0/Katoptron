@@ -64,3 +64,44 @@ begin
    raise exception 'M3: lower tier duplicates verified government point';
  end if;
 end $m1m3$;
+
+-- A new authenticated SECURITY DEFINER API requires explicit release review.
+-- The existing reviewer RPCs check auth.uid() and their role/owner allowlists;
+-- the two source-status booleans intentionally serve public RLS.
+do $privileged_authenticated$
+declare fn record;
+declare total integer;
+begin
+ select count(*) into total from pg_proc
+ where pronamespace='public'::regnamespace and prosecdef
+   and has_function_privilege('authenticated',oid,'EXECUTE');
+ if total <> 13 then
+    raise exception 'M1: authenticated privileged RPC allowlist changed';
+ end if;
+ for fn in
+   select proname, pg_get_function_identity_arguments(oid) as args, prosrc,
+      oid::regprocedure::text as signature
+   from pg_proc
+   where pronamespace='public'::regnamespace and prosecdef
+     and has_function_privilege('authenticated',oid,'EXECUTE')
+ loop
+   if fn.proname not in (
+     'community_report_attachment_paths','editorial_decide',
+     'editorial_evidence_ref','editorial_general_decide',
+     'editorial_general_list','editorial_history','editorial_list',
+     'editorial_session','gis_camera_authority_current',
+     'is_current_flock_polygon_camera_gis_source',
+     'list_community_review_queue','set_community_review_status',
+     'withdraw_own_community_report'
+   ) then raise exception 'M1: unreviewed authenticated privileged RPC %',fn.signature;end if;
+   if fn.proname = 'set_community_review_status'
+     and fn.args <> 'p_id uuid, p_status text, p_note text' then
+     raise exception 'M1: legacy unlogged community review RPC re-enabled';
+   end if;
+   if fn.proname not in ('gis_camera_authority_current',
+     'is_current_flock_polygon_camera_gis_source')
+     and fn.prosrc not ilike '%auth.uid%' then
+     raise exception 'M1: privileged authenticated RPC has no UID gate: %',fn.signature;
+   end if;
+ end loop;
+end $privileged_authenticated$;
