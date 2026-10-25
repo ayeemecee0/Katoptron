@@ -1,6 +1,6 @@
-/* Optional ODbL community overlay. Never enters official evidence, route
+/* Default-on nationwide ODbL community map. Never enters official evidence, route
  * proximity comparison, replay, or verified-point source arrays.
- * Off by default. Sparse regional density at z<10; exact OSM observations
+ * Coarse regional density at z<10; exact OSM observations
  * queried only at zoom 10+, bounded by 1,000 confirmed-complete results per viewport.
  */
 (() => {
@@ -13,7 +13,7 @@
   if(!map||!toggle||!status)return;
   const L=window.L;
   const dots=L.layerGroup(),regions=L.layerGroup();
-  let active=false,revision=0,abort=null,densityLoaded=false,delay=null;
+  let active=toggle.checked,revision=0,abort=null,densityLoaded=false,delay=null;
   function note(message){status.textContent=message;}
   function link(key){
    return typeof key==='string'&&/^(node|way)\/[1-9][0-9]{0,17}$/.test(key)
@@ -42,7 +42,7 @@
    if(id!==revision||!active)return;
    if(rows.length>=500)throw Error('Incomplete national density results');
    regions.clearLayers();
-   for(const r of page.rows){
+   for(const r of rows){
     const lat=Number(r.cell_latitude),lon=Number(r.cell_longitude),
       count=Number(r.community_report_count);
     if(!Number.isFinite(lat)||!Number.isFinite(lon)||
@@ -160,7 +160,8 @@
    if(!active)return;
    clearTimeout(delay);delay=setTimeout(refresh,250);
   });
-  note('Off by default. Community locations are unconfirmed and excluded from official route simulation and plate-detection modeling.');
+  if(active)refresh();
+  else note('Community layer disabled. Re-enable it to view community-source observations.');
  }
  window.KatoptronCommunityOverlay={install};
 })();
