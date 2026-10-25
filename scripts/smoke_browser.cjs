@@ -18,7 +18,14 @@ const assert=require('node:assert/strict');
     await route.fulfill({status:200,contentType:'application/javascript',body});
   });
   await page.goto(process.env.KATOPTRON_SMOKE_BASE||'https://ayeemecee0.github.io/Katoptron/',{waitUntil:'domcontentloaded',timeout:45000});
-  await page.waitForFunction(()=>document.querySelector('#coverageSpinner')?.textContent==='Live data',{timeout:30000});
+  await page.waitForFunction(()=>{
+    const value=document.querySelector('#coverageSpinner')?.textContent||'';
+    return value==='Live data'||value==='Source unavailable';
+  },null,{timeout:60000});
+  const coverage=await page.locator('#coverageSpinner').textContent();
+  assert.equal(coverage,'Live data',
+    'Government camera evidence fetch failed: '+await page.locator('#coverageStatus').textContent());
+
   await page.waitForFunction(()=>document.querySelector('#nationalStats')?.textContent?.includes('verified camera points in'),{timeout:20000});
   assert.ok((await page.locator('#nationalStats').textContent()).includes('Coverage is incomplete'));
   // The new corroborated tier is opt-in and must be RLS-filtered in the
