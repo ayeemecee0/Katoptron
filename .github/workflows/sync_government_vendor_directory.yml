@@ -1,0 +1,38 @@
+name: Refresh original-government links to Flock portals
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '34 16 * * 4'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync_government_vendor_directory.py'
+      - 'scripts/test_sync_government_vendor_directory.py'
+      - '.github/workflows/sync_government_vendor_directory.yml'
+      - 'supabase/migrations/100_government_linked_flock_vendor_directory.sql'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-verified-agency-vendor-links
+  cancel-in-progress: false
+jobs:
+  refresh-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test source-link registration, revocation and fail-closed behavior
+        run: python -m unittest discover -s scripts -p 'test_sync_government_vendor_directory.py' -v
+      - name: Check private source researcher credential
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Recheck government Flock program disclosures and upsert only exact live links
+        run: python scripts/sync_government_vendor_directory.py
