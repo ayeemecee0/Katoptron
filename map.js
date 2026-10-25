@@ -173,6 +173,7 @@
     loadNationalSummary();
     loadCommunityNationalSummary();
     loadCommunityQuality();
+    loadLatestProviderHealth();
     loadStateEvidenceIndex();
     loadVerifiedAgendaMentions();
   }
@@ -341,6 +342,49 @@
     }catch(err){
       setText('nationalCommunityQuality','OSM source quality measurements unavailable: '+
         err.message+'. Treat missing quality information as unknown.');
+    }
+  }
+  async function loadLatestProviderHealth() {
+    if(!CFG?.supabaseUrl||!CFG?.supabasePublishableKey){
+      setText('providerHealthPublic','Public provider health record unavailable. Route status unknown.');
+      return;
+    }
+    try{
+      const q=new URLSearchParams({
+        select:'checked_at,result_code,routing_http_status,geocoding_http_status,browser_test_passed,fixture_type',
+        limit:'1'
+      });
+      const r=await fetch(CFG.supabaseUrl.replace(/\/$/,'')+
+        '/rest/v1/flock_public_latest_provider_health?'+q.toString(),{
+         headers:{apikey:CFG.supabasePublishableKey},cache:'no-store',
+         referrerPolicy:'no-referrer'
+        });
+      if(!r.ok)throw Error('Public sample health HTTP '+r.status);
+      const rows=await r.json();
+      if(!Array.isArray(rows)||rows.length!==1){
+        setText('providerHealthPublic','No completed scheduled Geoapify sample published yet. Availability unknown.');
+        return;
+      }
+      const health=rows[0],stamp=Date.parse(health.checked_at);
+      if(!Number.isFinite(stamp)||stamp>Date.now()+600000||
+        health.fixture_type!=='public_fixed_route')
+        throw Error('Invalid provider-health source timestamp or scope');
+      const ageHours=(Date.now()-stamp)/3600000;
+      const asOf=new Date(stamp).toLocaleString();
+      if(ageHours>36){
+        setText('providerHealthPublic','Last public Geoapify test is stale ('+asOf+
+          '). Current provider availability unknown; account-wide remaining quota not available.');
+      }else if(health.result_code==='passed'){
+        setText('providerHealthPublic','Fixed public Geoapify route and geocode tests passed at '+
+          asOf+'. This is not an uptime guarantee or account-wide quota balance.');
+      }else{
+        setText('providerHealthPublic','Fixed public Geoapify test reported '+
+          (health.result_code==='provider_error'?'provider error':'inconclusive results')+
+          ' at '+asOf+'. Routing availability unknown; failed queries do not imply absent cameras.');
+      }
+    }catch(error){
+      setText('providerHealthPublic','Public provider health unavailable: '+
+        error.message+'. Routing availability unknown.');
     }
   }
   async function loadCommunityNationalSummary() {
