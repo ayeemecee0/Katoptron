@@ -19,7 +19,7 @@ function client(fetcher=(...args)=>fetch(...args),clock=()=>Date.now(),delay=ms=
  function retryAfterMs(raw){
   if(typeof raw!=='string'||raw.length>100)return 0;
   let ms=0;
-  if(/^\\d{1,8}$/.test(raw.trim()))ms=Number(raw.trim())*1000;
+  if(/^\d{1,8}$/.test(raw.trim()))ms=Number(raw.trim())*1000;
   else{const date=Date.parse(raw);if(Number.isFinite(date))ms=Math.max(0,date-clock());}
   return Number.isFinite(ms)?Math.min(60*60*1000,Math.max(0,ms)):0;
  }
