@@ -832,7 +832,7 @@ jobs:
             "select count(*) >= 11 from pg_indexes where schemaname='public' and indexname like '%_fk_idx'" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.trusted_flock_gis_sources where source_status='verified'" | tee /tmp/verified_gis_sources_count
-          grep -qx 5 /tmp/verified_gis_sources_count
+          grep -qx 6 /tmp/verified_gis_sources_count
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_function_privilege('anon','public.promote_owner_bound_gis_source(text,text,text)','EXECUTE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
@@ -865,7 +865,7 @@ jobs:
             "select has_column_privilege('service_role','public.flock_camera_locations','last_source_recheck_at','UPDATE')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.trusted_flock_gis_sources where source_status='verified'" | tee /tmp/verified_gis_sources_count
-          grep -qx 5 /tmp/verified_gis_sources_count
+          grep -qx 6 /tmp/verified_gis_sources_count
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('service_role','public.trusted_flock_gis_sources','UPDATE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
