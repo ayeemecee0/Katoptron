@@ -63,3 +63,23 @@ Real Storage photographs are not in Supabase DB dumps, so the owner must additio
 **This final owner backup gate remains NOT VERIFIED.** The three private Windows exports, encrypted offsite archive, and actual isolated restore instance are not accessible through the connected services. Never copy private files or credentials to GitHub Actions or chat. Testing a synthetic 1-pixel image and a synthetic DB is not proof that the owner's original Auth, schema, data, or Storage backups recover.
 
 Official references: [Supabase platform restore](https://supabase.com/docs/guides/self-hosting/restore-from-platform) and [Supabase backup guidance](https://supabase.com/docs/guides/platform/backups). The official platform restore guide specifies that Storage bytes, Auth provider configuration, SMTP settings and JWT secrets require separate setup.
+
+
+## October 24: owner-conducted local restore acceptance — updated result
+
+**The earlier "never restore-tested" statements above are historical and superseded for the database portion by this section.** The project owner used Windows PowerShell and Docker Desktop to start a local-only Supabase PostgreSQL 17.11 instance, binding all published ports to IPv4 127.0.0.1 and IPv6 ::1. Both the earlier 275-point SQL snapshot and a freshly exported production snapshot were restored with the roles/schema/data order prescribed by Supabase, through the verified local Docker database container. No production database restoration or mutation was performed.
+
+**Important recovery defect found and reproduced:** importing with the local `postgres` account failed on `log_min_messages` (not superuser). Importing as local `supabase_admin` superuser succeeded, but the first restore inherited default public table privileges granting anonymous users inappropriate access to private reports and reviewer tables. The disposable database was RESET; before the second restore, the owner revoked automatic default table privileges for `anon, authenticated` from `postgres` and `supabase_admin` **in schema public**. Then the SQL dump was restored in one transaction with `ON_ERROR_STOP=1` and `SET session_replication_role=replica`. Direct post-restore permission checks passed.
+
+**Fresh production snapshot:**
+- `roles.sql` 370 bytes; `schema.sql` 328,855 bytes; `data.sql` 16,093,373 bytes, stored only in the owner's `C:\Users\ayeem\KatoptronFreshExport` folder (NEVER publish the files or contents).
+- A second clean, default-grant-restricted local PostgreSQL 17 database accepted the roles/schema/data snapshot and reported `FRESH RESTORE SUCCESS`.
+- Verification: 293/293 independently source-verified exact camera locations, one Auth user, 48/48 public tables with RLS, no anonymous report SELECT or INSERT privilege, and no authenticated direct reviewer-table SELECT privilege.
+- An ephemeral fictional report with the restored Auth owner was visible to that owner but hidden from a different `authenticated` database principal. The transaction rolled back; subsequent read-only query found zero remaining fictional reports.
+- These are **owner-reported local command results**, not CI access to the owner's private backup; no actual email confirmation or Storage binary backup occurred in this drill.
+
+**Remaining before a confidential-data-resilient production service:** verify the Windows disk's BitLocker protection status; create a separately encrypted off-device archive/copy when accepting user-submitted private materials at scale; independently back up any real Storage blob bytes (SQL metadata does not preserve photographs); and test actual email-confirmation delivery/redirect. As of this checkpoint, production had zero community reports and zero private community photo objects. For an explicitly read-only public beta, lack of off-device redundancy may be a time-bounded accepted risk, not grounds to claim it is safely backed up.
+
+**Do not blindly run the legacy `scripts/verify_owner_private_backup_restore.ps1` on the already restored `postgres` database.** That script was only syntax-tested, expects a separately named `katoptron_recovery_*` database and locally installed `psql`; it does not yet model the successful Docker-based recovery or the prerequisite default-grant hardening. Prepare and verify an isolated target, then follow the proven owner-local procedure with administrator credentials, no network-exposed ports and explicit privilege checks.
+
+**Business-priority change:** the public map/source-validation MVP is prioritized over mature off-device archival infrastructure, but account signup, user privacy and consent/deletion protections remain mandatory when opening confidential public submissions. See [MVP acceptance and human test protocol](./mvp-beta-user-acceptance.md).
