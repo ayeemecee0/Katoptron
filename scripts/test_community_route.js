@@ -20,4 +20,35 @@ r=community.summarize(route,[first],[official(38.54,-121.495)],Geo,true);
 assert.equal(r.possibleOverlaps,0,'Non-proximate government point does not match community observation');
 assert.throws(()=>community.summarize(route,[osm('bad',38.5,-121.495)],[],Geo,true),/Malformed/);
 assert.throws(()=>community.summarize(null,[first],[],Geo,false),/incomplete/);
-console.log('Community route proximity and possible-overlap isolation PASS');
+async function runAdaptiveTests(){
+ const dense=Array.from({length:1001},()=>first);
+ const visited=[];
+ const filled=await community.scanRoute(route,Geo,async box=>{
+  visited.push(box);
+  if(visited.length===1)return dense; // A full bounded page must be subdivided
+  return [first,second]; // Duplicate OSM IDs dedupe across adjacent boxes
+ },new AbortController().signal);
+ assert.ok(visited.length>=3,'Dense cell should be split into complete smaller boxes');
+ assert.equal(filled.records.length,2);
+ const result=community.summarize(route,filled.records,[],Geo,false);
+ assert.equal(result.communityNearRoute,2);
+ assert.equal(result.possibleOverlaps,null);
+ assert.throws(()=>community.splitBox({
+  south:38.50000,north:38.50005,west:-121.50000,east:-121.49995
+ }),/too dense/);
+ let calls=0;
+ await assert.rejects(()=>community.scanRoute(route,Geo,async()=>{
+  calls++;return dense;
+ },new AbortController().signal),/dense|budget/i);
+ assert.ok(calls<250,'Dense unresolvable corridor should fail closed at budget');
+ const controller=new AbortController();controller.abort();
+ await assert.rejects(()=>community.scanRoute(route,Geo,
+  async()=>{throw Error('Should never fetch when canceled')},controller.signal),/cancelled/);
+ assert.equal(community.format({status:'unavailable'},
+  {status:'complete'}).includes('UNKNOWN'),true);
+ assert.equal(community.format({status:'complete',
+  summary:{communityNearRoute:0,possibleOverlaps:null}},
+  {status:'unavailable'}).includes('overlaps unknown'),true);
+ console.log('Community route adaptive queries, deduplication, cancellation and fail-closed budget PASS');
+}
+runAdaptiveTests().catch(error=>{console.error(error);process.exitCode=1});
