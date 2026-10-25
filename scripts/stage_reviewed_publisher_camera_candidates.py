@@ -154,7 +154,10 @@ if __name__=='__main__':
     args=p.parse_args()
     try:
         run(stage_private=args.stage_private)
+    except InventoryHeld as exc:
+        # InventoryHeld strings are predefined generic categories, not HTTP
+        # server responses or submitted coordinate payloads.
+        raise SystemExit('Government publisher research held: '+str(exc)) from None
     except Exception as exc:
-        # A public CI log must not print a response body, private case row,
-        # camera coordinate, candidate URL, or bearer token on failure.
+        # Do not leak private coordinates, API bodies or credentials.
         raise SystemExit('Government publisher research held: '+type(exc).__name__) from None
