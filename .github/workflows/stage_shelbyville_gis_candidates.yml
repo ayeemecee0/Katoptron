@@ -41,7 +41,7 @@ jobs:
             exit 1
           }
       - name: Stage exact source points and attestation receipts privately, with overlap hold
-        run: python scripts/stage_shelbyville_gis_candidates.py --stage-private
+        run: python scripts/stage_shelbyville_gis_candidates.py --stage-private --evidence-hold-ok
 
       - name: Test explicit municipal-source attribution and immutable drift holds
         run: python -m unittest discover -s scripts -p 'test_sync_source_attributed_gis.py' -v
