@@ -34,6 +34,21 @@ def map_identifiers(app_data):
     walk(app_data)
     return sorted(found)
 
+def verified_item_org(item,fetch):
+    org=item.get('orgId') if isinstance(item,dict) else None
+    if isinstance(org,str) and re.fullmatch(r'[A-Za-z0-9]{8,48}',org):
+        return org
+    owner=item.get('owner') if isinstance(item,dict) else None
+    if not isinstance(owner,str) or not re.fullmatch(r'[A-Za-z0-9_.-]{3,90}',owner):
+        raise ValueError('ArcGIS item missing independently provable owner')
+    profile=fetch('https://www.arcgis.com/sharing/rest/community/users/'+owner+'?f=json')
+    if (not isinstance(profile,dict) or profile.get('username')!=owner or
+            not isinstance(profile.get('orgId'),str) or
+            not re.fullmatch(r'[A-Za-z0-9]{8,48}',profile['orgId'])):
+        raise ValueError('Original Esri account organization identity not proven')
+    return profile['orgId']
+
+
 def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     doc,page_digest=page_fetch(CITY)
     anchors={normalized_url(urljoin(CITY,href)) for href,label in doc.anchors
@@ -44,16 +59,16 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     if (not isinstance(application,dict) or application.get('id')!=APPID
             or application.get('type') not in ('Web Mapping Application','Web Experience')):
         raise ValueError('Original city-linked ArcGIS application identity changed')
-    app_org=application.get('orgId')
-    if not isinstance(app_org,str) or len(app_org)<8:
-        raise ValueError('Original ArcGIS application organization unproven')
+    app_org=verified_item_org(application,fetch)
     config=fetch(ITEM+APPID+'/data?f=json')
     maps=map_identifiers(config)
     if len(maps)!=1:raise ValueError('City camera app does not identify exactly one Web Map')
     mapid=maps[0]
     item=fetch(ITEM+mapid+'?f=json')
     if (not isinstance(item,dict) or item.get('type')!='Web Map'
-        or item.get('id','').lower()!=mapid or item.get('orgId')!=app_org):
+        or item.get('id','').lower()!=mapid):
+        raise ValueError('App Web Map identity changed')
+    if verified_item_org(item,fetch)!=app_org:
         raise ValueError('App Web Map publisher differs from original city app')
     data=fetch(ITEM+mapid+'/data?f=json')
     layers=data.get('operationalLayers') if isinstance(data,dict) else None
