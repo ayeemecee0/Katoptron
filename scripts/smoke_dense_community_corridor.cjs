@@ -21,7 +21,7 @@ const assert=require('node:assert/strict');
    const route={points:[[33.75,-84.50],[34.0,-84.25]]};
    const fetchRows=async(b,signal)=>{
     const q=new URLSearchParams({
-     select:'osm_key,latitude,longitude',order:'osm_key.asc',limit:'1001'
+     select:'osm_key,latitude,longitude',order:'osm_key.asc',limit:'1000'
     });
     q.append('latitude','gte.'+b.south.toFixed(7));
     q.append('latitude','lte.'+b.north.toFixed(7));
@@ -29,27 +29,32 @@ const assert=require('node:assert/strict');
     q.append('longitude','lte.'+b.east.toFixed(7));
     const r=await fetch(c.supabaseUrl.replace(/\/$/,'')+
      '/rest/v1/flock_osm_community_points?'+q.toString(),{
-     headers:{apikey:c.supabasePublishableKey},signal,cache:'no-store'
+     headers:{apikey:c.supabasePublishableKey,Prefer:'count=exact'},signal,cache:'no-store'
     });
     if(!r.ok)throw Error('Public community REST '+r.status);
-    return r.json();
+    const rows=await r.json();
+    const match=/^(?:[0-9]+-[0-9]+|[*])\/([0-9]+)$/.exec(
+      r.headers.get('content-range')||'');
+    if(!match)throw Error('Public REST Content-Range exact total was unavailable');
+    return {rows,total:Number(match[1])};
    };
    const initial=await fetchRows({
     south:33.747,north:34.003,west:-84.503,east:-84.247
    },new AbortController().signal);
-   if(initial.length<=1000)throw Error('Urban fixture no longer exceeds legacy cutoff');
+   if(initial.total<=1000)throw Error('Urban fixture no longer exceeds legacy cutoff');
    const scan=await evaluator.scanRoute(route,geo,fetchRows,new AbortController().signal);
    const stats=evaluator.summarize(route,scan.records,[],geo,false);
-   return {initial:initial.length,queries:scan.queries,records:scan.records.length,
+   return {initial:initial.total,cappedPage:initial.rows.length,queries:scan.queries,records:scan.records.length,
      nearRoute:stats.communityNearRoute,uncertainOverlap:stats.possibleOverlaps};
   });
-  assert.equal(result.initial,1001);
+  assert.ok(result.initial>1000);
+  assert.equal(result.cappedPage,1000);
   assert.ok(result.queries>1&&result.queries<=240,
     'Dense urban area was not fully subdivided: '+JSON.stringify(result));
   assert.ok(result.records>1000,'Source inventory unexpectedly truncated');
   assert.equal(result.uncertainOverlap,null);
   assert.deepEqual(errors,[]);
-  console.log('DENSE URBAN OSM ROUTE PASS: baseline page=1001 (old fail); adaptive queries='+
+  console.log('DENSE URBAN OSM ROUTE PASS: public API capped at 1000 but exact total='+result.initial+' adaptive queries='+
    result.queries+'; complete unique source records='+result.records+
    '; community proximity='+result.nearRoute+'; official overlaps remain unknown');
  }catch(e){console.error('DENSE URBAN OSM ROUTE FAILED:',e.message);process.exitCode=1}
