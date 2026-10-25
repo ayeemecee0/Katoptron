@@ -109,6 +109,8 @@ on:
       - 'supabase/migrations/105_reconcile_existing_camera_point_cases.sql'
       - 'supabase/migrations/106_source_attributed_unconfirmed_separate_map_tier.sql'
       - 'scripts/test_source_reset_and_attributed_publication.sql'
+      - 'vendor-agency-layer.js'
+      - 'scripts/test_vendor_agency_layer.cjs'
       - 'scripts/reconcile_gis_candidate_lifecycle.py'
       - 'scripts/sync_source_attributed_gis.py'
       - 'scripts/test_sync_source_attributed_gis.py'
@@ -1064,6 +1066,8 @@ jobs:
         run: |
           node --check route-geometry.js
           node --check map.js
+          node --check vendor-agency-layer.js
+          node scripts/test_vendor_agency_layer.cjs
           node --check routing-routes.js
           node --check routing-provider.js
           node --check geoapify-adapter.js
