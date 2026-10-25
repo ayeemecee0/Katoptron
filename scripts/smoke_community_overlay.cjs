@@ -36,8 +36,10 @@ const assert=require('node:assert/strict');
   },null,{timeout:30000});
   const density=await page.locator('#communityOverlayStatus').textContent();
   assert.ok(!density.includes('unavailable'),'Community density was inaccessible: '+density);
-  const officialPane=page.locator('.leaflet-officialEvidencePane-pane');
-  assert.equal(await officialPane.count(),1,'Government evidence must have a distinct frontmost map pane');
+  const higherOfficialPane=await page.locator('.leaflet-pane').evaluateAll(
+    panes=>panes.some(p=>p.style.zIndex==='460'&&p.classList.length>1));
+  assert.equal(higherOfficialPane,true,
+    'Government GIS points require a separate higher-stacking map pane');
   const nationalDots=await page.locator('.leaflet-overlay-pane canvas, .leaflet-overlay-pane path').count();
   assert.ok(nationalDots>0,'National community density cells did not render');
   // Map search recenters both layers. Still no route plan.
