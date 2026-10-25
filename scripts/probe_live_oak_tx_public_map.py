@@ -141,6 +141,8 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page,private_point
         label for href,label in doc.anchors
         if isinstance(href,str) and normalized_url(urljoin(CITY,href))==APP
     ]
+    if APP not in anchors:
+        raise ValueError('Original city police no longer links its original map')
     if (not original_camera_disclosure(doc) or
         not any('camera map' in str(label).lower() for label in agency_map_labels)):
         raise ValueError('Original city police no longer attributes camera map to its Flock program')
