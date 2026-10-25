@@ -39,7 +39,7 @@ const assert=require('node:assert/strict');
   },null,{timeout:40000});
   let status=await page.locator('#status').textContent();
   assert.ok(status.includes('community Flock locations shown'),'Map source retrieval did not succeed: '+status);
-  assert.ok(await page.locator('.leaflet-interactive').count()>0,'No map geometry rendered');
+  assert.ok(Number.parseInt(status.replaceAll(',',''),10)>=1,'No real camera positions returned within source viewport: '+status);
   assert.deepEqual(errors,[],'Browser JavaScript errors');
   console.log('NATIONAL COMMUNITY FLOCK MAP PASS: '+count+' public ODbL points indexed; GIS and community separate');
  }catch(e){console.error('NATIONAL COMMUNITY FLOCK MAP FAILED:',e.message);process.exitCode=1}
