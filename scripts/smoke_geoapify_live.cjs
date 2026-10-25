@@ -6,10 +6,12 @@
  * action (2 free-plan routing requests) + one geocoding request. */
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
+const {record}=require('./publish_provider_health.cjs');
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1365,height:900}});
  const results={geocoding:[],routing:[]};
+ let accepted=false;
  try{
   page.on('response',response=>{
    const url=new URL(response.url());
@@ -54,6 +56,7 @@ const assert=require('node:assert/strict');
   assert.ok((await page.locator('#mapSearchStatus').textContent())
     .startsWith('Map centered on '),'Geoapify US geocoding failed');
   assert.deepEqual(results.geocoding,[200]);
+  accepted=true;
   console.log('LIVE GEOAPIFY PASS: authorized origin, US geocode, drive route, evidence check, attribution. Requests: routing='+
     results.routing.length+' geocoding='+results.geocoding.length);
  }catch(err){
@@ -61,5 +64,18 @@ const assert=require('node:assert/strict');
     err.name);
   console.error('Geoapify status codes: '+JSON.stringify(results));
   process.exitCode=1;
- }finally{await browser.close();}
+ }finally{
+  await browser.close();
+  if(process.env.SUPABASE_SERVICE_ROLE_KEY){
+   try{
+    const state=await record(results,accepted);
+    console.log('PUBLIC GEOAPIFY HEALTH RECEIPT saved status='+state+
+      ' (fixed public fixtures only; no account-wide quota balance)');
+   }catch(err){
+    console.error('PUBLIC GEOAPIFY HEALTH RECEIPT FAILED: '+err.name+
+      ' (no key or route details printed)');
+    process.exitCode=1;
+   }
+  }
+ }
 })().catch(err=>{console.error('Geoapify acceptance harness failure',err.name);process.exitCode=1;});
