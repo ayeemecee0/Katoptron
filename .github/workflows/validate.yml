@@ -101,6 +101,10 @@ on:
       - 'supabase/migrations/097_published_osm_nearby_candidates.sql'
       - 'supabase/migrations/098_public_fixed_route_provider_health.sql'
       - 'supabase/migrations/099_bounded_osm_viewport_density.sql'
+      - 'supabase/migrations/100_government_linked_flock_vendor_directory.sql'
+      - 'scripts/test_government_vendor_directory.sql'
+      - 'scripts/sync_government_vendor_directory.py'
+      - 'scripts/test_sync_government_vendor_directory.py'
       - 'scripts/test_bounded_osm_viewport_density.sql'
       - 'scripts/test_public_provider_health.sql'
       - 'scripts/publish_provider_health.cjs'
@@ -626,6 +630,10 @@ jobs:
             -f supabase/migrations/099_bounded_osm_viewport_density.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_bounded_osm_viewport_density.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/100_government_linked_flock_vendor_directory.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_government_vendor_directory.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
