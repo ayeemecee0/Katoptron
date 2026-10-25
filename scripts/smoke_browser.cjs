@@ -50,7 +50,7 @@ const assert=require('node:assert/strict');
   const tierSecurity=await page.evaluate(async()=>{
     const c=window.KATOPTRON_CONFIG;
     const h={apikey:c.supabasePublishableKey};
-    const view=await fetch(c.supabaseUrl+'/rest/v1/flock_public_tiered_camera_points?select=case_key,evidence_tier&limit=20',
+    const view=await fetch(c.supabaseUrl+'/rest/v1/flock_public_tiered_camera_points?select=case_key,evidence_tier,evidence_summary&limit=20',
       {headers:h,cache:'no-store'});
     if(!view.ok)throw Error('Tiered public read HTTP '+view.status);
     const items=await view.json();
