@@ -1,0 +1,32 @@
+name: Audit independent Live Oak city Flock map evidence
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '19 15 * * 3'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/probe_live_oak_tx_public_map.py'
+      - 'scripts/test_probe_live_oak_tx_public_map.py'
+      - '.github/workflows/probe_live_oak_tx.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-original-live-oak-map-proof
+  cancel-in-progress: false
+jobs:
+  inspect-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Reject arbitrary map links and false ArcGIS publisher identities
+        run: python -m unittest discover -s scripts -p 'test_probe_live_oak_tx_public_map.py' -v
+      - name: Follow public police camera-map application to its original publisher Web Map
+        run: python scripts/probe_live_oak_tx_public_map.py
