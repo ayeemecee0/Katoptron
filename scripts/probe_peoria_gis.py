@@ -34,7 +34,7 @@ def query(fetch, parameters):
     return fetch(LAYER + '/query?' + urllib.parse.urlencode(parameters))
 
 
-def inventory(fetch=read):
+def inventory(fetch=read, include_private_points=False):
     meta = fetch(LAYER + '?f=json')
     service = fetch(SERVICE + '?f=json')
     fields = meta.get('fields', [])
@@ -114,9 +114,13 @@ def inventory(fetch=read):
         seen.update(actual)
     if ids != original_ids() or seen != set(ids):
         raise ValueError('Original camera inventory changed during verification')
-    return {'point_count': len(ids), 'stable_ids': True,
-            'complete_original_inventory': True,
-            'operational_status': 'not_established'}
+    result = {'point_count': len(ids), 'stable_ids': True,
+              'complete_original_inventory': True,
+              'operational_status': 'not_established'}
+    if include_private_points:
+        # In-memory only. Callers MUST NOT print, persist, or expose positions.
+        result['_private_points'] = sorted(points)
+    return result
 
 
 def main():
