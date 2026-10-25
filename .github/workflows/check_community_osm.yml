@@ -26,6 +26,28 @@ jobs:
         run: npm install --no-save --no-package-lock playwright@1.56.1
       - name: Serve public static site locally
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-map-http.log 2>&1 &
+      - name: Check documented public OpenStreetMap tile and metadata endpoints
+        run: |
+          python3 - <<'PY'
+          import urllib.request
+          urls=[
+           'https://data.dontgetflocked.com/cameras-manifest.json',
+           'https://tiles.dontgetflocked.com/cameras-us-hourly-manifest.json',
+           'https://tiles.dontgetflocked.com/cameras-us-hourly-filter.json',
+           'https://tiles.dontgetflocked.com/cameras-us-hourly.json',
+           'https://tiles.dontgetflocked.com/cameras-us-hourly-filter/0/0/0.mvt'
+          ]
+          for url in urls:
+              try:
+                  req=urllib.request.Request(url,method='GET',
+                      headers={'User-Agent':'Katoptron-public-open-data-research/1.0'})
+                  with urllib.request.urlopen(req,timeout=10) as r:
+                      print('PUBLIC_DATA_ENDPOINT',url,'status',r.status,
+                           'cors',r.headers.get('access-control-allow-origin','none'),
+                           'type',r.headers.get('content-type','unknown'))
+              except Exception as e:
+                  print('PUBLIC_DATA_ENDPOINT',url,'error',type(e).__name__,str(e)[:120])
+          PY
       - name: Verify real open-data source and manufacturer-filtered nationwide map
         env:
           KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
