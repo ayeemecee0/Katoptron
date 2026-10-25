@@ -184,13 +184,26 @@ def run(stage_private=False,api=api_request,fetch_page=fetch_government_page,
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--stage-private',action='store_true')
+    p.add_argument('--evidence-hold-ok',action='store_true',
+                   help='Report previously staged evidence drift as a guarded research hold')
     args=p.parse_args()
     try:
         run(stage_private=args.stage_private)
     except InventoryHeld as exc:
-        # InventoryHeld strings are predefined generic categories, not HTTP
-        # server responses or submitted coordinate payloads.
-        raise SystemExit('Government publisher research held: '+str(exc)) from None
+        # Only known immutable-receipt conflicts are accepted as a guarded
+        # held research result. Other source, credential and inventory errors
+        # remain hard failures. The workflow never approves camera positions.
+        known_holds={
+            'Private source proof changed; independent review required',
+            'Private source case changed; independent review required',
+        }
+        if args.evidence_hold_ok and str(exc) in known_holds:
+            print('::warning::Private original-government GIS evidence drift requires independent review')
+            print('GOV-OWNED ARCGIS RESEARCH status: HELD, no private staging completed')
+            print('GOV-OWNED ARCGIS RESEARCH canonical_cameras_published: 0')
+        else:
+            # These strings are predefined categories, not HTTP response data.
+            raise SystemExit('Government publisher research held: '+str(exc)) from None
     except Exception as exc:
         # Do not leak private coordinates, API bodies or credentials.
         raise SystemExit('Government publisher research held: '+type(exc).__name__) from None
