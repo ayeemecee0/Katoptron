@@ -91,7 +91,7 @@ async function loadGovernmentLinks(){
    select:'program_key,jurisdiction_label,state_code,program_status,government_document_date,original_government_url,portal_url,checked_at,source_tier',
    order:'jurisdiction_label.asc,portal_url.asc',limit:'200'
   });
-  const res=await fetch(cfg.supabaseUrl.replace(/\\/$/,'')+
+  const res=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+
    '/rest/v1/flock_public_government_vendor_directory?'+query.toString(),{
    headers:{apikey:cfg.supabasePublishableKey},cache:'no-store',referrerPolicy:'no-referrer'});
   if(!res.ok)throw Error('Source-link directory temporarily unavailable');
