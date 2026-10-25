@@ -14,8 +14,9 @@ begin
  if has_function_privilege('anon','public.reconcile_flock_gis_candidate_lifecycle()','EXECUTE')
    or has_function_privilege('authenticated','public.reconcile_flock_gis_point_case_dispositions()','EXECUTE')
  then raise exception 'Untrusted client can alter private GIS dispositions';end if;
- if not ('security_invoker=true'=any((select reloptions from pg_class
-                 where oid='public.flock_public_tiered_camera_points'::regclass)))
+ if not exists(select 1 from pg_class
+    where oid='public.flock_public_tiered_camera_points'::regclass
+      and 'security_invoker=true'=any(reloptions))
  then raise exception 'Public tiered view lost invoker RLS';end if;
 end $$;
 -- A staged *separately published* source observation must stay outside official rows.
