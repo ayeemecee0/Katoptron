@@ -21,7 +21,7 @@ input{font:inherit;background:#172636;border:1px solid #567286;border-radius:8px
 .stat{border:1px solid #344b5d;background:#111f2c;border-radius:10px;padding:14px 20px;min-width:190px}
 .stat strong{display:block;font-size:1.6rem}.stat span{color:#adbdca;font-size:.76rem}
 #results{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:15px;margin-top:20px}
-.card{border:1px solid #354e62;border-radius:12px;background:#101e2b;padding:19px}
+.card{border:1px solid #354e62;border-radius:12px;background:#101e2b;padding:19px}.government-link-list{display:grid;gap:10px;list-style:none;padding:0}.government-link-list li{padding:12px;border:1px solid #405b6d;border-radius:7px}.government-link-list a{margin-right:12px}
 .eyebrow{font-size:.73rem;letter-spacing:.07em;text-transform:uppercase;color:#9db7c8}
 .hero{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0}
 .camera strong{font-size:2.15rem;font-variant-numeric:tabular-nums}
@@ -50,6 +50,12 @@ dt{color:#b4c6d4}dd{margin:0;font-weight:650;text-align:right;font-variant-numer
 <input id="search" type="search" maxlength="90" placeholder="Search e.g. Menifee, Folsom, CA">
 <p id="status" role="status" aria-live="polite">Loading first-party source snapshots…</p>
 <section id="results" aria-live="polite"></section>
+<section aria-labelledby="government-links-heading">
+<h2 id="government-links-heading">Government-linked Flock transparency portals</h2>
+<p>These portals were directly linked from an independently reviewed original-government program page within the last 30 days. The link establishes a government-to-vendor disclosure relationship, <strong>not</strong> that any camera count, position, or current operation is verified.</p>
+<p id="governmentLinkStatus" role="status" aria-live="polite">Checking original government links…</p>
+<ul id="governmentLinkList" class="government-link-list"></ul>
+</section>
 <p class="foot">The snapshot list is selective, not a census of participating agencies. New information requires an exact original Flock portal citation and a dated reviewed snapshot. Individual camera locations are verified separately. <a href="./methodology.html">Read the evidence policy</a>.</p>
 </main><script src="./config.js"></script>
 <script>
@@ -78,6 +84,39 @@ function card(row){
  el.append(text('p','Vendor-reported and source-dated. No camera coordinates are implied.','foot'));
  return el;
 }
+async function loadGovernmentLinks(){
+ const cfg=window.KATOPTRON_CONFIG;
+ try{
+  const query=new URLSearchParams({
+   select:'program_key,jurisdiction_label,state_code,program_status,government_document_date,original_government_url,portal_url,checked_at,source_tier',
+   order:'jurisdiction_label.asc,portal_url.asc',limit:'200'
+  });
+  const res=await fetch(cfg.supabaseUrl.replace(/\\/$/,'')+
+   '/rest/v1/flock_public_government_vendor_directory?'+query.toString(),{
+   headers:{apikey:cfg.supabasePublishableKey},cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!res.ok)throw Error('Source-link directory temporarily unavailable');
+  const data=await res.json();
+  if(!Array.isArray(data)||data.length>=200)throw Error('Government-linked portal list incomplete');
+  const list=$('governmentLinkList');list.replaceChildren();
+  for(const row of data){
+   const link=safePortal(row.portal_url);
+   if(!link)throw Error('Unexpected government-linked vendor URL');
+   const li=document.createElement('li');
+   li.append(text('strong',row.jurisdiction_label+' · Source checked '+String(row.checked_at).slice(0,10)));
+   const p=text('p','Direct link on original government programme page. Vendor content is separate evidence.','foot');
+   li.append(p);
+   const a=text('a','Open Flock vendor portal');a.href=link;a.target='_blank';a.rel='noopener noreferrer';li.append(a);
+   const gov=new URL(row.original_government_url);
+   if(gov.protocol==='https:'){
+    const b=text('a','Read original government programme');
+    b.href=gov.href;b.target='_blank';b.rel='noopener noreferrer';li.append(b);
+   }
+   list.append(li);
+  }
+  $('governmentLinkStatus').textContent=data.length+
+   ' current independently government-linked vendor portal(s), without implied camera locations.';
+ }catch(err){$('governmentLinkStatus').textContent='Government-linked portal references unavailable. Coverage unknown.';}
+}
 function render(){
  const q=$('search').value.trim().toLowerCase();
  const result=rows.filter(x=>(x.agency_label+' '+x.state_code).toLowerCase().includes(q));
@@ -103,4 +142,5 @@ async function load(){
 }
 $('search').addEventListener('input',render);
 load();
+loadGovernmentLinks();
 </script></body></html>
