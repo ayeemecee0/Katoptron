@@ -22,7 +22,7 @@ MAX_PUBLIC = 5000
 def audited_private_points(page_fetch=fetch_government_page,
                            arcgis_fetch=get_official_json,
                            publisher=inspect_arcgis_publisher,
-                           inventory=inspect):
+                           inventory=inspect, include_evidence=False):
     original, checksum = page_fetch(CITY)
     if not isinstance(checksum, str) or len(checksum) != 64:
         raise ValueError('Original city webpage receipt missing')
@@ -45,6 +45,9 @@ def audited_private_points(page_fetch=fetch_government_page,
         if not (35.2 <= point['lat'] <= 36.0 and
                 -87.2 <= point['lon'] <= -86.0):
             raise ValueError('Original camera feature outside reviewed city envelope')
+    if include_evidence:
+        return {'gov_page_sha256': checksum, 'arcgis_org_id': identity['org_id'],
+                'private_original_points': points}
     return [(p['lat'], p['lon']) for p in points]
 
 
