@@ -1,6 +1,6 @@
 """Regress exact-Osm-ID, ODbL classification and non-official point imports."""
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch,MagicMock
 import import_osm_community_flock as m
 
 DAY='2026-10-24'
@@ -34,6 +34,41 @@ class ImportTests(unittest.TestCase):
   self.assertEqual(len(calls),1)
   self.assertTrue(all('verification_status' not in p for p in calls[0]))
   self.assertTrue(all('latitude' in p and 'source_snapshot_date' in p for p in calls[0]))
+ def test_reconcile_does_not_delete_on_partial_source(self):
+  with patch.object(m,'read_count') as count:
+   with patch.object(m.urllib.request,'urlopen') as net:
+    with self.assertRaisesRegex(ValueError,'shrink'):
+     m.reconcile(116160,100000,'2026-10-25T03:00:00+00:00')
+   count.assert_not_called()
+   net.assert_not_called()
+ def test_reconcile_does_not_delete_after_incomplete_upload(self):
+  with patch.object(m,'read_count',return_value=116000):
+   with patch.object(m.urllib.request,'urlopen') as net:
+    with self.assertRaisesRegex(ValueError,'count mismatch'):
+     m.reconcile(116160,116120,'2026-10-25T03:00:00+00:00')
+   net.assert_not_called()
+ def test_successful_full_reconciliation_checks_both_sides(self):
+  response=MagicMock()
+  response.__enter__.return_value.status=204
+  response.__enter__.return_value.read.return_value=b''
+  with patch.object(m,'read_count',side_effect=[116120,116120]) as counts:
+   with patch.object(m.urllib.request,'urlopen',return_value=response) as net:
+    with patch.dict(m.os.environ,{
+     'SUPABASE_URL':'https://bpvkapswslmgfazbzpsv.supabase.co',
+     'SUPABASE_SERVICE_ROLE_KEY':'only-a-test-secret'
+    }):
+     m.reconcile(116160,116120,'2026-10-25T03:00:00+00:00')
+    self.assertEqual(net.call_args.args[0].get_method(),'DELETE')
+    self.assertIn('last_seen_sync_at=neq.',net.call_args.args[0].full_url)
+    self.assertEqual(counts.call_count,2)
+ def test_upsert_batch_includes_marker_and_preserves_existing_ids(self):
+  collected=[]
+  row=m.normalize(f(),DAY)
+  m.import_rows([row],1,api=lambda batch:collected.extend(batch),
+   run_stamp='2026-10-25T03:00:00+00:00')
+  self.assertEqual(collected[0]['last_seen_sync_at'],'2026-10-25T03:00:00+00:00')
+  self.assertEqual(collected[0]['osm_key'],'node/123')
+  self.assertNotIn('evidence_tier',collected[0])
  def test_unexpected_count_held(self):
   with self.assertRaisesRegex(ValueError,'outside bounds'):
    m.prepare_rows([f()],DAY)
