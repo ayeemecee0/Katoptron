@@ -89,6 +89,10 @@ on:
       - 'supabase/migrations/085_government_map_only_flock_programs_az_va.sql'
       - 'supabase/migrations/086_original_government_camera_map_documents.sql'
       - 'supabase/migrations/087_menifee_government_program_without_approved_camera_points.sql'
+      - 'supabase/migrations/088_vendor_first_party_portal_snapshots.sql'
+      - 'scripts/test_vendor_portal_snapshots.sql'
+      - 'scripts/test_vendor_portal_static.py'
+      - 'portals.html'
       - 'scripts/test_documented_map_only_programs.sql'
       - 'scripts/test_first_party_agency_gis_rechecks.sql'
       - 'scripts/test_reviewed_first_party_agency_registry.sql'
@@ -544,6 +548,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/087_menifee_government_program_without_approved_camera_points.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/088_vendor_first_party_portal_snapshots.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_vendor_portal_snapshots.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_first_party_agency_gis_rechecks.sql
@@ -947,6 +955,7 @@ jobs:
           node scripts/test_routing_provider.js
           python scripts/test_community_frontend_syntax.py
           python scripts/test_public_accessibility.py
+          python scripts/test_vendor_portal_static.py
           python scripts/test_static_release_security.py
           node --check route-comparison.js
           node scripts/test_route_comparison.js
