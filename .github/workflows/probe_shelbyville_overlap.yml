@@ -1,5 +1,7 @@
 name: Read-only Shelbyville original GIS proximity audit
 on:
+  schedule:
+    - cron: '21 14 * * 2'
   workflow_dispatch:
   push:
     branches: [main]
