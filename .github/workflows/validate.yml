@@ -715,7 +715,7 @@ jobs:
           # The corresponding production total is eight because some states
           # also have independently verified public GIS camera locations.
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(*) from public.flock_public_state_evidence_index where verified_camera_points=0 and dated_program_records>0" | grep -qx 13
+            "select (select count(*) from public.flock_public_state_evidence_index where verified_camera_points=0 and dated_program_records>0)=(select count(distinct state_code) from public.flock_documented_programs where record_status='verified')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.flock_public_state_evidence_index where terminated_program_records>0" | grep -qx 3
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
