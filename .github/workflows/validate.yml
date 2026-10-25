@@ -96,6 +96,9 @@ on:
       - 'supabase/migrations/092_separate_osm_community_flock_camera_layer.sql'
       - 'supabase/migrations/093_osm_community_nationwide_density.sql'
       - 'supabase/migrations/094_osm_community_full_snapshot_reconciliation.sql'
+      - 'supabase/migrations/095_possible_cross_source_osm_proximity.sql'
+      - 'scripts/test_cross_source_proximity.sql'
+      - 'community-route.js'
       - 'scripts/test_osm_full_snapshot_reconciliation.sql'
       - 'scripts/test_osm_community_density.sql'
       - 'scripts/test_osm_community_layer.sql'
@@ -590,6 +593,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_full_snapshot_reconciliation.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/095_possible_cross_source_osm_proximity.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_cross_source_proximity.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_first_party_agency_gis_rechecks.sql
@@ -999,6 +1006,8 @@ jobs:
           python scripts/test_static_release_security.py
           node --check route-comparison.js
           node scripts/test_route_comparison.js
+          node --check community-route.js
+          node scripts/test_community_route.js
           node scripts/test_routing_routes.js
           node scripts/test_route_geometry.js
       - name: Verify disposable PostgreSQL dump and actual recovery
