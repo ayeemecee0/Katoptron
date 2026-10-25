@@ -22,6 +22,21 @@ class Catalog(unittest.TestCase):
   self.assertIn("PRIVATE discovery lead",result["layer_purpose"])
   self.assertIsNone(d.qualify_layer(R,service,286,"Flock Cameras",
        {**feature,"geometryType":"esriGeometryPolygon"}))
+ def test_named_camera_services_are_checked_without_waiting_for_full_rotation(self):
+  routine=['https://gis.peoriaaz.gov/arcgis/rest/services/PM/Utility%04d/MapServer'%i
+           for i in range(120)]
+  flock='https://gis.peoriaaz.gov/arcgis/rest/services/PM/Flock_Cameras/MapServer'
+  for day in (0,3,7,11):
+   batch=d.catalog_daily_slice(sorted(routine+[flock]),day)
+   self.assertIn(flock,batch)
+   self.assertLessEqual(len(batch),d.PER_DAY)
+   self.assertTrue(any(u in routine for u in batch))
+ def test_generic_services_still_rotate(self):
+  urls=['https://gis.peoriaaz.gov/arcgis/rest/services/PM/GIS%04d/MapServer'%i
+        for i in range(90)]
+  visited=set()
+  for day in range(3): visited.update(d.catalog_daily_slice(urls,day))
+  self.assertEqual(visited,set(urls))
  def test_no_candidate_is_published(self):
   service="https://gis.peoriaaz.gov/arcgis/rest/services/PM/pmPublicWorks/MapServer"
   listing={"folders":[],"services":[{"name":"PM/pmPublicWorks","type":"MapServer"}]}
