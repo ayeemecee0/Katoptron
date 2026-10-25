@@ -98,6 +98,12 @@ on:
       - 'supabase/migrations/094_osm_community_full_snapshot_reconciliation.sql'
       - 'supabase/migrations/095_possible_cross_source_osm_proximity.sql'
       - 'supabase/migrations/096_osm_quality_snapshots.sql'
+      - 'supabase/migrations/097_published_osm_nearby_candidates.sql'
+      - 'scripts/test_osm_nearby_publication.sql'
+      - 'scripts/publish_osm_nearby.py'
+      - 'scripts/test_publish_osm_nearby.py'
+      - 'nearby.html'
+      - 'scripts/smoke_nearby.cjs'
       - 'scripts/test_osm_quality_snapshots.sql'
       - 'scripts/test_cross_source_proximity.sql'
       - 'community-route.js'
@@ -602,6 +608,10 @@ jobs:
             -f supabase/migrations/096_osm_quality_snapshots.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_quality_snapshots.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/097_published_osm_nearby_candidates.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_osm_nearby_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
