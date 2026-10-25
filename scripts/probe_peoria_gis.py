@@ -41,7 +41,8 @@ def inventory(fetch=read):
     names = {field.get('name') for field in fields if isinstance(field, dict)}
     oid_field = meta.get('objectIdField') or next((field.get('name') for field in fields
         if isinstance(field, dict) and field.get('type') == 'esriFieldTypeOID'), None)
-    if (meta.get('objectIdField') and meta['objectIdField'] != oid_field):\n        raise ValueError('Conflicting ArcGIS ObjectID metadata')
+    if (meta.get('objectIdField') and meta['objectIdField'] != oid_field):
+        raise ValueError('Conflicting ArcGIS ObjectID metadata')
     if (meta.get('name') != 'Flock Cameras'
             or meta.get('geometryType') != 'esriGeometryPoint'
             or meta.get('type') != 'Feature Layer'
