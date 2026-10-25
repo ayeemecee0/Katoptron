@@ -1,0 +1,21 @@
+name: Audit public nationwide OSM Flock inventory
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_open_alpr_feed.py'
+      - '.github/workflows/audit_public_osm_flock.yml'
+permissions:
+  contents: read
+jobs:
+  read-only-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Fetch and classify public openly licensed national ALPR source
+        run: python scripts/inspect_open_alpr_feed.py
