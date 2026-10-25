@@ -16,6 +16,7 @@ from paged_supabase import fetch_all
 from audit_external_arcgis_candidates import (candidate_inputs,
     inspect_arcgis_publisher,check_external,LAYER_URL)
 from auto_verify_camera_gis import get_official_json
+from audit_affiliated_flock_inventory import inspect as inspect_camera_inventory, InventoryHeld
 from discover_government_gis_links import (
     fetch_government_page,get_seed_pages,normalized_url)
 from government_domain_registry import load_approved_domains
@@ -215,6 +216,25 @@ def run():
                 # A matched link is original-government *publisher association*
                 # only, not yet an individually reviewed Flock camera location.
                 print('ESRI GOV PUBLISHER MATCH',marker,'gov_page_sha',matches[0])
+                try:
+                    proof=inspect_camera_inventory(
+                        url,candidate['layer_name'],candidate['object_id_field'],
+                        get_official_json)
+                    counts['government_affiliated_complete_gis_inventories']+=1
+                    counts['government_affiliated_gis_features']+=proof['features']
+                    if proof['has_individual_camera_id_field']:
+                        counts['gis_inventory_has_individual_camera_id_field']+=1
+                    # Original gov links to the publisher alone do not
+                    # endorse any particular camera layer, installation or
+                    # live camera. No private coordinate or OID is printed.
+                    print('ESRI GOV INVENTORY READONLY',marker,'points',proof['features'],
+                          'complete_ids',proof['stable_original_ids'],
+                          'geometry_valid',proof['bounded_point_geometry'],
+                          'individual_id_field',proof['has_individual_camera_id_field'])
+                except (InventoryHeld,ValueError,TypeError,KeyError) as exc:
+                    counts['government_affiliated_inventory_held']+=1
+                    print('ESRI GOV INVENTORY HELD',marker,type(exc).__name__)
+
             else:
                 counts['original_government_organization_link_missing']+=1
                 print('ESRI GOV PUBLISHER HELD',marker,'no reviewed agency org hyperlink')
