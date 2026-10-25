@@ -39,7 +39,7 @@ class SourceTierAcceptance(unittest.TestCase):
     def test_no_untrusted_source_promoted(self):
         sample=list(copy.deepcopy(snapshot()))
         sample[1][0]['source_status']='unverified'
-        with self.assertRaisesRegex(ValueError,'source identity'):
+        with self.assertRaisesRegex(ValueError,'No current independently approved source'):
             audit.check(sample,1)
 
     def test_bad_digest_or_missing_recheck_held(self):
