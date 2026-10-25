@@ -9,7 +9,7 @@ import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
 PAGES=["index.html","records.html","accountability.html","analytics.html",
-       "submit.html","community-review.html","privacy.html","methodology.html","portals.html"]
+       "submit.html","community-review.html","privacy.html","methodology.html","portals.html","community-map.html"]
 
 class Page(HTMLParser):
     def __init__(self):
