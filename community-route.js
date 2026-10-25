@@ -35,8 +35,10 @@
    possibleOverlaps=candidates.filter(p=>exact.some(o=>
      geo.haversine(p,[Number(o.latitude),Number(o.longitude)])<=OVERLAP_M)).length;
   }
-  return {communityNearRoute:candidates.length,possibleOverlaps,
-    proximityMeters:RADIUS_M,overlapMeters:OVERLAP_M};
+  const uniqueMappedCoordinates=new Set(candidates.map(p=>p[0].toFixed(7)+','+p[1].toFixed(7))).size;
+  return {communityNearRoute:candidates.length,uniqueMappedCoordinates,
+    colocatedExtraObservations:candidates.length-uniqueMappedCoordinates,
+    possibleOverlaps,proximityMeters:RADIUS_M,overlapMeters:OVERLAP_M};
  }
  function splitBox(box){
   const latitudeSpan=box.north-box.south;
@@ -63,11 +65,13 @@
   const overlap=officialStatus?.status==='complete'
    ?result.summary.possibleOverlaps+' possible overlaps with government-source locations (30m); not confirmed same cameras'
    :'possible government-source overlaps unknown';
-  return n+' community-mapped OSM observation(s) within 120m · '+overlap+
+  return n+' community-mapped OSM observation(s) within 120m · '+
+   result.summary.uniqueMappedCoordinates+' mapped coordinate position(s) ('+
+   result.summary.colocatedExtraObservations+' co-located extra observation(s)) · '+overlap+
    '. Neither count estimates actual detections.';
  }
- // All bounding subdivisions must complete. 1001 rows triggers subdivision;
- // a failed page, exceeded budget or over-dense cell fails closed as unknown.
+ // All bounding subdivisions must complete. PostgREST can cap responses at
+ // 1000 without warning; exact Content-Range totals detect truncated rows.
  async function scanRoute(route,geo,fetchRows,signal){
   if(!route||!Array.isArray(route.points)||!geo?.corridorBoxes)
    throw Error('Route geometry unavailable');
@@ -180,7 +184,9 @@
     ?' '+summary.possibleOverlaps+' OSM observation(s) within 30m of official-source points may overlap; not proof of identical devices.'
     :' Government-source overlaps unknown because official corridor evidence is incomplete.';
    say('Selected route: '+summary.communityNearRoute+
-    ' OSM community observations within an illustrative 120m band.'+overlap+
+    ' OSM community observations within an illustrative 120m band ('+
+    summary.uniqueMappedCoordinates+' exact mapped coordinate positions; '+
+    summary.colocatedExtraObservations+' extra observations sharing coordinates).'+overlap+
     ' These are not detected vehicles or active-device counts. Counts are not added.');
   }
   function entryFor(route){
