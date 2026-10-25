@@ -215,9 +215,12 @@ def run():
         try:
             download_private_image(path,bystander["token"])
         except CheckFailed as rejection:
+            # Supabase Storage sometimes returns 400 for hidden RLS-protected
+            # objects. The owner must subsequently read the identical bytes,
+            # ruling out a malformed path or missing QA fixture.
             require(any(code in str(rejection) for code in
-                        ("HTTP 401", "HTTP 403", "HTTP 404")),
-                    "Private Storage bystander response classification: "+str(rejection))
+                        ("HTTP 400", "HTTP 401", "HTTP 403", "HTTP 404")),
+                    "Private Storage bystander access denied with documented gateway response")
         else:
             raise CheckFailed("Private Storage allowed unprivileged third-party access")
         original=download_private_image(path,owner["token"])
