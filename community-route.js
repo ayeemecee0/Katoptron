@@ -146,6 +146,17 @@
   function officialFor(route){
    return officialEvidence[routes.indexOf(route)]||{status:'checking'};
   }
+  function summaryFor(route,entry){
+   const official=officialFor(route);
+   // Route geometry and its community source records are stable per scan.
+   // Recalculate only when the separate official evidence result changes.
+   if(entry.summary&&entry.officialSnapshot===official)return entry.summary;
+   const complete=official.status==='complete';
+   entry.summary=summarize(route,entry.records,
+     complete?official.records:[],geo,complete);
+   entry.officialSnapshot=official;
+   return entry.summary;
+  }
   function viewSelected(){
    if(!toggle.checked||!selected)return;
    const entry=results.get(selected);
@@ -158,9 +169,7 @@
     return;
    }
    const official=officialFor(selected);
-   const summary=summarize(selected,entry.records,
-    official.status==='complete'?official.records:[],geo,official.status==='complete');
-   entry.summary=summary;
+   const summary=summaryFor(selected,entry);
    const overlap=official.status==='complete'
     ?' '+summary.possibleOverlaps+' OSM observation(s) within 30m of official-source points may overlap; not proof of identical devices.'
     :' Government-source overlaps unknown because official corridor evidence is incomplete.';
@@ -172,11 +181,7 @@
    if(!toggle.checked)return null;
    const entry=results.get(route);
    if(!entry)return {status:'checking'};
-   if(entry.status==='complete'){
-    const official=officialFor(route);
-    entry.summary=summarize(route,entry.records,
-     official.status==='complete'?official.records:[],geo,official.status==='complete');
-   }
+   if(entry.status==='complete')summaryFor(route,entry);
    return entry;
   }
   function select(route){
