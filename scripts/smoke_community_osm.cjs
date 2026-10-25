@@ -5,7 +5,9 @@ const assert=require('node:assert/strict');
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1280,height:850}});
  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
- let tileResponses=0;const failed=[];
+ let tileResponses=0;const failed=[];const networkFailures=[];
+ page.on('requestfailed',req=>networkFailures.push(req.url().slice(0,160)+':'+(req.failure()?.errorText||'unknown')));
+ page.on('console',msg=>{if(msg.type()==='error')networkFailures.push('console:'+msg.text().slice(0,160))});
  page.on('response',r=>{if(r.url().includes('cameras-us-hourly-filter/')&&r.status()===200)tileResponses++});
  page.on('pageerror',e=>failed.push(e.message));
  try{
