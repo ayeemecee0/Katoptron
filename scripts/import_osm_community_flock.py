@@ -147,7 +147,7 @@ def read_count(query=None):
         content_range=response.headers.get('Content-Range','')
         if len(response.read(4000))>4000:
             raise ValueError('Count query returned excessive data')
-    match=re.fullmatch(r'(?:\\d+-\\d+|\\*)/(\\d+)',content_range)
+    match=re.fullmatch(r'(?:[0-9]+-[0-9]+|[*])/([0-9]+)',content_range)
     if not match:
         raise ValueError('Community exact count missing: refusing reconciliation')
     return int(match.group(1))
