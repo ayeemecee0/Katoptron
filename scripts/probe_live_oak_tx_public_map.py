@@ -100,6 +100,11 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
     layers=data.get('operationalLayers') if isinstance(data,dict) else None
     if not isinstance(layers,list) or not 1<=len(layers)<=100:
         raise ValueError('Original Web Map operational layer catalogue unavailable')
+    for index,layer in enumerate(layers):
+        if isinstance(layer,dict):
+            print('LIVE OAK source layer title',index,
+                  repr(str(layer.get('title') or '')[:55]),
+                  'kind',repr(str(layer.get('layerType') or '')[:40]))
     matched=[x for x in layers if isinstance(x,dict) and
           re.search(r'flock|license.?plate',str(x.get('title',''))+' '+str(x.get('id','')),re.I)]
     print('LIVE OAK original_city_page_link',True)
