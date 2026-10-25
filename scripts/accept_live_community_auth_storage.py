@@ -211,6 +211,15 @@ def run():
         # Storage restore drill uses a disposable PRIVATE photo, not any
         # reporter's content. Verify authenticated bytes, remove, re-upload
         # identical bytes, and verify again before continuing the review.
+        # Probe unprivileged third-party access, not a deliberately authorized reviewer.
+        try:
+            download_private_image(path,bystander["token"])
+        except CheckFailed as rejection:
+            require(any(code in str(rejection) for code in
+                        ("HTTP 401", "HTTP 403", "HTTP 404")),
+                    "Private Storage bystander test returned unexpected error")
+        else:
+            raise CheckFailed("Private Storage allowed unprivileged third-party access")
         original=download_private_image(path,owner["token"])
         call("DELETE","/storage/v1/object/"+BUCKET,secret,
              {"prefixes":[path]},expect=(200,204))
