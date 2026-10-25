@@ -1,0 +1,39 @@
+name: Read-only Shelbyville original GIS proximity audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/probe_shelbyville_overlap.py'
+      - 'scripts/test_probe_shelbyville_overlap.py'
+      - '.github/workflows/probe_shelbyville_overlap.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-shelbyville-readonly-overlap
+  cancel-in-progress: false
+jobs:
+  inspect-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Exercise closed-fail city GIS link and geometry tests
+        run: python -m unittest discover -s scripts -p 'test_probe_shelbyville_overlap.py' -v
+      - name: Verify private read-only credential exists
+        run: |
+          test -n "$SUPABASE_SERVICE_ROLE_KEY" || {
+            echo "::error::Missing configured GIS research credential"
+            exit 1
+          }
+      - name: Read original linked GIS inventory and compare with canonical points
+        run: python scripts/probe_shelbyville_overlap.py
