@@ -7,6 +7,7 @@ can be independently established. All fetch targets are static allowlisted.
 """
 import argparse
 import re
+from urllib.parse import quote
 import urllib.request
 from collections import Counter
 
@@ -66,6 +67,20 @@ def candidate_from_metadata(seed, metadata):
 
 
 def stage_candidate(candidate):
+    """Never silently accept conflicting private layer metadata on reruns."""
+    url=candidate['gis_layer_url']
+    previous=api_request('flock_gis_source_candidates?select=gis_layer_url,layer_name,'
+                         'geometry_type,object_id_field,trust_status'
+                         '&gis_layer_url=eq.'+quote(url,safe='')+'&limit=2')
+    if not isinstance(previous,list) or len(previous)>1:
+        raise ValueError('Cannot reconcile existing private GIS candidate')
+    if previous:
+        for field in ('gis_layer_url','layer_name','geometry_type','object_id_field'):
+            if previous[0].get(field)!=candidate[field]:
+                raise ValueError('Previously staged source metadata changed; hold for review')
+        # Never overwrite a source that has subsequently obtained higher authority.
+        if previous[0].get('trust_status')!='unverified':
+            return
     receipt=api_request(
         "flock_gis_source_candidates?on_conflict=gis_layer_url",
         method="POST",payload=[candidate],
