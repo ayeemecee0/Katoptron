@@ -1,0 +1,27 @@
+name: Audit national Flock vendor transparency portal agency feed
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '39 15 * * 1,4'
+  push:
+    branches: [main]
+    paths:
+      - 'vendor-agency-layer.js'
+      - 'scripts/audit_live_vendor_agencies.cjs'
+      - '.github/workflows/audit_vendor_agency_feed.yml'
+permissions:
+  contents: read
+jobs:
+  audit-agency-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node scripts/test_vendor_agency_layer.cjs
+      - run: node scripts/audit_live_vendor_agencies.cjs
