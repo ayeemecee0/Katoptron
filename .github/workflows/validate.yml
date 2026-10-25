@@ -110,6 +110,7 @@ on:
       - 'supabase/migrations/106_source_attributed_unconfirmed_separate_map_tier.sql'
       - 'supabase/migrations/107_source_attribution_immediate_revocation.sql'
       - 'supabase/migrations/109_m1_m3_source_fk_indexes.sql'
+      - 'supabase/migrations/110_restrict_unused_public_definer_rpcs.sql'
       - 'scripts/test_m1_m3_acceptance.sql'
       - 'scripts/test_source_reset_and_attributed_publication.sql'
       - 'vendor-agency-layer.js'
@@ -672,6 +673,8 @@ jobs:
             -f supabase/migrations/107_source_attribution_immediate_revocation.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/109_m1_m3_source_fk_indexes.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/110_restrict_unused_public_definer_rpcs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
