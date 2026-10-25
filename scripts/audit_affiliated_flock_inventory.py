@@ -18,7 +18,7 @@ FLOCK_NAME=re.compile(r'^flock[_ -]*cameras?(?: - [A-Za-z ]{1,50})?$',re.I)
 class InventoryHeld(ValueError):
     pass
 
-def inspect(layer_url,expected_name,expected_oid,fetch):
+def inspect(layer_url,expected_name,expected_oid,fetch,private_points=False):
     """Return safe counts/boolean evidence ONLY, never data or coordinates."""
     if not isinstance(layer_url,str) or not LAYER_URL.fullmatch(layer_url):
         raise InventoryHeld("layer URL not allowlisted public ArcGIS FeatureServer")
@@ -70,6 +70,7 @@ def inspect(layer_url,expected_name,expected_oid,fetch):
 
     start=object_ids()
     seen=[]
+    verified_private=[]
     for offset in range(0,len(start),PAGE_SIZE):
         requested=start[offset:offset+PAGE_SIZE]
         response=fetch(layer_url+'/query?'+urllib.parse.urlencode({
@@ -96,10 +97,17 @@ def inspect(layer_url,expected_name,expected_oid,fetch):
                 not (17<=lat<=72 and -180<=lon<=-64)):
                 raise InventoryHeld("feature lacks valid US point geometry")
             seen.append(values[0])
+            if private_points:
+                verified_private.append({'id':values[0], 'lat':round(lat,7), 'lon':round(lon,7)})
         if sorted(seen[-len(requested):])!=requested:
             raise InventoryHeld("original layer omitted or duplicated requested features")
     if len(seen)!=len(start) or sorted(seen)!=start or object_ids()!=start:
         raise InventoryHeld("original camera inventory changed during audit")
     # Never return private coordinates, individual IDs, or source URLs.
-    return {'features':len(start),'stable_original_ids':True,
+    result={'features':len(start),'stable_original_ids':True,
             'bounded_point_geometry':True,'has_individual_camera_id_field':has_camera_id}
+    if private_points:
+        # Only return to a specifically approved PRIVATE staging worker.
+        # Never stringify this member in GitHub Actions or browser output.
+        result['_private_points']=sorted(verified_private,key=lambda r:r['id'])
+    return result
