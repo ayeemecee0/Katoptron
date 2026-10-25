@@ -18,6 +18,7 @@ SAFE_URL = re.compile(r'^https://[A-Za-z0-9.-]+/')
 ALLOWED_LIFECYCLE = {
     'resolved_existing_trusted', 'rejected_source', 'parked_specific_agency_evidence',
     'parked_same_government_jurisdiction', 'investigate_original_agency',
+    'needs_review',
 }
 CANONICAL_LIMIT = 5000
 
@@ -125,14 +126,14 @@ def check(data, min_camera=1):
         state=queue[key].get('disposition')
         if state not in ALLOWED_LIFECYCLE:
             raise ValueError('Private source lifecycle disposition unknown')
-        if state not in ('resolved_existing_trusted','rejected_source'):
+        if state not in ('resolved_existing_trusted','rejected_source','needs_review'):
             if not queue[key].get('next_review_after'):
                 raise ValueError('Parked or actionable research candidate has no revisit date')
     return {'verified_source_points':len(canonical),
             'trusted_source_count':len(indexed),
             'unconfirmed_source_points':len(prior),
             'private_lifecycle_count':len(lifecycle),
-            'research_remaining':sum(x.get('disposition')=='investigate_original_agency'
+            'research_remaining':sum(x.get('disposition') in ('investigate_original_agency','needs_review')
                                      for x in lifecycle),
             'live_oak_source_positions':counts['live_oak_tx']}
 
