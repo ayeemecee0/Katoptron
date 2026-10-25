@@ -117,6 +117,9 @@ def authorize(s,p,r,external=None):
             s["government_evidence_url"]!=r["official_government_page"] or
             s["jurisdiction_label"]!=r["jurisdiction_label"]):
             raise ValueError("GIS URL/authority differs from owner-reviewed government root")
+    elif p.get('identity_mode')=='municipal_public_flock_map':
+        from verify_live_oak_direct_map import authorize as authorize_published_app
+        authorize_published_app(s,p)
     elif external:
         if (external.get("verification_status")!="verified" or
             external.get("source_key")!=s.get("source_key") or
@@ -141,6 +144,9 @@ def authorize(s,p,r,external=None):
         if (not FIELD.fullmatch(p.get("vendor_field") or "") or
             p.get("service_evidence_mode")!="official_program_plus_vendor"):
             raise ValueError("Missing individual Flock vendor evidence policy")
+    elif p.get('identity_mode')=='municipal_public_flock_map':
+        from verify_live_oak_direct_map import authorize as authorize_published_app
+        authorize_published_app(s,p)
     elif p.get("identity_mode")=="official_flock_layer":
         if ((p.get("camera_id_field") or "").lower()==
             (s.get("expected_id_field") or "").lower() and
@@ -515,6 +521,9 @@ def source_with_bounded_retries(s,p,attempts=3):
     Permanent metadata or schema failures still fail closed and are reported.
     """
     last=None
+    if p.get('identity_mode')=='municipal_public_flock_map':
+        from verify_live_oak_direct_map import qualify
+        return qualify(s,p)
     for attempt in range(attempts):
         try:
             return verify_points(s,p,query_gis(s,p))
