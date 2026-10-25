@@ -1,6 +1,7 @@
 -- 096: Compact source-quality snapshots. Each row is a dated measurement of
 -- the community OSM feed, not proof of current hardware placement or activity.
 -- Read-only for browser clients; appended only after a full validated sync.
+set search_path = public, extensions;
 create table if not exists public.flock_osm_quality_snapshots (
  sync_at timestamptz primary key,
  source_snapshot_date date not null,
@@ -60,7 +61,7 @@ with grouped as (
 select s.sync_at,s.source_snapshot_date,s.osm_observations,c.distinct_coordinates,
  c.colocated_extra_observations,c.colocated_coordinate_groups,
  s.osm_edits_older_365d,s.osm_edit_timestamp_missing,
- encode(extensions.digest(s.sync_at::text||':'||s.osm_observations::text||':'||c.distinct_coordinates::text,
+ encode(digest(s.sync_at::text||':'||s.osm_observations::text||':'||c.distinct_coordinates::text,
    'sha256'),'hex')
 from current_source s cross join clusters c
 where s.osm_observations between 90000 and 200000 and s.sync_at is not null
