@@ -8,7 +8,7 @@ ORG='AgencyOrg123456'
 PAGE=source.CITY
 def original(with_map=True):
     d=Anchors()
-    d.feed('<h1>Flock Safety Cameras</h1><a href="'+
+    d.feed('<h1>Flock Safety ALPR cameras</h1><a href="'+
            (source.APP if with_map else 'https://unrelated.example/')+'">Live Oak Camera Map</a>')
     return d,'b'*64
 
