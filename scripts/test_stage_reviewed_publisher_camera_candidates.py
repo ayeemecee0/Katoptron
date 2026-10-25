@@ -26,6 +26,8 @@ def good_api(path,method='GET',payload=None,prefer=None):
                  'record_status':'verified'}]
     if path.startswith('flock_gis_source_candidates?'):
         return [C]
+    if path.startswith('flock_point_evidence_cases?') or path.startswith('flock_point_evidence_attestations?'):
+        return []
     raise AssertionError('Unexpected write')
 def proof(*args,**kwargs):
     return {'features':2,'stable_original_ids':True,
@@ -79,6 +81,39 @@ class PublisherStage(unittest.TestCase):
                    [OID1,{'id':8,'lat':47.0,'lon':-117.16}]):
       with self.assertRaises(s.InventoryHeld):
         s.private_records(points,'EXAMPLE1234',D,D)
+ def test_stale_private_case_is_held_without_writes(self):
+    writes=[]
+    def api(path,method='GET',payload=None,prefer=None):
+      if method!='GET':
+        writes.append(path)
+        return None
+      if path.startswith('flock_point_evidence_cases?'):
+        return [{'case_key':s.private_records([OID1,OID2],'EXAMPLE1234',D,D)[0][0]['case_key'],
+                 'latitude':33.8,'longitude':-117.15,'source_url':s.GIS}]
+      return good_api(path,method,payload,prefer)
+    with (patch.object(s,'inspect',side_effect=proof),
+          patch.object(s,'linked_government_org',return_value=True),
+          patch.object(s,'original_camera_disclosure',return_value=True)):
+      with self.assertRaisesRegex(s.InventoryHeld,'changed'):
+        s.run(True,api,page,lambda _: {},lambda *a,**k:ORG)
+    self.assertEqual(writes,[])
+ def test_stale_private_proof_is_held_without_writes(self):
+    writes=[]
+    def api(path,method='GET',payload=None,prefer=None):
+      if method!='GET':
+        writes.append(path)
+        return None
+      if path.startswith('flock_point_evidence_attestations?'):
+        proofrow=s.private_records([OID1,OID2],'EXAMPLE1234',D,D)[1][0].copy()
+        proofrow['evidence_sha256']='0'*64
+        return [proofrow]
+      return good_api(path,method,payload,prefer)
+    with (patch.object(s,'inspect',side_effect=proof),
+          patch.object(s,'linked_government_org',return_value=True),
+          patch.object(s,'original_camera_disclosure',return_value=True)):
+      with self.assertRaisesRegex(s.InventoryHeld,'changed'):
+        s.run(True,api,page,lambda _: {},lambda *a,**k:ORG)
+    self.assertEqual(writes,[])
  def test_inventory_check_dry_run_never_writes(self):
     with (patch.object(s,'inspect',side_effect=proof),
           patch.object(s,'linked_government_org',return_value=True),
