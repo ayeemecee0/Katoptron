@@ -32,6 +32,7 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 <header><a class="brand" href="./index.html">KATOPTRON</a>
 <nav aria-label="Site navigation"><a href="./index.html">OFFICIAL MAP</a>
 <a href="./community-map.html" aria-current="page">COMMUNITY FLOCK MAP</a>
+<a href="./nearby.html">NEARBY SOURCE RECORDS</a>
 <a href="./portals.html">FLOCK DISCLOSURES</a><a href="./methodology.html">EVIDENCE POLICY</a></nav></header>
 <main id="main-content">
 <aside><h1>Community-reported Flock camera locations</h1>
@@ -43,8 +44,9 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 <div class="stat"><strong id="colocatedExtraCount">—</strong><span>Additional community observations sharing exact coordinates; possible overlaps</span></div>
 <div class="stat"><strong id="oldSourceEditCount">—</strong><span>OSM observations last edited more than 365 days before the latest complete import</span></div>
 <p id="qualityStatus" class="small" role="status">Loading source quality measurements…</p>
-<div class="stat"><strong>4,929</strong><span>Possible near-coordinate OSM observation pairs (different positions within 15m) in the Oct 25 source audit of 116,128 records</span></div>
-<p class="small">Of these candidate pairs, 1,924 are within 5m. They may be separate physical cameras or mapping discrepancies; no records are merged. <a href="https://github.com/ayeemecee0/Katoptron/actions/runs/40164365899" target="_blank" rel="noopener noreferrer">Inspect the dated audit and source-ID CSV</a>. This is an audit snapshot, not a live count or confirmed duplicate count.</p>
+<div class="stat"><strong id="nearbyPairCount">—</strong><span>Possible near-coordinate OSM source pairs (different coordinates within 15m, not confirmed duplicate devices)</span></div>
+<p id="nearbyPairStatus" class="small" role="status">Loading persistent near-coordinate source audit…</p>
+<p class="small"><a href="./nearby.html">Search OSM proximity evidence and inspect original source IDs</a>. These source pairs are never used to automatically delete or merge camera records.</p>
 <div class="stat"><strong id="overlapCount">—</strong><span>Official-source locations with at least one OSM observation within 30m (possible overlap only)</span></div>
 <p id="crossSourceStatus" class="small" role="status">Checking possible proximity matches across sources…</p>
 <p id="status" role="status" aria-live="polite">Loading nationwide community data…</p>
@@ -99,6 +101,20 @@ async function loadDensity(){
   }
  }catch(err){status('Coarse regional coverage unavailable: '+err.message)}
 }
+async function loadNearbyPairs(){
+ try{
+  const data=await api('flock_public_osm_nearby_latest',
+    new URLSearchParams({select:'pair_count,pairs_within_5m,source_snapshot_date,source_observations',limit:'1'}));
+  if(data.length!==1||!Number.isSafeInteger(data[0].pair_count)||data[0].pair_count<0)
+   throw Error('No complete persistent proximity audit available');
+  const d=data[0];
+  $('nearbyPairCount').textContent=d.pair_count.toLocaleString();
+  $('nearbyPairStatus').textContent=d.pairs_within_5m.toLocaleString()+
+    ' pairs within 5m · OSM source snapshot '+d.source_snapshot_date+
+    ' ('+d.source_observations.toLocaleString()+' community observations). Geographic proximity is not proof of duplicate hardware.';
+ }catch(err){$('nearbyPairStatus').textContent=
+  'Nearby OSM source audit unavailable: '+err.message+'. Unknown is not zero.'}
+}
 async function loadPossibleOverlaps(){
  try{
   const rows=await api('flock_public_cross_source_proximity',new URLSearchParams({
@@ -144,6 +160,7 @@ async function loadSummary(){
   $('sourceDate').textContent='OpenStreetMap source snapshot imported: '+(rows[0].last_dataset_snapshot_date||'Unknown');
   loadDensity();
   loadQuality();
+  loadNearbyPairs();
   loadPossibleOverlaps();
   loadVisible();
  }catch(err){status('Community summary unavailable: '+err.message)}
