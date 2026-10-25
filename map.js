@@ -937,7 +937,9 @@
     try {
       const data=await providerClient.json(kind,url,timeoutMs,signal);
       setText('providerStatus',(kind==='routing'?'Routing':'Geocoding')+
-        ' service responded. Shared demo availability is NOT guaranteed.');
+        (locationProviderMode()==='geoapify'
+          ?' via Geoapify responded. Free-tier credits and account quotas apply; future availability is not guaranteed.'
+          :' via shared public demonstration provider responded. No availability guarantee.'));
       return data;
     }catch(error){
       if(error.name!=='AbortError')setText('providerStatus',
