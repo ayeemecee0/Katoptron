@@ -109,6 +109,16 @@
       receipt.textContent='Last included in imported OSM dataset: '+String(r.source_snapshot_date).slice(0,10)+'. Not a physical camera inspection.';
       popup.append(receipt);
     }
+   if(r.source_timestamp&&r.source_snapshot_date){
+     const edited=Date.parse(r.source_timestamp);
+     const imported=Date.parse(String(r.source_snapshot_date).slice(0,10)+'T00:00:00Z');
+     if(Number.isFinite(edited)&&Number.isFinite(imported)&&
+       imported-edited>365*86400000){
+       const stale=document.createElement('p');
+       stale.textContent='Mapping freshness: OSM entry last edited over one year before this import. Camera activity remains unknown.';
+       popup.append(stale);
+     }
+   }
     marker.bindPopup(popup).addTo(dots);
    }
    note(page.total.toLocaleString()+' community-reported camera observations shown in view (complete query). Not confirmed active cameras.');
