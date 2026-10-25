@@ -41,12 +41,17 @@ def query_plan(today=None):
       ('National','"Flock Safety" "GIS" "camera" site:gov'),
       ('National','"Flock cameras" "MapServer" site:gov'),
       ('National','"Flock Safety" "camera map" site:gov'),
+      ('National','"Flock" "FeatureServer" "camera" site:gov'),
+      ('National','"Flock" "license plate reader" "GIS" site:gov'),
     ]
     # Use the same 10-day geographic rotation but alternate wording on
     # successive cycles. Many original government pages call these simply
     # "Flock cameras" and omit the full vendor name or an ArcGIS reference.
-    state_phrase=('"Flock Safety" "camera" "map"' if (day//10)%2==0
-                  else '"Flock cameras" "map"')
+    state_phrases=('"Flock Safety" "camera" "map"',
+                   '"Flock cameras" "map"',
+                   '"Flock" "license plate reader" "GIS"',
+                   '"Flock" "FeatureServer"')
+    state_phrase=state_phrases[(day//10)%len(state_phrases)]
     queries += [(name,state_phrase+' "'+name+'" site:gov')
                 for name in states]
     return queries
