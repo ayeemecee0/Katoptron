@@ -29,6 +29,21 @@ BEGIN
             split_part(official_evidence_url,'/',3)) <> 2 THEN
     RAISE EXCEPTION 'Original agency camera-map links missing or offsite';
   END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM public.flock_documented_programs
+    WHERE program_key='menifee_ca' AND record_status='verified'
+      AND program_status='documented_at_source_date'
+      AND reported_camera_count IS NULL
+      AND official_evidence_url='https://menifeepolice.org/automated-licesnse-plate-reader/'
+  ) THEN
+    RAISE EXCEPTION 'Official Menifee programme-only evidence missing';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM public.flock_camera_locations
+    WHERE jurisdiction_label='Menifee, CA'
+  ) THEN
+    RAISE EXCEPTION 'Unendorsed Menifee app-derived camera points were published';
+  END IF;
   IF NOT (SELECT relrowsecurity FROM pg_class
     WHERE oid='public.flock_documented_programs'::regclass) THEN
     RAISE EXCEPTION 'Documented program RLS disabled';
