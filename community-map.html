@@ -198,6 +198,16 @@ async function loadVisible(){
      receipt.textContent='Last included in imported OSM dataset: '+String(row.source_snapshot_date).slice(0,10)+'. This does not confirm physical camera operation.';
      popup.append(receipt);
    }
+   if(row.source_timestamp&&row.source_snapshot_date){
+     const edited=Date.parse(row.source_timestamp);
+     const imported=Date.parse(String(row.source_snapshot_date).slice(0,10)+'T00:00:00Z');
+     if(Number.isFinite(edited)&&Number.isFinite(imported)&&
+       imported-edited>365*86400000){
+       const stale=document.createElement('p');
+       stale.textContent='Mapping freshness: OSM entry last edited over one year before this import. Camera activity remains unknown.';
+       popup.append(stale);
+     }
+   }
    m.bindPopup(popup);points.addLayer(m);
   }
   status(result.total.toLocaleString()+' community Flock locations shown in this map view (complete source query, not an active-camera census).');
