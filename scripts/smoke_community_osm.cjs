@@ -20,7 +20,7 @@ const assert=require('node:assert/strict');
   assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
   assert.ok((await page.locator('#status').textContent()).includes('density cells'));
   assert.ok((await page.locator('#sourceDate').textContent()).includes('snapshot'));
-  await page.waitForFunction(()=>/^\\d+$/.test((document.querySelector('#overlapCount')?.textContent||'').replaceAll(',','')),null,{timeout:30000});
+  await page.waitForFunction(()=>{const value=document.querySelector('#crossSourceStatus')?.textContent||'';return value.includes('assessed')||value.includes('unavailable');},null,{timeout:22000});
   const matchStatus=await page.locator('#crossSourceStatus').textContent();
   assert.ok(matchStatus.includes('government-source records assessed')&&matchStatus.includes('not confirmed identical cameras'),matchStatus);
   const density=await page.evaluate(async()=>{
