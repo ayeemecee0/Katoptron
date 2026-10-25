@@ -86,6 +86,9 @@ class GovPublisher(unittest.TestCase):
           patch.object(a,'check_external',
              return_value='verified_arcgis_metadata_only_missing_original_government_link'),
           patch.object(a,'inspect_arcgis_publisher',return_value=ORG),
+          patch.object(a,'inspect_camera_inventory',return_value={
+             'features':12,'stable_original_ids':True,
+             'bounded_point_geometry':True,'has_individual_camera_id_field':True}),
           patch.object(a,'get_official_json',side_effect=owned),
           io.StringIO() as output):
        with contextlib.redirect_stdout(output):
@@ -110,6 +113,9 @@ class GovPublisher(unittest.TestCase):
           patch.object(a,'check_external',return_value=
             'verified_arcgis_metadata_only_missing_original_government_link'),
           patch.object(a,'inspect_arcgis_publisher',return_value=ORG),
+          patch.object(a,'inspect_camera_inventory',return_value={
+             'features':12,'stable_original_ids':True,
+             'bounded_point_geometry':True,'has_individual_camera_id_field':True}),
           io.StringIO() as output):
       with contextlib.redirect_stdout(output):
        result=a.run()
@@ -126,6 +132,9 @@ class GovPublisher(unittest.TestCase):
           patch.object(a,'check_external',return_value=
            'verified_arcgis_metadata_only_missing_original_government_link'),
           patch.object(a,'inspect_arcgis_publisher',return_value=ORG),
+          patch.object(a,'inspect_camera_inventory',return_value={
+             'features':12,'stable_original_ids':True,
+             'bounded_point_geometry':True,'has_individual_camera_id_field':True}),
           io.StringIO() as output):
       with contextlib.redirect_stdout(output):
        result=a.run()
