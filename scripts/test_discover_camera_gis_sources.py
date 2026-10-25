@@ -35,11 +35,26 @@ class SourceDiscoveryTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     d.candidate_from_metadata(self.seed,{**self.layer,**updates})
     def test_only_private_queue_insert(self):
-        with patch.object(d,"api_request",return_value=None) as req:
+        with patch.object(d,"api_request",side_effect=[[],None]) as req:
             d.stage_candidate(d.candidate_from_metadata(self.seed,self.layer))
         self.assertIn("flock_gis_source_candidates",req.call_args.args[0])
         self.assertNotIn("trusted_flock_gis_sources",req.call_args.args[0])
         self.assertIn("ignore-duplicates",req.call_args.kwargs["prefer"])
+    def test_existing_candidate_metadata_conflict_held(self):
+        item=d.candidate_from_metadata(self.seed,self.layer)
+        old={k:item[k] for k in ('gis_layer_url','layer_name','geometry_type','object_id_field','trust_status')}
+        old['object_id_field']='CHANGED'
+        with patch.object(d,'api_request',return_value=[old]) as req:
+            with self.assertRaisesRegex(ValueError,'changed'):
+                d.stage_candidate(item)
+        self.assertEqual(req.call_count,1)
+    def test_promoted_candidate_is_never_downgraded(self):
+        item=d.candidate_from_metadata(self.seed,self.layer)
+        old={k:item[k] for k in ('gis_layer_url','layer_name','geometry_type','object_id_field','trust_status')}
+        old['trust_status']='verified'
+        with patch.object(d,'api_request',return_value=[old]) as req:
+            d.stage_candidate(item)
+        self.assertEqual(req.call_count,1)
     def test_scan_dryrun_does_not_write(self):
         with (patch.object(d,"get_official_json",return_value=self.layer),
               patch.object(d,"stage_candidate") as write):
