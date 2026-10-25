@@ -15,6 +15,8 @@ on:
       - 'scripts/smoke_geoapify.cjs'
       - 'scripts/smoke_geoapify_live.cjs'
       - 'scripts/smoke_community.cjs'
+      - 'scripts/smoke_community_overlay.cjs'
+      - 'community-overlay.js'
       - 'scripts/smoke_community_authenticated_mock.cjs'
       - 'scripts/smoke_accountability.cjs'
       - 'scripts/smoke_analytics.cjs'
@@ -69,6 +71,7 @@ jobs:
           KATOPTRON_SMOKE_BASE: ${{ github.event_name == 'push' && 'http://127.0.0.1:8765/' || 'https://ayeemecee0.github.io/Katoptron/' }}
         run: |
           node scripts/smoke_browser.cjs
+          node scripts/smoke_community_overlay.cjs
           node scripts/smoke_mobile.cjs
           node scripts/smoke_geoapify.cjs
           node scripts/smoke_community.cjs
