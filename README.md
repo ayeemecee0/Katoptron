@@ -2,6 +2,14 @@
 
 Katoptron is a **nationwide Flock Safety camera-map and route-surveillance education project**. Its primary product combines an evidence-backed map, an optional planned-driving-route simulator, and separately linked government records. The map NEVER invents camera coordinates: exact pins and approximate areas require distinct source verification. All simulated detections are hypothetical; the site never accesses private Flock plate reads or tracks actual vehicles. The legacy synthetic simulator remains available separately.
 
+## Nationwide Flock-labeled community locations — major coverage expansion (October 24, 2026)
+
+- **[Nationwide community camera map](./community-map.html)** exposes a distinct OpenStreetMap-derived public tier with **116,160 Flock-tagged camera-location observations in production** at the October 24–25 import checkpoint, compared with the earlier 293 separately verified original-government GIS points. This is a fundamental new geographic data source, not new government verification.
+- The openly licensed source, `https://data.dontgetflocked.com/cameras.geojson.gz`, was audited in [read-only GitHub Actions](https://github.com/ayeemecee0/Katoptron/actions/runs/40158408183) with 144,273 point features and 116,128 Flock-branded at audit time; the subsequent fresh import yielded 116,160. Source changes between downloads explain why snapshot totals need not match.
+- The [separate community table](./supabase/migrations/092_separate_osm_community_flock_camera_layer.sql) keeps immutable OSM IDs, point geometry and source dates under `community_osm`; the original-government camera inventory remains unchanged. The map uses bounded public Supabase viewport queries (zoom in for individual points), not an inaccessible third-party vector-tile CORS endpoint.
+- The [importer](./scripts/import_osm_community_flock.py) validates source identity, geometry and complete-input bounds; the [successful full import](https://github.com/ayeemecee0/Katoptron/actions/runs/40158798913) populated production at ~66 MB total database size. These records have **not** been independently confirmed as operational, and may overlap original-government records. Never add community counts to verified GIS counts or default route simulation detections.
+- Sources: © OpenStreetMap contributors, ODbL 1.0, redistributed by the [DeFlock open-data pipeline](https://github.com/flockhopper3/deflock-data). OSM source-item links are accessible from point popups. No plate reads or private movement data were acquired.
+
 ## First-party Flock Safety disclosures (October 24, 2026)
 
 - **[Direct vendor transparency directory](./portals.html):** Katoptron now separately publishes **13 individually researched Flock-hosted agency portal snapshots in five states (CA, TX, WA, FL and AZ)**. The public source dates are in June–July 2026; these are historical source-snapshot metrics, **not live camera counts or present-day activity**.
