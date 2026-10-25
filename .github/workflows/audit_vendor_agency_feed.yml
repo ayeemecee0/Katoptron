@@ -1,8 +1,6 @@
-name: Audit national Flock vendor transparency portal agency feed
+name: Manually recheck blocked third-party vendor agency feed
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '39 15 * * 1,4'
   push:
     branches: [main]
     paths:
