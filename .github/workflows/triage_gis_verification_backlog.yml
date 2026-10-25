@@ -11,6 +11,7 @@ on:
       - 'scripts/reconcile_gis_candidate_lifecycle.py'
       - 'supabase/migrations/104_gis_candidate_lifecycle_reset.sql'
       - 'supabase/migrations/105_reconcile_existing_camera_point_cases.sql'
+      - 'supabase/migrations/111_evidence_driven_gis_source_reactivation.sql'
       - '.github/workflows/triage_gis_verification_backlog.yml'
 permissions:
   contents: read
@@ -40,8 +41,9 @@ jobs:
             echo "::error::Missing existing government GIS health credential"
             exit 1
           }
-      - name: Classify GIS candidate blockers without publishing unreviewed locations
+      - name: Identify newly changed source metadata and reopen due research
+        run: python scripts/reconcile_gis_candidate_lifecycle.py
+      - name: Classify only due original-agency GIS candidates without publishing
         run: python scripts/triage_gis_verification_backlog.py
-
-      - name: Reconcile duplicates and park sources lacking new evidence
+      - name: Cool down investigated unchanged sources and reconcile duplicates
         run: python scripts/reconcile_gis_candidate_lifecycle.py
