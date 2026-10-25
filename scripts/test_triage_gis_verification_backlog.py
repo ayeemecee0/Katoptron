@@ -16,6 +16,16 @@ KNOWN=[{'jurisdiction_label':'El Paso County, CO','latitude':38.9,'longitude':-1
 MATCH={URL:(PARENT,ROOT,C)}
 
 class Triage(unittest.TestCase):
+ def test_parked_and_terminal_sources_wait_for_new_evidence(self):
+    from datetime import datetime,timedelta,timezone
+    later=(datetime.now(timezone.utc)+timedelta(days=60)).isoformat()
+    self.assertFalse(q.needs_research({'disposition':'resolved_existing_trusted',
+                                       'next_review_after':None}))
+    self.assertFalse(q.needs_research({'disposition':'parked_specific_agency_evidence',
+                                       'next_review_after':later}))
+    self.assertTrue(q.needs_research({'disposition':'investigate_original_agency',
+                                      'next_review_after':'2020-01-01T00:00:00+00:00'}))
+    self.assertTrue(q.needs_research(None))
  def test_duplicate_source_is_not_counted_again(self):
     kind,n,near=q.classify(C,{URL},{ROOT['government_gis_host']},MATCH,KNOWN)
     self.assertEqual((kind,n,near),('already_authorized_source_candidate_duplicate',0,0))
@@ -65,6 +75,7 @@ class Triage(unittest.TestCase):
     with (patch.object(q,'inputs',return_value=([C,EXTERNAL],
              [],[{'government_gis_host':ROOT['government_gis_host']}],KNOWN,[])),
           patch.object(q,'discovery_inputs',return_value=[(PARENT,ROOT,C)]),
+          patch.object(q,'read_lifecycle',return_value={}),
           patch.object(q,'verify_layer',return_value={'p_locations':[{'lat':38.9,'lon':-104.8}]})):
        # The runtime default argument was bound at definition; inject through
        # a wrapper so no real GIS network can run even in a test.
