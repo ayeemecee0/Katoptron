@@ -1,6 +1,6 @@
 """One-shot, disposable REAL Supabase Auth + Storage acceptance.
 
-Does not claim to test email delivery or owner backup restore. Uses two new
+Does not claim to test email delivery or owner backup restore. Uses three new
 admin-confirmed @example.invalid Auth users, a 1x1 synthetic PNG, an explicitly
 non-public report, and finally deletes all test content/users. Requires
 GitHub Actions and the project's server-only secret. No secrets, coordinates,
@@ -156,7 +156,7 @@ def run():
     path=None
     failures=[]
     try:
-        for kind in ("contributor","reviewer"):
+        for kind in ("contributor","reviewer","bystander"):
             email="katoptron-qa-"+kind+"-"+prefix+"@example.invalid"
             password=secrets.token_urlsafe(27)+"Aa1!"
             item=call("POST","/auth/v1/admin/users",secret,{
@@ -173,7 +173,7 @@ def run():
                     isinstance(identity.get("access_token"),str),
                     "Real confirmed-email Auth password sign-in failed")
             users[-1]["token"]=identity["access_token"]
-        owner,reviewer=users
+        owner,reviewer,bystander=users
         source="Rollback-only intent: disposable public beta authentication acceptance; never an actual Flock camera."
         payload={"latitude":38.5816,"longitude":-121.4944,
                  "description":source,"consent_to_review":True,"publication_consent":False}
@@ -242,7 +242,7 @@ def run():
         # that our synthetic report ID cannot appear as a source record key.
         require(all(case not in str(x) for x in public),
                 "Synthetic private case linked to a public camera")
-        print("LIVE AUTH/STORAGE ACCEPTANCE PASS: two actual Auth JWTs; RLS; "
+        print("LIVE AUTH/STORAGE ACCEPTANCE PASS: three actual Auth JWTs; RLS; "
               "private report; reviewer grant/decision; real photo upload/restore; "
               "withdrawal and reviewer cutoff. Email delivery untested.")
     finally:
