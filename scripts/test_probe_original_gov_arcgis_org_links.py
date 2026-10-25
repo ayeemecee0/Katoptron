@@ -30,6 +30,68 @@ class GovPublisher(unittest.TestCase):
               'https://fake.maps.arcgis.com/home/index.html'):
        with self.subTest(url=u):
         self.assertFalse(a.is_exact_esri_org_link(u,ORG))
+ def test_original_gov_arcgis_web_application_owner_verification(self):
+    appid='a'*32
+    base='https://citygis.maps.arcgis.com/apps/webappviewer/index.html?id='+appid
+    item='https://www.arcgis.com/sharing/rest/content/items/'+appid+'?f=json'
+    def owned_fetch(url):
+       self.assertEqual(url,item)
+       return {'id':appid,'type':'Web Mapping Application',
+               'owner':'municipalgis','orgId':'ABCD12345678'}
+    doc=document('<p>Official city GIS map.</p><a href="'+base+'">City map</a>')
+    self.assertTrue(a.linked_government_org(doc,'https://originalcity.gov/gis',ORG,owned_fetch))
+    self.assertFalse(a.linked_government_org(doc,'https://originalcity.gov/gis',
+        {**ORG,'org_id':'DIFFERENT1234'},owned_fetch))
+ def test_arcgis_app_spoofing_and_unrelated_item_rejected(self):
+    appid='b'*32
+    base='https://citygis.maps.arcgis.com/apps/webappviewer/index.html?id='+appid
+    def unauthorised(_):
+       return {'id':appid,'type':'Web Mapping Application',
+               'owner':'attacker','orgId':'SOMEOTHERORG'}
+    for url in (
+        'https://fakegis.maps.arcgis.com/apps/webappviewer/index.html?id='+appid,
+        'http://citygis.maps.arcgis.com/apps/webappviewer/index.html?id='+appid,
+        base+'&next=https://evil.example',
+        base+'&id='+appid,
+        'https://citygis.maps.arcgis.com/apps/webappviewer/index.html?id=invalid',
+        'https://citygis.maps.arcgis.com/home/item.html?id='+appid,
+        'https://citygis.maps.arcgis.com/apps/webappviewer/index.html?id='+appid+'#fragment'
+    ):
+       with self.subTest(url=url):
+          self.assertFalse(a.independently_owned_arcgis_application(url,ORG,unauthorised))
+    self.assertFalse(a.independently_owned_arcgis_application(base,ORG,unauthorised))
+ def test_arcgis_orgid_can_be_verified_via_exact_owner_profile(self):
+    appid='c'*32
+    base='https://citygis.maps.arcgis.com/apps/Shortlist/index.html?appid='+appid
+    def owner_fetch(url):
+      if '/content/items/' in url:
+        return {'id':appid,'type':'Web Mapping Application','owner':'municipalgis'}
+      if '/community/users/municipalgis' in url:
+        return {'username':'municipalgis','orgId':'ABCD12345678'}
+      raise AssertionError('unexpected endpoint')
+    self.assertTrue(a.independently_owned_arcgis_application(base,ORG,owner_fetch))
+    self.assertFalse(a.independently_owned_arcgis_application(base,ORG,
+       lambda _: {'error':'unavailable'}))
+ def test_government_app_lead_alone_never_promotes_a_camera(self):
+    appid='d'*32
+    doc=document('<h1>Official municipal GIS</h1><a href="https://citygis.maps.arcgis.com/apps/instant/minimalist/index.html?appid='+
+       appid+'">Map app</a>')
+    def owned(url):
+       return {'id':appid,'type':'Web Mapping Application',
+               'owner':'municipalgis','orgId':'ABCD12345678'}
+    self.assertTrue(a.linked_government_org(doc,'https://city.gov/maps',ORG,owned))
+    with (patch.object(a,'candidate_inputs',return_value=([C],[],[])),
+          patch.object(a,'government_pages',return_value=['https://city.gov/maps']),
+          patch.object(a,'fetch_government_page',return_value=(doc,'a'*64)),
+          patch.object(a,'check_external',
+             return_value='verified_arcgis_metadata_only_missing_original_government_link'),
+          patch.object(a,'inspect_arcgis_publisher',return_value=ORG),
+          patch.object(a,'get_official_json',side_effect=owned),
+          io.StringIO() as output):
+       with contextlib.redirect_stdout(output):
+          result=a.run()
+       self.assertEqual(result['gov_page_links_exact_esri_organization'],1)
+       self.assertIn('camera locations automatically verified: 0',output.getvalue())
  def test_false_esri_portal_custom_domain_never_authorized(self):
     self.assertFalse(a.is_exact_esri_org_link(
       'https://citygis.maps.arcgis.com/home/index.html',
