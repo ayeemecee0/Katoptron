@@ -105,6 +105,13 @@ on:
       - 'supabase/migrations/101_live_oak_exact_police_flock_map_source.sql'
       - 'supabase/migrations/102_private_government_arcgis_camera_app_discovery.sql'
       - 'supabase/migrations/103_morehead_original_government_flock_camera_map_program.sql'
+      - 'supabase/migrations/104_gis_candidate_lifecycle_reset.sql'
+      - 'supabase/migrations/105_reconcile_existing_camera_point_cases.sql'
+      - 'supabase/migrations/106_source_attributed_unconfirmed_separate_map_tier.sql'
+      - 'scripts/test_source_reset_and_attributed_publication.sql'
+      - 'scripts/reconcile_gis_candidate_lifecycle.py'
+      - 'scripts/sync_source_attributed_gis.py'
+      - 'scripts/test_sync_source_attributed_gis.py'
       - 'scripts/test_morehead_government_map_program.sql'
       - 'scripts/test_government_camera_map_app_leads.sql'
       - 'scripts/test_live_oak_exact_police_source.sql'
@@ -650,6 +657,14 @@ jobs:
             -f supabase/migrations/103_morehead_original_government_flock_camera_map_program.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_morehead_government_map_program.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/104_gis_candidate_lifecycle_reset.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/105_reconcile_existing_camera_point_cases.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/106_source_attributed_unconfirmed_separate_map_tier.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
