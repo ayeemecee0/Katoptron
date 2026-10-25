@@ -85,7 +85,7 @@ async function loadDensity(){
     new URLSearchParams({select:'cell_latitude,cell_longitude,community_report_count',limit:'500'}));
   if(rows.length>=500)throw Error('Coarse community grid unexpectedly truncated');
   densityPoints.clearLayers();
-  for(const row of result.rows){
+  for(const row of rows){
    const lat=Number(row.cell_latitude),lon=Number(row.cell_longitude);
    const n=Number(row.community_report_count);
    if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isInteger(n)||n<=0)continue;
@@ -181,7 +181,7 @@ async function loadVisible(){
   const result=await apiCounted('flock_osm_community_points',search,abort.signal);
   if(seq!==requestNumber)return;
   if(result.total>result.rows.length){status(result.total.toLocaleString()+' community observations in view. Zoom closer for a complete view; no truncated subset is shown.');return}
-  for(const row of rows){
+  for(const row of result.rows){
    const lat=Number(row.latitude),lon=Number(row.longitude);
    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
    const m=L.circleMarker([lat,lon],{radius:5,color:'#b55e79',fillColor:'#a32d56',fillOpacity:.85,weight:1});
