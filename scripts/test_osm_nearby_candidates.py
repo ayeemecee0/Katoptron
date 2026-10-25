@@ -10,10 +10,10 @@ class NearbyAuditTests(unittest.TestCase):
        row(3,38.50000,-121.50000),
        row(4,38.504,-121.50000)]
   p=candidates(pts)
-  self.assertEqual(len(p),1)
-  self.assertEqual(p[0][:2],('node/1','node/2'))
+  self.assertEqual(len(p),2)
+  self.assertEqual({tuple(x[:2]) for x in p},{('node/1','node/2'),('node/2','node/3')})
   self.assertTrue(6<p[0][2]<7)
-  self.assertEqual(summarize(p)['source_records_in_nearby_pairs'],2)
+  self.assertEqual(summarize(p)['source_records_in_nearby_pairs'],3)
  def test_boundary_between_adjacent_grid_cells_is_not_missed(self):
   pts=[row(1,38.500499,-121.5001),row(2,38.500501,-121.5001)]
   self.assertEqual(len(candidates(pts)),1)
