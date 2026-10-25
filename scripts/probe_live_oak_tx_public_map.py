@@ -109,10 +109,10 @@ def inspect_mapped_point_inventory(layer, fetch, private_points=False):
         vendor=str(attr.get('Device_Type') or '').strip().lower()
         if 'flock' in vendor:
             manufacturer_counts['flock']+=1
-        elif vendor:
-            manufacturer_counts['other']+=1
-        else:
+        elif vendor in ('','lpr camera','alpr','lpr','license plate reader','camera'):
             manufacturer_counts['unknown']+=1
+        else:
+            manufacturer_counts['other']+=1
     categories={str(x.get('attributes',{}).get('Device_Type') or '').strip().lower()
                 for x in rows if isinstance(x,dict)}
     print('LIVE OAK original source equipment type categories',
