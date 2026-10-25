@@ -7,7 +7,7 @@ coordinates, feature identities or unpublished GIS layer URLs.
 import re
 from urllib.parse import urljoin,urlsplit,urlencode
 from auto_verify_camera_gis import get_official_json
-from discover_government_gis_links import fetch_government_page,normalized_url
+from discover_government_gis_links import fetch_government_page,normalized_url,original_camera_disclosure
 
 CITY='https://www.liveoaktx.net/departments/police/flock-safety'
 APP='https://liveoaktx.maps.arcgis.com/apps/instant/basic/index.html?appid=1fe4ad954b3346b9a7e2a3a337c5cfbf'
@@ -137,6 +137,13 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page,private_point
     doc,page_digest=page_fetch(CITY)
     anchors={normalized_url(urljoin(CITY,href)) for href,label in doc.anchors
              if isinstance(href,str) and len(href)<1500}
+    agency_map_labels=[
+        label for href,label in doc.anchors
+        if isinstance(href,str) and normalized_url(urljoin(CITY,href))==APP
+    ]
+    if (not original_camera_disclosure(doc) or
+        not any('camera map' in str(label).lower() for label in agency_map_labels)):
+        raise ValueError('Original city police no longer attributes camera map to its Flock program')
     if APP not in anchors or not isinstance(page_digest,str) or len(page_digest)!=64:
         raise ValueError('Current original police source no longer links its published map')
     application=fetch(ITEM+APPID+'?f=json')
