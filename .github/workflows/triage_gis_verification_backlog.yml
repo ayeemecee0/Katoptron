@@ -8,6 +8,9 @@ on:
     paths:
       - 'scripts/triage_gis_verification_backlog.py'
       - 'scripts/test_triage_gis_verification_backlog.py'
+      - 'scripts/reconcile_gis_candidate_lifecycle.py'
+      - 'supabase/migrations/104_gis_candidate_lifecycle_reset.sql'
+      - 'supabase/migrations/105_reconcile_existing_camera_point_cases.sql'
       - '.github/workflows/triage_gis_verification_backlog.yml'
 permissions:
   contents: read
@@ -39,3 +42,6 @@ jobs:
           }
       - name: Classify GIS candidate blockers without publishing unreviewed locations
         run: python scripts/triage_gis_verification_backlog.py
+
+      - name: Reconcile duplicates and park sources lacking new evidence
+        run: python scripts/reconcile_gis_candidate_lifecycle.py
