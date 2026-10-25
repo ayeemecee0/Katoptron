@@ -1,5 +1,9 @@
 name: Find independent government ArcGIS organization endorsements
 on:
+  workflow_run:
+    workflows: ["Discover public ArcGIS Flock camera source leads"]
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '27 20 * * 2'
   workflow_dispatch:
@@ -17,6 +21,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   investigate:
+    # Discovery can queue research candidates; its success is NOT camera trust.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 17
     env:
