@@ -11,6 +11,18 @@ def proof():
                 for i in range(12)]}
 
 class SourceAttribution(unittest.TestCase):
+    def test_privacy_safe_diagnostics_classify_only_allowlisted_internal_errors(self):
+        from audit_affiliated_flock_inventory import InventoryHeld
+        self.assertEqual(
+            m.safe_held_reason(InventoryHeld('original ObjectID inventory unavailable')),
+            'InventoryHeld:source_inventory_unavailable')
+        # Never leak a new exception message: it can contain untrusted
+        # original-service responses, unpublished source URLs or coordinates.
+        self.assertEqual(m.safe_held_reason(InventoryHeld('untrusted 31,-86.3 URL')),
+                         'InventoryHeld')
+        self.assertEqual(m.safe_held_reason(ValueError('private response text')),
+                         'ValueError')
+
     def test_dry_run_never_writes_government_or_lower_tier(self):
         def api(path,method=None,payload=None,prefer=None):
             self.assertNotEqual(method,'POST')
