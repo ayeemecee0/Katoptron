@@ -18,8 +18,17 @@ const assert=require('node:assert/strict');
   },null,{timeout:45000});
   const count=await page.locator('#communityCount').textContent();
   assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
-  assert.ok((await page.locator('#status').textContent()).includes('Zoom in'));
+  assert.ok((await page.locator('#status').textContent()).includes('density cells'));
   assert.ok((await page.locator('#sourceDate').textContent()).includes('snapshot'));
+  const density=await page.evaluate(async()=>{
+    const c=window.KATOPTRON_CONFIG;
+    const url=c.supabaseUrl+'/rest/v1/flock_public_osm_community_density?select=community_report_count&limit=1';
+    const r=await fetch(url,{headers:{apikey:c.supabasePublishableKey},cache:'no-store'});
+    if(!r.ok)throw Error('National coarse community density unavailable HTTP '+r.status);
+    return r.json();
+  });
+  assert.ok(Array.isArray(density)&&density.length===1&&density[0].community_report_count>0);
+
   // Retrieve ONE already-published community-source coordinate to prove the
   // viewport-scoped map can display an actual database-backed camera record.
   const record=await page.evaluate(async()=>{
