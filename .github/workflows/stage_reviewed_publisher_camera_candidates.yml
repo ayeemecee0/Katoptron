@@ -50,4 +50,4 @@ jobs:
             exit 1
           }
       - name: Fetch original city and police authority, recheck all original IDs and stage privately
-        run: python scripts/stage_reviewed_publisher_camera_candidates.py --stage-private
+        run: python scripts/stage_reviewed_publisher_camera_candidates.py --stage-private --evidence-hold-ok
