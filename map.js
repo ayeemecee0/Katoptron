@@ -158,7 +158,9 @@
     state.pointLayer = L.layerGroup().addTo(map);
     state.routeLayer = L.featureGroup().addTo(map);
     state.simLayer = L.layerGroup().addTo(map);
-    communityRouteCompare=window.KatoptronCommunityRoute?.install({cfg:CFG,geo:Geo})||null;
+    communityRouteCompare=window.KatoptronCommunityRoute?.install({
+      cfg:CFG,geo:Geo,showStatus:()=>renderRouteComparisons()
+    })||null;
     // Optional, independently queried ODbL community observations never enter
     // state.visible, route comparisons, or simulated encounters.
     window.KatoptronCommunityOverlay?.install(map,CFG);
@@ -530,6 +532,13 @@
           'No absence-of-surveillance claim.';
       }else result.textContent='Checking the full route corridor… camera evidence unknown';
       button.append(heading,meta,result);
+      if(communityRouteCompare?.isEnabled()){
+        const community=communityRouteCompare.entryFor(route);
+        const communityLine=document.createElement('small');
+        communityLine.className='community-comparison-evidence';
+        communityLine.textContent=window.KatoptronCommunityRoute.format(community,evidence);
+        button.append(communityLine);
+      }
       item.append(button);list.append(item);
     });
     const total=state.routeChoices.length;
@@ -594,10 +603,11 @@
         if(controller.signal.aborted || request!==state.routeRequest ||
           state.routeChoices[index]!==route)return;
         state.routeComparisons[index]=outcome;
+        if(communityRouteCompare?.isEnabled())
+          communityRouteCompare.updateOfficial(route,outcome);
         if(state.route===route){
           displaySelectedRouteEvidence();
-          if(communityRouteCompare?.isEnabled())
-            communityRouteCompare.choose(route,outcome);
+
         }
         renderRouteComparisons();
       }
@@ -1118,7 +1128,7 @@
     displaySelectedRouteEvidence();
     renderRouteComparisons();
     if(communityRouteCompare?.isEnabled())
-      communityRouteCompare.choose(trip,state.routeComparisons[index]);
+      communityRouteCompare.select(trip);
   }
   async function planRoute(ev) {
     if (ev) ev.preventDefault();
@@ -1138,6 +1148,7 @@
     state.evidenceAbort=null;
     state.routeChoices=[];
     state.routeComparisons=[];
+    communityRouteCompare?.cancel();
     state.route=null;
     state.routeRecords=[];
     state.routeCoverage='unchecked';
@@ -1170,6 +1181,8 @@
       state.evidenceAbort?.abort();
       state.routeChoices=trips;
       state.routeComparisons=trips.map(()=>({status:'checking'}));
+      if(communityRouteCompare?.isEnabled())
+        communityRouteCompare.compareAll(trips,state.routeComparisons);
       const select=$('routeChoice');
       select.replaceChildren();
       trips.forEach((trip,index)=>{
@@ -1202,6 +1215,7 @@
     state.evidenceAbort=null;
     state.routeChoices=[];
     state.routeComparisons=[];
+    communityRouteCompare?.cancel();
     clearRouteCandidate('from');
     clearRouteCandidate('to');
     renderRouteComparisons();
@@ -1247,8 +1261,11 @@
     $('showApprox').addEventListener('change',drawLocations);
     $('showProvisional').addEventListener('change',drawLocations);
     $('compareCommunityRoute').addEventListener('change',()=>{
-      if($('compareCommunityRoute').checked&&state.route)
-        communityRouteCompare?.choose(state.route,state.routeComparisons[state.routeChoices.indexOf(state.route)]);
+      if($('compareCommunityRoute').checked&&state.routeChoices.length){
+        communityRouteCompare?.compareAll(state.routeChoices,state.routeComparisons);
+        communityRouteCompare?.select(state.route);
+      }
+      renderRouteComparisons();
     });
     $('hypothetical').addEventListener('change',()=>{
       state.simLayer?.clearLayers();
