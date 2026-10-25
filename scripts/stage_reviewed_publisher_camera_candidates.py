@@ -21,7 +21,7 @@ from probe_original_gov_arcgis_org_links import linked_government_org
 
 CITY='https://www.cityofmenifee.us/maps'
 POLICE='https://menifeepolice.org/automated-licesnse-plate-reader/'
-GIS='https://services.arcgis.com/RjTKod25O4b8SbZx/ArcGIS/rest/services/PeregrineWebLayers/FeatureServer/20'
+GIS='https://services.arcgis.com/RjTKod25O4b8SbZx/arcgis/rest/services/PeregrineWebLayers/FeatureServer/20'
 NAME='Flock Cameras'
 JURISDICTION='Menifee, CA'
 # Deliberately conservative research scope, NOT an official municipality
