@@ -81,18 +81,19 @@
    if(calls>=MAX_QUERIES)
     throw Error('Community corridor exceeds safe query budget');
    const box=queue.shift();
-   const rows=await fetchRows(box,signal);
+   const page=await fetchRows(box,signal);
    calls++;
-   if(!Array.isArray(rows)||rows.length>PAGE_LIMIT+1)
-    throw Error('Community source response invalid');
-   if(rows.length>PAGE_LIMIT){
+   if(!page||!Array.isArray(page.rows)||page.rows.length>PAGE_LIMIT||
+      !Number.isSafeInteger(page.total)||page.total<page.rows.length)
+    throw Error('Community source exact-count proof missing or invalid');
+   if(page.total>page.rows.length){
     // Divide the entire region; do NOT discard or count the truncated page.
     queue.unshift(...splitBox(box));
     if(queue.length>MAX_QUERIES)
      throw Error('Community corridor subdivision budget exceeded');
     continue;
    }
-   for(const row of rows){
+   for(const row of page.rows){
     if(!row||typeof row.osm_key!=='string'||!Number.isFinite(Number(row.latitude))||
       !Number.isFinite(Number(row.longitude)))throw Error('Malformed community source record');
     const old=collected.get(row.osm_key);
@@ -126,7 +127,7 @@
     throw Error('Community source not configured');
    const q=new URLSearchParams({
     select:'osm_key,latitude,longitude',order:'osm_key.asc',
-    limit:String(PAGE_LIMIT+1)
+    limit:String(PAGE_LIMIT)
    });
    q.append('latitude','gte.'+box.south.toFixed(7));
    q.append('latitude','lte.'+box.north.toFixed(7));
@@ -134,14 +135,19 @@
    q.append('longitude','lte.'+box.east.toFixed(7));
    const response=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+
     '/rest/v1/'+SOURCE_TABLE+'?'+q.toString(),{
-     headers:{apikey:cfg.supabasePublishableKey},
+     headers:{apikey:cfg.supabasePublishableKey,Prefer:'count=exact'},
      signal,cache:'no-store',referrerPolicy:'no-referrer'
    });
    if(!response.ok)throw Error('Community source HTTP '+response.status);
    const rows=await response.json();
-   if(!Array.isArray(rows)||rows.length>PAGE_LIMIT+1)
-    throw Error('Community source returned an incomplete page');
-   return rows;
+   const contentRange=response.headers.get('content-range')||'';
+   const match=/^(?:[0-9]+-[0-9]+|[*])\/([0-9]+)$/.exec(contentRange);
+   if(!match||!Array.isArray(rows)||rows.length>PAGE_LIMIT)
+    throw Error('Community source exact-count header unavailable; coverage UNKNOWN');
+   const total=Number(match[1]);
+   if(!Number.isSafeInteger(total)||total<rows.length)
+    throw Error('Invalid community source completeness proof');
+   return {rows,total};
   }
   function officialFor(route){
    return officialEvidence[routes.indexOf(route)]||{status:'checking'};
