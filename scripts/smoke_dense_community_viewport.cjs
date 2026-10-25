@@ -14,10 +14,10 @@ const assert=require('node:assert/strict');
   await page.evaluate(()=>community.fitBounds([[33.747,-84.503],[34.003,-84.247]]));
   await page.waitForFunction(()=>{
     const status=document.querySelector('#status')?.textContent||'';
-    return status.includes('Zoom closer; no truncated')||status.includes('unavailable');
+    return status.includes('no truncated subset is shown')||status.includes('unavailable');
   },null,{timeout:35000});
   const big=await page.locator('#status').textContent();
-  assert.ok(big.includes('Zoom closer; no truncated'),big);
+  assert.ok(big.includes('no truncated subset is shown'),big);
   assert.ok(Number.parseInt(big.replaceAll(',',''),10)>1000,big);
   // A closer view must display only a completely returned result.
   const point=await page.evaluate(async()=>{
