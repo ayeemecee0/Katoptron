@@ -38,7 +38,7 @@ const assert=require('node:assert/strict');
   assert.ok(!density.includes('unavailable'),'Community density was inaccessible: '+density);
   const officialPane=page.locator('.leaflet-officialEvidencePane-pane');
   assert.equal(await officialPane.count(),1,'Government evidence must have a distinct frontmost map pane');
-  const nationalDots=await page.locator('.leaflet-overlay-pane path').count();
+  const nationalDots=await page.locator('.leaflet-overlay-pane canvas, .leaflet-overlay-pane path').count();
   assert.ok(nationalDots>0,'National community density cells did not render');
   // Map search recenters both layers. Still no route plan.
   await page.locator('#mapSearch').fill(p.latitude+','+p.longitude);
