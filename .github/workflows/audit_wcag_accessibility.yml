@@ -16,6 +16,7 @@ on:
       - 'privacy.html'
       - 'methodology.html'
       - 'portals.html'
+      - 'community-map.html'
       - 'map.css'
       - 'a11y.css'
 
