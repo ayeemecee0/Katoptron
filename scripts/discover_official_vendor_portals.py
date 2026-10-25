@@ -74,7 +74,8 @@ def direct_vendor_portals(document,page,page_hash):
     ][:30]
 
 
-def stage(item,api=api_request):
+def stage(item,api=None):
+    api=api or api_request
     # A changed source webpage never silently replaces an old receipt.
     params=('flock_vendor_portal_source_leads?select=government_source_url,'
             'portal_url,government_page_sha256&government_source_url=eq.'+
