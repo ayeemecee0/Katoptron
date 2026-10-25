@@ -172,6 +172,7 @@
     loadDocumentedPrograms();
     loadNationalSummary();
     loadCommunityNationalSummary();
+    loadCommunityQuality();
     loadStateEvidenceIndex();
     loadVerifiedAgendaMentions();
   }
@@ -309,6 +310,37 @@
     }catch(error) {
       setText('nationalStats','National published evidence totals unavailable: '+
         error.message+'. Missing counts do not mean no cameras.');
+    }
+  }
+  async function loadCommunityQuality() {
+    if(!CFG?.supabaseUrl||!CFG?.supabasePublishableKey){
+      setText('nationalCommunityQuality','OSM quality measurements unavailable.');
+      return;
+    }
+    try{
+      const p=new URLSearchParams({select:'source_snapshot_date,osm_observations,distinct_coordinates,colocated_extra_observations,osm_edits_older_365d',limit:'2'});
+      const response=await fetch(CFG.supabaseUrl.replace(/\/$/,'')+
+        '/rest/v1/flock_public_osm_latest_quality?'+p.toString(),{
+        headers:{apikey:CFG.supabasePublishableKey},
+        cache:'no-store',referrerPolicy:'no-referrer'
+      });
+      if(!response.ok)throw Error('Quality API HTTP '+response.status);
+      const rows=await response.json();
+      if(!Array.isArray(rows)||rows.length!==1)throw Error('Latest quality receipt unavailable');
+      const r=rows[0];
+      const nums=['osm_observations','distinct_coordinates','colocated_extra_observations','osm_edits_older_365d'];
+      if(nums.some(k=>!Number.isSafeInteger(r[k])||r[k]<0)||
+         r.osm_observations!==r.distinct_coordinates+r.colocated_extra_observations)
+        throw Error('Malformed quality receipt');
+      setText('nationalCommunityQuality',
+        'OSM quality as of '+r.source_snapshot_date+': '+
+        r.distinct_coordinates.toLocaleString()+' mapped coordinate positions · '+
+        r.colocated_extra_observations.toLocaleString()+' additional observations at the same coordinates · '+
+        r.osm_edits_older_365d.toLocaleString()+' source records last edited over one year before the import. '+
+        'Neither co-location nor old edits prove duplicate or inactive cameras.');
+    }catch(err){
+      setText('nationalCommunityQuality','OSM source quality measurements unavailable: '+
+        err.message+'. Treat missing quality information as unknown.');
     }
   }
   async function loadCommunityNationalSummary() {
