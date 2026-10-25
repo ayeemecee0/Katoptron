@@ -65,7 +65,7 @@
      note('Move to a U.S. location for community map observations.');return;
    }
    const q=new URLSearchParams({
-    select:'osm_key,latitude,longitude,source_timestamp',
+    select:'osm_key,latitude,longitude,source_timestamp,source_snapshot_date,last_seen_sync_at',
     order:'osm_key.asc',limit:String(MAX_POINTS)});
    q.append('latitude','gte.'+south.toFixed(7));
    q.append('latitude','lte.'+north.toFixed(7));
@@ -103,6 +103,11 @@
       const edited=document.createElement('small');
       edited.textContent='OSM record last edited: '+String(r.source_timestamp).slice(0,10)+'. This is not a device inspection date.';
       popup.append(edited);
+    }
+    if(r.source_snapshot_date){
+      const receipt=document.createElement('p');
+      receipt.textContent='Last included in imported OSM dataset: '+String(r.source_snapshot_date).slice(0,10)+'. Not a physical camera inspection.';
+      popup.append(receipt);
     }
     marker.bindPopup(popup).addTo(dots);
    }
