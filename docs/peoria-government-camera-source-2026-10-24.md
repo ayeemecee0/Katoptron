@@ -1,4 +1,4 @@
-# Peoria, Arizona: original city GIS inventory acquisition
+# Peoria, Arizona: existing trusted government GIS inventory (revalidated)
 
 ## Source and checks
 - City-controlled GIS portal: https://gis.peoriaaz.gov/portal/sharing/portals/self — public ArcGIS Enterprise portal labels itself **Peoria GIS Portal**.
@@ -21,3 +21,6 @@ The two counts must not be subtracted to invent seven additional points or justi
 
 ## Public safety boundary
 No private camera coordinates or individually identifying device values appear in this report. Do not publish raw source exports in GitHub. Do not mark published until independently queried from production.
+
+## Production reconciliation (verified after this report was initially drafted)
+A direct read-only production query grouped `flock_camera_locations` exact verified points and confirmed **Peoria already has 74 published camera points**, among 293 across seven jurisdictions. Migration `026_peoria_city_camera_source.sql` already established the trusted government source. Consequently, **do not register these 74 again or present them as additions**. This source audit is a freshness and regression improvement only. Any future new positions must pass the existing source refresh/duplicate safeguards.
