@@ -62,7 +62,11 @@ const assert=require('node:assert/strict');
   assert.ok(Array.isArray(tierSecurity.items));
   assert.ok(tierSecurity.items.every(item=>
     item.evidence_tier==='government_verified' ||
-    item.evidence_tier==='independently_corroborated'));
+    item.evidence_tier==='independently_corroborated' ||
+    item.evidence_tier==='source_attributed_unconfirmed'));
+  assert.ok(tierSecurity.items.filter(item=>item.evidence_tier==='source_attributed_unconfirmed')
+    .every(item=>item.evidence_summary.includes('NOT established')),
+    'Source-attributed camera markers must retain their explicit unverifiable-status warning');
   assert.ok(tierSecurity.privateEvidenceStatus===401 || tierSecurity.privateEvidenceStatus===403);
   await page.locator('#showProvisional').check();
   await page.locator('#showProvisional').uncheck();
