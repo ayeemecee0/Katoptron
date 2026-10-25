@@ -14,6 +14,17 @@ class Catalog(unittest.TestCase):
               "http://services.arcgis.com/foo/FeatureServer",
               "https://services.arcgis.com.evil.org/a/arcgis/rest/services/Flock/FeatureServer"):
    self.assertIsNone(x.vetted_service_url({**ITEM,"url":url}))
+ def test_generic_police_map_service_requires_exact_flock_point_layer(self):
+  police={**ITEM,"title":"PeregrineWebLayers",
+          "url":"https://services.arcgis.com/Acme0123/arcgis/rest/services/PeregrineWebLayers/FeatureServer",
+          "tags":["Public safety integration"]}
+  self.assertEqual(x.vetted_service_url(police),police["url"])
+  self.assertIsNone(x.vetted_service_url({**police,"title":"UnreviewedPoliceMaps"}))
+  self.assertIsNone(x.valid_candidate(police["url"]+"/20",
+       {**META,"name":"Police Districts"}))
+  c=x.valid_candidate(police["url"]+"/20",META)
+  self.assertEqual(c["trust_status"],"unverified")
+  self.assertIsNone(c["public_gov_context_url"])
  def test_vendor_name_alone_remains_private(self):
   c=x.valid_candidate(URL+"/0",META)
   self.assertEqual(c["trust_status"],"unverified")
