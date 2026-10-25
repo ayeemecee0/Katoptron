@@ -87,6 +87,7 @@ on:
       - 'supabase/migrations/083_reviewed_first_party_agency_registry.sql'
       - 'supabase/migrations/084_first_party_gis_recheck_receipts.sql'
       - 'supabase/migrations/085_government_map_only_flock_programs_az_va.sql'
+      - 'supabase/migrations/086_original_government_camera_map_documents.sql'
       - 'scripts/test_documented_map_only_programs.sql'
       - 'scripts/test_first_party_agency_gis_rechecks.sql'
       - 'scripts/test_reviewed_first_party_agency_registry.sql'
@@ -537,6 +538,8 @@ jobs:
             -f supabase/migrations/084_first_party_gis_recheck_receipts.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/085_government_map_only_flock_programs_az_va.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/086_original_government_camera_map_documents.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
