@@ -6,6 +6,10 @@ on:
     paths:
       - 'community-map.html'
       - 'scripts/smoke_community_osm.cjs'
+      - 'scripts/smoke_community_overlay.cjs'
+      - 'community-overlay.js'
+      - 'index.html'
+      - 'map.js'
       - '.github/workflows/check_community_osm.yml'
 permissions:
   contents: read
@@ -29,4 +33,6 @@ jobs:
       - name: Verify nationwide community map renders a public Supabase camera record
         env:
           KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
-        run: node scripts/smoke_community_osm.cjs
+        run: |
+          node scripts/smoke_community_osm.cjs
+          node scripts/smoke_community_overlay.cjs
