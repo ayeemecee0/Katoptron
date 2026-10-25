@@ -104,6 +104,8 @@ on:
       - 'supabase/migrations/100_government_linked_flock_vendor_directory.sql'
       - 'supabase/migrations/101_live_oak_exact_police_flock_map_source.sql'
       - 'supabase/migrations/102_private_government_arcgis_camera_app_discovery.sql'
+      - 'supabase/migrations/103_morehead_original_government_flock_camera_map_program.sql'
+      - 'scripts/test_morehead_government_map_program.sql'
       - 'scripts/test_government_camera_map_app_leads.sql'
       - 'scripts/test_live_oak_exact_police_source.sql'
       - 'scripts/test_government_vendor_directory.sql'
@@ -645,6 +647,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_camera_map_app_leads.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/103_morehead_original_government_flock_camera_map_program.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_morehead_government_map_program.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_documented_map_only_programs.sql
@@ -681,7 +687,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from pg_constraint where conrelid='public.flock_documented_coverage_areas'::regclass and conname='coverage_one_original_source_only'" | grep -qx 1
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(distinct state_code) from public.flock_documented_programs where record_status='verified'" | grep -qx 13
+            "select count(distinct state_code) from public.flock_documented_programs where record_status='verified'" | grep -qx 14
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_function_privilege('anon','public.confirm_gis_camera_withdrawals(text,text[])','EXECUTE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
@@ -713,7 +719,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.flock_public_state_evidence_index where terminated_program_records>0" | grep -qx 3
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 23
+            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 24
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select count(*) from public.flock_documented_programs where program_status='terminated_at_source_date' and record_status='verified'" | grep -qx 5
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
@@ -821,7 +827,7 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('service_role','public.gis_verification_profiles','UPDATE')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 23
+            "select count(*) from public.flock_documented_programs where record_status='verified'" | grep -qx 24
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('anon','public.flock_documented_programs','SELECT')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
