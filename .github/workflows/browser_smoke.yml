@@ -18,6 +18,8 @@ on:
       - 'scripts/smoke_community_authenticated_mock.cjs'
       - 'scripts/smoke_accountability.cjs'
       - 'scripts/smoke_analytics.cjs'
+      - 'scripts/smoke_vendor_portals.cjs'
+      - 'portals.html'
       - 'scripts/smoke_accessibility.cjs'
       - 'scripts/smoke_zoom_accessibility.cjs'
       - 'a11y.css'
@@ -73,6 +75,7 @@ jobs:
           node scripts/smoke_community_authenticated_mock.cjs
           node scripts/smoke_accountability.cjs
           node scripts/smoke_analytics.cjs
+          node scripts/smoke_vendor_portals.cjs
           node scripts/smoke_accessibility.cjs
           node scripts/smoke_zoom_accessibility.cjs
       - name: Verify live free Geoapify from the authorized GitHub Pages origin
