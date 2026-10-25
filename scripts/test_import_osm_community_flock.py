@@ -51,7 +51,7 @@ class ImportTests(unittest.TestCase):
   response=MagicMock()
   response.__enter__.return_value.status=204
   response.__enter__.return_value.read.return_value=b''
-  with patch.object(m,'read_count',side_effect=[116120,116120]) as counts:
+  with patch.object(m,'read_count',side_effect=[116120,40,116120]) as counts:
    with patch.object(m.urllib.request,'urlopen',return_value=response) as net:
     with patch.dict(m.os.environ,{
      'SUPABASE_URL':'https://bpvkapswslmgfazbzpsv.supabase.co',
@@ -60,7 +60,14 @@ class ImportTests(unittest.TestCase):
      m.reconcile(116160,116120,'2026-10-25T03:00:00+00:00')
     self.assertEqual(net.call_args.args[0].get_method(),'DELETE')
     self.assertIn('last_seen_sync_at=neq.',net.call_args.args[0].full_url)
-    self.assertEqual(counts.call_count,2)
+    self.assertEqual(counts.call_count,3)
+ def test_many_renamed_source_ids_does_not_remove_existing_evidence(self):
+  with patch.object(m,'read_count',side_effect=[116000,8200]) as counts:
+   with patch.object(m.urllib.request,'urlopen') as net:
+    with self.assertRaisesRegex(ValueError,'identity churn'):
+     m.reconcile(116160,116000,'2026-10-25T03:00:00+00:00')
+   net.assert_not_called()
+   self.assertEqual(counts.call_count,2)
  def test_upsert_batch_includes_marker_and_preserves_existing_ids(self):
   collected=[]
   row=m.normalize(f(),DAY)
