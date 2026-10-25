@@ -1,0 +1,36 @@
+name: Discover official agency Flock portal links
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/discover_official_vendor_portals.py'
+      - 'scripts/test_discover_official_vendor_portals.py'
+      - '.github/workflows/discover_official_vendor_portals.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-original-agency-vendor-leads
+  cancel-in-progress: true
+jobs:
+  discover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify original-agency link and private-only discovery constraints
+        run: PYTHONPATH=scripts python -m unittest scripts/test_discover_official_vendor_portals.py -v
+      - name: Check configured original-source read credential
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY" || { echo '::error::Research source secret unavailable'; exit 1; }
+      - name: Discover and privately stage only direct original-agency portal links
+        env:
+          SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python scripts/discover_official_vendor_portals.py
