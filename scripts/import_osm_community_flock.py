@@ -142,7 +142,7 @@ def read_count(query=None):
         headers={'apikey':key,'Authorization':'Bearer '+key,
                  'Prefer':'count=exact','Accept':'application/json'})
     with urllib.request.urlopen(req,timeout=45) as response:
-        if response.status!=200:
+        if response.status not in (200,206):
             raise ValueError('Community row-count request failed')
         content_range=response.headers.get('Content-Range','')
         if len(response.read(4000))>4000:
