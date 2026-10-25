@@ -115,8 +115,9 @@ def audit(fetch=get_official_json,page_fetch=fetch_government_page):
         try:
             n=inspect_mapped_point_inventory(layer,fetch)
             print('LIVE OAK original_source_camera_ids_count',n)
-        except ValueError:
-            print('LIVE OAK original_source_layer_held',True)
+        except ValueError as exc:
+            reasons={'Original app map lacks an exact source URL','Original app layer has unapproved source locator','Original map layer not a named Flock point source','Original camera layer feature ID list incomplete'}
+            print('LIVE OAK original_source_layer_held',str(exc) if str(exc) in reasons else type(exc).__name__)
     print('LIVE OAK original_city_page_link',True)
     print('LIVE OAK application_and_webmap_same_organization',
           app_org is not None and app_org==map_org)
