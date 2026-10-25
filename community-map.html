@@ -1,138 +1,128 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="referrer" content="no-referrer">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Katoptron | Nationwide Community-Mapped Flock Cameras</title>
-<meta name="description" content="Explore nationwide community-reported Flock Safety ALPR camera positions from openly licensed OpenStreetMap records. Not an official manufacturer inventory.">
+<meta name="description" content="Explore separately labeled OpenStreetMap community-reported Flock Safety camera locations across the U.S.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="./a11y.css">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.11.2/dist/maplibre-gl.css">
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#09121c;color:#e8f2fb}
-*{box-sizing:border-box}body{margin:0}a{color:#ade1ee}
-header{padding:15px max(16px,2vw);border-bottom:1px solid #364d5f;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.brand{font-weight:800;letter-spacing:.12em;color:inherit;text-decoration:none}nav{display:flex;gap:15px;flex-wrap:wrap;font-size:.82rem}
-main{height:calc(100dvh - 73px);min-height:550px;display:grid;grid-template-columns:minmax(270px,360px) 1fr}
-aside{padding:23px 22px;overflow:auto;border-right:1px solid #3b5364;background:#111e2c}
-h1{font-size:1.6rem;line-height:1.13;margin:.4rem 0 1.1rem}h2{font-size:1rem}
-p{line-height:1.55;color:#bfcedb}
+:root{font-family:Inter,system-ui,sans-serif;color-scheme:dark;background:#0c1420;color:#edf3f8}
+*{box-sizing:border-box}body{margin:0}a{color:#a6dce7}
+header{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem max(1rem,3vw);border-bottom:1px solid #314653;background:#101e2b}
+.brand{font-size:1.15rem;font-weight:800;letter-spacing:.14em;color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:1rem;font-size:.83rem}
+main{display:grid;grid-template-columns:minmax(280px,370px) minmax(0,1fr);height:calc(100dvh - 72px);min-height:560px}
+aside{padding:1.3rem 1.45rem;overflow:auto;border-right:1px solid #314653;background:#101e2b}
+h1{font-size:clamp(1.5rem,2.3vw,2.1rem);line-height:1.16;margin:0 0 .85rem}
+p{line-height:1.55;color:#c4d3dc;font-size:.91rem}
+.note{padding:.75rem 1rem;background:#1b2e3c;border-left:3px solid #a5d8e6;margin:1rem 0}
+.stat{border:1px solid #3d6170;border-radius:9px;padding:.85rem 1rem;margin:10px 0;background:#1a2c3b}
 .stat strong{display:block;font-size:2rem;font-variant-numeric:tabular-nums}
-.stat span,.small{display:block;font-size:.8rem;color:#adbecb}
-.stat{border:1px solid #365265;border-radius:10px;padding:14px;background:#182c3c;margin:14px 0}
-#map{width:100%;height:100%}
-#status{font-size:.86rem;min-height:2rem;overflow-wrap:anywhere}
-.note{border-left:3px solid #86cddd;padding-left:13px}
-label{display:block;margin:15px 0 6px;font-weight:650;font-size:.82rem}
-input{font:inherit;padding:10px;width:100%;color:#e8f2fb;background:#193040;border:1px solid #7aa2b3;border-radius:6px}
-button{font:inherit;padding:10px;margin-top:10px;background:#b9e5ed;color:#0b2331;font-weight:700;border:0;border-radius:6px;cursor:pointer}
-a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #c8edf4;outline-offset:3px}
-.maplibregl-popup-content{color:#142334}
-@media(max-width:850px){main{height:auto;display:flex;flex-direction:column}aside{max-height:none}#map{height:65dvh;min-height:400px}}
-</style></head>
-<body><a class="skip-link" href="#main-content">Skip to main content</a>
-<header><a href="./index.html" class="brand">KATOPTRON</a>
-<nav aria-label="Site navigation"><a href="./index.html">OFFICIAL CAMERA MAP</a>
+.stat span,.small{font-size:.78rem;color:#b4cbd7}
+label{display:block;margin:16px 0 5px;font-size:.84rem;font-weight:650}
+input{font:inherit;width:100%;padding:10px;color:#fff;background:#213744;border:1px solid #7d9aa8;border-radius:5px}
+button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background:#b9e8ef;border:0;border-radius:6px;font-weight:650;cursor:pointer}
+#map{height:100%;width:100%;background:#a1b7c0}
+#status{min-height:3em}
+:focus-visible{outline:3px solid #b6e2ec;outline-offset:3px}
+.leaflet-popup-content{color:#18242f}
+@media(max-width:860px){main{height:auto;display:flex;flex-direction:column}aside{max-height:none}#map{min-height:450px;height:65dvh}}
+</style></head><body><a class="skip-link" href="#main-content">Skip to main content</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a>
+<nav aria-label="Site navigation"><a href="./index.html">OFFICIAL MAP</a>
 <a href="./community-map.html" aria-current="page">COMMUNITY FLOCK MAP</a>
-<a href="./portals.html">FLOCK DISCLOSURES</a><a href="./methodology.html">METHODOLOGY</a></nav>
-</header>
+<a href="./portals.html">FLOCK DISCLOSURES</a><a href="./methodology.html">EVIDENCE POLICY</a></nav></header>
 <main id="main-content">
-<aside>
- <h1>Community-mapped Flock cameras</h1>
- <p>This map uses publicly contributed OpenStreetMap ALPR camera records whose <strong>manufacturer tag identifies Flock Safety</strong>. These are not confirmed or endorsed by Flock Safety and may be incorrect, moved, inactive, or duplicates of Katoptron's government records.</p>
- <div class="stat"><strong id="communityCount">—</strong><span>Flock-tagged records in source dataset, not unique active installed cameras</span></div>
- <div class="stat"><strong id="officialCount">293</strong><span>Separately verified government-sourced exact camera records in Katoptron's last audited baseline</span></div>
- <p id="sourceDate" class="small">Checking external open-data source…</p>
- <p id="status" role="status" aria-live="polite">Connecting to community open-data tiles…</p>
- <div class="note"><strong>These two counts must not be added.</strong> Government and community datasets overlap, and the community layer is not an inspection or live status report. Route simulations on the official map still only use their existing verified dataset.</div>
- <form id="jumpForm">
- <label for="coords">Jump to location (latitude,longitude)</label>
- <input id="coords" placeholder="38.5816,-121.4944" autocomplete="off" maxlength="60" required>
- <button type="submit">Go to coordinates</button>
- </form>
- <p class="small">Underlying records © OpenStreetMap contributors, <a href="https://opendatacommons.org/licenses/odbl/" target="_blank" rel="noopener noreferrer">ODbL</a>. Tile rendering provided by <a href="https://github.com/flockhopper3/deflock-data" target="_blank" rel="noopener noreferrer">DeFlock's open tile pipeline</a>. Base map © OpenStreetMap contributors.</p>
+<aside><h1>Community-reported Flock camera locations</h1>
+<p>Explore OpenStreetMap observations tagged as Flock Safety ALPR cameras. These are **community-attributed**, not independently confirmed by the manufacturer or government. Positions, vendor labels and operation status can be outdated or wrong.</p>
+<div class="stat"><strong id="communityCount">—</strong><span>Publicly mapped community-reported Flock locations, not confirmed active cameras</span></div>
+<div class="stat"><strong>293</strong><span>Government-source camera records in Katoptron's last audited official baseline, separate from these observations</span></div>
+<p id="sourceDate" class="small" role="status">Loading open-data snapshot date…</p>
+<p id="status" role="status" aria-live="polite">Loading nationwide community data…</p>
+<div class="note"><strong>Zoom in to level 10 or closer to load individual mapped cameras.</strong> National counts do not mean all source points are simultaneously displayed. The official and community counts overlap and cannot be added.</div>
+<form id="jumpForm"><label for="coordinates">Find latitude,longitude</label><input id="coordinates" autocomplete="off" maxlength="60" placeholder="38.5816,-121.4944" required><button type="submit">Go to location</button></form>
+<p class="small">Original records © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>, ODbL 1.0. Camera observations originate with OpenStreetMap and are distributed through <a href="https://github.com/flockhopper3/deflock-data" target="_blank" rel="noopener noreferrer">DeFlock's open-data feed</a>. Data can be incomplete. Map and routing simulations remain separated from privately submitted reports.</p>
 </aside>
-<div id="map" role="region" aria-label="Interactive map of community-reported Flock Safety ALPR cameras"></div>
+<div id="map" role="region" aria-label="OpenStreetMap community-mapped Flock Safety ALPR locations"></div>
 </main>
-<script type="module">
-import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.11.2/dist/maplibre-gl.mjs';
+<script src="./config.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+'use strict';
+const cfg=window.KATOPTRON_CONFIG;
 const $=id=>document.getElementById(id);
-const manifestURL='https://tiles.dontgetflocked.com/cameras-us-hourly-manifest.json';
-const tileURL='https://tiles.dontgetflocked.com/cameras-us-hourly-filter/{z}/{x}/{y}.mvt';
-let map;
-const clean=n=>typeof n==='number'&&Number.isFinite(n);
-function status(message){$('status').textContent=message}
-function sourceDate(value){
- const text=typeof value==='string'?value.slice(0,10):'';
- return /^\d{4}-\d{2}-\d{2}$/.test(text)?text:'Date not provided';
+const status=message=>{$('status').textContent=message};
+const community=L.map('map',{preferCanvas:true}).setView([39.83,-98.58],4);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+ maxZoom:19,attribution:'© OpenStreetMap contributors'
+}).addTo(community);
+let points=L.layerGroup().addTo(community),requestNumber=0,abort=null;
+const sourceLink=key=>{
+ if(!/^(node|way)\/[1-9][0-9]{0,17}$/.test(key||''))return null;
+ return 'https://www.openstreetmap.org/'+key;
+};
+async function api(table,params,signal){
+ if(!cfg?.supabaseUrl||!cfg?.supabasePublishableKey)
+   throw Error('Public Supabase configuration unavailable');
+ const url=cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+table+'?'+params.toString();
+ const res=await fetch(url,{headers:{apikey:cfg.supabasePublishableKey},
+   cache:'no-store',referrerPolicy:'no-referrer',signal});
+ if(!res.ok)throw Error('Public source HTTP '+res.status);
+ const data=await res.json();
+ if(!Array.isArray(data))throw Error('Malformed community data response');
+ return data;
 }
-async function init(){
+async function loadSummary(){
  try{
-  const response=await fetch(manifestURL,{cache:'no-store',mode:'cors'});
-  if(!response.ok)throw Error('Source manifest HTTP '+response.status);
-  const manifest=await response.json();
-  const brands=manifest?.brands;
-  if(!Array.isArray(brands)||brands.length<1)throw Error('Source vendor classification unavailable');
-  const flock=brands.find(b=>b?.label==='Flock Safety'&&
-    Number.isSafeInteger(b.id)&&b.id>0&&
-    Number.isSafeInteger(b.count)&&b.count>0);
-  if(!flock)throw Error('No explicitly Flock-labeled cameras in the source manifest');
-  $('communityCount').textContent=flock.count.toLocaleString();
-  $('sourceDate').textContent='Third-party dataset snapshot: '+sourceDate(manifest.generatedAt)+
-    '. Vendor IDs are matched to this build’s own manifest.';
-  map=new maplibregl.Map({
-   container:'map',
-   style:'https://tiles.openfreemap.org/styles/liberty',
-   center:[-98.58,39.83],zoom:3,minZoom:2,maxZoom:18
-  });
-  map.addControl(new maplibregl.NavigationControl(),'top-right');
-  map.on('load',()=>{
-   map.addSource('osm-flock-community',{
-    type:'vector',tiles:[tileURL],minzoom:0,maxzoom:14,attribution:'© OpenStreetMap contributors · ODbL · DeFlock'
-   });
-   const vendorFilter=['==',['get','b'],flock.id];
-   map.addLayer({
-    id:'community-flock-heat',type:'heatmap',source:'osm-flock-community', 'source-layer':'cameras',
-    filter:vendorFilter,maxzoom:9,
-    paint:{'heatmap-weight':1,'heatmap-radius':['interpolate',['linear'],['zoom'],2,2,8,11],
-      'heatmap-intensity':0.6,'heatmap-opacity':0.75}
-   });
-   map.addLayer({
-    id:'community-flock-points',type:'circle',source:'osm-flock-community',
-    'source-layer':'cameras',filter:vendorFilter,minzoom:8,
-    paint:{'circle-radius':['interpolate',['linear'],['zoom'],8,3,14,6],
-           'circle-color':'#b83265','circle-stroke-color':'#f5d7e3',
-           'circle-stroke-width':0.7,'circle-opacity':0.9}
-   });
-   map.on('click','community-flock-points',e=>{
-    const feat=e.features?.[0];if(!feat)return;
-    const props=feat.properties||{};
-    const elem=document.createElement('div');
-    const strong=document.createElement('strong');
-    strong.textContent='OpenStreetMap-reported Flock ALPR';elem.append(strong);
-    const p=document.createElement('p');
-    p.textContent='Community mapping, not Flock or police confirmation.';elem.append(p);
-    const id=props.osmId||props.osm_id||props.id;
-    if(id&&/^\d+$/.test(String(id))){
-     const a=document.createElement('a');a.href='https://www.openstreetmap.org/node/'+id;
-     a.target='_blank';a.rel='noopener noreferrer';a.textContent='View source OSM record';elem.append(a);
-    }
-    new maplibregl.Popup({maxWidth:'270px'}).setLngLat(e.lngLat).setDOMContent(elem).addTo(map);
-   });
-   map.on('mouseenter','community-flock-points',()=>{map.getCanvas().style.cursor='pointer'});
-   map.on('mouseleave','community-flock-points',()=>{map.getCanvas().style.cursor=''});
-   status('Community-reported Flock camera layer loaded. Zoom in for individual points.');
-  });
-  map.on('error',event=>{if(event?.error){status('Map provider issue: '+String(event.error.message||'Unavailable').slice(0,120))}});
- }catch(err){status('Community map is unavailable: '+err.message+'. Official records remain accessible via the main map.')}
+  const rows=await api('flock_public_osm_community_stats',
+     new URLSearchParams({select:'reported_flock_points,last_dataset_snapshot_date'}));
+  if(rows.length!==1||!Number.isInteger(rows[0].reported_flock_points))
+    throw Error('Community count unavailable');
+  $('communityCount').textContent=rows[0].reported_flock_points.toLocaleString();
+  $('sourceDate').textContent='OpenStreetMap source snapshot imported: '+(rows[0].last_dataset_snapshot_date||'Unknown');
+  loadVisible();
+ }catch(err){status('Community summary unavailable: '+err.message)}
 }
+async function loadVisible(){
+ const seq=++requestNumber;
+ if(abort)abort.abort();
+ abort=new AbortController();
+ points.clearLayers();
+ if(community.getZoom()<10){status('Zoom in to see community-mapped Flock locations. Nationwide counts remain visible at left.');return}
+ const b=community.getBounds();
+ const search=new URLSearchParams({select:'osm_key,latitude,longitude,source_timestamp',
+   'latitude':'gte.'+b.getSouth().toFixed(6),'longitude':'gte.'+b.getWest().toFixed(6),
+   order:'osm_key.asc',limit:'1501'});
+ search.append('latitude','lte.'+b.getNorth().toFixed(6));
+ search.append('longitude','lte.'+b.getEast().toFixed(6));
+ try{
+  const rows=await api('flock_osm_community_points',search,abort.signal);
+  if(seq!==requestNumber)return;
+  if(rows.length>1500){status('More than 1,500 community reports in view. Zoom in for a complete view of individual locations.');return}
+  for(const row of rows){
+   const lat=Number(row.latitude),lon=Number(row.longitude);
+   if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
+   const m=L.circleMarker([lat,lon],{radius:5,color:'#b55e79',fillColor:'#a32d56',fillOpacity:.85,weight:1});
+   const popup=document.createElement('div');
+   const label=document.createElement('strong');label.textContent='Community-reported Flock ALPR';popup.append(label);
+   const p=document.createElement('p');p.textContent='OpenStreetMap observation, not official confirmation of installation or operation.';popup.append(p);
+   const link=sourceLink(row.osm_key);
+   if(link){const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Check original OSM source';popup.append(a)}
+   m.bindPopup(popup);points.addLayer(m);
+  }
+  status(rows.length.toLocaleString()+' community Flock locations shown in this map view (not an active-camera census).');
+ }catch(err){if(seq===requestNumber&&err.name!=='AbortError')status('Community locations unavailable: '+err.message)}
+}
+let delayed=null;
+community.on('moveend',()=>{clearTimeout(delayed);delayed=setTimeout(loadVisible,300)});
 $('jumpForm').addEventListener('submit',event=>{
  event.preventDefault();
- const input=$('coords').value.trim();
- const match=/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/.exec(input);
+ const match=/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/.exec($('coordinates').value.trim());
  if(!match){status('Enter latitude,longitude as numbers.');return}
  const lat=Number(match[1]),lon=Number(match[2]);
- if(!clean(lat)||!clean(lon)||lat<-90||lat>90||lon<-180||lon>180){status('Coordinates outside allowed range.');return}
- if(!map){status('Map still unavailable.');return}
- map.flyTo({center:[lon,lat],zoom:13});status('Showing community records near selected coordinates.');
+ if(lat<-90||lat>90||lon<-180||lon>180){status('Coordinates outside the valid geographic range.');return}
+ community.setView([lat,lon],13);
 });
-init();
+loadSummary();
 </script></body></html>
