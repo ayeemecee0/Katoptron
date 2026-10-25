@@ -53,7 +53,9 @@
       return element;
     }
     add('strong', record.label);
-    add('span',record.evidence_tier==='independently_corroborated'
+    add('span',record.evidence_tier==='source_attributed_unconfirmed'
+      ? 'SOURCE-ATTRIBUTED · city-associated GIS map observation, NOT an approved or active Flock camera. Excluded from simulations'
+      : record.evidence_tier==='independently_corroborated'
       ? 'PROVISIONAL · independently corroborated, NOT government verified. No detections available'
       : record.evidence_tier==='government_verified'
         ? 'Government verified via independently reviewed alternate authority evidence'
@@ -64,7 +66,9 @@
     add('small', record.evidence_summary);
     if (record.evidence_tier) {
       add('small','Case review: '+shortDate(record.published_at));
-      add('small','Underlying evidence must satisfy independent review and time-limited corroboration. Current camera operation remains unknown.');
+      add('small',record.evidence_tier==='source_attributed_unconfirmed'
+        ? 'Source publisher association was rechecked. Individual camera manufacturer, installation and active status are UNKNOWN.'
+        : 'Underlying evidence must satisfy independent review and time-limited corroboration. Current camera operation remains unknown.');
     } else {
       add('small', 'Source last checked: ' + shortDate(record.last_source_recheck_at || record.last_confirmed_on));
       const freshness=sourceFreshness(record);
@@ -81,7 +85,9 @@
     const originalEvidence=safeUrl(record.source_url);
     const arcgisExternal=originalEvidence && /^services[0-9]*\.arcgis\.com$/i
       .test(new URL(originalEvidence).hostname);
-    add('small',record.evidence_tier==='independently_corroborated'
+    add('small',record.evidence_tier==='source_attributed_unconfirmed'
+      ? 'Evidence tier: CITY-ASSOCIATED MAP PUBLISHER (UNCONFIRMED) · NOT independently government-verified camera hardware'
+      : record.evidence_tier==='independently_corroborated'
       ? 'Evidence tier: INDEPENDENTLY CORROBORATED · provisional map layer, excluded from simulator'
       : record.evidence_tier==='government_verified'
         ? 'Evidence tier: government verified through independently reviewed alternative authority path'
@@ -611,7 +617,7 @@
     if(!Array.isArray(rows)||rows.length>=MAX_VISIBLE)
       throw new Error('Tiered source list unavailable or truncated; camera coverage unknown');
     if(rows.some(row=>!row || !validCoord(Number(row.latitude),Number(row.longitude)) ||
-        !['government_verified','independently_corroborated'].includes(row.evidence_tier)))
+        !['government_verified','independently_corroborated','source_attributed_unconfirmed'].includes(row.evidence_tier)))
       throw new Error('Tiered source contained invalid location or classification');
     return rows.map(row=>({
       ...row,record_key:'tiered-'+row.case_key,
@@ -619,7 +625,8 @@
       published_at:row.published_at,
       last_confirmed_on:null,last_source_recheck_at:null,
       verification_method:row.evidence_tier==='government_verified'
-        ?'alternative_government_authority_v1':'independent_corroboration_v1'
+        ?'alternative_government_authority_v1':row.evidence_tier==='source_attributed_unconfirmed'
+         ?'source_attributed_gis_unconfirmed_v1':'independent_corroboration_v1'
     }));
   }
   async function routeCameraRows(bounds,signal) {
@@ -933,11 +940,20 @@
     if (!state.map) return;
     state.pointLayer.clearLayers();
     state.areaLayer.clearLayers();
-    let exact = 0, areas = 0, provisional = 0, overdue = 0, unknownFreshness = 0;
+    let exact = 0, areas = 0, provisional = 0, attributed = 0, overdue = 0, unknownFreshness = 0;
     for (const record of [...state.visible,...state.tiered]) {
       if (!recordMatchesFilters(record)) continue;
       const p = [Number(record.latitude), Number(record.longitude)];
-      if (record.evidence_tier==='independently_corroborated') {
+      if(record.evidence_tier==='source_attributed_unconfirmed') {
+         if($('showAttributed').checked) {
+           attributed++;
+           L.circleMarker(p,{pane:'officialEvidencePane',radius:6,color:'#e1a0ba',weight:2,
+             dashArray:'2 4',fillColor:'#b44876',fillOpacity:.55})
+             .bindPopup(popupFor(record)).addTo(state.pointLayer);
+         }
+         continue;
+       }
+       if (record.evidence_tier==='independently_corroborated') {
         if($('showProvisional').checked) {
           provisional++;
           L.circleMarker(p,{pane:'officialEvidencePane',radius:7,color:'#afc1fa',weight:2,dashArray:'3 3',
@@ -980,6 +996,7 @@
       }
     }
     setText('exactCount', exact);
+    setText('attributedCount',attributed);
     setText('areaCount', areas);
     setText('provisionalCount',state.tieredUnavailable?'Unknown':provisional);
     const freshnessWarning=(overdue||unknownFreshness)
@@ -987,7 +1004,8 @@
         ' with unknown check freshness; orange pins require caution.'
       : '';
     setText('filterStatus',exact+areas+' government-verified camera or area entries and '+
-      provisional+' separately corroborated provisional point(s) displayed after filters. '+
+      provisional+' separately corroborated provisional point(s) and '+attributed+
+       ' source-attributed UNCONFIRMED map observation(s) displayed. '+
       'Location precision is source-specific; zero displayed does not mean no cameras.'+
       freshnessWarning);
     // Never apply map UI filters to the full-route evidence queries.
@@ -1413,6 +1431,7 @@
     $('showExact').addEventListener('change',drawLocations);
     $('showApprox').addEventListener('change',drawLocations);
     $('showProvisional').addEventListener('change',drawLocations);
+    $('showAttributed').addEventListener('change',drawLocations);
     $('compareCommunityRoute').addEventListener('change',()=>{
       if($('compareCommunityRoute').checked&&state.routeChoices.length){
         communityRouteCompare?.compareAll(state.routeChoices,state.routeComparisons);
