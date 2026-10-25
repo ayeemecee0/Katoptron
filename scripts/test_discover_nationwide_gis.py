@@ -136,6 +136,16 @@ class National(unittest.TestCase):
    found=d.upstream_government_source_seeds()
   self.assertEqual(len(found),3)
   self.assertNotIn("https://bad.example/alpr",found)
+ def test_exact_reviewed_agency_non_gov_pages_are_research_seeds(self):
+  verified='https://menifeepolice.org/automated-licesnse-plate-reader/'
+  with patch.object(d,'api_request',side_effect=[
+    [],[],[{'official_evidence_url':verified,'state_code':'CA'}]
+  ]):
+   found=d.upstream_government_source_seeds()
+  self.assertIn(verified,found)
+  self.assertEqual(len(found),1)
+  # An unrelated search hit or unsupported URL never inherits that status.
+  self.assertIsNone(d.gov_url('https://unrelated.example/flock'))
  def test_unvisited_government_pages_are_sampled_before_old_sources(self):
   import datetime as dt
   hits={f"https://city{i}.example.gov/flock":("State","original source")
