@@ -42,6 +42,34 @@ class GovernmentCrawler(unittest.TestCase):
   p=self.document(HTML+'<a href="javascript:alert(1)">Flock GIS map</a>')
   pages=d.same_site_page_links(p,PAGE,'city.example.gov')
   self.assertEqual(pages,['https://city.example.gov/police/flock-map'])
+ def test_generic_original_government_gis_navigation_is_followed(self):
+  # A Flock program often links its public GIS portal using only "GIS map".
+  # This is a bounded research follow-up, not a camera or source approval.
+  doc=self.document('<h1>Our police Flock Safety cameras</h1>'
+      '<a href="/contact">Locations and hours</a>'
+      '<a href="/maps">GIS map</a>'
+      '<a href="/other">Geospatial data</a>'
+      '<a href="/police/flock-map">Flock camera map</a>')
+  links=d.same_site_page_links(doc,PAGE,'city.example.gov')
+  self.assertIn('https://city.example.gov/maps',links)
+  self.assertEqual(links[0],'https://city.example.gov/police/flock-map')
+  self.assertNotIn('https://city.example.gov/contact',links)
+ def test_generic_gis_subpage_cannot_authorize_any_camera(self):
+  source=self.document('<h1>Flock cameras</h1><p>Our license plate '
+      'camera program is described here.</p><a href="/maps">GIS map</a>')
+  unrelated=self.document('<h1>General city map</h1>'
+      '<a href="https://gis.city.example.gov/a/FeatureServer/9">GIS cameras</a>')
+  with (patch.object(d,'load_approved_domains',return_value={}),
+        patch.object(d,'get_seed_pages',return_value=([(PAGE,'Example, ST')],{PAGE})),
+        patch.object(d,'fetch_government_page',side_effect=[
+           (source,'a'*64),(unrelated,'b'*64)]),
+        patch.object(d,'stage') as stage_leads,
+        patch.object(d,'stage_same_gov_flock_page') as queue):
+   result=d.scan(dry_run=False)
+  self.assertEqual(result['original_gov_pages_queued'],0)
+  self.assertEqual(result['gis_links_found'],0)
+  stage_leads.assert_not_called()
+  queue.assert_not_called()
  def test_offsite_redirect_is_blocked(self):
   with patch.object(d,'public_dns',return_value=False):
    with self.assertRaises(ValueError): d.fetch_government_page(PAGE)
