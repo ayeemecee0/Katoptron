@@ -118,7 +118,17 @@ window.__QA={reports,activity};
    assert.equal(first.status(),200);
    assert.equal(await page.locator('#reportPanel').isHidden(),true);
    await page.locator('#email').fill('qa.contributor@example.invalid');
+   await page.locator('#password').fill('eightchars');
+   await page.locator('#register').click();
+   assert.ok((await page.locator('#notice').textContent()).includes('at least 12 characters'),
+     'Signup must explain the stronger new-account password requirement');
    await page.locator('#password').fill('another-safe-mock-password');
+   await page.locator('#register').click();
+   assert.ok((await page.locator('#notice').textContent()).includes('verification link'),
+     'Pending confirmation must display a usable verification instruction');
+   assert.equal(await page.locator('#reportPanel').isHidden(),true,
+     'No account session may open private contribution');
+   console.log('MOCK SIGNUP UX PASS: 12-character warning, pending confirmation, no false login');
    await page.locator('#authForm button[type=submit]').click();
    await page.locator('#reportPanel').waitFor({state:'visible',timeout:12000});
    // Camera coordinates are accepted as one local-only comma-separated pair,
