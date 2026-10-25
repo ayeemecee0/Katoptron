@@ -1,0 +1,25 @@
+name: Audit independent nationwide community-confirmed ALPR open data
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '18 12 * * 2,5'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/probe_independent_community_confirmed.py'
+      - '.github/workflows/audit_independent_community_confirmed.yml'
+permissions:
+  contents: read
+jobs:
+  qualify-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python scripts/probe_independent_community_confirmed.py
