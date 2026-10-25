@@ -36,12 +36,14 @@ const assert=require('node:assert/strict');
       headers:{'access-control-allow-origin':'*'},
       body:JSON.stringify({code:'Ok',routes:[
        {distance:1700,duration:170,
-        geometry:{type:'LineString',coordinates:[[lon-.008,lat],[lon,lat],[lon+.008,lat]]}}
+        geometry:{type:'LineString',coordinates:[[lon-.008,lat],[lon,lat],[lon+.008,lat]]}},
+       {distance:2800,duration:250,
+        geometry:{type:'LineString',coordinates:[[lon-.008,lat],[lon,lat+.015],[lon+.008,lat]]}}
       ]})}));
   await page.locator('#from').fill(lat+','+(lon-.008));
   await page.locator('#to').fill(lat+','+(lon+.008));
   await page.locator('#planRoute').click();
-  await page.waitForFunction(()=>document.querySelector('#comparisonStatus')?.textContent?.includes('1/1 driving routes completely checked'),null,{timeout:40000});
+  await page.waitForFunction(()=>document.querySelector('#comparisonStatus')?.textContent?.includes('2/2 driving routes completely checked'),null,{timeout:40000});
   const before=await page.locator('#nearbyCount').textContent();
   const original=await page.locator('#observationCount').textContent();
   const stats=await page.locator('#nationalStats').textContent();
@@ -54,6 +56,21 @@ const assert=require('node:assert/strict');
   assert.ok(value.startsWith('Selected route:'),'Community corridor query failed: '+value);
   assert.ok(/Selected route: [1-9][0-9]* OSM community observations/.test(value),value);
   assert.ok(value.includes('not detected vehicles or active-device counts'));
+  await page.waitForFunction(()=>{
+   const entries=[...document.querySelectorAll('.community-comparison-evidence')];
+   return entries.length===2&&entries.every(e=>e.textContent.includes('community-mapped OSM observation(s)'));
+  },null,{timeout:45000});
+  const alternatives=await page.locator('.community-comparison-evidence').allTextContents();
+  assert.equal(alternatives.length,2);
+  assert.ok(alternatives.every(x=>!x.includes('UNKNOWN')),alternatives.join(' | '));
+  await page.locator('#routeChoice').selectOption('1');
+  await page.waitForFunction(()=>document.querySelector('#communityRouteStatus')?.textContent?.startsWith('Selected route:'),null,{timeout:10000});
+  const secondSelected=await page.locator('#communityRouteStatus').textContent();
+  assert.ok(secondSelected.includes('OSM community observations within'),secondSelected);
+  await page.locator('#routeChoice').selectOption('0');
+  await page.waitForFunction(()=>document.querySelector('#communityRouteStatus')?.textContent?.startsWith('Selected route:'),null,{timeout:10000});
+  assert.equal((await page.locator('#communityRouteStatus').textContent()).includes('UNKNOWN'),false);
+
   assert.equal(await page.locator('#nearbyCount').textContent(),before);
   assert.equal(await page.locator('#observationCount').textContent(),original);
   assert.equal(await page.locator('#nationalStats').textContent(),stats);
