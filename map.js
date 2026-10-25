@@ -154,6 +154,10 @@
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors', maxZoom: 19
     }).addTo(map);
+    // Government-verified positions render ABOVE community density and OSM dots.
+    // Different evidence layers never share a visual pane or publication gate.
+    map.createPane('officialEvidencePane');
+    map.getPane('officialEvidencePane').style.zIndex='460';
     state.areaLayer = L.layerGroup().addTo(map);
     state.pointLayer = L.layerGroup().addTo(map);
     state.routeLayer = L.featureGroup().addTo(map);
@@ -161,8 +165,8 @@
     communityRouteCompare=window.KatoptronCommunityRoute?.install({
       cfg:CFG,geo:Geo,showStatus:()=>renderRouteComparisons()
     })||null;
-    // Optional, independently queried ODbL community observations never enter
-    // state.visible, route comparisons, or simulated encounters.
+    // Default-on community observations are visually primary but never enter
+    // state.visible, government comparisons, or official modeled encounters.
     window.KatoptronCommunityOverlay?.install(map,CFG);
     map.on('moveend', () => {
       clearTimeout(state.viewportTimer);
@@ -897,7 +901,7 @@
       if (record.evidence_tier==='independently_corroborated') {
         if($('showProvisional').checked) {
           provisional++;
-          L.circleMarker(p,{radius:7,color:'#afc1fa',weight:2,dashArray:'3 3',
+          L.circleMarker(p,{pane:'officialEvidencePane',radius:7,color:'#afc1fa',weight:2,dashArray:'3 3',
             fillColor:'#6587ce',fillOpacity:.6})
             .bindPopup(popupFor(record)).addTo(state.pointLayer);
         }
@@ -908,7 +912,7 @@
         const freshness=sourceFreshness(record);
         if(freshness==='overdue')overdue++;
         if(freshness==='unknown')unknownFreshness++;
-        L.circleMarker(p, {radius:6,color:'#0c292e',weight:2,
+        L.circleMarker(p, {pane:'officialEvidencePane',radius:6,color:'#0c292e',weight:2,
           fillColor:freshness==='recent'?'#40d8bc':'#cba16e',
           fillOpacity:freshness==='recent'?1:.8})
           .bindPopup(popupFor(record)).addTo(state.pointLayer);
@@ -1346,7 +1350,7 @@
     setText('timelineIntro','Route planning uses real street geometry when the external router is available. A modeled observation is an illustration, not a record retrieved from Flock.');
     $('timelineEvents').replaceChildren();
     setText('routeStatus','Route cleared. No personal route details were saved by Katoptron.');
-    setText('mapLabel','Nationwide view · Camera inventory incomplete');
+    setText('mapLabel','Nationwide OSM reporting density · Official GIS shown separately · Coverage incomplete');
   }
   function bind() {
     $('programSearch').addEventListener('input',renderPrograms);
