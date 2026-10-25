@@ -6,6 +6,7 @@ become PRIVATE non-authoritative leads and cannot publish a camera or metric.
 """
 import argparse
 from collections import Counter
+import datetime as dt
 import re
 from urllib.parse import urljoin, urlsplit, quote
 
@@ -17,7 +18,7 @@ from discover_government_gis_links import (
 from government_domain_registry import load_approved_domains
 from paged_supabase import fetch_all
 
-MAX_PAGES=80
+MAX_PAGES=20
 VENDOR_HOST='transparency.flocksafety.com'
 PORTAL_PATH=re.compile(r'^/[a-z0-9-]+/?$')
 
@@ -47,7 +48,13 @@ def reviewed_original_pages(api=api_request):
         if original:pages.add(original)
     if len(pages)>1000:
         raise ValueError('Unbounded original reviewed agency source registry')
-    return sorted(pages)[:MAX_PAGES]
+    ordered=sorted(pages)
+    if not ordered:return []
+    # Bound daily original-agency requests and rotate to reach all sources
+    # across runs, instead of starving late-sorted municipalities.
+    start=(dt.datetime.now(dt.timezone.utc).date().toordinal()*MAX_PAGES)%len(ordered)
+    return [ordered[(start+i)%len(ordered)]
+            for i in range(min(MAX_PAGES,len(ordered)))]
 
 
 def direct_vendor_portals(document,page,page_hash):
