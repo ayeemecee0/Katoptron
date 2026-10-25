@@ -12,7 +12,7 @@ async function main(){
  const limited=P.client(async()=>new Response('limit',{status:429}));
  await assert.rejects(()=>limited.json('geocoding','https://example.com/api',3000),/rate limited/);
  assert.equal(limited.status('geocoding').available,false);
- await assert.rejects(()=>limited.json('geocoding','https://example.com/api',3000),/temporarily unavailable/);
+ await assert.rejects(()=>limited.json('geocoding','https://example.com/api',3000),/quota\/rate limit active/);
  let n=0;const transient=P.client(async()=>{n++;return n===1
   ?new Response('temporary',{status:503}):new Response('{"code":"Ok"}',{headers:{'content-type':'application/json'}});},
   ()=>Date.now(),async()=>{});
