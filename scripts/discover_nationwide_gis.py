@@ -196,10 +196,15 @@ def upstream_government_source_seeds():
         if url:
             found[url]=("Verified legislative record","Flock Safety legislative government source")
     for item in programs:
-        url=gov_url(item.get("official_evidence_url") or "")
+        raw=item.get("official_evidence_url") or ""
+        # Verified original-agency records can use .us, municipal .org and
+        # police department sites rather than .gov. Their *exact* DB-pinned
+        # URLs are safe research seeds, NOT delegated GIS publisher approval.
+        # Search-engine hits and discovery_queue rows still require .gov.
+        url=gov_url(raw) or normalized_url(raw)
         if url:
             found[url]=(str(item.get("state_code") or "Official program"),
-                        "Original government Flock program citation")
+                        "Reviewed original government Flock program citation")
     return found
 
 
