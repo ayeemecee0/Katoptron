@@ -31,11 +31,15 @@ URL_KEY=re.compile(r'^[A-Za-z0-9-]{3,90}$')
 APP_ID=re.compile(r'^[0-9a-fA-F]{32}$')
 APP_PATH=re.compile(r'^/apps/(?:webappviewer/index[.]html|Shortlist/index[.]html|instant/[A-Za-z0-9_-]{2,35}/index[.]html)$',re.I)
 APP_TYPES={'Web Mapping Application','Web Experience','Dashboard','StoryMap'}
+MAP_VIEWER_PATH='/apps/mapviewer/index.html'
 MAX_APP_LINK_CHECKS=12
 # Individually researched ORIGINAL city-government mapping directory, not an
 # ArcGIS publisher approval. This adds an independent agency proof lead to the
 # read-only probe; a matching app never approves or publishes a camera point.
-ORIGINAL_GOV_GIS_RESEARCH_PAGES=('https://www.cityofmenifee.us/maps',)
+ORIGINAL_GOV_GIS_RESEARCH_PAGES=(
+    'https://www.cityofmenifee.us/maps',
+    'https://test.shelbyvilletn.org/planning-community-development/',
+)
 
 
 
@@ -89,11 +93,13 @@ def independently_owned_arcgis_application(url,identity,fetch=None):
     if not original:
         return False
     parsed=urlsplit(original)
+    is_webmap=parsed.path.lower()==MAP_VIEWER_PATH
     if (parsed.hostname!=key.lower()+'.maps.arcgis.com' or
-        not APP_PATH.fullmatch(parsed.path)):
+        not (APP_PATH.fullmatch(parsed.path) or is_webmap)):
         return False
     params=parse_qs(parsed.query,keep_blank_values=True)
-    if len(params)!=1 or not set(params).issubset({'appid','id'}):
+    allowed={'webmap'} if is_webmap else {'appid','id'}
+    if len(params)!=1 or not set(params).issubset(allowed):
         return False
     _,values=next(iter(params.items()))
     if len(values)!=1 or not APP_ID.fullmatch(values[0]):
@@ -103,7 +109,7 @@ def independently_owned_arcgis_application(url,identity,fetch=None):
     details=fetch('https://www.arcgis.com/sharing/rest/content/items/'+item_id+'?f=json')
     if (not isinstance(details,dict) or
         str(details.get('id','')).lower()!=item_id.lower() or
-        details.get('type') not in APP_TYPES or
+        details.get('type') not in ({'Web Map'} if is_webmap else APP_TYPES) or
         not isinstance(details.get('owner'),str)):
         return False
     if details.get('orgId')==orgid:
@@ -128,7 +134,8 @@ def linked_government_org(document,page,identity,fetch=None):
             return True
         candidate=urlsplit(url)
         if (candidate.hostname and candidate.hostname.endswith('.maps.arcgis.com') and
-            APP_PATH.fullmatch(candidate.path)):
+            (APP_PATH.fullmatch(candidate.path) or
+             candidate.path.lower()==MAP_VIEWER_PATH)):
             if examined>=MAX_APP_LINK_CHECKS:
                 break
             examined+=1
