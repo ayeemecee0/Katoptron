@@ -219,3 +219,24 @@ A second original municipal source, [Seabrook, Texas's official LPR FAQ](https:/
 **Unresolved publication gate:** The government-operated map application associates the original Esri publisher with Menifee, and the original police page documents Flock use, but a reviewed agency source does not yet explicitly identify/endorse this particular camera point layer as the police department's public location inventory. The 27 coordinates remain *privately staged*, not government-verified or independently corroborated public pins. Further original-agency layer-specific attribution and an independently approved case review are required. No unauthenticated ArcGIS catalog title or source count may bypass those checks.
 
 This work used existing free GitHub Actions and Supabase resources, without provisioning paid infrastructure.
+
+
+## October 24 additional acceptance: immutable research evidence and reviewed-source expansion
+
+**Live PostgreSQL checkpoint:** 293 canonical government-source camera rows, 23 verified dated program rows, 27 Menifee private candidate cases and 27 private attestations. All Menifee cases remain `candidate` and all 27 attestations remain `staged`. No Menifee coordinate has been approved by this work.
+
+**Source-drift protection:** The municipality-specific private worker now checks its previously staged case geometry and evidence receipts before using append-only conflict-ignore staging. Because the original municipality and police webpages can legitimately change bytes, previously staged page-bound fingerprints can differ on a later audit. The actual subsequent live Menifee run detected such a mismatch and **HELD** the data. The GitHub Actions workflow now reports only the two known immutable-receipt conflicts as a warning/held result; other source-validation, credential and inventory errors still fail the job. A green held job must never be mistaken for completed staging, refreshed provenance, or camera approval. Independently inspect the source revision before approving or replacing any past evidence.
+
+**Other candidate data:** The pinned externally hosted GIS source candidate importer now reads its existing private record before attempting an append-only insert. Changes to name, ObjectID field, geometry type or URL are held for review, and a later trusted status is never downgraded to unverified. Regression coverage tests both cases.
+
+**Nationwide expansion:** The 50-state original-government GIS discoverer now alternates broader Flock/GIS/FeatureServer phrasing, including abbreviated references to license plate readers. It also reuses exact already-reviewed agency program source URLs on non-.gov agency hosts for private lead research; ordinary search hits and unreviewed discovery-queue pages still require government-domain validation. These do not grant publisher authority or publish camera points. A completed workflow inspected 21 original pages and found no newly qualifying direct GIS links; later expanded-source discovery increased the source seed set from 50 to 52, but the checked original pages still yielded no new qualifying layer. A candidate discovery and full script-validation run passed after regression fixes. Public map and account flows remain in public beta.
+
+**Independent Menifee agency acceptance remains BLOCKED:** The Menifee PD official ALPR description and municipal map publisher connection establish a real program and a GIS publisher association, **not** per-layer installation authority. The public Flock portal's July 2026 `Total Cameras` figure of 44 explicitly includes LPR **and other cameras**, so it cannot be equated with the 27 original GIS point features or a precise count of fixed municipal ALPR installations. See [P0 evidence gap / existing-records request issue #2](https://github.com/ayeemecee0/Katoptron/issues/2). Do not publish these points absent independent original agency layer endorsement and reviewer acceptance.
+
+**Verified checks:**
+- [Script validation #617](https://github.com/ayeemecee0/Katoptron/actions/runs/40154209005) passed.
+- [Nationwide original-government discovery](https://github.com/ayeemecee0/Katoptron/actions/runs/40154208976) passed.
+- [Private municipal staging research](https://github.com/ayeemecee0/Katoptron/actions/runs/40154405179) passed with an explicit **HELD** source-drift status.
+- [Latest GitHub Pages build](https://github.com/ayeemecee0/Katoptron/actions/runs/40154405471) passed.
+
+No paid infrastructure was added and no unverified camera points were promoted.
