@@ -10,7 +10,7 @@ create table if not exists public.flock_osm_quality_snapshots (
  colocated_coordinate_groups integer not null check (colocated_coordinate_groups between 0 and distinct_coordinates),
  osm_edits_older_365d integer not null check(osm_edits_older_365d between 0 and osm_observations),
  osm_edit_timestamp_missing integer not null check(osm_edit_timestamp_missing between 0 and osm_observations),
- source_fingerprint_sha256 text not null check(source_fingerprint_sha256 ~ '^[0-9a-f]{64}$'),
+ measurement_receipt_sha256 text not null check(measurement_receipt_sha256 ~ '^[0-9a-f]{64}$'),
  source_label text not null default 'OSM-derived DeFlock open ALPR feed'
    check(source_label='OSM-derived DeFlock open ALPR feed'),
  source_license text not null default 'ODbL 1.0' check(source_license='ODbL 1.0')
@@ -20,7 +20,7 @@ revoke all on public.flock_osm_quality_snapshots from public,anon,authenticated,
 grant select on public.flock_osm_quality_snapshots to anon,authenticated,service_role;
 grant insert(sync_at,source_snapshot_date,osm_observations,
  distinct_coordinates,colocated_extra_observations,colocated_coordinate_groups,
- osm_edits_older_365d,osm_edit_timestamp_missing,source_fingerprint_sha256)
+ osm_edits_older_365d,osm_edit_timestamp_missing,measurement_receipt_sha256)
  on public.flock_osm_quality_snapshots to service_role;
 create policy public_reviewed_osm_quality_snapshots
  on public.flock_osm_quality_snapshots for select to anon,authenticated
@@ -41,7 +41,7 @@ grant select on public.flock_public_osm_latest_quality to anon,authenticated,ser
 insert into public.flock_osm_quality_snapshots (
  sync_at,source_snapshot_date,osm_observations,distinct_coordinates,
  colocated_extra_observations,colocated_coordinate_groups,osm_edits_older_365d,
- osm_edit_timestamp_missing,source_fingerprint_sha256
+ osm_edit_timestamp_missing,measurement_receipt_sha256
 )
 with grouped as (
  select latitude,longitude,count(*) as n
@@ -60,7 +60,7 @@ with grouped as (
 select s.sync_at,s.source_snapshot_date,s.osm_observations,c.distinct_coordinates,
  c.colocated_extra_observations,c.colocated_coordinate_groups,
  s.osm_edits_older_365d,s.osm_edit_timestamp_missing,
- encode(digest(s.sync_at::text||':'||s.osm_observations::text||':'||c.distinct_coordinates::text,
+ encode(extensions.digest(s.sync_at::text||':'||s.osm_observations::text||':'||c.distinct_coordinates::text,
    'sha256'),'hex')
 from current_source s cross join clusters c
 where s.osm_observations between 90000 and 200000 and s.sync_at is not null
