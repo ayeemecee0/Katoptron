@@ -21,8 +21,9 @@ const assert=require('node:assert/strict');
     bounds:community.getBounds().toBBoxString(),
     status:document.querySelector('#status')?.textContent||''
   }));
-  assert.ok(overview.zoom>=10&&overview.status.includes('no truncated subset is shown'),
-    'Dense city viewport did not confirm completeness: '+JSON.stringify(overview));
+  assert.ok(overview.zoom>=10&&overview.status.includes('approximate reporting cells'),
+    'Dense city viewport did not show complete aggregate coverage: '+JSON.stringify(overview));
+  assert.ok(!overview.status.includes('unavailable'),'Dense source aggregation failed');
   assert.ok(Number.parseInt(overview.status.replaceAll(',',''),10)>1000,overview.status);
   // A closer view must display only a completely returned result.
   const point=await page.evaluate(async()=>{
@@ -48,7 +49,7 @@ const assert=require('node:assert/strict');
   const small=await page.locator('#status').textContent();
   assert.ok(small.includes('complete source query')&&
     Number.parseInt(small.replaceAll(',',''),10)>=1,small);
-  console.log('COMMUNITY VIEWPORT COMPLETENESS PASS: crowded 1000-row-capped metro area withheld; complete zoomed points shown');
+  console.log('COMMUNITY VIEWPORT COMPLETENESS PASS: complete metro density fallback plus precise source-linked points when zoomed');
  }catch(e){console.error('COMMUNITY VIEWPORT COMPLETENESS FAILED',e.message);process.exitCode=1}
  finally{await browser.close()}
 })().catch(e=>{console.error('Viewport test harness failed',e.message);process.exitCode=1});
