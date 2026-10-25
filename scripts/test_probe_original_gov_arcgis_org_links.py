@@ -42,6 +42,28 @@ class GovPublisher(unittest.TestCase):
     self.assertTrue(a.linked_government_org(doc,'https://originalcity.gov/gis',ORG,owned_fetch))
     self.assertFalse(a.linked_government_org(doc,'https://originalcity.gov/gis',
         {**ORG,'org_id':'DIFFERENT1234'},owned_fetch))
+
+ def test_original_city_mapviewer_is_private_publisher_proof_only(self):
+    webmap='b567681267f642f1bd5e23e4960d64e9'
+    city_link='https://citygis.maps.arcgis.com/apps/mapviewer/index.html?webmap='+webmap
+    doc=document('<a href="'+city_link+'">Mapping Information</a>')
+    endpoint='https://www.arcgis.com/sharing/rest/content/items/'+webmap+'?f=json'
+    def matched_fetch(url):
+       self.assertEqual(url,endpoint)
+       return {'id':webmap,'type':'Web Map','owner':'city_planning',
+               'orgId':'ABCD12345678'}
+    self.assertTrue(a.linked_government_org(doc,'https://city.gov/planning',ORG,matched_fetch))
+    self.assertFalse(a.linked_government_org(doc,'https://city.gov/planning',
+        {**ORG,'org_id':'DIFFERENT1234'},matched_fetch))
+    self.assertFalse(a.linked_government_org(doc,'https://city.gov/planning',ORG,
+        lambda _: {'id':webmap,'type':'Feature Service','owner':'city_planning',
+                   'orgId':'ABCD12345678'}))
+    for bad in (city_link+'&next=evil',city_link.replace('webmap=','appid='),
+                city_link.replace('citygis.maps','fakegis.maps'),
+                city_link.replace('https:','http:'),
+                city_link+'#fragment'):
+       with self.subTest(bad=bad):
+          self.assertFalse(a.independently_owned_arcgis_application(bad,ORG,matched_fetch))
  def test_arcgis_app_spoofing_and_unrelated_item_rejected(self):
     appid='b'*32
     base='https://citygis.maps.arcgis.com/apps/webappviewer/index.html?id='+appid
