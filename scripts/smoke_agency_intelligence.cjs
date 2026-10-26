@@ -63,6 +63,23 @@ const {chromium}=require('playwright');
   assert.ok((await page.locator('#selectedContext').textContent()).includes('snapshot'));
   assert.ok((await page.locator('#outcount').textContent()).includes('directed outgoing'));
   assert.ok((await page.locator('#incount').textContent()).includes('incoming'));
+  // Government-authenticated sharing is separate from the secondary graph.
+  await page.locator('#filter').fill('Elk Grove CA PD');
+  await page.locator('#cards button').first().click();
+  await page.waitForFunction(()=>
+   document.querySelector('#originalSummary')?.textContent?.includes('publisher-listed outbound'),
+    null,{timeout:25000});
+  assert.ok((await page.locator('#originalSummary').textContent()).includes('65 publisher-listed outbound'),
+   'Elk Grove original government page must list 65 source-qualified recipients');
+  assert.ok((await page.locator('#originalOutbound').textContent()).includes('Folsom CA PD'));
+  assert.ok((await page.locator('#originalOutbound').textContent()).includes('Original government-published named access'));
+  assert.ok((await page.locator('#originalOutbound a').first().getAttribute('href'))
+   .startsWith('https://elkgrove.gov/'));
+  await page.locator('#filter').fill('Folsom CA PD');
+  await page.locator('#cards button').first().click();
+  assert.ok((await page.locator('#originalInbound').textContent()).includes('Elk Grove Police Department'),
+    'A recipient should see source-cited inbound government sharing without inventing reciprocal access');
+
   assert.deepEqual(problems,[]);
   console.log('AGENCY INTELLIGENCE PASS: live sourced X-Ray dossier, local watch persistence and reviewed-state, secondary access explorer');
  }catch(e){console.error('AGENCY INTELLIGENCE FAILED:',e.stack||e);console.error(problems.slice(0,5));process.exitCode=1}
