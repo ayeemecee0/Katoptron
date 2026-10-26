@@ -24,7 +24,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <a href="#main-content" class="skip-link">Skip to content</a>
 <header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Primary">
 <a href="./index.html">CAMERA MAP</a><a href="./accountability.html">ACCOUNTABILITY</a>
-<a href="./government-watch.html">GOVERNMENT WATCH</a><a href="./sharing-explorer.html">SHARING EXPLORER</a>
+<a href="./government-watch.html">GOVERNMENT WATCH</a><a href="./original-acquisition.html">SOURCE COVERAGE</a><a href="./sharing-explorer.html">SHARING EXPLORER</a>
 </nav></header>
 <main id="main-content"><h1>Agency X-Ray</h1>
 <p>One source-linked research profile for each locality in Katoptron's published evidence. Compare government maps, government decisions and separately sourced Flock vendor disclosures.</p>
@@ -36,7 +36,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <div id="list" aria-label="Localities with published evidence"></div>
 <section id="profile" hidden aria-label="Selected locality source dossier">
 <h2 id="profileTitle"></h2>
-<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a></div>
+<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a><a id="timelineLink" href="./agency-timeline.html">View dated accountability timeline</a></div>
 <div class="grid" id="metrics"></div>
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
@@ -99,6 +99,7 @@ function select(group){
  const url=new URL(location.href);url.searchParams.set('place',group.key);
  $('permalink').href=url.toString();
  $('brief').href='./agency-brief.html?place='+encodeURIComponent(group.key);
+ $('timelineLink').href='./agency-timeline.html?place='+encodeURIComponent(group.key);
  $('follow').textContent=API.safeRead().follows.includes(group.key)?'Following in Government Watch':'Follow in Government Watch';
  $('metrics').replaceChildren(metric('Government source-mapped positions',group.cameras.length),
  metric('Government records',group.events.length),
