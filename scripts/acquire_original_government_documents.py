@@ -78,16 +78,24 @@ def normalize_url(url,base,source_host=None):
  out=urllib.parse.urlunsplit(("https",p_host,p.path or "/",p.query,""))
  return out if len(out)<=1500 else None
 
-class NoRedirect(urllib.request.HTTPRedirectHandler):
+class SameGovRedirect(urllib.request.HTTPRedirectHandler):
+ def __init__(self,root_host):
+  super().__init__()
+  self.root=root_host.removeprefix("www.")
  def redirect_request(self,req,fp,code,msg,headers,newurl):
-  raise ValueError("Original publisher redirected; independent domain verification required")
+  p=valid_https_url(newurl)
+  if not p or not p.hostname.endswith(".gov") or p.hostname.removeprefix("www.")!=self.root:
+   raise ValueError("Redirect leaves original verified government authority")
+  if not public_dns(p.hostname):
+   raise ValueError("Government redirect does not resolve to a public IP")
+  return super().redirect_request(req,fp,code,msg,headers,newurl)
 
 def fetch(url,limit=MAX_PAGE):
  p=valid_https_url(url)
  if not p or not p.hostname.endswith(".gov") or not public_dns(p.hostname):
   raise ValueError("Non-government or private-network source rejected")
  req=urllib.request.Request(url,headers={"User-Agent":USER_AGENT,"Accept":"text/html,text/csv,application/octet-stream,*/*"})
- opener=urllib.request.build_opener(NoRedirect())
+ opener=urllib.request.build_opener(SameGovRedirect(p.hostname))
  with opener.open(req,timeout=17) as res:
   if res.status!=200:raise ValueError("Original source HTTP "+str(res.status))
   data=res.read(limit+1)
