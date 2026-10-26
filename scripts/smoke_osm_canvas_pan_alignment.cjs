@@ -30,9 +30,9 @@ const assert=require('node:assert/strict');
    const r=await fetch(c.supabaseUrl+
       '/rest/v1/flock_osm_community_points?'+q.toString(),
        {headers:{apikey:c.supabasePublishableKey},cache:'no-store'});
-   assert.equal(r.status,200);
+   if(r.status!==200)throw Error('Original community source HTTP '+r.status);
    const rows=await r.json();
-   assert.ok(rows.length===1,'No real Sacramento original OSM source for pixel test');
+   if(rows.length!==1)throw Error('No real Sacramento original OSM source for pixel test');
    return rows[0];
   });
   const sample=await page.evaluate(async record=>{
