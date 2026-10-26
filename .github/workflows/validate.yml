@@ -124,6 +124,7 @@ on:
       - 'supabase/migrations/121_secondary_retention_history.sql'
       - 'supabase/migrations/122_bounded_agency_retention_public_view.sql'
       - 'supabase/migrations/123_verified_vendor_secondary_portal_identity_view.sql'
+      - 'supabase/migrations/124_watch_delivery_receipt_event_fk_index.sql'
       - 'scripts/test_exact_portal_identity_crosswalk.sql'
       - 'scripts/test_agency_watch_security.sql'
       - 'agency-network.js'
@@ -738,6 +739,8 @@ jobs:
             -f supabase/migrations/122_bounded_agency_retention_public_view.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/123_verified_vendor_secondary_portal_identity_view.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/124_watch_delivery_receipt_event_fk_index.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
