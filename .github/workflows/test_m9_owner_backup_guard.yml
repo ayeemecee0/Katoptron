@@ -1,0 +1,35 @@
+name: M9 owner backup recovery script safety
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verify_owner_private_backup_restore.ps1'
+      - 'scripts/test_m9_owner_private_backup_guard.py'
+      - '.github/workflows/test_m9_owner_backup_guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  static-recovery-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify fail-closed localhost, empty database and private ACL checks
+        run: python3 -m unittest discover -s scripts -p 'test_m9_owner_private_backup_guard.py' -v
+      - name: Parse-only validation of the guarded PowerShell restore script
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          $file = (Resolve-Path 'scripts/verify_owner_private_backup_restore.ps1').Path
+          $null = [System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -ne 0) {
+            throw 'Owner-local restore script has PowerShell parser errors'
+          }
+          Write-Host 'M9 OWNER RESTORE SAFETY PASS: parsed without executing backup or psql.'
