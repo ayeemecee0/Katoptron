@@ -1,5 +1,8 @@
 # Katoptron M2/M3 continuation acceptance checkpoint — October 25–26, 2026
 
+> **Latest October 26 update:** M2 Discovery **engineering scope signed off at 100%** after migrations 135–137 and original-doc pipeline/owner-only review acceptance. The historical 92% value below describes the earlier checkpoint. National source and camera evidence remain substantially incomplete. See [M2 engineering sign-off](./m2-discovery-engineering-signoff-2026-10-26.md). M3 source-specific verification remains separately open.
+
+
 ## M1–M3 scope
 - M1 Foundation: **100% engineering scope signed off** in `docs/m1-foundation-engineering-signoff-2026-10-25.md`. Not full production-owner operational sign-off.
 - M2 Discovery: prior **92% estimate retained**. Source acquisition and PDF-byte provenance now work, but independently verified document contents, nationwide agency publisher evidence and new GIS sources remain incomplete.
