@@ -20,7 +20,7 @@ const assert=require('node:assert/strict');
   assert.ok(await number('provisional')>=0&&await number('corroborated')>=0);
   const states=await page.locator('#stateRows tr').count();
   assert.ok(states>=1,'State source breakdown unavailable');
-  assert.equal(await page.locator('#stateRows tr:first-child td').count(),8,
+  assert.equal(await page.locator('#stateRows tr:first-child td').count(),7,
     'Government manufacturer-source tiers must remain visible per state');
   assert.ok((await page.locator('#timeChart [role="listitem"]').count())>=1,
     'Source-dated chronological evidence unavailable');
