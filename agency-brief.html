@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Katoptron | Source-cited agency research brief</title>
+<meta name="description" content="Print a source-cited, date-stamped Flock Safety government accountability agency research brief.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:light;font-family:system-ui,Arial,sans-serif;background:#f1f4f6;color:#183143}*{box-sizing:border-box}
+body{margin:0;line-height:1.52}
+header{background:#0f2433;color:#f4fafc;padding:1rem max(1rem,4vw);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+header a{color:#e5f7fc}main{max-width:860px;margin:2rem auto;padding:2rem;background:#fff;box-shadow:0 4px 20px #aabbc944}
+h1{font-size:1.75rem;line-height:1.25}h2{border-bottom:2px solid #c8d7df;padding-bottom:.25rem;margin-top:1.6rem}
+p,li{overflow-wrap:anywhere}small,.meta{color:#466275}section{break-inside:avoid-page}article{border-bottom:1px solid #d9e0e4;padding:.6rem 0;break-inside:avoid-page}
+.notice{background:#edf4f7;border-left:3px solid #327b9b;padding:.8rem;margin:1rem 0}
+a{color:#146b91}a:focus-visible,button:focus-visible{outline:3px solid #317b9b}
+button{font:inherit;background:#e8f2f5;border:1px solid #557487;border-radius:6px;padding:.6rem;cursor:pointer}
+@media print{header,.no-print{display:none!important}body,main{background:#fff;margin:0;padding:0;box-shadow:none}
+ a{color:#17394b;text-decoration:underline}a::after{content:" (" attr(href) ")";font-size:8pt;word-break:break-all}
+ h1{margin-top:0}section,article{break-inside:avoid-page}@page{margin:16mm}}
+</style></head><body>
+<a class="skip-link" href="#report">Skip to brief</a>
+<header><a href="./index.html">KATOPTRON</a><nav><a href="./agency-xray.html">AGENCY X-RAY</a></nav></header>
+<main id="report">
+<div class="no-print"><button id="print" type="button" disabled>Print / Save as PDF</button>
+<a id="back" href="./agency-xray.html">Return to the live agency profile</a></div>
+<p class="meta">KATOPTRON • PUBLIC ACCOUNTABILITY RESEARCH</p>
+<h1 id="title">Loading source-cited agency brief…</h1>
+<p id="asOf" class="meta"></p><p id="status" role="status">Retrieving public source evidence…</p>
+<div id="content" hidden>
+<div class="notice">
+<strong>Evidence limitations.</strong> This report does not certify physical Flock installations, present camera operation, actual ALPR searches, or agency access beyond the cited sources. A locality may have multiple public agencies. Original government documents, first-party Flock portal claims and licensed secondary portal readings remain distinct.
+</div>
+<h2>Documented evidence inventory</h2>
+<p id="counts"></p>
+<section><h2>Government program records</h2><div id="programs"></div></section>
+<section><h2>Government actions and source-documented agreements</h2><div id="events"></div></section>
+<section><h2>Government source-mapped equipment positions</h2><div id="map"></div></section>
+<section><h2>First-party Flock disclosures and retention</h2><div id="firstParty"></div></section>
+<section><h2>Secondary portal identities and retention history</h2><div id="secondary"></div></section>
+<section><h2>Confirmed portal identity crosswalk</h2><div id="identity"></div></section>
+<section><h2>Outstanding evidence gaps</h2><ul id="gaps"></ul></section>
+<section><h2>Methodology and attribution</h2>
+<p>Government source-mapped locations, public decisions and signed-document spending are identified separately from vendor-reported totals. Secondary portal observations are licensed EyesOnFlock-derived research under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Agency names joined by locality are exploratory context only. Portal identities are corroborated only where original Flock URL slugs match. Source links in each record enable independent verification.</p>
+<p>Primary evidence methods: <a href="./methodology.html">Katoptron methodology</a> and <a href="https://github.com/flockhopper3/deflock-data/tree/main/eyesonflock">secondary-data provenance</a>. The exact agency data used here may change after this document is printed.</p></section>
+</div>
+</main>
+<script src="./config.js"></script><script src="./agency-intelligence.js"></script>
+<script>
+'use strict';
+const A=window.KatoptronIntelligence,$=id=>document.getElementById(id);
+function el(tag,txt){const n=document.createElement(tag);if(txt!=null)n.textContent=String(txt);return n}
+function addLink(parent,url,label){
+ const safe=A.safeUrl(url);if(!safe)return;
+ const p=el('p');const a=el('a',label||'Read cited original source');
+ a.href=safe;a.target='_blank';a.rel='noopener noreferrer';p.append(a);parent.append(p);
+}
+function item(where,title,detail,date,url){
+ const parent=$(where),section=el('article');
+ section.append(el('strong',title||'Untitled published record'));
+ if(date)section.append(el('p','Source date: '+String(date).slice(0,10)));
+ if(detail)section.append(el('p',detail));
+ addLink(section,url,'Original source / dated disclosure');
+ parent.append(section);
+}
+function fallback(id,message){
+ if(!$(id).childElementCount)$(id).append(el('p',message));
+}
+const key=new URL(location.href).searchParams.get('place');
+$('asOf').textContent='Brief generated '+new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})+
+ '. Sources have their own separate publication and snapshot dates.';
+if(!key||!/^[-a-z0-9 ]+\|[A-Z]{2}$/.test(key)){
+ $('status').textContent='Select a locality from Agency X-Ray to make a sourced brief.';
+}else A.load().then(groups=>{
+ const g=groups.find(x=>x.key===key);
+ if(!g){$('status').textContent='No source-qualified published dossier for that locality. No report generated.';return;}
+ $('title').textContent='Flock Safety evidence: '+g.label;
+ $('back').href='./agency-xray.html?place='+encodeURIComponent(key);
+ $('counts').textContent=g.events.length+' government actions/records · '+
+  g.cameras.length+' government source-mapped equipment positions · '+
+  g.programs.length+' government program disclosures · '+
+  g.portals.length+' original Flock vendor snapshots · '+
+  g.secondary.length+' licensed secondary portal identities. These categories must not be summed as physical cameras.';
+ for(const p of g.programs)item('programs','Program status: '+p.program_status,
+   'Documented government program. Status is not a live device uptime check.',
+   p.source_date,p.official_evidence_url);
+ for(const e of g.events)item('events',e.title,
+   String(e.summary||'')+(e.amount_usd!=null?' · Source-documented amount: $'+Number(e.amount_usd).toLocaleString('en-US')+'. Price may cover a multi-year term and overlap other records.':''),
+   e.event_date,e.source_url);
+ const sources=new Map();
+ for(const c of g.cameras){const url=c.source_url||'';sources.set(url,(sources.get(url)||0)+1);}
+ for(const [url,n] of sources)item('map',n+' government source-mapped position(s)',
+   'Locations trace to a reviewed government GIS source; current operation and individual Flock hardware identification may remain unverified.',
+   null,url);
+ for(const p of g.portals)item('firstParty',p.agency_label+' original Flock vendor snapshot',
+   'Source-reported mixed-scope cameras: '+(p.reported_total_cameras??'unknown')+
+    '; retention: '+(p.retention_days==null?'unknown':p.retention_days+' days')+
+    '; last 30-day searches reported: '+(p.reported_search_sessions_30d??'unknown')+
+    '. First-party claim, not independent physical camera validation.',
+   p.source_date,p.portal_url);
+ for(const p of g.secondary){
+  const history=g.secondaryRetention.filter(x=>x.source_agency_id===p.source_agency_id)
+   .sort((a,b)=>a.observed_on.localeCompare(b.observed_on));
+  item('secondary',p.agency_name+' (licensed secondary reporting portal)',
+   'Source-reported mixed camera count: '+(p.source_reported_mixed_cameras??'unknown')+
+   '. Dated secondary retention: '+(history.map(h=>h.observed_on+' '+(h.retention_days==null?'unknown':h.retention_days+' days')).join('; ')||'not available')+
+   '. Not an independently confirmed current policy.',
+   p.source_snapshot_at,p.source_url);
+ }
+ for(const m of g.identityMatches)item('identity',
+   m.first_party_agency_label+' ↔ '+m.secondary_agency_name,
+   'Exact original Flock portal URL matched licensed secondary agency ID '+m.source_agency_id+
+   '. Establishes portal identity only, not map camera operator/physical position.',
+   m.first_party_source_date,m.first_party_portal_url);
+ fallback('programs','No qualifying original government program disclosure in Katoptron.');
+ fallback('events','No published original government action or reviewed contract evidence.');
+ fallback('map','No exact approved government source-mapped camera coordinates. Unknown, not zero cameras.');
+ fallback('firstParty','No original Flock vendor snapshot; retention and reporting unknown.');
+ fallback('secondary','No exact matched secondary portal record in this locality.');
+ fallback('identity','No original Flock portal identity match established.');
+ const gaps=[];
+ if(!g.cameras.length)gaps.push('Original government exact camera GIS inventory not yet authenticated.');
+ if(!g.portals.length)gaps.push('No original Flock portal snapshot for this locality.');
+ if(!g.events.some(e=>e.event_type==='executed_contract'))gaps.push('No independently reviewed executed Flock contract here.');
+ if(!g.events.some(e=>e.event_type==='recorded_legislative_decision'))gaps.push('No source-verified recorded legislative decision here.');
+ if(g.portals.filter(x=>x.retention_days!=null).length<2)gaps.push('Insufficient first-party retention-history snapshots for a reliable comparison.');
+ gaps.push('Locality source aggregation does not independently prove agency ownership of all mapped cameras.');
+ gaps.push('Current data-sharing permissions and actual searches require their own primary audit evidence.');
+ for(const text of gaps)$('gaps').append(el('li',text));
+ $('content').hidden=false;
+ $('status').textContent='Source-qualified printable report ready. Sources are linked and evidence gaps preserved.';
+ $('print').disabled=false;
+}).catch(e=>{$('status').textContent='Brief cannot be produced from incomplete source data: '+e.message;});
+$('print').addEventListener('click',()=>window.print());
+</script></body></html>
