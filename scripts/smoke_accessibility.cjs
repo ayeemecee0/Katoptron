@@ -35,6 +35,19 @@ const assert=require('node:assert/strict');
             width:Math.round(n.getBoundingClientRect().width)}))
           .filter(n=>n.right>innerWidth+4||n.left< -4)
           .sort((a,b)=>b.right-a.right).slice(0,10));
+      const probe=await page.evaluate(()=>{
+        const report=n=>{const rect=n.getBoundingClientRect();const st=getComputedStyle(n);
+          return {tag:n.tagName,id:n.id,cls:typeof n.className==='string'?n.className:'',
+            sw:n.scrollWidth,cw:n.clientWidth,ow:n.offsetWidth,rectLeft:Math.round(rect.left),
+            rectRight:Math.round(rect.right),overflowX:st.overflowX,
+            text:(n.textContent||'').trim().slice(0,95)}};
+        return {html:report(document.documentElement),body:report(document.body),
+          parents:[...document.querySelectorAll('body *')]
+            .filter(n=>n.scrollWidth>n.clientWidth+10||n.getBoundingClientRect().width>innerWidth)
+            .sort((a,b)=>(b.scrollWidth-b.clientWidth)-(a.scrollWidth-a.clientWidth))
+            .slice(0,16).map(report)};
+      });
+      console.error('ACCESSIBILITY OVERFLOW SCROLLWIDTH DIAGNOSTIC',path,width,JSON.stringify(probe));
       console.error('ACCESSIBILITY MOBILE OVERFLOW ELEMENTS',path,width,JSON.stringify(offenders));
     }
     assert.ok(overflow<=4,path+' unexpectedly overflows '+width+'px viewport: '+overflow);
