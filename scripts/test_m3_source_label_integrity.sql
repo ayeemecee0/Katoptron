@@ -53,6 +53,24 @@ begin
         or p.source_checked_at < now() - interval '14 days'
         or p.source_checked_at > now() + interval '10 minutes')
  ) then raise exception 'M3 source-attributed provisional evidence stale or unapproved';end if;
+ -- Public tiered view must contain only classification-backed eligible cases
+ -- or explicitly source-attributed municipal observations. Raw private OSM
+ -- candidate attestation/case counts must never inflate verified camera maps.
+ if exists(
+   select 1 from public.flock_public_tiered_camera_points v
+   where (v.evidence_tier not in ('government_verified',
+     'independently_corroborated','source_attributed_unconfirmed'))
+     or (v.evidence_tier in ('government_verified','independently_corroborated')
+         and not exists (
+           select 1 from public.flock_point_evidence_cases c
+           where c.case_key=v.case_key and c.classification=v.evidence_tier
+             and c.reviewed_at is not null))
+     or (v.evidence_tier='source_attributed_unconfirmed'
+         and not exists(
+           select 1 from public.flock_source_attributed_map_points p
+           where p.case_key=v.case_key and p.publication_status='active'
+             and p.source_checked_at >= now()-interval '14 days'))
+ ) then raise exception 'M3 private candidate leaked into public classified GIS view';end if;
  if has_table_privilege('anon','public.flock_point_evidence_attestations','SELECT')
     or has_table_privilege('authenticated','public.flock_point_evidence_attestations','UPDATE')
     or has_table_privilege('anon','public.flock_gis_candidate_lifecycle','SELECT')
