@@ -24,19 +24,26 @@ button{cursor:pointer}button:hover{border-color:#93c9df}button:disabled{opacity:
 button.active{background:#7dd0dd;color:#0a1925;font-weight:700}
 .controls{display:grid;grid-template-columns:minmax(220px,2fr) repeat(3,minmax(110px,1fr)) auto;gap:.7rem;align-items:end}
 label{display:flex;flex-direction:column;gap:.4rem;font-size:.76rem;color:#b9cbd9;font-weight:650}
-#status{font-size:.85rem;min-height:1.6em}#results{display:grid;gap:.75rem}
+/* Zero-minimum tracks prevent long source labels and large option lists from
+   expanding the document beyond the mobile layout viewport. */
+.controls{min-width:0;max-width:100%}
+.controls>*,.controls input,.controls select{min-width:0;max-width:100%;width:100%}
+#status{font-size:.85rem;min-height:1.6em}
+#results{display:grid;grid-template-columns:minmax(0,1fr);gap:.75rem;min-width:0;max-width:100%}
+#recordsPanel,#peoplePanel,#positionResults,#peopleResults{min-width:0;max-width:100%}
 .entry{border:1px solid #334d60;border-radius:11px;background:#111e2a;padding:1rem 1.15rem}
+.entry{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:normal}
 .entry h3{font-size:1.05rem;margin:.55rem 0}.entry p{margin:.55rem 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .eyebrow{font-size:.73rem;letter-spacing:.04em;color:#9fb5c8;font-weight:650}
 .chips{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin:.25rem 0}
 .chip{border:1px solid #537082;border-radius:999px;font-size:.69rem;padding:.24rem .55rem;color:#bcd1df}
 .chip.info{border-color:#4e91a7;color:#a9e9ee}.chip.uncertain{border-color:#997f5c;color:#ebd5ac}
-.source{display:inline-block;margin-top:.5rem;font-size:.86rem}
+.source{display:inline-block;margin-top:.5rem;font-size:.86rem;max-width:100%;overflow-wrap:anywhere}
 .foot{font-size:.8rem;color:#9fb4c4;margin-top:1.8rem}
 .group{font-size:.9rem;font-weight:750;margin:1.3rem 0 .2rem;border-bottom:1px solid #334c5d;padding:.55rem 0}
 #peoplePanel[hidden],#recordsPanel[hidden]{display:none}
 @media(max-width:870px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.controls label:first-child{grid-column:span 2}.counters{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:520px){.controls{grid-template-columns:1fr}.controls label:first-child{grid-column:auto}}
+@media(max-width:520px){.controls{grid-template-columns:minmax(0,1fr)}.controls label:first-child{grid-column:auto}}
 :focus-visible{outline:3px solid #8bdeed;outline-offset:3px}
 </style><link rel="stylesheet" href="./a11y.css"></head>
 <body><a class="skip-link" href="#main-content">Skip to main content</a>
