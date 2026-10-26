@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/audit_m1_m3_production.py'
+      - 'supabase/migrations/138_m3_positive_flock_source_label_insert_guard.sql'
+      - 'scripts/test_m3_source_label_integrity.sql'
       - 'scripts/test_audit_m1_m3_production.py'
       - '.github/workflows/accept_m1_m3_production.yml'
 permissions:
