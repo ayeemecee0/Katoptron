@@ -136,6 +136,9 @@ on:
       - 'supabase/migrations/133_bellevue_original_council_decision_and_named_votes.sql'
       - 'supabase/migrations/134_salem_original_flock_nonrenewal_publication.sql'
       - 'supabase/migrations/135_m2_source_link_lifecycle_and_private_pdf_content_triage.sql'
+      - 'supabase/migrations/136_m2_independent_original_content_review_receipt.sql'
+      - 'scripts/test_m2_original_content_review_acceptance.sql'
+      - 'scripts/seed_m2_original_document_review_ci_fixture.sql'
       - 'scripts/triage_original_government_pdf_content.py'
       - 'scripts/test_m2_private_pdf_content_triage.py'
       - 'scripts/test_m2_source_discovery_acceptance.sql'
@@ -806,6 +809,12 @@ jobs:
             -f supabase/migrations/135_m2_source_link_lifecycle_and_private_pdf_content_triage.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_m2_source_discovery_acceptance.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/seed_m2_original_document_review_ci_fixture.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/136_m2_independent_original_content_review_receipt.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_m2_original_content_review_acceptance.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_original_government_pdf_receipt_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
