@@ -63,6 +63,10 @@
           ? 'Source-verified location · actual detections not available'
           : 'Approximate deployment area · NOT an individual camera position');
     add('span', record.jurisdiction_label);
+    if(Comparison && !Comparison.eligibleForFlockRoute(record) &&
+       !record.evidence_tier) {
+      add('small','AGENCY-MAPPED GENERIC LPR. The individual device manufacturer is not confirmed. This map point is excluded from Flock-only route simulation.');
+    }
     add('small', record.evidence_summary);
     if (record.evidence_tier) {
       add('small','Case review: '+shortDate(record.published_at));
@@ -633,8 +637,10 @@
     const [official,tiered]=await Promise.all([
       cameraRows(bounds,signal),tieredRows(bounds,signal)
     ]);
-    // Provisional locations never silently become "verified camera encounters".
-    return official.concat(tiered.filter(row=>row.evidence_tier==='government_verified'));
+    // Generic city-mapped LPR coordinates do NOT establish a Flock device.
+    // Keep them visible on the provenance map, not Flock-only simulation.
+    return official.concat(tiered.filter(row=>row.evidence_tier==='government_verified'))
+      .filter(Comparison.eligibleForFlockRoute);
   }
   // Each OSRM alternative must independently finish its entire corridor scan.
   // Aborted, incomplete or overloaded evidence is UNKNOWN, never zero cameras.
@@ -1173,7 +1179,8 @@
     let found = 0;
     const observations = [];
     for (const row of state.routeRecords) {
-      if (row.location_accuracy !== 'exact') continue;
+      if (row.location_accuracy !== 'exact' ||
+          !Comparison.eligibleForFlockRoute(row)) continue;
       const close = nearRoute([Number(row.latitude),Number(row.longitude)],points);
       if (close.distance > CAMERA_NEAR_ROUTE_M) continue;
       found += 1;
