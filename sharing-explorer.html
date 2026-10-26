@@ -49,6 +49,16 @@ function primaryCard(parent,r,mode){
  box.append(el('strong',mode==='outbound'?r.recipient_label:r.publisher_name));
  box.append(el('small',r.source_kind==='original_government'?
    'Original government-published named access':'Original Flock-hosted named access'));
+ const sourceHealth=original?.health?.get(r.source_key);
+ if(sourceHealth){
+  const check=sourceHealth.check_result==='all_previously_published_names_still_present'?
+    'All previously recorded publisher names found at last direct recheck.':
+    sourceHealth.check_result==='source_fetch_unavailable'?
+    'Latest direct source recheck blocked/unavailable (HTTP '+(sourceHealth.source_http_status||'unknown')+').':
+    'Latest direct source recheck could not reconfirm the complete named list.';
+  box.append(el('small',check+' Attempted '+(sourceHealth.last_attempted_at||'not recorded')+
+    '. Original historical observation retained; current access unknown.'));
+ }else box.append(el('small','No direct current recheck established; original historic observation only.'));
  box.append(el('p','Listed outbound permission · observed '+r.recipient_observed_on+
   '. Source section: '+r.source_section+
   '. '+(r.identity_basis==='exact_source_agency_name'?
@@ -72,9 +82,12 @@ function showOriginal(id){
   return;
  }
  const x=O.forAgency(original,id,network);
+ const verifiedSourceCount=[...original.sources.keys()].filter(k=>
+   original.health?.get(k)?.check_result==='all_previously_published_names_still_present').length;
  $('originalSummary').textContent=x.outbound.length+
   ' publisher-listed outbound names · '+x.inbound.length+
-  ' first-party source lists naming this agency as a recipient. Captures are historical snapshots, not a live current-access audit.';
+  ' first-party source lists naming this agency as a recipient. '+verifiedSourceCount+
+  ' of '+original.sources.size+' original sources passed a complete latest direct recheck across Katoptron. Other historical observations remain source-attributed, not current verified access.';
  for(const r of x.outbound.slice(0,220))primaryCard($('originalOutbound'),r,'outbound');
  for(const r of x.inbound.slice(0,220))primaryCard($('originalInbound'),r,'inbound');
  if(!x.outbound.length)$('originalOutbound').append(el('p',
