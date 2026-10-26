@@ -1,0 +1,29 @@
+name: M9 release and service acceptance heartbeat
+on:
+  schedule:
+    - cron: '53 19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: katoptron-m9-launch-safety-heartbeat
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Reject stale or failed main-branch gate evidence
+        run: python -m unittest discover -s scripts -p 'test_monitor_release_gates.py' -v
+      - name: Verify fresh successful browser, SQL, backup-independent and provider checks
+        run: python scripts/monitor_release_gates.py
