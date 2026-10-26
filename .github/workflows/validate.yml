@@ -130,6 +130,8 @@ on:
       - 'supabase/migrations/127_original_sharing_source_recheck_audit.sql'
       - 'supabase/migrations/128_original_government_document_acquisition.sql'
       - 'supabase/migrations/129_original_government_civic_milestones.sql'
+      - 'supabase/migrations/130_portage_original_government_access_list.sql'
+      - 'scripts/test_portage_original_government_access.sql'
       - 'scripts/test_original_government_civic_timeline.sql'
       - 'agency-timeline.js'
       - 'agency-timeline.html'
@@ -768,6 +770,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/129_original_government_civic_milestones.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/130_portage_original_government_access_list.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -807,6 +811,8 @@ jobs:
             -f scripts/test_original_government_acquisition_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_original_government_civic_timeline.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_portage_original_government_access.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_analytics_m7.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
