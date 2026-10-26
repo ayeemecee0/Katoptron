@@ -304,8 +304,8 @@ def assess_live_analytics(metrics,exact_points,accountability_count,program_coun
                      'source_dated_program_records'):
             if type(item.get(name)) is not int or item[name]<0:
                 raise ValueError('Missing/nonnegative public analytics state category')
-        if item['source_flock_labeled_points']+item['generic_lpr_points']+
-           item['unknown_manufacturer_points']!=item['verified_exact_gis_points']:
+        if (item['source_flock_labeled_points']+item['generic_lpr_points']+
+            item['unknown_manufacturer_points']!=item['verified_exact_gis_points']):
             raise ValueError('Flock/generic/unknown government GIS source labels do not add up')
         states[code]=item
     for original in indexed_states:
@@ -320,8 +320,8 @@ def assess_live_analytics(metrics,exact_points,accountability_count,program_coun
     for key in ('source_flock_labeled_points','generic_lpr_points','unknown_manufacturer_points'):
         if type(row.get(key)) is not int or row[key]!=sum(x[key] for x in states.values()):
             raise ValueError('National original camera manufacturer labels differ by state')
-    if row['source_flock_labeled_points']+row['generic_lpr_points']+
-       row['unknown_manufacturer_points']!=exact_points:
+    if (row['source_flock_labeled_points']+row['generic_lpr_points']+
+        row['unknown_manufacturer_points']!=exact_points):
         raise ValueError('Original government exact camera manufacturer split invalid')
     return row
 
