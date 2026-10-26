@@ -52,7 +52,11 @@ const browserErrors=[];
      const rect=link.getBoundingClientRect();
      return {height:rect.height,top:rect.top,left:rect.left,
        outlineStyle:style.outlineStyle,outlineWidth:style.outlineWidth,
-       transform:style.transform,scrollY:scrollY};
+       transform:style.transform,scrollY:scrollY,
+       matchedFocus:link.matches(':focus'),matchedVisible:link.matches(':focus-visible'),
+       sheets:[...document.styleSheets].map(s=>s.href||'(inline)').filter(Boolean),
+       cssText:[...document.querySelectorAll('link[rel=stylesheet]')].map(x=>({
+         href:x.getAttribute('href'),loaded:!!x.sheet}))};
    });
    assert.ok(skipFocus.height>=24&&skipFocus.top>=-1&&skipFocus.left>=-1&&
      skipFocus.outlineStyle!=='none'&&parseFloat(skipFocus.outlineWidth)>=2,
