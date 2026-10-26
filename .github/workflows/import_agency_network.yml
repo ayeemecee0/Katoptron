@@ -1,0 +1,39 @@
+name: Import licensed agency transparency index
+on:
+  schedule:
+    - cron: '23 9 * * 2'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_licensed_agency_network.py'
+      - 'scripts/test_import_licensed_agency_network.py'
+      - '.github/workflows/import_agency_network.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-licensed-agency-import
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test source reconciliation and fail-closed publication
+        run: python -m unittest discover -s scripts -p 'test_import_licensed_agency_network.py' -v
+      - name: Fetch and validate secondary agency network without publishing
+        run: python scripts/import_licensed_agency_network.py --dry-run
+      - name: Require protected service role only in automated workflow
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Import secondary agency identity directory; never camera positions
+        run: python scripts/import_licensed_agency_network.py
