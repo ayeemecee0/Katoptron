@@ -16,5 +16,6 @@ create table if not exists storage.objects(
   name text not null,
   owner uuid,
   owner_id text,
+  metadata jsonb not null default '{}'::jsonb,
   unique(bucket_id,name)
 );
