@@ -28,7 +28,7 @@ const reports=reviewerMode?
  retryMode?
  [{submission_id:id,created_at:'2026-10-23T12:00:00Z',
    report_status:'withdrawn',observed_on:null}]:[];
-const activity={uploaded:[],deleted:[],signed:[],reviewed:[],withdrawn:[],lastSubmission:null,deleteAttempts:0};
+const activity={uploaded:[],deleted:[],signed:[],reviewed:[],withdrawn:[],erased:[],lastSubmission:null,deleteAttempts:0};
 function signal(){for(const cb of onAuth)cb('SIGNED_IN',session);}
 const auth={
  getSession:async()=>({data:{session},error:null}),
@@ -67,6 +67,14 @@ const api={
    if(name==='withdraw_own_community_report'){
      reports.find(r=>r.submission_id===args.p_id).report_status='withdrawn';
      activity.withdrawn.push(args.p_id);return{data:true,error:null};
+   }
+   if(name==='delete_withdrawn_community_report'){
+     const r=reports.find(x=>x.submission_id===args.p_id);
+     if(!r)return{data:false,error:null};
+     if(r.report_status!=='withdrawn'||!activity.deleted.length)
+       return{data:null,error:{message:'Remove photo before erasure'}};
+     reports.splice(reports.indexOf(r),1);
+     activity.erased.push(args.p_id);return{data:true,error:null};
    }
    if(name==='list_community_review_queue'){
      return{data:reports.filter(x=>['pending','needs_evidence'].includes(x.report_status)),error:null};
@@ -174,7 +182,13 @@ window.__QA={reports,activity};
    assert.equal((await page.locator('#myReports').textContent()).includes('withdrawn'),true);
    assert.equal(await page.getByRole('button',{name:/Retry private photo deletion/}).count(),1,
       'Withdrawn contributor must retain ability to retry photo cleanup');
-   console.log('MOCK CONTRIBUTOR PASS: sign-in, submission, private image recode/upload, default consent, withdraw and photo cleanup');
+   const eraseBtn=page.getByRole('button',{name:/Permanently erase report/});
+   assert.equal(await eraseBtn.count(),1);
+   await eraseBtn.click();
+   await page.waitForFunction(()=>window.__QA.activity.erased.length===1,undefined,{timeout:12000});
+   assert.equal(await page.evaluate(()=>window.__QA.reports.length),0);
+   assert.ok((await page.locator('#notice').textContent()).includes('permanently erased'));
+   console.log('MOCK CONTRIBUTOR PASS: sign-in, photo, withdrawal, private Storage delete and permanent report erasure');
    await page.goto(new URL('submit.html?scenario=retrydelete',base).href,{waitUntil:'load'});
    await page.locator('#email').fill('qa.contributor@example.invalid');
    await page.locator('#password').fill('another-safe-mock-password');
@@ -193,7 +207,10 @@ window.__QA={reports,activity};
    await cleanup.click();
    await page.waitForFunction(()=>/No private photos remain/.test(
       document.querySelector('#notice')?.textContent||''),undefined,{timeout:12000});
-   console.log('MOCK PHOTO CLEANUP RETRY PASS: withdrawal survives failed Storage deletion and owner retries safely');
+   await page.getByRole('button',{name:/Permanently erase report/}).click();
+   await page.waitForFunction(()=>window.__QA.activity.erased.length===1,undefined,{timeout:12000});
+   assert.equal(await page.evaluate(()=>window.__QA.reports.length),0);
+   console.log('MOCK PHOTO CLEANUP RETRY PASS: real photo cleanup is prerequisite for final erasure');
    await page.goto(new URL('submit.html?scenario=followup',base).href,{waitUntil:'load'});
    await page.locator('#email').fill('qa.contributor@example.invalid');
    await page.locator('#password').fill('another-safe-mock-password');
