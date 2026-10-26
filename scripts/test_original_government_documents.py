@@ -43,6 +43,35 @@ class GovDocumentAcquisition(unittest.TestCase):
   self.assertIsNone(M.normalize_url("https://othercity.gov/contract.pdf",root,"portagein.gov"))
   self.assertEqual(M.normalize_url("/facts.pdf#section",root,"portagein.gov"),
     "https://portagein.gov/facts.pdf")
+ def test_verified_government_program_rotating_seed_authority(self):
+  old=M.page_all
+  rows=[
+   {"official_evidence_url":"https://www.provo.gov/flock", "jurisdiction_label":"Provo, UT","record_status":"verified"},
+   {"official_evidence_url":"https://private-company.com/flock","jurisdiction_label":"Unknown, CA","record_status":"verified"},
+   {"official_evidence_url":"https://www.morehead-ky.gov/flock","jurisdiction_label":"Morehead, KY","record_status":"unreviewed"}
+  ]
+  M.page_all=lambda *args,**kwargs:rows
+  try:
+   source=M.reviewed_seeds("https://test.supabase.co","owner-key",limit=9)
+   self.assertIn(("https://www.provo.gov/flock","Provo, UT"),source)
+   self.assertNotIn(("https://private-company.com/flock","Unknown, CA"),source)
+   self.assertNotIn(("https://www.morehead-ky.gov/flock","Morehead, KY"),source)
+   self.assertLessEqual(len(source),9)
+  finally:M.page_all=old
+ def test_redirect_only_same_original_government_authority(self):
+  import urllib.request
+  saved=M.public_dns
+  M.public_dns=lambda host:True
+  try:
+   guard=M.SameGovRedirect("portagein.gov")
+   request=urllib.request.Request("https://portagein.gov/547/Flock-Information-Center")
+   next_request=guard.redirect_request(request,None,301,"Moved",{},
+                                        "https://www.portagein.gov/547/Flock-Information-Center")
+   self.assertTrue(next_request.full_url.startswith("https://www.portagein.gov/"))
+   for outside in ("https://othercity.gov/away","http://portagein.gov/away",
+                   "https://private.example/away"):
+    with self.assertRaises(ValueError):guard.redirect_request(request,None,301,"Moved",{},outside)
+  finally:M.public_dns=saved
  def test_non_flock_government_page_held(self):
   with self.assertRaisesRegex(ValueError,"not an ALPR"):
    M.extract_links(b'<a href="/contract.pdf">A contract</a>',
