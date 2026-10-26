@@ -22,6 +22,8 @@ class EvidenceLabels(unittest.TestCase):
         self.assertIn('.filter(Comparison.eligibleForFlockRoute)',map_js)
         self.assertIn('!Comparison.eligibleForFlockRoute(row)',map_js)
         self.assertIn('GENERIC_CITY_LPR_LAYER',compare)
+        self.assertIn('source_flock_label_status',map_js)
+        self.assertIn("record.source_flock_label_status!=='source_flock_identified'",compare)
         self.assertIn('if(!eligibleForFlockRoute(r))continue',compare)
         self.assertIn('excluded from Flock-only planned-route proximity',methodology)
         self.assertIn('individual device manufacturer is not confirmed',map_js)

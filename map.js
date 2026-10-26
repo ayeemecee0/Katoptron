@@ -65,7 +65,9 @@
     add('span', record.jurisdiction_label);
     if(Comparison && !Comparison.eligibleForFlockRoute(record) &&
        !record.evidence_tier) {
-      add('small','AGENCY-MAPPED GENERIC LPR. The individual device manufacturer is not confirmed. This map point is excluded from Flock-only route simulation.');
+      add('small',record.source_flock_label_status==='generic_lpr'
+        ? 'AGENCY-MAPPED GENERIC LPR. The individual device manufacturer is not confirmed. This map point is excluded from Flock-only route simulation.'
+        : 'FLOCK GIS LABEL UNCONFIRMED. This government-mapped location is not yet source-identified as Flock equipment and is excluded from Flock-only route simulation.');
     }
     add('small', record.evidence_summary);
     if (record.evidence_tier) {
@@ -572,7 +574,7 @@
   }
   function publicCameraUrl(bounds) {
     const query = new URLSearchParams({
-      select: 'id,record_key,label,jurisdiction_label,latitude,longitude,location_accuracy,uncertainty_radius_m,source_type,source_url,evidence_summary,last_confirmed_on,last_source_recheck_at,published_at,verification_method',
+      select: 'id,record_key,label,jurisdiction_label,latitude,longitude,location_accuracy,uncertainty_radius_m,source_type,source_url,evidence_summary,source_flock_label_status,last_confirmed_on,last_source_recheck_at,published_at,verification_method',
       verification_status: 'eq.verified',
       latitude: 'gte.' + bounds.south.toFixed(6),
       longitude: 'gte.' + bounds.west.toFixed(6),
