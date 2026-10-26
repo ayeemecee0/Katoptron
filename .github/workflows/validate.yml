@@ -141,6 +141,7 @@ on:
       - 'supabase/migrations/138_m3_positive_flock_source_label_insert_guard.sql'
       - 'supabase/migrations/139_community_report_erasure_and_independent_rate_ledger.sql'
       - 'scripts/test_m5_private_report_erasure.sql'
+      - 'scripts/seed_m5_storage_catalog_ci_only.sql'
       - 'scripts/accept_live_community_auth_storage.py'
       - 'scripts/test_m3_source_label_integrity.sql'
       - 'scripts/test_m2_discovery_signoff_sql.sql'
@@ -833,6 +834,8 @@ jobs:
             -f supabase/migrations/138_m3_positive_flock_source_label_insert_guard.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_m3_source_label_integrity.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/seed_m5_storage_catalog_ci_only.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/139_community_report_erasure_and_independent_rate_ledger.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
