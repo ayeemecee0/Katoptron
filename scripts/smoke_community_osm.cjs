@@ -53,7 +53,7 @@ const assert=require('node:assert/strict');
 
   // Clicking an approximate national cluster must resolve a genuine original
   // OSM report, not zoom to a mathematical offshore 3-degree center.
-  await page.evaluate(()=>densityPoints.getLayers()[0].fire('click'));
+  await page.evaluate(()=>{densityPoints.getLayers()[0].fire('click');return true;});
   await page.waitForFunction(()=>community.getZoom()>=13,null,{timeout:25000});
   const popup=await page.locator('.leaflet-popup-content').textContent();
   assert.ok(popup.includes('Example OSM report inside this cluster'),popup);
