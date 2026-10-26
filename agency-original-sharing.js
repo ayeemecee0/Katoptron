@@ -37,7 +37,20 @@ async function load(){
   const batch=await res.json();
   if(!Array.isArray(batch))throw Error('Invalid publisher response');
   rows.push(...batch);
-  if(batch.length<500)return validate(rows);
+  if(batch.length<500){
+   const catalog=validate(rows);
+   catalog.health=new Map();
+   const hq=new URLSearchParams({select:'source_key,last_attempted_at,check_result,expected_names,matched_names,source_http_status,last_successfully_rechecked_at',limit:'250'});
+   try{
+    const hr=await fetch(cfg.supabaseUrl+'/rest/v1/flock_public_original_sharing_source_health?'+hq,
+     {headers:{apikey:cfg.supabasePublishableKey},cache:'no-store'});
+    if(!hr.ok)throw Error('Health HTTP '+hr.status);
+    const history=await hr.json();
+    if(!Array.isArray(history))throw Error('Invalid source verification health');
+    for(const entry of history)catalog.health.set(entry.source_key,entry);
+   }catch(error){catalog.healthError=error.message}
+   return catalog;
+  }
  }
  throw Error('Publisher list exceeded page limit');
 }
