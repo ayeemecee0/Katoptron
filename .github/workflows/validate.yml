@@ -133,6 +133,12 @@ on:
       - 'supabase/migrations/130_portage_original_government_access_list.sql'
       - 'supabase/migrations/131_positive_flock_source_label_route_gate.sql'
       - 'supabase/migrations/132_private_original_government_pdf_bytes_receipts.sql'
+      - 'supabase/migrations/133_bellevue_original_council_decision_and_named_votes.sql'
+      - 'supabase/migrations/134_salem_original_flock_nonrenewal_publication.sql'
+      - 'scripts/test_m6_original_source_final_acceptance.sql'
+      - 'accountability-original.js'
+      - 'scripts/test_accountability_original_civic.cjs'
+      - 'scripts/test_bellevue_named_government_votes.sql'
       - 'scripts/test_original_government_pdf_receipt_security.sql'
       - 'scripts/test_original_government_pdf_receipts.py'
       - 'scripts/observe_original_government_pdfs.py'
@@ -783,6 +789,14 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/132_private_original_government_pdf_bytes_receipts.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/133_bellevue_original_council_decision_and_named_votes.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_bellevue_named_government_votes.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/134_salem_original_flock_nonrenewal_publication.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_m6_original_source_final_acceptance.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_original_government_pdf_receipt_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_positive_flock_source_label_route_gate.sql
@@ -1221,6 +1235,8 @@ jobs:
           node scripts/test_osm_viewport_source_anchors.cjs
           node --check osm-point-canvas.js
           node scripts/test_osm_point_canvas.cjs
+          node --check accountability-original.js
+          node scripts/test_accountability_original_civic.cjs
           node --check agency-intelligence.js
           node scripts/test_agency_intelligence.cjs
           node --check agency-network.js

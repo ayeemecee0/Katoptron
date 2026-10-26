@@ -28,6 +28,7 @@ on:
       - 'map.css'
       - 'analytics.html'
       - 'accountability.html'
+      - 'accountability-original.js'
       - 'submit.html'
       - 'community-review.html'
       - 'map.js'

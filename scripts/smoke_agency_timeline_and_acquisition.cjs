@@ -44,7 +44,17 @@ const {chromium}=require('playwright');
     null,{timeout:45000});
   assert.ok((await page.locator('#timeline').textContent()).includes('2026-09-09'));
   assert.ok((await page.locator('#timeline').textContent()).includes('reported disabling'));
-  r=await page.goto(new URL('original-acquisition.html',base).href,
+  r=await page.goto(new URL('agency-timeline.html?place=bellevue%7CID',base).href,
+    {waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('dated records displayed'),
+    null,{timeout:45000});
+  await page.locator('#kind').selectOption('recorded_decision');
+  const bellevue=await page.locator('#timeline').textContent();
+  assert.ok(bellevue.includes('2025-03-24')&&bellevue.includes('five-to-zero'),
+   'Official Bellevue Council vote and verified date missing from civic timeline');
+  assert.ok(bellevue.includes('NOT an executed agreement amount'),
+   'Authorization ceiling cannot be presented as signed contract expenditure');
+    r=await page.goto(new URL('original-acquisition.html',base).href,
     {waitUntil:'domcontentloaded',timeout:25000});
   assert.equal(r?.status(),200);
   await page.waitForFunction(()=>{
