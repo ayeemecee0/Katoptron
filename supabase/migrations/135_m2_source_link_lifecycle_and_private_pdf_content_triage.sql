@@ -54,6 +54,12 @@ begin
  where o.government_page_url=p_government_page_url
    and not exists(select 1 from jsonb_array_elements_text(p_document_urls) x(document_url)
          where x.document_url=o.document_url);
+ -- Refresh observed provenance, never the separately reviewed status.
+ update public.flock_original_document_leads l set
+    last_seen_at=now(),checked_at=now(),source_page_sha256=p_page_sha256
+ where l.government_page_url=p_government_page_url
+   and exists(select 1 from jsonb_array_elements_text(p_document_urls) x(document_url)
+              where x.document_url=l.document_url);
  insert into public.flock_original_document_link_observations
   (government_page_url,document_url,last_page_sha256,successful_absence_streak,link_status)
  select p_government_page_url,x.document_url,p_page_sha256,0,
