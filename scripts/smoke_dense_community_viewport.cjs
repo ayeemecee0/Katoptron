@@ -51,7 +51,7 @@ const assert=require('node:assert/strict');
     status:document.querySelector('#status')?.textContent||''
   }));
   assert.ok(exact.zoom>=16&&exact.canvas===1&&exact.data>100000&&
-    exact.status.includes('individual community coordinates'),JSON.stringify(exact));
+    exact.status.includes('original OSM coordinates shown as individual small points'),JSON.stringify(exact));
   console.log('COMMUNITY VIEWPORT COMPLETENESS PASS: nationally and locally visible true OSM coordinates, no approximation clusters');
  }catch(e){console.error('COMMUNITY VIEWPORT COMPLETENESS FAILED',e.message);process.exitCode=1}
  finally{await browser.close()}
