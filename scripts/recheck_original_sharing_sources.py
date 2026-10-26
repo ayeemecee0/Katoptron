@@ -18,6 +18,7 @@ from html.parser import HTMLParser
 from datetime import datetime,timezone
 
 ALLOWED_HOSTS={'elkgrove.gov','www.cityofwoodland.gov',
+               'portagein.gov','www.portagein.gov',
                'transparency.flocksafety.com'}
 LIMIT=5_000_000
 
