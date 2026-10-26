@@ -114,6 +114,8 @@ on:
       - 'supabase/migrations/111_evidence_driven_gis_source_reactivation.sql'
       - 'supabase/migrations/112_due_candidate_preflight_without_cooldown.sql'
       - 'supabase/migrations/113_monterey_original_flock_portal_snapshot.sql'
+      - 'supabase/migrations/114_community_density_real_observation_anchors.sql'
+      - 'scripts/test_community_density_real_anchors.sql'
       - 'scripts/test_monterey_vendor_without_camera_points.sql'
       - 'scripts/test_due_source_triage_preflight.sql'
       - 'scripts/test_source_evidence_reactivation.sql'
@@ -688,6 +690,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/113_monterey_original_flock_portal_snapshot.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/114_community_density_real_observation_anchors.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -709,6 +713,8 @@ jobs:
             -f scripts/test_due_source_triage_preflight.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_monterey_vendor_without_camera_points.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_community_density_real_anchors.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_analytics_m7.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
