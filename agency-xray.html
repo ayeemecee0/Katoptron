@@ -41,6 +41,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
 <h3>Direct Flock portal disclosures and retention history</h3><div id="portals"></div>
+<h3>Corroborated portal identities</h3><div id="identityMatches"></div>
 <h3>Licensed secondary agency disclosures</h3><div id="secondary"></div>
 <h3>Source-documented contract spending</h3><div id="spending"></div>
 <h3>Disclosure gaps</h3><div id="gaps"></div>
@@ -101,7 +102,8 @@ function select(group){
  metric('Government records',group.events.length),
  metric('Flock vendor snapshots',group.portals.length),
  metric('Government program disclosures',group.programs.length),
- metric('Secondary portal identities',group.secondary.length));
+ metric('Secondary portal identities',group.secondary.length),
+ metric('Original vendor portal ID matches',group.identityMatches.length));
  $('programs').replaceChildren();
  for(const p of group.programs){
   makeCard($('programs'),'Program: '+p.program_status,
@@ -134,6 +136,18 @@ function select(group){
    .sort((a,b)=>a.source_date.localeCompare(b.source_date));
  if(retention.length)$('portals').append(node('p',
    'Original vendor source retention history: '+retention.map(p=>p.source_date+': '+p.retention_days+' days').join(' → ')+'. These source-dated reports do not prove current settings.'));
+ $('identityMatches').replaceChildren();
+ for(const m of group.identityMatches){
+   const card=node('article',null,'card');
+   card.append(node('strong',m.first_party_agency_label+' ↔ '+m.secondary_agency_name));
+   card.append(node('p','Exact original Flock transparency portal URL identifier matches the licensed EyesOnFlock-derived network agency ID. This corroborates portal identity only, NOT physical camera locations, operational status, or actual database searches.'));
+   source(card,m.first_party_portal_url,'Original Flock vendor transparency portal');
+   const link=node('a','See dated sharing relationships');
+   link.href='./sharing-explorer.html?agency='+encodeURIComponent(m.source_agency_id);
+   card.append(link);$('identityMatches').append(card);
+ }
+ if(!group.identityMatches.length)$('identityMatches').append(node('p',
+   'No exact original Flock portal URL identity match currently recorded. Any secondary same-city listing is not a verified operator identity.'));
  $('secondary').replaceChildren();
  for(const p of group.secondary){
   const card=node('article',null,'card');
