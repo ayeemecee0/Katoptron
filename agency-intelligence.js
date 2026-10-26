@@ -31,8 +31,8 @@
   if(!key)return null;
   return {key,source,row};
  }
- function build(events,portals,cameras,programs,secondary=[]){
-  if(![events,portals,cameras,programs,secondary].every(Array.isArray))
+ function build(events,portals,cameras,programs,secondary=[],retention=[]){
+  if(![events,portals,cameras,programs,secondary,retention].every(Array.isArray))
    throw Error('Incomplete published agency evidence');
   const map=new Map();
   function include(source,rows){
@@ -41,7 +41,7 @@
     if(!rec)continue;
     if(!map.has(rec.key))map.set(rec.key,{
       key:rec.key,label:labelForKey(rec.key),
-      events:[],portals:[],cameras:[],programs:[],secondary:[],matchedLabels:new Set()});
+      events:[],portals:[],cameras:[],programs:[],secondary:[],secondaryRetention:[],matchedLabels:new Set()});
     const entry=map.get(rec.key);
     entry[source==='event'?'events':source==='portal'?'portals':source==='camera'?'cameras':source==='secondary'?'secondary':'programs'].push(row);
     entry.matchedLabels.add(source+':'+(row.jurisdiction_label||row.agency_label||row.agency_name));
@@ -51,7 +51,16 @@
   include('portal',portals.filter(x=>x.disclosure_status==='verified_source_snapshot'));
   include('camera',cameras.filter(x=>x.verification_status==='verified'&&x.location_accuracy==='exact'));
   include('program',programs.filter(x=>x.record_status==='verified'));
-  include('secondary',secondary.filter(x=>x.is_reporting_portal===true&&x.source_tier==='secondary_aggregated_portal_snapshot'))
+  include('secondary',secondary.filter(x=>x.is_reporting_portal===true&&x.source_tier==='secondary_aggregated_portal_snapshot'));
+  const byAgency=new Map(secondary.map(x=>[x.source_agency_id,x]));
+  for(const entry of retention){
+   const owner=byAgency.get(entry.source_agency_id);
+   if(!owner||owner.is_reporting_portal!==true||!entry.observed_on||
+      entry.evidence_tier!=='secondary_aggregated_portal_snapshot')continue;
+   const key=locality(owner.agency_name);
+   const group=map.get(key);
+   if(group)group.secondaryRetention.push(entry);
+  }
   return [...map.values()].sort((a,b)=>a.label.localeCompare(b.label));
  }
  function sourceDate(row){return String(row.event_date||row.source_date||'').slice(0,10)}
@@ -128,14 +137,15 @@
   throw Error('Public evidence pagination truncated; cannot claim complete inventory');
  }
  async function load(){
-  const [events,portals,cameras,programs,secondary]=await Promise.all([
+  const [events,portals,cameras,programs,secondary,retention]=await Promise.all([
     published('flock_accountability_events','event_key,event_type,jurisdiction_label,event_date,date_basis,title,summary,source_url,amount_usd,camera_count'),
     published('flock_vendor_portal_snapshots','agency_key,agency_label,state_code,portal_url,source_date,reported_total_cameras,camera_count_scope,retention_days,reported_search_sessions_30d,reported_hotlist_hits_30d,disclosure_status','disclosure_status=eq.verified_source_snapshot'),
     published('flock_camera_locations','record_key,jurisdiction_label,verification_status,location_accuracy,source_url,evidence_summary','verification_status=eq.verified&location_accuracy=eq.exact'),
     published('flock_documented_programs','program_key,jurisdiction_label,record_status,source_date,program_status,official_evidence_url,official_camera_map_url','record_status=eq.verified'),
-    published('flock_secondary_portal_agencies','source_agency_id,agency_name,state_code,agency_type,is_reporting_portal,portal_slug,source_reported_mixed_cameras,source_reported_network_links,source_snapshot_at,source_url,source_tier','is_reporting_portal=eq.true')
+    published('flock_secondary_portal_agencies','source_agency_id,agency_name,state_code,agency_type,is_reporting_portal,portal_slug,source_reported_mixed_cameras,source_reported_network_links,source_snapshot_at,source_url,source_tier','is_reporting_portal=eq.true'),
+    published('flock_secondary_portal_retention_history','source_agency_id,observed_on,retention_days,portal_slug,source_url,evidence_tier')
   ]);
-  return build(events,portals,cameras,programs,secondary);
+  return build(events,portals,cameras,programs,secondary,retention);
  }
  return Object.freeze({locality,labelForKey,build,updateItems,safeRead,follow,
    unfollow,changes,markSeen,load,safeUrl,sourceDate});
