@@ -16,6 +16,7 @@ const assert=require('node:assert/strict');
     assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('href')),
       '#main-content',path+' has no keyboard-accessible skip link');
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(100);
     assert.equal(await page.evaluate(()=>document.activeElement?.id),'main-content',
       path+' Enter on skip link did not focus the main landmark');
     const mainFocus=await page.locator('main#main-content').evaluate(el=>{

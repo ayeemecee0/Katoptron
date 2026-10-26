@@ -65,10 +65,13 @@ const browserErrors=[];
      skipFocus.outlineStyle!=='none'&&parseFloat(skipFocus.outlineWidth)>=2,
      file+' focused skip target invisible in system high contrast: '+JSON.stringify(skipFocus));
    await page.keyboard.press('Enter');
+   // Wait for the browser to paint the new fragment-focus state before
+   // assessing its visible outline (as for the initial skip-link focus).
+   await page.waitForTimeout(100);
    const landed=await page.evaluate(()=>{
      const el=document.activeElement;
      const style=getComputedStyle(el);
-     return {id:el?.id,outline:style.outlineStyle,width:parseFloat(style.outlineWidth)};
+     return {id:el?.id,outline:style.outlineStyle,width:parseFloat(style.outlineWidth),css:getComputedStyle(el).outline,forced:matchMedia('(forced-colors:active)').matches};
    });
    assert.ok(landed.id==='main-content'&&landed.outline!=='none'&&landed.width>=2,
      file+' Enter must visibly focus main in forced-colors mode: '+JSON.stringify(landed));
