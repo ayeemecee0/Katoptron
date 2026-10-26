@@ -32,7 +32,7 @@ const {chromium}=require('playwright');
       async maybeSingle(){return result(data.get(key)||null)},
       async upsert(row){if(!loggedIn||!confirmed)throw Error('Unexpected unconfirmed write');
        data.set(row.locality_key,{...row});events.push({action:'upsert',row});return result(row)},
-      async delete(){this.deleting=true;return this},
+      delete(){this.deleting=true;return this},
       then(onOk,onErr){if(this.deleting){data.delete(key);events.push({action:'delete',key})}
        return Promise.resolve({data:null,error:null}).then(onOk,onErr)}
      };
