@@ -43,3 +43,8 @@ The owner completed the real production email flow: signup confirmation email ar
 **Do not mark M9 100%** or enable an unrestricted private-contribution production launch merely because CI/browser/security tests are green. Preserve public evidence-first beta operation, actual user private records and encrypted recovery hygiene. Prioritize production-grade sender reputation, owner-controlled backup and real-user accessibility checkpoints. Automation must remain truthful about incomplete provider-account and user acceptance gates.
 
 **M9 preparation estimate: 90% (up from the previous 75% estimate), blocked on externally unverifiable owner/human controls.** This is a planning estimate, not a cryptographic/release assurance score.
+
+
+## October 26: actual backup-recovery safety hardening
+
+Live read-only check: 116.9 MB database, 2 Auth accounts, no real private reports or photo objects, and 316 government-source exact GIS points. The private Storage bucket remains non-public. The owner has already completed a real signup/recovery and local SQL restore in earlier tests. New owner-local PowerShell restore preflight now requires an empty disposable loopback-only database, checks local superuser permission, refuses implicit libpq connection redirects, and atomically revokes risky default report/reviewer grants before import. Separate CI checks script syntax and static safety guards only. **The actual private owner backup has NOT been re-restored using this revised script.** Separately encrypted off-device database backup and real Storage binary recovery remain owner-only launch risks. Full private-contributor production acceptance remains open, with no paid services introduced.
