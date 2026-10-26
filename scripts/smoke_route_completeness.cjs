@@ -14,7 +14,7 @@ const {chromium}=require('playwright');
   id:'00000000-0000-4000-8000-000000000001',
   record_key:'synthetic-test-camera',
   label:'INTERNAL FIXTURE · NOT A REAL CAMERA',
-  jurisdiction_label:'Fixture, CA',latitude:38.62,longitude:-121.38,
+  jurisdiction_label:'Fixture, CA',latitude:38.6261,longitude:-121.38,
   location_accuracy:'exact',uncertainty_radius_m:0,
   source_type:'official_government',
   source_url:'https://testing.gov/fixture-gis',
