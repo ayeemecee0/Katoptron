@@ -11,10 +11,11 @@ const reviewerMode=location.pathname.includes('community-review.html');
 const followupMode=location.search.includes('scenario=followup');
 const staleMode=location.search.includes('scenario=stale');
 const retryMode=location.search.includes('scenario=retrydelete');
+const recoveryMode=location.search.includes('scenario=recovery');
 const contributor={id:'11111111-aaaa-4111-8111-111111111111',email:'qa.contributor@example.invalid'};
 const reviewer={id:'22222222-bbbb-4222-8222-222222222222',email:'qa.reviewer@example.invalid'};
 const id='33333333-cccc-4333-8333-333333333333';
-let session=staleMode?{user:reviewerMode?reviewer:contributor}:null;
+let session=(staleMode||recoveryMode)?{user:reviewerMode?reviewer:contributor}:null;
 const onAuth=[];
 const reports=reviewerMode?
  [{submission_id:id,created_at:'2026-10-23T12:00:00Z',latitude:38.5,longitude:-121.5,
@@ -28,7 +29,7 @@ const reports=reviewerMode?
  retryMode?
  [{submission_id:id,created_at:'2026-10-23T12:00:00Z',
    report_status:'withdrawn',observed_on:null}]:[];
-const activity={uploaded:[],deleted:[],signed:[],reviewed:[],withdrawn:[],erased:[],lastSubmission:null,deleteAttempts:0};
+const activity={uploaded:[],deleted:[],signed:[],reviewed:[],withdrawn:[],erased:[],lastSubmission:null,deleteAttempts:0,resetRequests:[],passwordUpdates:[]};
 function signal(){for(const cb of onAuth)cb('SIGNED_IN',session);}
 const auth={
  getSession:async()=>({data:{session},error:null}),
@@ -40,8 +41,18 @@ const auth={
    signal();return{data:{session},error:null};
  },
  signUp:async()=>({data:{user:contributor,session:null},error:null}),
+ resetPasswordForEmail:async(email,options)=>{
+   activity.resetRequests.push({email,options});return{data:{},error:null};
+ },
+ updateUser:async({password})=>{
+   activity.passwordUpdates.push(password);return{data:{user:session?.user},error:null};
+ },
  signOut:async()=>{session=null;signal();return{error:null}},
- onAuthStateChange:callback=>{onAuth.push(callback);return{data:{subscription:{unsubscribe(){}}}}}
+ onAuthStateChange:callback=>{
+   onAuth.push(callback);
+   if(recoveryMode)queueMicrotask(()=>callback('PASSWORD_RECOVERY',session));
+   return{data:{subscription:{unsubscribe(){}}}};
+ }
 };
 const api={
  auth,
@@ -137,6 +148,16 @@ window.__QA={reports,activity};
    assert.equal(await page.locator('#reportPanel').isHidden(),true,
      'No account session may open private contribution');
    console.log('MOCK SIGNUP UX PASS: 12-character warning, pending confirmation, no false login');
+   await page.locator('#forgotPassword').click();
+   await page.waitForFunction(()=>window.__QA.activity.resetRequests.length===1,undefined,{timeout:12000});
+   const reset=await page.evaluate(()=>window.__QA.activity.resetRequests[0]);
+   assert.equal(reset.email,'qa.contributor@example.invalid');
+   assert.equal(new URL(reset.options.redirectTo).pathname,new URL('submit.html',base).pathname,
+     'Recovery link must return to the known contributor page');
+   assert.equal(new URL(reset.options.redirectTo).origin,new URL(base).origin);
+   assert.match(await page.locator('#notice').textContent(),/If an account exists/,
+     'Recovery request response should not reveal account existence');
+   console.log('MOCK RESET REQUEST PASS: no old password required, fixed redirect and enumeration-safe response');
    await page.locator('#authForm button[type=submit]').click();
    await page.locator('#reportPanel').waitFor({state:'visible',timeout:12000});
    // Camera coordinates are accepted as one local-only comma-separated pair,
@@ -262,6 +283,25 @@ window.__QA={reports,activity};
    assert.equal(await page.locator('#workspace').isHidden(),true,
       'Cached stale reviewer token must not open private review queue');
    console.log('STALE SESSION PASS: unverified cached browser token never opens contributor or reviewer pages');
+   await page.goto(new URL('submit.html?scenario=recovery',base).href,{waitUntil:'load'});
+   await page.locator('#recoveryPanel').waitFor({state:'visible',timeout:12000});
+   assert.equal(await page.locator('#authPanel').isHidden(),true);
+   assert.equal(await page.locator('#reportPanel').isHidden(),true,
+     'Recovery must complete password update before private reports appear');
+   await page.locator('#newPassword').fill('123456789012-safe');
+   await page.locator('#confirmNewPassword').fill('does-not-match-this');
+   await page.locator('#saveNewPassword').click();
+   assert.match(await page.locator('#notice').textContent(),/must match/);
+   assert.equal(await page.evaluate(()=>window.__QA.activity.passwordUpdates.length),0);
+   await page.locator('#confirmNewPassword').fill('123456789012-safe');
+   await page.locator('#saveNewPassword').click();
+   await page.waitForFunction(()=>window.__QA.activity.passwordUpdates.length===1,undefined,{timeout:12000});
+   assert.equal(await page.evaluate(()=>window.__QA.activity.passwordUpdates[0]),'123456789012-safe');
+   await page.locator('#reportPanel').waitFor({state:'visible',timeout:12000});
+   assert.equal(await page.locator('#recoveryPanel').isHidden(),true);
+   assert.equal(await page.locator('#newPassword').inputValue(),'',
+     'New password inputs must be cleared after success');
+   console.log('MOCK PASSWORD RECOVERY PASS: recovery event, mismatch rejection, update and safe contributor reentry');
  }catch(err){console.error('MOCK AUTHENTICATED FLOW FAIL:',err.stack||err);process.exitCode=1;}
  finally{await browser.close();}
 })().catch(err=>{console.error('Smoke harness failed',err);process.exitCode=1});
