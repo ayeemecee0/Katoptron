@@ -16,7 +16,8 @@ with types as (
 camera_labels as (
  select substring(c.jurisdiction_label, ', ([A-Z]{2})$') as state_code,
    count(*) filter(where c.source_flock_label_status='source_flock_identified')::integer as flock_source_points,
-   count(*) filter(where c.source_flock_label_status='generic_lpr')::integer as generic_lpr_points
+   count(*) filter(where c.source_flock_label_status='generic_lpr')::integer as generic_lpr_points,
+   count(*) filter(where c.source_flock_label_status not in ('generic_lpr','source_flock_identified') or c.source_flock_label_status is null)::integer as unknown_label_points
  from public.flock_camera_locations c
  where c.verification_status='verified' and c.location_accuracy='exact'
    and c.jurisdiction_label ~ ', [A-Z]{2}$'
@@ -31,7 +32,8 @@ select coalesce(s.state_code,t.state_code,c.state_code) as state_code,
  coalesce(t.agenda_mentions,0)::integer as agenda_mentions,
  coalesce(t.documented_signed_contracts,0)::integer as signed_contracts,
  coalesce(c.flock_source_points,0)::integer as source_flock_labeled_points,
- coalesce(c.generic_lpr_points,0)::integer as generic_lpr_points
+ coalesce(c.generic_lpr_points,0)::integer as generic_lpr_points,
+ coalesce(c.unknown_label_points,0)::integer as unknown_manufacturer_points
 from public.flock_public_state_evidence_index s
 full join types t on t.state_code=s.state_code
 full join camera_labels c on c.state_code=coalesce(s.state_code,t.state_code)
@@ -69,7 +71,11 @@ select
  (select count(*)::integer from public.flock_public_tiered_camera_points
    where evidence_tier='source_attributed_unconfirmed') as source_attributed_unconfirmed_points,
  (select count(*)::integer from public.flock_public_tiered_camera_points
-   where evidence_tier='government_verified') as additional_government_verified_points;
+   where evidence_tier='government_verified') as additional_government_verified_points,
+ (select count(*)::integer from public.flock_camera_locations
+  where verification_status='verified' and location_accuracy='exact'
+    and (source_flock_label_status not in ('source_flock_identified','generic_lpr')
+      or source_flock_label_status is null)) as unknown_manufacturer_points;
 revoke all on public.flock_analytics_overview from public,anon,authenticated,service_role;
 grant select on public.flock_analytics_overview to anon,authenticated,service_role;
 
