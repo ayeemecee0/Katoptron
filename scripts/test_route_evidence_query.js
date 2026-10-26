@@ -79,6 +79,16 @@ async function run(){
   i++;
   return {official:page([{...strong,longitude:i===1?-104.79:-103}]),tiered:empty()};
  },compare.eligibleForFlockRoute),/Conflicting/);
+ // Source-wide classification can change between requests, even if the
+ // recorded coordinates remain unchanged. Treat contradictory snapshots
+ // as UNKNOWN, never hold an older positive Flock match.
+ let changed=0;
+ await assert.rejects(()=>q.collect(trip,geo,async()=>{
+  changed++;
+  return {official:page([{...strong,
+    source_flock_label_status:changed===1?'source_flock_identified':'generic_lpr'}]),
+    tiered:empty()};
+ },compare.eligibleForFlockRoute),/Conflicting/);
  console.log('M4 exact-count route scan passes density subdivision, all-or-unknown semantics, abort, dedup, and positive manufacturer tier guard');
 }
 run().catch(e=>{console.error(e);process.exitCode=1});
