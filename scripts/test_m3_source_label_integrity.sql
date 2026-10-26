@@ -76,7 +76,7 @@ begin
    evidence_summary,evidence_sha256,verification_method,
    first_documented_on,last_confirmed_on,verification_status,
    last_source_recheck_at,source_flock_label_status)
-  select 'm3-test-untrusted-label-'+substr(md5(random()::text),1,8),
+  select 'm3-test-untrusted-label-'||substr(md5(random()::text),1,8),
    label,jurisdiction_label,latitude,longitude,
    location_accuracy,uncertainty_radius_m,source_type,source_url,
    evidence_summary,evidence_sha256,verification_method,
