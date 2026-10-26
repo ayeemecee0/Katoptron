@@ -107,4 +107,34 @@ class HealthTests(unittest.TestCase):
    'sb_publishable_public')
   with self.assertRaises(ValueError):
    m.public_key("supabasePublishableKey: 'sb_secret_do_not_use'")
+ def test_m7_accountability_only_states_are_not_false_outages(self):
+  original=[{'state_code':'CA','verified_camera_points':3,'dated_program_records':1}]
+  expanded=[
+   {'state_code':'CA','verified_exact_gis_points':3,
+    'source_flock_labeled_points':2,'generic_lpr_points':1,
+    'unknown_manufacturer_points':0,'source_dated_program_records':1},
+   {'state_code':'NY','verified_exact_gis_points':0,
+    'source_flock_labeled_points':0,'generic_lpr_points':0,
+    'unknown_manufacturer_points':0,'source_dated_program_records':0}
+  ]
+  overview=[{'exact_government_points':3,'accountability_records':2,
+             'source_dated_programs':1,'documented_signed_contracts':0,
+             'states_with_any_documented_evidence':2,
+             'source_flock_labeled_points':2,'generic_lpr_points':1,
+             'unknown_manufacturer_points':0}]
+  self.assertEqual(m.assess_live_analytics(overview,3,2,1,original,expanded)
+                   ['states_with_any_documented_evidence'],2)
+  with self.assertRaisesRegex(ValueError,'denominator'):
+   m.assess_live_analytics([{**overview[0],
+     'states_with_any_documented_evidence':1}],3,2,1,original,expanded)
+  with self.assertRaisesRegex(ValueError,'government GIS source labels'):
+   m.assess_live_analytics(overview,3,2,1,original,
+    [{**expanded[0],'source_flock_labeled_points':1},expanded[1]])
+  with self.assertRaisesRegex(ValueError,'index state'):
+   m.assess_live_analytics(overview,3,2,1,original,
+    [{**expanded[0],'source_dated_program_records':0},expanded[1]])
+  with self.assertRaisesRegex(ValueError,'jurisdiction code'):
+   m.assess_live_analytics(overview,3,2,1,original,
+    [expanded[0],{**expanded[1],'state_code':'CA'}])
+
 if __name__=='__main__':unittest.main()

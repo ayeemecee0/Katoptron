@@ -268,23 +268,63 @@ def fetch_public_accountability(key):
     return events,roles,positions
 
 
-def assess_live_analytics(metrics,exact_points,accountability_count,program_count,states_count):
-    """Analytics is strictly a second view over the same RLS-filtered sources."""
+def assess_live_analytics(metrics,exact_points,accountability_count,program_count,
+                          indexed_states,analytics_states):
+    """M7 141: analytics includes public accountability-only states too.
+    The original camera+program state index remains a strict subset and is
+    still independently reconciled against its original government records.
+    """
     if not isinstance(metrics,list) or len(metrics)!=1 or not isinstance(metrics[0],dict):
         raise ValueError('Public evidence analytics overview missing')
     row=metrics[0]
-    expectations={
-      'exact_government_points':exact_points,
-      'accountability_records':accountability_count,
-      'source_dated_programs':program_count,
-      'states_with_any_documented_evidence':states_count,
-    }
+    expectations={'exact_government_points':exact_points,
+                  'accountability_records':accountability_count,
+                  'source_dated_programs':program_count}
     for key,expected in expectations.items():
         if type(row.get(key)) is not int or row[key]!=expected:
             raise ValueError('Public analytics contradict independently queried '+key)
-    if row.get('documented_signed_contracts',0)<0:
+    if (type(row.get('documented_signed_contracts')) is not int
+        or row['documented_signed_contracts']<0):
         raise ValueError('Invalid published signed-contract count')
+    if not isinstance(indexed_states,list) or not isinstance(analytics_states,list):
+        raise ValueError('Original and extended state source tables missing')
+    if len(analytics_states)>70 or len(indexed_states)>70:
+        raise ValueError('Public state evidence query exceeds expected bounded set')
+    if row.get('states_with_any_documented_evidence')!=len(analytics_states):
+        raise ValueError('Extended analytics state denominator missing accountability-only jurisdictions')
+    states={}
+    for item in analytics_states:
+        if not isinstance(item,dict) or not isinstance(item.get('state_code'),str):
+            raise ValueError('Malformed public analytics state row')
+        code=item['state_code']
+        if not re.fullmatch(r'[A-Z]{2}',code) or code in states:
+            raise ValueError('Duplicated/invalid analytics jurisdiction code')
+        for name in ('verified_exact_gis_points','source_flock_labeled_points',
+                     'generic_lpr_points','unknown_manufacturer_points',
+                     'source_dated_program_records'):
+            if type(item.get(name)) is not int or item[name]<0:
+                raise ValueError('Missing/nonnegative public analytics state category')
+        if (item['source_flock_labeled_points']+item['generic_lpr_points']+
+            item['unknown_manufacturer_points']!=item['verified_exact_gis_points']):
+            raise ValueError('Flock/generic/unknown government GIS source labels do not add up')
+        states[code]=item
+    for original in indexed_states:
+        code=original['state_code']
+        extended=states.get(code)
+        if extended is None or (
+            extended['verified_exact_gis_points']!=original['verified_camera_points'] or
+            extended['source_dated_program_records']!=original['dated_program_records']):
+            raise ValueError('Source index state missing from extended accountability analytics')
+    if sum(x['verified_exact_gis_points'] for x in states.values())!=exact_points:
+        raise ValueError('State original-government GIS totals do not match national view')
+    for key in ('source_flock_labeled_points','generic_lpr_points','unknown_manufacturer_points'):
+        if type(row.get(key)) is not int or row[key]!=sum(x[key] for x in states.values()):
+            raise ValueError('National original camera manufacturer labels differ by state')
+    if (row['source_flock_labeled_points']+row['generic_lpr_points']+
+        row['unknown_manufacturer_points']!=exact_points):
+        raise ValueError('Original government exact camera manufacturer split invalid')
     return row
+
 
 def run(site=SITE):
     if not site.startswith('https://'):
@@ -322,9 +362,15 @@ def run(site=SITE):
        totals['documented_government_programs'])
     analytics_url=PUBLIC_API.replace('/flock_camera_locations','/flock_analytics_overview')
     analytics=json.loads(get(analytics_url+'?select=*',{'apikey':key}))
+    analytics_states_url=PUBLIC_API.replace('/flock_camera_locations',
+                                            '/flock_analytics_states')
+    analytics_states=json.loads(get(analytics_states_url+
+        '?select=state_code,verified_exact_gis_points,source_flock_labeled_points,'
+        'generic_lpr_points,unknown_manufacturer_points,source_dated_program_records'
+        '&limit=70',{'apikey':key}))
     live_analytics=assess_live_analytics(analytics,sum(counts.values()),
-       len(events),totals['documented_government_programs'],states)
-    print('LIVE ANALYTICS PASS: cross-checked public evidence points, published records, programs, states')
+       len(events),totals['documented_government_programs'],footprint,analytics_states)
+    print('LIVE ANALYTICS PASS: original camera+program index subset and accountability-extended states reconciled')
     areas=fetch_public_coverage_areas(key)
     visible_areas=assess_public_area_provenance(
         areas,totals['verified_area_polygons'])

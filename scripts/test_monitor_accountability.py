@@ -16,11 +16,20 @@ def role():
 class AccountabilityMonitorTests(unittest.TestCase):
     def test_cross_checked_live_analytics(self):
         metrics=[{'exact_government_points':275,'accountability_records':30,
-          'source_dated_programs':20,'states_with_any_documented_evidence':14,
-          'documented_signed_contracts':0}]
-        self.assertEqual(assess_live_analytics(metrics,275,30,20,14),metrics[0])
+          'source_dated_programs':20,'states_with_any_documented_evidence':2,
+          'documented_signed_contracts':0,'source_flock_labeled_points':252,
+          'generic_lpr_points':23,'unknown_manufacturer_points':0}]
+        original=[{'state_code':'AZ','verified_camera_points':275,
+                   'dated_program_records':20}]
+        extended=[{'state_code':'AZ','verified_exact_gis_points':275,
+          'source_flock_labeled_points':252,'generic_lpr_points':23,
+          'unknown_manufacturer_points':0,'source_dated_program_records':20},
+          {'state_code':'UT','verified_exact_gis_points':0,
+           'source_flock_labeled_points':0,'generic_lpr_points':0,
+           'unknown_manufacturer_points':0,'source_dated_program_records':0}]
+        self.assertEqual(assess_live_analytics(metrics,275,30,20,original,extended),metrics[0])
         with self.assertRaisesRegex(ValueError,'contradict'):
-            assess_live_analytics(metrics,300,30,20,14)
+            assess_live_analytics(metrics,300,30,20,original,extended)
     def test_source_linked_evidence(self):
         self.assertEqual(assess_public_accountability([record()],[role()],1,1),(1,1))
     def test_agenda_cannot_infer_votes(self):
