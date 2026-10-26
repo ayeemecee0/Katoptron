@@ -50,7 +50,7 @@
   if(!Number.isInteger(maxQueries)||maxQueries<1||maxQueries>MAX_QUERIES)
    throw Error('Invalid bounded government route query budget');
   let queries=0,splitRegions=0,checkedRegions=0;
-  const collected=new Map();
+  const collected=new Map(),identities=new Map();
   while(queue.length){
    if(signal?.aborted)throw Error('Route evidence request canceled');
    if(queries>=maxQueries)throw Error('Government route scan exceeds safe evidence query budget');
@@ -76,14 +76,17 @@
       !Number.isFinite(Number(row.latitude))||
       !Number.isFinite(Number(row.longitude)))
      throw Error('Government route scan returned malformed source location');
-    if(!eligible(row))continue;
-    const previous=collected.get(row.record_key);
-    if(previous&&(
-       Number(previous.latitude)!==Number(row.latitude)||
-       Number(previous.longitude)!==Number(row.longitude)||
-       previous.source_url!==row.source_url||
-       previous.source_flock_label_status!==row.source_flock_label_status))
+    // Even ineligible generic/provisional records must be checked against
+    // earlier copies. A concurrent Flock-to-generic source change cannot
+    // leave an earlier optimistic row in a completed comparison.
+    const identity=[Number(row.latitude),Number(row.longitude),
+      row.source_url||'',row.source_flock_label_status||'',
+      row.evidence_tier||'',row.verification_status||''].join('|');
+    const previous=identities.get(row.record_key);
+    if(previous!==undefined&&previous!==identity)
      throw Error('Conflicting original source identity across route regions');
+    identities.set(row.record_key,identity);
+    if(!eligible(row))continue;
     collected.set(row.record_key,row);
     if(collected.size>MAX_RECORDS)
      throw Error('Government route evidence exceeds safe full-corridor capacity');
