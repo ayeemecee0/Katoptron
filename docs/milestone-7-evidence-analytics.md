@@ -1,4 +1,7 @@
 # Milestone 7 — Public evidence analytics
+
+> **October 26 engineering update:** The prior M7 dashboard had a serious source-tier aggregation error: it counted 12 merely source-attributed, unconfirmed points as independently corroborated, and did not explicitly separate 293 positively Flock-labeled government GIS positions from 23 generic LPR positions. [The M7 engineering fix and acceptance](./m7-evidence-analytics-engineering-signoff-2026-10-26.md) is now **100% signed off** with exact-count pagination, independent state/national reconciliation, production SQL and real browser tests. The October 23 test snapshot further below is historical, not current. Nationwide cameras and actual operation are still unknown.
+
 Implemented October 23, 2026.
 
 ## Purpose
