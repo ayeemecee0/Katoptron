@@ -9,6 +9,18 @@
 })(typeof window!=='undefined'?window:null,function(){
   'use strict';
   const PROXIMITY_METERS=120;
+  // City police GIS confirms these 23 map positions as generic LPR Camera,
+  // not individually identifiable Flock-manufactured equipment. Still display
+  // them on the official-source map but exclude from Flock-only route evidence.
+  const GENERIC_CITY_LPR_LAYER='https://services9.arcgis.com/xdpiCgT89eSIEpbi/arcgis/rest/services/LiveOakCameras/FeatureServer/0';
+  function eligibleForFlockRoute(record) {
+    if(!record||typeof record!=='object')return false;
+    if(record.evidence_tier && record.evidence_tier!=='government_verified')return false;
+    if(record.source_url===GENERIC_CITY_LPR_LAYER)return false;
+    if(typeof record.evidence_summary==='string' &&
+       /NOT per-device manufacturer/i.test(record.evidence_summary))return false;
+    return true;
+  }
   function reviewFreshness(record,now=Date.now()) {
     const value=record.last_source_recheck_at||record.last_confirmed_on;
     if(!value||/^\d{4}-\d{2}-\d{2}$/.test(String(value)))return 'unknown';
@@ -29,8 +41,9 @@
       const key=r.record_key||r.case_key;
       if(!key||ids.has(key))continue;
       ids.add(key);
-      // Provisional camera evidence is never a verified simulator sighting.
-      if(r.evidence_tier==='independently_corroborated')continue;
+      // GIS-documented generic LPR, independent provisional and
+      // source-attributed-unconfirmed entries never become Flock route matches.
+      if(!eligibleForFlockRoute(r))continue;
       const distance=geo.closestOnRoute(
         [Number(r.latitude),Number(r.longitude)],route.points).distance;
       if(r.location_accuracy==='exact'&&distance<=threshold){
@@ -46,5 +59,5 @@
     }
     return Object.freeze({nearby,approx,overdue,unknown,threshold});
   }
-  return Object.freeze({summarize,reviewFreshness,PROXIMITY_METERS});
+  return Object.freeze({summarize,reviewFreshness,eligibleForFlockRoute,PROXIMITY_METERS});
 });
