@@ -13,8 +13,8 @@ declare n integer; blocked boolean:=false;
 begin
  select count(*) into n from public.flock_watch_subscriptions;
  if n<>0 then raise exception 'BOLA: account A can view account B Watch subscriptions';end if;
- select count(*) into n from public.flock_watch_deliveries;
- if n<>0 then raise exception 'Subscriber can inspect private mail delivery receipts';end if;
+ if has_table_privilege('authenticated','public.flock_watch_deliveries','SELECT')
+ then raise exception 'Subscriber has SELECT privilege on private email delivery receipts';end if;
  insert into public.flock_watch_subscriptions(user_id,locality_key,email_enabled)
  values ('11111111-1111-4111-8111-111111111111','own city|CA',false);
  select count(*) into n from public.flock_watch_subscriptions;
