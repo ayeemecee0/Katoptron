@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Agency X-Ray</title>
+<meta name="description" content="Explore source-linked Flock camera positions, government actions, vendor disclosures and unknowns by locality.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0a121a;color:#e7f0f6}*{box-sizing:border-box}body{margin:0}
+a{color:#9fdceb}header{background:#10202d;border-bottom:1px solid #354c60;padding:1.1rem max(1rem,4vw);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
+.brand{color:inherit;text-decoration:none;font-weight:800;letter-spacing:.13em}nav{display:flex;gap:.9rem;flex-wrap:wrap;font-size:.8rem}
+main{max-width:1120px;margin:auto;padding:2.3rem 1.2rem 5rem}h1{font-size:clamp(1.8rem,4vw,2.5rem);margin:0 0 .4rem}h2{font-size:1.3rem}p{color:#bfd0dd;line-height:1.55}
+.note{border-left:3px solid #74b4be;background:#102330;padding:.85rem 1rem;line-height:1.5;margin:1rem 0}
+.search{display:flex;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0}input,button{font:inherit;background:#172b3c;border:1px solid #658092;color:inherit;border-radius:8px;padding:.8rem}
+input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#24445b}button:disabled{opacity:.55}
+#list{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:.65rem}#list button{text-align:left;line-height:1.4}
+#list small{display:block;color:#bfd0dd}.pane{background:#101f2b;border:1px solid #385267;border-radius:12px;padding:1rem;margin:1rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin:1rem 0}.metric{padding:1rem;border-radius:10px;background:#172d3c}
+.metric strong{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums}.metric span{font-size:.75rem;color:#bfd0dd}
+.card{background:#152836;border:1px solid #365166;border-radius:9px;padding:.85rem;margin:.7rem 0;overflow-wrap:anywhere}
+.card strong{display:block}.card small{display:block;color:#a9c0d0;margin:.35rem 0}.card p{margin:.35rem 0}h3{font-size:1rem;margin:1.25rem 0 .3rem}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap}.status{color:#a9cbdc;font-size:.88rem;min-height:1.2rem}
+[hidden]{display:none!important}:focus-visible{outline:3px solid #90d8ed;outline-offset:3px}
+</style></head><body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Primary">
+<a href="./index.html">CAMERA MAP</a><a href="./accountability.html">ACCOUNTABILITY</a>
+<a href="./government-watch.html">GOVERNMENT WATCH</a><a href="./sharing-explorer.html">SHARING EXPLORER</a>
+</nav></header>
+<main id="main-content"><h1>Agency X-Ray</h1>
+<p>One source-linked research profile for each locality in Katoptron's published evidence. Compare government maps, government decisions and separately sourced Flock vendor disclosures.</p>
+<div class="note"><strong>Evidence boundaries:</strong> A portal's camera count is <em>not</em> a count of confirmed individual map positions. Locality/name matching does not independently prove two agencies are the same operator. Absence of records is never evidence of no surveillance. This view never presents community OSM observations as agency-owned cameras.</div>
+<div class="search"><label for="query">Find a city, county or state</label>
+<input id="query" type="search" maxlength="120" autocomplete="off" placeholder="Try Folsom, Menifee, California or AZ">
+<button id="clear" type="button">Clear</button></div>
+<p class="status" id="status" role="status" aria-live="polite">Loading source-qualified public records…</p>
+<div id="list" aria-label="Localities with published evidence"></div>
+<section id="profile" hidden aria-label="Selected locality source dossier">
+<h2 id="profileTitle"></h2>
+<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a></div>
+<div class="grid" id="metrics"></div>
+<h3>Government program disclosures</h3><div id="programs"></div>
+<h3>Government actions and documented decisions</h3><div id="events"></div>
+<h3>Original Flock vendor portal snapshots</h3><div id="portals"></div>
+<h3>Map evidence and provenance</h3><div id="mapEvidence"></div>
+<h3>What this profile cannot establish</h3><p id="unknowns"></p>
+</section>
+<p class="status">Evidence sources: published Katoptron records, original government links, and separately source-dated Flock vendor reports. For sharing access, inspect the <a href="./sharing-explorer.html">documented access explorer</a>.</p>
+</main><script src="./config.js"></script><script src="./agency-intelligence.js"></script><script>
+'use strict';
+const API=window.KatoptronIntelligence,$=id=>document.getElementById(id);
+let groups=[],selected=null;
+function node(tag,value,cls){
+ const e=document.createElement(tag);if(value!=null)e.textContent=String(value);
+ if(cls)e.className=cls;return e;
+}
+function source(parent,href,text){
+ const safe=API.safeUrl(href);if(!safe)return;
+ const a=node('a',text||'Open original source');a.href=safe;a.target='_blank';a.rel='noopener noreferrer';
+ parent.append(a);
+}
+function metric(label,num){
+ const el=node('div',null,'metric');
+ el.append(node('strong',num==null?'Not reported':Number(num).toLocaleString()),
+   node('span',label));return el;
+}
+function makeCard(parent,title,detail,date,href){
+ const c=node('article',null,'card');c.append(node('strong',title));
+ if(date)c.append(node('small',date));
+ if(detail)c.append(node('p',detail));
+ source(c,href,'Inspect source evidence');
+ parent.append(c);
+}
+function renderList(){
+ const q=$('query').value.trim().toLowerCase();
+ const result=groups.filter(g=>g.label.toLowerCase().includes(q)||
+     [...g.matchedLabels].some(s=>s.toLowerCase().includes(q))).slice(0,80);
+ $('list').replaceChildren();
+ for(const g of result){
+  const button=node('button',g.label);button.type='button';
+  button.append(node('small',g.events.length+' published government records · '+
+     g.portals.length+' vendor snapshot(s) · '+
+     g.cameras.length+' source-mapped positions'));
+  button.addEventListener('click',()=>select(g));
+  $('list').append(button);
+ }
+ $('status').textContent=groups.length+' source-backed localities indexed; '+
+   result.length+' shown'+(groups.length>80&&!q?' (enter a city to narrow the list)':'')+
+   '. All categories are separate evidence, not additive installed cameras.';
+}
+function select(group){
+ selected=group;$('profile').hidden=false;
+ $('profileTitle').textContent=group.label;
+ $('profileDetail').textContent='Published source evidence grouped by locality name. One place can have multiple agencies; this grouping does not establish record ownership or an active deployment.';
+ const url=new URL(location.href);url.searchParams.set('place',group.key);
+ $('permalink').href=url.toString();
+ $('follow').textContent=API.safeRead().follows.includes(group.key)?'Following in Government Watch':'Follow in Government Watch';
+ $('metrics').replaceChildren(metric('Government source-mapped positions',group.cameras.length),
+ metric('Government records',group.events.length),
+ metric('Flock vendor snapshots',group.portals.length),
+ metric('Government program disclosures',group.programs.length));
+ $('programs').replaceChildren();
+ for(const p of group.programs){
+  makeCard($('programs'),'Program: '+p.program_status,
+    'This original government record is source-dated, not proof a camera is active.',
+    p.source_date,p.official_evidence_url);
+  if(p.official_camera_map_url){
+   const el=node('p');source(el,p.official_camera_map_url,'Government-linked camera map (individual device evidence separately required)');$('programs').append(el);
+  }
+ }
+ if(!group.programs.length)$('programs').append(node('p','No reviewed government program record currently indexed.'));
+ $('events').replaceChildren();
+ for(const e of group.events.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''))){
+  makeCard($('events'),e.title,e.summary,
+    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
+ }
+ if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
+ $('portals').replaceChildren();
+ for(const p of [...group.portals].sort((a,b)=>b.source_date.localeCompare(a.source_date))){
+  makeCard($('portals'),p.agency_label,
+    'Vendor-reported cameras (LPR and potentially other devices): '+
+       (p.reported_total_cameras==null?'not published':p.reported_total_cameras)+
+    '; retention: '+(p.retention_days==null?'not published':p.retention_days+' days')+
+    '; prior-window searches: '+(p.reported_search_sessions_30d==null?'not published':p.reported_search_sessions_30d)+
+    '. These are vendor-reported figures, not verified GIS points.',
+    'Vendor snapshot '+p.source_date,p.portal_url);
+ }
+ if(!group.portals.length)$('portals').append(node('p','No Flock-hosted vendor snapshot indexed. That does not prove there is no vendor portal.'));
+ $('mapEvidence').replaceChildren();
+ if(group.cameras.length){
+  const byUrl=new Map();for(const c of group.cameras){
+   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
+  }
+  for(const [url,count] of byUrl){
+   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
+     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
+     'Current source-mapped records',url);
+  }
+ }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
+ $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
+ history.replaceState(null,'',url);
+ $('profile').scrollIntoView({block:'start',behavior:'smooth'});
+}
+$('follow').addEventListener('click',()=>{
+ if(!selected)return;
+ if(API.follow(selected.key)){
+  $('follow').textContent='Following in Government Watch';
+  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
+ }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
+});
+$('query').addEventListener('input',renderList);
+$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
+API.load().then(data=>{
+ groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
+ if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
+}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
+</script></body></html>
