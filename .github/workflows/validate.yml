@@ -143,6 +143,9 @@ on:
       - 'supabase/migrations/140_m5_daily_expired_rate_event_privacy_prune.sql'
       - 'supabase/migrations/141_m7_source_tier_analytics_reconciliation.sql'
       - 'supabase/migrations/142_m9_private_launch_capacity_aggregation.sql'
+      - 'supabase/migrations/143_m9_hide_privileged_source_predicates_from_data_api.sql'
+      - 'scripts/test_m9_private_source_predicate_rls.sql'
+      - 'scripts/monitor_anonymous_access.py'
       - 'scripts/monitor_production_capacity.py'
       - 'scripts/test_monitor_production_capacity.py'
       - 'scripts/test_m9_private_launch_capacity.sql'
@@ -864,6 +867,10 @@ jobs:
             -f supabase/migrations/142_m9_private_launch_capacity_aggregation.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_m9_private_launch_capacity.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/143_m9_hide_privileged_source_predicates_from_data_api.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_m9_private_source_predicate_rls.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_original_government_pdf_receipt_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
