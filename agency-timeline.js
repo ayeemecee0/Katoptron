@@ -38,7 +38,10 @@
    if(e.event_type==='recorded_legislative_decision')kind='recorded_decision';
    if(e.event_type==='executed_contract')kind='contract_execution';
    if(e.event_type==='government_program')kind='program_disclosure';
-   add(kind,when,title,e.summary,e.source_url,'original_government',
+   const detail=kind==='program_disclosure'
+    ?String(e.summary||'')+' This is a dated source disclosure, not necessarily the start or end of a camera program.'
+    :e.summary;
+   add(kind,when,title,detail,e.source_url,'original_government',
       e.date_basis||'date_not_established','government:'+e.event_key);
   }
   for(const p of group.programs){
