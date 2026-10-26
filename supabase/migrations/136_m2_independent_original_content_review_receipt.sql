@@ -79,5 +79,12 @@ update public.flock_original_document_leads l
             where r.document_url=l.document_url)
  and l.review_status='requires_document_review';
 
+-- Refresh aggregate-only public scorecard; no private links or fact text.
+update public.flock_original_acquisition_public_metrics
+ set total_reviewed_documents=(select count(*) from public.flock_original_document_leads
+     where review_status='document_content_verified'),
+     updated_at=now()
+ where metric_date=(select max(metric_date) from public.flock_original_acquisition_public_metrics);
+
 comment on column public.flock_original_document_leads.review_status is
 'The document_content_verified state means ORIGINAL document text checked for specifically scoped claims; NOT necessarily Flock manufacturer-specific, signed contract, active sharing, device or retention proof. Per-file owner review receipt required.';
