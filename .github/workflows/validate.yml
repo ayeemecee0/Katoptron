@@ -120,6 +120,10 @@ on:
       - 'scripts/test_osm_exact_snapshot_sql.sql'
       - 'scripts/test_osm_point_canvas.cjs'
       - 'osm-point-canvas.js'
+      - 'agency-intelligence.js'
+      - 'agency-xray.html'
+      - 'government-watch.html'
+      - 'sharing-explorer.html'
       - 'scripts/test_osm_viewport_original_anchor.sql'
       - 'scripts/test_osm_viewport_source_anchors.cjs'
       - 'osm-viewport-density.js'
@@ -1124,6 +1128,8 @@ jobs:
           node scripts/test_osm_viewport_source_anchors.cjs
           node --check osm-point-canvas.js
           node scripts/test_osm_point_canvas.cjs
+          node --check agency-intelligence.js
+          node scripts/test_agency_intelligence.cjs
           node --check routing-routes.js
           node --check routing-provider.js
           node --check geoapify-adapter.js
