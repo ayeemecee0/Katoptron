@@ -21,14 +21,18 @@ const assert=require('node:assert/strict');
   },null,{timeout:45000});
   const count=await page.locator('#communityCount').textContent();
   assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
-  assert.ok((await page.locator('#status').textContent()).includes('3° OSM report clusters'));
-  await page.waitForFunction(()=>densityPoints.getLayers().length>0,null,{timeout:22000});
-  const validSourceAnchor=await page.evaluate(()=>{
-   const layer=densityPoints.getLayers()[0];
-   return !!(layer&&Number.isFinite(layer.getLatLng().lat)&&
-     Number.isFinite(layer.getLatLng().lng)&&layer.getTooltip().getContent().includes('Click to inspect'));
-  });
-  assert.ok(validSourceAnchor,'Community aggregates must be clickable labeled source clusters');
+  await page.waitForFunction(()=>window.exactSnapshot?.count>90000&&
+    document.querySelector('.katoptron-osm-exact-canvas'),null,{timeout:60000});
+  const canvasInfo=await page.evaluate(()=>({
+    count:exactSnapshot.count,
+    zoom:community.getZoom(),
+    canvas:document.querySelectorAll('.katoptron-osm-exact-canvas').length,
+    hasBlobs:document.querySelectorAll('.leaflet-overlay-pane .leaflet-interactive').length
+  }));
+  assert.equal(canvasInfo.zoom,4,'Original OSM coordinates must render nationally');
+  assert.equal(canvasInfo.canvas,1,'Missing single national community canvas');
+  assert.equal(canvasInfo.hasBlobs,0,'No approximate national reporting circles allowed');
+  assert.ok((await page.locator('#status').textContent()).includes('individual small points'));
   assert.ok((await page.locator('#sourceDate').textContent()).includes('snapshot'));
   await page.waitForFunction(()=>Number((document.querySelector('#uniqueCoordinateCount')?.textContent||'').replaceAll(',',''))>100000,null,{timeout:22000});
   const observed=Number(count.replaceAll(',',''));
@@ -42,23 +46,6 @@ const assert=require('node:assert/strict');
   await page.waitForFunction(()=>{const value=document.querySelector('#crossSourceStatus')?.textContent||'';return value.includes('assessed')||value.includes('unavailable');},null,{timeout:22000});
   const matchStatus=await page.locator('#crossSourceStatus').textContent();
   assert.ok(matchStatus.includes('government-source records assessed')&&matchStatus.includes('not confirmed identical cameras'),matchStatus);
-  const density=await page.evaluate(async()=>{
-    const c=window.KATOPTRON_CONFIG;
-    const url=c.supabaseUrl+'/rest/v1/flock_public_osm_community_density?select=community_report_count&limit=1';
-    const r=await fetch(url,{headers:{apikey:c.supabasePublishableKey},cache:'no-store'});
-    if(!r.ok)throw Error('National coarse community density unavailable HTTP '+r.status);
-    return r.json();
-  });
-  assert.ok(Array.isArray(density)&&density.length===1&&density[0].community_report_count>0);
-
-  // Clicking an approximate national cluster must resolve a genuine original
-  // OSM report, not zoom to a mathematical offshore 3-degree center.
-  await page.evaluate(()=>{densityPoints.getLayers()[0].fire('click');return true;});
-  await page.waitForFunction(()=>community.getZoom()>=13,null,{timeout:25000});
-  const popup=await page.locator('.leaflet-popup-content').textContent();
-  assert.ok(popup.includes('Example OSM report inside this cluster'),popup);
-  assert.ok(popup.includes('Inspect this OSM report'),popup);
-
   // Retrieve ONE already-published community-source coordinate to prove the
   // viewport-scoped map can display an actual database-backed camera record.
   const record=await page.evaluate(async()=>{
@@ -72,13 +59,19 @@ const assert=require('node:assert/strict');
   });
   await page.locator('#coordinates').fill(record.latitude+','+record.longitude);
   await page.locator('#jumpForm button').click();
-  await page.waitForFunction(()=>{
-    const s=document.querySelector('#status')?.textContent||'';
-    return s.includes('community Flock locations shown')||s.includes('Zoom closer')||s.includes('unavailable');
-  },null,{timeout:40000});
-  let status=await page.locator('#status').textContent();
-  assert.ok(status.includes('community Flock locations shown'),'Map source retrieval did not succeed: '+status);
-  assert.ok(Number.parseInt(status.replaceAll(',',''),10)>=1,'No real camera positions returned within source viewport: '+status);
+  await page.waitForFunction(()=>community.getZoom()===13,null,{timeout:20000});
+  assert.equal(await page.locator('.katoptron-osm-exact-canvas').count(),1,
+    'Original OSM dots must remain drawn at street-level zoom');
+  // Click the original data dot using the map's geographic projection;
+  // the popup must link to its traceable public OpenStreetMap record.
+  await page.evaluate(row=>{
+    const pixel=community.latLngToContainerPoint([row.latitude,row.longitude]);
+    community.fire('click',{containerPoint:pixel});
+  },record);
+  await page.waitForFunction(()=>document.querySelector('.leaflet-popup-content')?.textContent
+    ?.includes('Inspect original OSM record'),null,{timeout:22000});
+  const link=await page.locator('.leaflet-popup-content a').getAttribute('href');
+  assert.ok(link?.includes(record.osm_key),'Original OSM source identity lost');
   assert.deepEqual(errors,[],'Browser JavaScript errors');
   console.log('NATIONAL COMMUNITY FLOCK MAP PASS: '+count+' public ODbL points indexed; GIS and community separate');
  }catch(e){console.error('NATIONAL COMMUNITY FLOCK MAP FAILED:',e.stack||e.message);console.error('PAGE ERRORS',errors.slice(0,5));process.exitCode=1}
