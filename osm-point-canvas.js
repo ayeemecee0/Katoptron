@@ -15,12 +15,12 @@
   if(!snapshot||!Number.isSafeInteger(snapshot.point_count)||
      snapshot.point_count<MIN_POINTS||snapshot.point_count>MAX_POINTS||
      typeof snapshot.source_snapshot_date!=='string'||
-     !/^\\d{4}-\\d{2}-\\d{2}$/.test(snapshot.source_snapshot_date)||
+     !/^\d{4}-\d{2}-\d{2}$/.test(snapshot.source_snapshot_date)||
      typeof snapshot.coordinates_base64!=='string'||
      snapshot.coordinates_base64.length>2600000||
-     !/^[A-Za-z0-9+\\/=\\r\\n]+$/.test(snapshot.coordinates_base64))
+     !/^[A-Za-z0-9+\/=\r\n]+$/.test(snapshot.coordinates_base64))
     throw Error('Incomplete OSM original-coordinate snapshot');
-  const base64=snapshot.coordinates_base64.replace(/\\s/g,'');
+  const base64=snapshot.coordinates_base64.replace(/\s/g,'');
   const raw=(typeof atob==='function'?atob(base64):
       Buffer.from(base64,'base64').toString('latin1'));
   if(raw.length!==snapshot.point_count*8)
