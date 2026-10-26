@@ -1,0 +1,45 @@
+name: M8 320px high-contrast and text-spacing acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/smoke_m8_adversarial_accessibility.cjs'
+      - '.github/workflows/accept_m8_adversarial_accessibility.yml'
+      - 'a11y.css'
+      - 'map.css'
+      - 'index.html'
+      - 'submit.html'
+      - 'community-review.html'
+      - 'accountability.html'
+      - 'analytics.html'
+      - 'records.html'
+      - 'nearby.html'
+      - 'portals.html'
+      - 'community-map.html'
+      - 'privacy.html'
+      - 'methodology.html'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-m8-adversarial-a11y
+  cancel-in-progress: true
+jobs:
+  a11y:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Install exact-version browser harness
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Host current public pages without accounts
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-a11y-server.log 2>&1 &
+      - name: Verify forced colors, 320px reflow, controls, text spacing and skip focus
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_m8_adversarial_accessibility.cjs
