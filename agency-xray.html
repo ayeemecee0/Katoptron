@@ -40,10 +40,10 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <div class="grid" id="metrics"></div>
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
-<h3>Direct Flock vendor portal snapshots and retention history</h3><div id="portals"></div>
-<h3>Licensed secondary agency research</h3><div id="secondary"></div>
-<h3>Documented spending and signed agreements</h3><div id="spending"></div>
-<h3>Disclosure gaps and source questions</h3><div id="gaps"></div>
+<h3>Direct Flock portal disclosures and retention history</h3><div id="portals"></div>
+<h3>Licensed secondary agency disclosures</h3><div id="secondary"></div>
+<h3>Source-documented contract spending</h3><div id="spending"></div>
+<h3>Disclosure gaps</h3><div id="gaps"></div>
 <h3>Map evidence and provenance</h3><div id="mapEvidence"></div>
 <h3>What this profile cannot establish</h3><p id="unknowns"></p>
 </section>
@@ -99,9 +99,9 @@ function select(group){
  $('follow').textContent=API.safeRead().follows.includes(group.key)?'Following in Government Watch':'Follow in Government Watch';
  $('metrics').replaceChildren(metric('Government source-mapped positions',group.cameras.length),
  metric('Government records',group.events.length),
- metric('Direct Flock vendor snapshots',group.portals.length),
+ metric('Flock vendor snapshots',group.portals.length),
  metric('Government program disclosures',group.programs.length),
- metric('Licensed secondary portal identities',group.secondary.length));
+ metric('Secondary portal identities',group.secondary.length));
  $('programs').replaceChildren();
  for(const p of group.programs){
   makeCard($('programs'),'Program: '+p.program_status,
@@ -115,7 +115,8 @@ function select(group){
  $('events').replaceChildren();
  for(const e of group.events.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''))){
   makeCard($('events'),e.title,e.summary+
-    (e.amount_usd==null?'':' · Source-documented amount: 
+   (e.amount_usd==null?'':' · Documented contract amount: $'+Number(e.amount_usd).toLocaleString('en-US')),
+    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
  }
  if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
  $('portals').replaceChildren();
@@ -128,230 +129,46 @@ function select(group){
     '. These are vendor-reported figures, not verified GIS points.',
     'Vendor snapshot '+p.source_date,p.portal_url);
  }
- if(!group.portals.length)$('portals').append(node('p','No original Flock-hosted vendor snapshot indexed; current retention cannot be established.'));
- const retention=[...group.portals].filter(p=>p.retention_days!=null).sort((a,b)=>a.source_date.localeCompare(b.source_date));
- if(retention.length){
-  const d=node('p','Documented vendor retention snapshot history: '+retention.map(p=>p.source_date+': '+p.retention_days+' days').join(' → ')+'. Changes between dates do not prove the current setting without a fresh snapshot.');
-  $('portals').append(d);
- }
+ if(!group.portals.length)$('portals').append(node('p','No direct Flock vendor snapshot indexed. That does not mean no portal exists.'));
+ const retention=[...group.portals].filter(p=>p.retention_days!=null)
+   .sort((a,b)=>a.source_date.localeCompare(b.source_date));
+ if(retention.length)$('portals').append(node('p',
+   'Original vendor source retention history: '+retention.map(p=>p.source_date+': '+p.retention_days+' days').join(' → ')+'. These source-dated reports do not prove current settings.'));
  $('secondary').replaceChildren();
  for(const p of group.secondary){
-  const c=node('div',null,'card');
-  c.append(node('strong',p.agency_name),node('small','CC BY-SA · EyesOnFlock-derived agency index · '+String(p.source_snapshot_at).slice(0,10)));
-  const line=node('p','Secondary source-reported cameras (mixed scope): '+
+  const card=node('article',null,'card');
+  card.append(node('strong',p.agency_name),
+    node('small','Licensed EyesOnFlock-derived SECONDARY source · '+String(p.source_snapshot_at).slice(0,10)));
+  card.append(node('p','Source-reported mixed camera count: '+
       (p.source_reported_mixed_cameras==null?'not published':p.source_reported_mixed_cameras)+
-      '. Reported network links (inbound and outbound combined, not searches): '+
+      '. Number of inbound/outbound sharing neighbors, NOT recorded searches: '+
       (p.source_reported_network_links==null?'unknown':p.source_reported_network_links)+
-      '. No map camera coordinates can be inferred.');
-  c.append(line);
-  const link=node('a','Inspect directional source network');link.href='./sharing-explorer.html?agency='+encodeURIComponent(p.source_agency_id);c.append(link);
-  $('secondary').append(c);
+      '. Agency town points never become individual camera coordinates.'));
+  const a=node('a','Inspect source-dated directional sharing network');
+  a.href='./sharing-explorer.html?agency='+encodeURIComponent(p.source_agency_id);
+  card.append(a);$('secondary').append(card);
  }
- if(!group.secondary.length)$('secondary').append(node('p','No reconciled secondary portal identity for this locality. A missing record is unknown, not proof no agency exists.'));
+ if(!group.secondary.length)$('secondary').append(node('p',
+    'No matching secondary portal in the licensed directory. Unknown, not zero.'));
  $('spending').replaceChildren();
- const contracted=group.events.filter(e=>e.event_type==='executed_contract'&&e.amount_usd!=null);
- if(contracted.length){
-  const sum=contracted.reduce((n,e)=>n+Number(e.amount_usd),0);
-  $('spending').append(node('p','Sum of source-documented signed agreement amounts indexed for this locality: 
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script></body></html>+Number(e.amount_usd).toLocaleString()),
-    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
- }
- if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
- $('portals').replaceChildren();
- for(const p of [...group.portals].sort((a,b)=>b.source_date.localeCompare(a.source_date))){
-  makeCard($('portals'),p.agency_label,
-    'Vendor-reported cameras (LPR and potentially other devices): '+
-       (p.reported_total_cameras==null?'not published':p.reported_total_cameras)+
-    '; retention: '+(p.retention_days==null?'not published':p.retention_days+' days')+
-    '; prior-window searches: '+(p.reported_search_sessions_30d==null?'not published':p.reported_search_sessions_30d)+
-    '. These are vendor-reported figures, not verified GIS points.',
-    'Vendor snapshot '+p.source_date,p.portal_url);
- }
- if(!group.portals.length)$('portals').append(node('p','No Flock-hosted vendor snapshot indexed. That does not prove there is no vendor portal.'));
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script></body></html>+sum.toLocaleString('en-US')+'. Amounts may cover different terms or overlapping awards; this is not annual expense or total program cost.'));
-  for(const c of contracted)makeCard($('spending'),c.title,'Signed agreement only · 
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script></body></html>+Number(e.amount_usd).toLocaleString()),
-    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
- }
- if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
- $('portals').replaceChildren();
- for(const p of [...group.portals].sort((a,b)=>b.source_date.localeCompare(a.source_date))){
-  makeCard($('portals'),p.agency_label,
-    'Vendor-reported cameras (LPR and potentially other devices): '+
-       (p.reported_total_cameras==null?'not published':p.reported_total_cameras)+
-    '; retention: '+(p.retention_days==null?'not published':p.retention_days+' days')+
-    '; prior-window searches: '+(p.reported_search_sessions_30d==null?'not published':p.reported_search_sessions_30d)+
-    '. These are vendor-reported figures, not verified GIS points.',
-    'Vendor snapshot '+p.source_date,p.portal_url);
- }
- if(!group.portals.length)$('portals').append(node('p','No Flock-hosted vendor snapshot indexed. That does not prove there is no vendor portal.'));
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script></body></html>+Number(c.amount_usd).toLocaleString(),c.event_date,c.source_url);
- }else $('spending').append(node('p','No source-verified signed contract amount is currently published for this locality. Actual program costs are unknown, not $0.'));
+ const amounts=group.events.filter(e=>e.event_type==='executed_contract'&&e.amount_usd!=null);
+ if(amounts.length){
+  $('spending').append(node('p','Sum of currently documented reviewed signed Flock agreements: $'+
+    amounts.reduce((total,e)=>total+Number(e.amount_usd),0).toLocaleString('en-US')+
+    '. These amounts may overlap or cover different contract terms; not a claim of annual spending.'));
+  for(const e of amounts)makeCard($('spending'),e.title,
+     'Source-confirmed signed agreement: $'+Number(e.amount_usd).toLocaleString('en-US'),
+     e.event_date,e.source_url);
+ }else $('spending').append(node('p','No reviewed signed Flock contract amount indexed. Actual spending is UNKNOWN, not $0.'));
  $('gaps').replaceChildren();
  const gaps=[];
- if(!group.cameras.length)gaps.push('Exact first-party geographic camera inventory not documented in Katoptron.');
- if(!group.portals.length)gaps.push('No direct dated Flock portal retention or disclosure metrics.');
+ if(!group.cameras.length)gaps.push('No independently authenticated first-party point inventory published for this locality.');
+ if(!group.portals.length)gaps.push('No first-party Flock portal snapshot; retention and operations metrics unknown.');
  if(!group.events.some(e=>e.event_type==='executed_contract'))gaps.push('No independently reviewed executed Flock contract in the public index.');
- if(!group.events.some(e=>e.event_type==='recorded_legislative_decision'))gaps.push('No verified governing-body action in the public index.');
- if(retention.length<2)gaps.push('Insufficient first-party historical retention snapshots to determine policy changes.');
- gaps.push('Actual queries and data-sharing permissions are not established by camera or agency totals.');
- for(const issue of gaps)$('gaps').append(node('p',issue));
-
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script></body></html>+Number(e.amount_usd).toLocaleString()),
-    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
- }
- if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
- $('portals').replaceChildren();
- for(const p of [...group.portals].sort((a,b)=>b.source_date.localeCompare(a.source_date))){
-  makeCard($('portals'),p.agency_label,
-    'Vendor-reported cameras (LPR and potentially other devices): '+
-       (p.reported_total_cameras==null?'not published':p.reported_total_cameras)+
-    '; retention: '+(p.retention_days==null?'not published':p.retention_days+' days')+
-    '; prior-window searches: '+(p.reported_search_sessions_30d==null?'not published':p.reported_search_sessions_30d)+
-    '. These are vendor-reported figures, not verified GIS points.',
-    'Vendor snapshot '+p.source_date,p.portal_url);
- }
- if(!group.portals.length)$('portals').append(node('p','No Flock-hosted vendor snapshot indexed. That does not prove there is no vendor portal.'));
+ if(!group.events.some(e=>e.event_type==='recorded_legislative_decision'))gaps.push('No original governing-body action recorded in this index.');
+ if(retention.length<2)gaps.push('Insufficient historical Flock retention snapshots to establish a change.');
+ gaps.push('Agency links reported by an aggregator are not proof that a named agency performed a search.');
+ for(const gap of gaps)$('gaps').append(node('p',gap));
  $('mapEvidence').replaceChildren();
  if(group.cameras.length){
   const byUrl=new Map();for(const c of group.cameras){
