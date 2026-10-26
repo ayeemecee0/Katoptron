@@ -44,19 +44,20 @@
  async function load(fetcher){
   const f=fetcher||(typeof fetch==='function'?fetch:null);
   if(!f)throw Error('No source fetch available');
+  // Source is mirrored only AFTER server-side integrity and license checks.
+  // Same-origin avoids blocking all agency data on third-party CORS/CDN.
+  const local=typeof document!=='undefined'&&document.baseURI;
+  const origin=local?new URL('./data/agency-intelligence/',document.baseURI).href:BASE;
   async function get(path){
-   const r=await f(BASE+path,{mode:'cors',credentials:'omit',cache:'no-store',
-     referrerPolicy:'no-referrer',redirect:'error'});
-   if(!r.ok)throw Error('Original-source network unavailable (HTTP '+r.status+')');
+   const r=await f(origin+path,{
+    credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'});
+   if(!r.ok)throw Error('Source-qualified agency network not yet published (HTTP '+r.status+')');
    return r.json();
   }
-  // This is a tertiary data feed for evidence exploration, NOT canonical
-  // camera points. Fail closed on missing source, mismatched count or CORS.
-  const [meta,nodes,adj]=await Promise.all([
-   get('sharing-network-meta.json'),
-   get('sharing-network-nodes.geojson'),
-   get('sharing-network-adjacency.json')
-  ]);
+  const paths=local?['manifest.json','nodes.json','adjacency.json']:
+    ['sharing-network-meta.json','sharing-network-nodes.geojson',
+     'sharing-network-adjacency.json'];
+  const [meta,nodes,adj]=await Promise.all(paths.map(get));
   return validate(nodes,adj,meta);
  }
  function details(network,id){
