@@ -5,7 +5,8 @@ begin
  foreach rel in array array[
   'flock_community_submissions','flock_community_screening',
   'flock_community_review_history','flock_point_evidence_cases',
-  'flock_point_evidence_attestations','editorial_reviewers'
+  'flock_point_evidence_attestations','editorial_reviewers',
+  'flock_private_submission_rate_events'
  ] loop
   if has_table_privilege('anon',format('public.%I',rel),'SELECT')
     or has_table_privilege('anon',format('public.%I',rel),'INSERT')
@@ -28,14 +29,14 @@ begin
    where pronamespace='public'::regnamespace
      and proname in ('editorial_decide','editorial_session','list_community_review_queue',
        'set_community_review_status','withdraw_own_community_report',
+       'delete_withdrawn_community_report',
        'community_report_attachment_paths')
  loop
   if has_function_privilege('anon',p.oid,'EXECUTE') then
    raise exception 'Anonymous ability to execute sensitive RPC %',p.signature;
   end if;
  end loop;
- if has_function_privilege('authenticated',
-   'public.set_community_review_status(uuid,text)'::regprocedure,'EXECUTE') then
+ if to_regprocedure('public.set_community_review_status(uuid,text)') is not null then
    raise exception 'Legacy no-audit reviewer RPC re-enabled';
  end if;
  if to_regclass('storage.objects') is not null then
