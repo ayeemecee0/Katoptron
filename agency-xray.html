@@ -41,6 +41,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
 <h3>Direct Flock portal disclosures and retention history</h3><div id="portals"></div>
+<h3>Original government and Flock-hosted sharing evidence</h3><div id="originalSharing"></div>
 <h3>Corroborated portal identities</h3><div id="identityMatches"></div>
 <h3>Licensed secondary agency disclosures</h3><div id="secondary"></div>
 <h3>Source-documented contract spending</h3><div id="spending"></div>
@@ -137,6 +138,20 @@ function select(group){
    .sort((a,b)=>a.source_date.localeCompare(b.source_date));
  if(retention.length)$('portals').append(node('p',
    'Original vendor source retention history: '+retention.map(p=>p.source_date+': '+p.retention_days+' days').join(' → ')+'. These source-dated reports do not prove current settings.'));
+ $('originalSharing').replaceChildren();
+ const original=[...group.originalOutgoing];
+ for(const r of original.slice(0,140)){
+   const card=node('article',null,'card');
+   card.append(node('strong',r.publisher_name+' → '+r.recipient_label));
+   card.append(node('small',(r.source_kind==='original_government'?'Original government disclosure':'Original Flock transparency portal')+
+      ' · observed '+r.recipient_observed_on+' · '+r.identity_basis));
+   card.append(node('p','Named outbound access as published by the original source; not confirmation of a plate query, current active permission, or reciprocal sharing. Captured list scope: '+r.captured_scope+'.'));
+   source(card,r.source_url,'Original publisher evidence');$('originalSharing').append(card);
+ }
+ if(original.length>140)$('originalSharing').append(node('p',(original.length-140)+' further named entries: inspect Sharing Explorer for the complete source layer.'));
+ const inbound=group.originalIncoming.length;
+ if(inbound)$('originalSharing').append(node('p',inbound+' original publisher list(s) name this exact agency ID as a potential recipient; inspect the sharing explorer to see their original source links.'));
+ if(!original.length&&!inbound)$('originalSharing').append(node('p','No independently publisher-named directional sharing relationship is currently indexed for this locality. Absence of evidence is NOT proof that sharing is disabled.'));
  $('identityMatches').replaceChildren();
  for(const m of group.identityMatches){
    const card=node('article',null,'card');
