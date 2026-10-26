@@ -8,6 +8,9 @@ const assert=require('node:assert/strict');
  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
  const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
+ page.on('framenavigated',frame=>{
+   if(frame===page.mainFrame())console.log('COMMUNITY SMOKE NAVIGATED',frame.url());
+ });
  try{
   const response=await page.goto(new URL('community-map.html',base).href,
     {waitUntil:'domcontentloaded',timeout:45000});
