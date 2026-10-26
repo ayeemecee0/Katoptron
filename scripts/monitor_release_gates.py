@@ -77,6 +77,9 @@ def evaluate(workflow,runs,now=None):
  good=next((x for x in previous if x[2]=='completed' and x[1]=='success'),None)
  if not good:
   raise ValueError(workflow+' lacks successful main-branch acceptance')
+ if any(x[2]=='completed' and x[1]!='success' and x[0]>good[0]
+        for x in previous):
+  raise ValueError(workflow+' newer failed or cancelled execution still unresolved')
  age=now-good[0]
  if age>dt.timedelta(days=REQUIRED[workflow]):
   raise ValueError(workflow+' success is stale beyond '+str(REQUIRED[workflow])+' days')
