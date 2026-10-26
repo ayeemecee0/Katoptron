@@ -2,6 +2,8 @@
 
 > **October 26 update:** M8 autonomous engineering preparation is now estimated **95%** (previously 85%) after actual Chromium high-contrast/forced-colors, 320px 400%-zoom-equivalent reflow, expanded text spacing, 24px target checks, and painted keyboard-focus assertions **passed independently across all 11 public pages**. Automated axe-core WCAG A/AA scans now also pass at **320, 390 and 1280 CSS pixels** and all full browser map/route/mobile checks passed. Read [M8 acceptance evidence and remaining real assistive-technology gates](./m8-autonomous-accessibility-acceptance-2026-10-26.md). This is NOT a full manual WCAG 2.2 AA certification or 100% milestone sign-off.
 
+> **October 26 limited-beta owner decision:** M8 engineering and beta acceptance are **closed with a documented waiver**, not fully accessibility-certified. The owner completed real Chrome 400% zoom form reachability and verified the keyboard skip-link correction after [PR #27](https://github.com/ayeemecee0/Katoptron/pull/27) and [PR #28](https://github.com/ayeemecee0/Katoptron/pull/28). The owner explicitly waived manual NVDA testing for beta; its result is **NOT TESTED / WAIVED**, not "passed." Full independent screen-reader, device touch/high-contrast, and complete private-report error-flow validation remain **unverified** and do not justify a WCAG 2.2 AA claim. Preserve the outstanding assurance tasks as deferred backlog, and reopen the milestone for real user barriers. See [M8 acceptance record](./m8-autonomous-accessibility-acceptance-2026-10-26.md).
+
 Implemented engineering work October 23, 2026.
 
 ## Scope delivered
