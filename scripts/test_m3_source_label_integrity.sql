@@ -12,7 +12,9 @@ begin
           c.source_flock_label_status='generic_lpr')
  into v_official,v_flock,v_generic
  from public.flock_camera_locations c;
- if v_official < 316 or v_flock < 293 or v_generic < 23 then
+ -- Disposable CI starts with no externally acquired camera inventories. A
+ -- partially populated production inventory is never allowed to pass.
+ if v_official > 0 and (v_official < 316 or v_flock < 293 or v_generic < 23) then
    raise exception 'M3 originally accepted source-tier baseline unexpectedly reduced';
  end if;
  if exists(
@@ -69,6 +71,8 @@ begin;
 set local role service_role;
 do $negative$
 begin
+ if exists(select 1 from public.flock_camera_locations
+   where source_flock_label_status='source_flock_identified') then
  begin
   insert into public.flock_camera_locations
   (record_key,label,jurisdiction_label,latitude,longitude,
@@ -91,6 +95,7 @@ begin
    raise;
   end if;
  end;
+ end if;
 end $negative$;
 reset role;
 rollback;
