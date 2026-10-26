@@ -47,6 +47,9 @@ const browserErrors=[];
    await page.keyboard.press('Tab');
    assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('href')),
      '#main-content',file+' keyboard skip link not first');
+   // Playwright may report :focus-visible before Chromium has advanced the
+   // next paint; allow two frames for the reduced-motion focus style to settle.
+   await page.waitForTimeout(100);
    const skipFocus=await page.evaluate(()=>{
      const link=document.activeElement,style=getComputedStyle(link);
      const rect=link.getBoundingClientRect();
