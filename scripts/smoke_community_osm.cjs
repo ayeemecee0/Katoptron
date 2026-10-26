@@ -78,6 +78,6 @@ const assert=require('node:assert/strict');
   assert.ok(Number.parseInt(status.replaceAll(',',''),10)>=1,'No real camera positions returned within source viewport: '+status);
   assert.deepEqual(errors,[],'Browser JavaScript errors');
   console.log('NATIONAL COMMUNITY FLOCK MAP PASS: '+count+' public ODbL points indexed; GIS and community separate');
- }catch(e){console.error('NATIONAL COMMUNITY FLOCK MAP FAILED:',e.message);process.exitCode=1}
+ }catch(e){console.error('NATIONAL COMMUNITY FLOCK MAP FAILED:',e.stack||e.message);console.error('PAGE ERRORS',errors.slice(0,5));process.exitCode=1}
  finally{await browser.close()}
 })().catch(e=>{console.error('Nationwide community browser harness failed:',e.message);process.exitCode=1});
