@@ -42,14 +42,14 @@ async function run(){
   return start===0?response([{state_code:'CA'}],'0-0/2'):
    response([{state_code:'CA'}],'1-1/2');
  };
- await assert.rejects(()=>data.read('flock_analytics_states','https://example.gov','public-key',dup),
+ await assert.rejects(()=>data.read('flock_analytics_states','https://example.gov','public-key',dup,{limit:1}),
   /Duplicate/);
  const changed=async(url,opt)=>{
   const start=Number(opt.headers.Range.split('-')[0]);
   return start===0?response([{state_code:'CA'}],'0-0/2'):
    response([{state_code:'NY'}],'1-1/3');
  };
- await assert.rejects(()=>data.read('flock_analytics_states','https://example.gov','public-key',changed),
+ await assert.rejects(()=>data.read('flock_analytics_states','https://example.gov','public-key',changed,{limit:1}),
   /count changed/);
  const overview={exact_government_points:316,source_flock_labeled_points:293,
   generic_lpr_points:23,unknown_manufacturer_points:0,states_with_any_documented_evidence:2};
