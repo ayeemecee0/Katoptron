@@ -120,7 +120,7 @@ function select(group){
  $('events').replaceChildren();
  for(const e of group.events.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''))){
   makeCard($('events'),e.title,e.summary+
-   (e.amount_usd==null?'':' · Documented contract amount: $'+Number(e.amount_usd).toLocaleString('en-US')),
+   (e.amount_usd==null?'':(e.amount_basis==='government_estimate_not_executed_contract'?' · Government cost estimate, NOT an executed contract: $':' · Source-documented amount: $')+Number(e.amount_usd).toLocaleString('en-US')),
     (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
  }
  if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
