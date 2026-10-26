@@ -5,6 +5,7 @@ A green result certifies these machine-checkable properties only, NOT national
 inventory completeness, installed hardware or ALPR activity.
 """
 import argparse
+import datetime as dt
 import hashlib
 import math
 import re
@@ -21,13 +22,23 @@ ALLOWED_LIFECYCLE = {
     'needs_review',
 }
 CANONICAL_LIMIT = 5000
+SOURCE_RECHECK_MAX_AGE = dt.timedelta(days=365)
+ATTRIBUTED_RECHECK_MAX_AGE = dt.timedelta(days=14)
+CLOCK_SKEW = dt.timedelta(minutes=10)
+# Owner-reviewed original GIS layer classification. New sources remain
+# unconfirmed until explicitly reviewed and added; a city using Flock is not
+# proof that every generic camera in its GIS inventory is Flock hardware.
+FLOCK_SOURCE_KEYS = frozenset({
+    'agency_alachua_fl','elpaso_co','lawrenceville_ga',
+    'monroe_wa','newport_beach_ca','peoria_az','webster_tx',
+})
 
 
 def snapshot(api=api_request):
     canonical=fetch_all(api,
       'flock_camera_locations?select=record_key,label,jurisdiction_label,latitude,'
       'longitude,source_url,evidence_sha256,evidence_summary,verification_status,'
-      'location_accuracy,verification_method,last_source_recheck_at'
+      'location_accuracy,verification_method,last_source_recheck_at,source_flock_label_status'
       '&verification_status=eq.verified&location_accuracy=eq.exact&limit=100',
       'record_key',max_records=CANONICAL_LIMIT)
     sources=fetch_all(api,
@@ -50,7 +61,8 @@ def snapshot(api=api_request):
     return canonical,sources,low,policy,candidates,lifecycle
 
 
-def check(data, min_camera=1):
+def check(data, min_camera=1, now=None):
+    now=now or dt.datetime.now(dt.timezone.utc)
     canonical,sources,low,policies,candidates,lifecycle=data
     if len(canonical)<min_camera or len(canonical)>CANONICAL_LIMIT:
         raise ValueError('Published official inventory unexpectedly small or truncated')
@@ -65,6 +77,7 @@ def check(data, min_camera=1):
         raise ValueError('No current independently approved source')
     seen=set()
     counts=Counter()
+    source_labels=Counter()
     for p in canonical:
         key=p.get('record_key')
         authority=(p.get('source_url'),p.get('jurisdiction_label'))
@@ -80,7 +93,21 @@ def check(data, min_camera=1):
         seen.add(key)
         if not valid_point(p):
             raise ValueError('Malformed original government point geometry')
-        if indexed[authority]=='live_oak_tx':
+        if not recheck_is_fresh(p.get('last_source_recheck_at'),
+                                SOURCE_RECHECK_MAX_AGE,now):
+            raise ValueError('Government camera source freshness expired or future-dated')
+        source_key=indexed[authority]
+        label=p.get('source_flock_label_status')
+        if label not in ('source_flock_identified','generic_lpr','unconfirmed'):
+            raise ValueError('Unreviewed Flock-only source label is not classified')
+        if label=='source_flock_identified' and source_key not in FLOCK_SOURCE_KEYS:
+            raise ValueError('Flock source-labeled evidence requires original reviewed source key')
+        if source_key=='live_oak_tx' and label!='generic_lpr':
+            raise ValueError('Generic Live Oak LPR source cannot be upgraded to Flock-labeled evidence')
+        if source_key in FLOCK_SOURCE_KEYS and label!='source_flock_identified':
+            raise ValueError('Existing reviewed Flock source label unexpectedly changed')
+        source_labels[label]+=1
+        if source_key=='live_oak_tx':
             # These city-published LPR locations have generic equipment labels;
             # do not misrepresent them as per-device Flock hardware certification.
             summary=p.get('evidence_summary') or ''
@@ -105,7 +132,8 @@ def check(data, min_camera=1):
             or p.get('jurisdiction_label')!=policy.get('jurisdiction_label')
             or not isinstance(p.get('evidence_sha256'),str)
             or not HEX.fullmatch(p['evidence_sha256'])
-            or not p.get('source_checked_at')
+            or not recheck_is_fresh(p.get('source_checked_at'),
+                                    ATTRIBUTED_RECHECK_MAX_AGE,now)
             or 'NOT' not in (p.get('caveat') or '')):
             raise ValueError('Unconfirmed source-publication proof missing')
         if not valid_point(p):
@@ -129,13 +157,29 @@ def check(data, min_camera=1):
         if state not in ('resolved_existing_trusted','rejected_source','needs_review'):
             if not queue[key].get('next_review_after'):
                 raise ValueError('Parked or actionable research candidate has no revisit date')
-    return {'verified_source_points':len(canonical),
+    return {'source_labeled_flock_points':source_labels['source_flock_identified'],
+            'generic_lpr_source_points':source_labels['generic_lpr'],
+            'unconfirmed_source_points':source_labels['unconfirmed'],
+            'verified_source_points':len(canonical),
             'trusted_source_count':len(indexed),
             'unconfirmed_source_points':len(prior),
             'private_lifecycle_count':len(lifecycle),
             'research_remaining':sum(x.get('disposition') in ('investigate_original_agency','needs_review')
                                      for x in lifecycle),
             'live_oak_source_positions':counts['live_oak_tx']}
+
+
+def recheck_is_fresh(value,maximum_age,now):
+    if not isinstance(value,str):
+        return False
+    try:
+        checked=dt.datetime.fromisoformat(value.replace('Z','+00:00'))
+    except ValueError:
+        return False
+    if checked.tzinfo is None or now.tzinfo is None:
+        return False
+    age=now-checked
+    return -CLOCK_SKEW <= age <= maximum_age
 
 
 def valid_point(p):
