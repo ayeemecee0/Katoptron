@@ -1,0 +1,40 @@
+name: Triage original government PDF content privately
+on:
+  schedule:
+    - cron: '13 15 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/triage_original_government_pdf_content.py'
+      - 'scripts/test_m2_private_pdf_content_triage.py'
+      - 'scripts/requirements-original-pdf-triage.txt'
+      - '.github/workflows/triage_original_government_pdf_content.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-private-original-government-pdf-triage
+  cancel-in-progress: false
+jobs:
+  triage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test metadata-only and evidence integrity boundaries
+        run: python -m unittest discover -s scripts -p 'test_m2_private_pdf_content_triage.py' -v
+      - name: Install hash-pinned pure Python PDF parser
+        run: python -m pip install --no-deps --require-hashes -r scripts/requirements-original-pdf-triage.txt
+      - name: Require private source acquisition key
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Produce private source PDF triage signals, never source facts
+        run: python scripts/triage_original_government_pdf_content.py
