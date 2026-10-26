@@ -1,5 +1,8 @@
 # Milestone 5 — Community evidence submissions
 
+> **Updated October 26, 2026:** M5 contributor reporting **engineering is now signed off at 100%**. After this historical October 23 checkpoint, migrations 139 and 140 implemented owner-authorized permanent report erasure and independent rolling rate-limit retention; live disposable Supabase Auth JWT, photo upload/download/owner deletion, reviewer cutoff, report erasure and complete cleanup now PASS. The remaining actual email-delivery/confirmation-link test requires a consenting mailbox and belongs to production launch acceptance (M9). See [October 26 M5 engineering sign-off](./m5-community-reporting-engineering-signoff-2026-10-26.md).
+
+
 Release verification: October 23, 2026 (America/Los_Angeles).
 **Core engineering and browser simulation passed. A live, email-confirmed Storage API upload test remains outstanding.**
 
