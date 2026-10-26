@@ -146,7 +146,21 @@ function select(group){
       '. Agency town points never become individual camera coordinates.'));
   const a=node('a','Inspect source-dated directional sharing network');
   a.href='./sharing-explorer.html?agency='+encodeURIComponent(p.source_agency_id);
-  card.append(a);$('secondary').append(card);
+  card.append(a);
+  const recorded=group.secondaryRetention.filter(x=>x.source_agency_id===p.source_agency_id)
+    .sort((a,b)=>a.observed_on.localeCompare(b.observed_on));
+  if(recorded.length){
+    const history=node('p','Secondary EyesOnFlock retention observations: '+
+      recorded.map(x=>x.observed_on+': '+(x.retention_days==null?'not reported':x.retention_days+' days')).join(' → ')+
+      '. These aggregator snapshots are not independently authenticated current Flock policies.');
+    card.append(history);
+    for(const row of recorded.slice(-2)){
+      const href=API.safeUrl(row.source_url);
+      if(href){const source=node('a','Source retention observation '+row.observed_on);source.href=href;
+        source.target='_blank';source.rel='noopener noreferrer';card.append(source);}
+    }
+  }
+  $('secondary').append(card);
  }
  if(!group.secondary.length)$('secondary').append(node('p',
     'No matching secondary portal in the licensed directory. Unknown, not zero.'));
