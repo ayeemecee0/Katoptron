@@ -15,7 +15,24 @@ permissions:
 jobs:
   static-recovery-checks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci-disposable-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: ci-disposable-only
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,3 +50,53 @@ jobs:
             throw 'Owner-local restore script has PowerShell parser errors'
           }
           Write-Host 'M9 OWNER RESTORE SAFETY PASS: parsed without executing backup or psql.'
+
+      - name: Execute the real guard against a disposable empty PostgreSQL 17 database
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v psql >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq postgresql-client
+          fi
+          # Extract only the literal preflight. Do NOT call the owner restore
+          # script or access owner data, Auth accounts or production endpoints.
+          python3 - <<'PY'
+          import pathlib,re
+          source=pathlib.Path('scripts/verify_owner_private_backup_restore.ps1').read_text().replace('\r\n','\n')
+          matches=re.findall(r"(?ms)^\$preflight=@'\n(.*?)\n'@$",source)
+          assert len(matches)==1, 'Expected exactly one complete literal SQL preflight'
+          pathlib.Path('/tmp/m9-owner-preflight.sql').write_text(matches[0]+'\n')
+          PY
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE anon"
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE authenticated"
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE supabase_admin"
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE qa_operator LOGIN PASSWORD 'ci-disposable-only'"
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE katoptron_recovery_ciqa"
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE katoptron_recovery_user"
+          # Reproduce the Oct 24 dangerous inherited anonymous default grants.
+          psql -d katoptron_recovery_ciqa -v ON_ERROR_STOP=1 -c "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT ON TABLES TO anon,authenticated"
+          psql -d katoptron_recovery_ciqa -X -v ON_ERROR_STOP=1 --single-transaction -f /tmp/m9-owner-preflight.sql
+          psql -d katoptron_recovery_ciqa -v ON_ERROR_STOP=1 -c "CREATE TABLE public.qa_only_fixture (id integer)"
+          psql -d katoptron_recovery_ciqa -v ON_ERROR_STOP=1 <<'SQL'
+          DO $check$
+          BEGIN
+            IF has_table_privilege('anon','public.qa_only_fixture','SELECT')
+              OR has_table_privilege('anon','public.qa_only_fixture','INSERT')
+              OR has_table_privilege('authenticated','public.qa_only_fixture','SELECT') THEN
+              RAISE EXCEPTION 'Insecure default table grants still present after preflight';
+            END IF;
+          END $check$;
+          SQL
+          # Existing table must refuse a second import; no silent overwrite.
+          if psql -d katoptron_recovery_ciqa -X -v ON_ERROR_STOP=1 -f /tmp/m9-owner-preflight.sql >/dev/null 2>&1; then
+            echo "FAIL: preflight allowed an existing user table"; exit 1
+          fi
+          # Wrong database name and ordinary user must both be rejected.
+          if psql -d postgres -X -v ON_ERROR_STOP=1 -f /tmp/m9-owner-preflight.sql >/dev/null 2>&1; then
+            echo "FAIL: preflight allowed wrong database"; exit 1
+          fi
+          if PGUSER=qa_operator PGPASSWORD=ci-disposable-only psql -d katoptron_recovery_user -X -v ON_ERROR_STOP=1 -f /tmp/m9-owner-preflight.sql >/dev/null 2>&1; then
+            echo "FAIL: preflight allowed a nonsuperuser"; exit 1
+          fi
+          echo 'M9 ATOMIC SQL PREFLIGHT PASS: unsafe defaults revoked; nonempty/wrong-role/wrong-db targets refused; no private data used.'
