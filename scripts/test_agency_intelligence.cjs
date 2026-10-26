@@ -31,6 +31,36 @@ const activities=A.updateItems(folsom);
 assert.equal(activities.length,2);
 assert.equal(activities[0].type,'Government record');
 assert.equal(activities[1].type,'Vendor disclosure');
+const secondary=[{
+  source_agency_id:'folsom-ca-pd',agency_name:'Folsom CA PD',
+  source_tier:'secondary_aggregated_portal_snapshot',is_reporting_portal:true
+},{
+  source_agency_id:'unrelated-ca-pd',agency_name:'Folsom CA PD',
+  source_tier:'secondary_aggregated_portal_snapshot',is_reporting_portal:true
+}];
+const original=[{
+  agency_label:'Folsom CA PD',agency_key:'folsom_ca_pd',
+  disclosure_status:'verified_source_snapshot',
+  portal_url:'https://transparency.flocksafety.com/folsom-ca-pd'
+}];
+const match=[{
+  first_party_agency_key:'folsom_ca_pd',
+  first_party_portal_url:'https://transparency.flocksafety.com/folsom-ca-pd',
+  source_agency_id:'folsom-ca-pd',
+  match_basis:'original_flock_portal_slug_exact'
+},{
+  first_party_agency_key:'folsom_ca_pd',
+  first_party_portal_url:'https://transparency.flocksafety.com/another-city',
+  source_agency_id:'unrelated-ca-pd',
+  match_basis:'original_flock_portal_slug_exact'
+}];
+const tie=A.build([],original,[],[],secondary,[],[],match).find(g=>g.key==='folsom|CA');
+assert.equal(tie.identityMatches.length,1,'Reject mismatched portal URLs');
+assert.equal(tie.identityMatches[0].source_agency_id,'folsom-ca-pd');
+assert.equal(tie.secondary.length,2,
+ 'Locality names may overlap but only the exact portal URL qualifies as an identity tie');
+assert.equal(A.build([],original,[],[],secondary,[],[],[])[0].identityMatches.length,0,
+ 'No inference of portal operator from city name alone');
 assert.equal(A.safeUrl('http://example.org'),null);
 assert.equal(A.safeUrl('https://example.org/path'),'https://example.org/path');
 assert.equal(A.safeUrl('https://user:pass@example.org'),null);
