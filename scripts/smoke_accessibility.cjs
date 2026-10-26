@@ -15,6 +15,19 @@ const assert=require('node:assert/strict');
     await page.keyboard.press('Tab');
     assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('href')),
       '#main-content',path+' has no keyboard-accessible skip link');
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(()=>document.activeElement?.id),'main-content',
+      path+' Enter on skip link did not focus the main landmark');
+    const mainFocus=await page.locator('main#main-content').evaluate(el=>{
+      const style=getComputedStyle(el);
+      return {outline:style.outlineStyle,width:parseFloat(style.outlineWidth)};
+    });
+    assert.ok(mainFocus.outline!=='none'&&mainFocus.width>=2,
+      path+' main skip destination lacks visible keyboard focus');
+    await page.keyboard.press('Tab');
+    assert.ok(await page.evaluate(()=>document.querySelector('main#main-content')
+      .contains(document.activeElement)),
+      path+' next Tab did not continue inside main content');
     if(path==='index.html'){
       assert.equal(await page.locator('#map').getAttribute('tabindex'),'0',
         'Interactive map not keyboard-focusable');

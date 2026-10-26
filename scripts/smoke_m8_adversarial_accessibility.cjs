@@ -64,6 +64,18 @@ const browserErrors=[];
    assert.ok(skipFocus.height>=24&&skipFocus.top>=-1&&skipFocus.left>=-1&&
      skipFocus.outlineStyle!=='none'&&parseFloat(skipFocus.outlineWidth)>=2,
      file+' focused skip target invisible in system high contrast: '+JSON.stringify(skipFocus));
+   await page.keyboard.press('Enter');
+   const landed=await page.evaluate(()=>{
+     const el=document.activeElement;
+     const style=getComputedStyle(el);
+     return {id:el?.id,outline:style.outlineStyle,width:parseFloat(style.outlineWidth)};
+   });
+   assert.ok(landed.id==='main-content'&&landed.outline!=='none'&&landed.width>=2,
+     file+' Enter must visibly focus main in forced-colors mode: '+JSON.stringify(landed));
+   await page.keyboard.press('Tab');
+   assert.ok(await page.evaluate(()=>document.querySelector('main#main-content')
+     .contains(document.activeElement)),
+     file+' Tab after skipping does not continue in main content');
    // WCAG 1.4.12 letter + word + paragraph spacing stress, with no document
    // horizontal overflow. These are CSS overrides, not speech synthesis.
    await page.addStyleTag({content:`

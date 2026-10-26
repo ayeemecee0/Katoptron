@@ -106,3 +106,16 @@ a.skip-link:focus{
     outline:3px solid Highlight!important;
   }
 }
+
+/* The skip destination is programmatically focusable and shows a clear
+   visible target after Enter, even when the main region starts on screen. */
+main#main-content:focus{
+  outline:3px solid #82d8e5!important;
+  outline-offset:-3px!important;
+}
+@media(forced-colors:active){
+  main#main-content:focus{
+    outline:3px solid Highlight!important;
+    outline-offset:-3px!important;
+  }
+}
