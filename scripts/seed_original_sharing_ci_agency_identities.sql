@@ -23,6 +23,9 @@ values
  ('city-of-las-vegas-nv-department-of-public-safety','City of Las Vegas NV Department of Public Safety','NV','police',false,null,
   '2026-10-19T12:00:00Z','https://deflockdata.dontgetflocked.com/sharing-network-nodes.geojson',
   'secondary_aggregated_portal_snapshot','CC BY-SA 4.0'),
+ ('portage-in-pd','Portage IN PD','IN','police',true,'portage-in-pd',
+  '2026-10-19T12:00:00Z','https://deflockdata.dontgetflocked.com/sharing-network-nodes.geojson',
+  'secondary_aggregated_portal_snapshot','CC BY-SA 4.0'),
  ('folsom-ca-pd','Folsom CA PD','CA','police',true,'folsom-ca-pd',
   '2026-10-19T12:00:00Z','https://deflockdata.dontgetflocked.com/sharing-network-nodes.geojson',
   'secondary_aggregated_portal_snapshot','CC BY-SA 4.0');
