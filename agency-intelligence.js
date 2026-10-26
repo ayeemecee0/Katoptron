@@ -31,8 +31,8 @@
   if(!key)return null;
   return {key,source,row};
  }
- function build(events,portals,cameras,programs,secondary=[],retention=[],watchEvents=[],portalMatches=[],originalSharing=[]){
-  if(![events,portals,cameras,programs,secondary,retention,watchEvents,portalMatches,originalSharing].every(Array.isArray))
+ function build(events,portals,cameras,programs,secondary=[],retention=[],watchEvents=[],portalMatches=[],originalSharing=[],civicMilestones=[]){
+  if(![events,portals,cameras,programs,secondary,retention,watchEvents,portalMatches,originalSharing,civicMilestones].every(Array.isArray))
    throw Error('Incomplete published agency evidence');
   const map=new Map();
   function include(source,rows){
@@ -48,6 +48,24 @@
    }
   }
   include('event',events);
+  const originalCivic=civicMilestones.filter(m=>
+    m.evidence_tier==='original_government_reviewed' &&
+    typeof m.milestone_key==='string' &&
+    typeof m.source_url==='string'&&m.source_url.startsWith('https://'))
+    .map(m=>({
+      event_key:'original_civic:'+m.milestone_key,
+      event_type:m.event_type==='recorded_governing_body_decision'?'recorded_legislative_decision':m.event_type,
+      evidence_level:'original_government_reviewed',
+      jurisdiction_label:m.jurisdiction_label,
+      event_date:m.event_date,
+      date_basis:m.date_basis,
+      title:m.title,
+      summary:m.summary,
+      source_url:m.source_url,
+      amount_usd:m.amount_usd,
+      amount_basis:m.amount_basis
+    }));
+  include('event',originalCivic);
   include('portal',portals.filter(x=>x.disclosure_status==='verified_source_snapshot'));
   include('camera',cameras.filter(x=>x.verification_status==='verified'&&x.location_accuracy==='exact'));
   include('program',programs.filter(x=>x.record_status==='verified'));
@@ -192,7 +210,7 @@
   throw Error('Public evidence pagination truncated; cannot claim complete inventory');
  }
  async function load(){
-  const [events,portals,cameras,programs,secondary,retention,watchEvents,portalMatches,originalSharing]=await Promise.all([
+  const [events,portals,cameras,programs,secondary,retention,watchEvents,portalMatches,originalSharing,civicMilestones]=await Promise.all([
     published('flock_accountability_events','event_key,event_type,jurisdiction_label,event_date,date_basis,title,summary,source_url,amount_usd,camera_count'),
     published('flock_vendor_portal_snapshots','agency_key,agency_label,state_code,portal_url,source_date,reported_total_cameras,camera_count_scope,retention_days,reported_search_sessions_30d,reported_hotlist_hits_30d,disclosure_status','disclosure_status=eq.verified_source_snapshot'),
     published('flock_camera_locations','record_key,jurisdiction_label,verification_status,location_accuracy,source_url,evidence_summary','verification_status=eq.verified&location_accuracy=eq.exact'),
@@ -201,9 +219,10 @@
     published('flock_public_agency_retention_recent','source_agency_id,observed_on,retention_days,portal_slug,source_url,evidence_tier'),
     published('flock_agency_watch_events','event_key,locality_key,kind,title,source_url,source_date,evidence_tier,observed_at'),
     published('flock_public_portal_identity_matches','first_party_agency_key,first_party_agency_label,first_party_portal_url,first_party_source_date,source_agency_id,secondary_agency_name,secondary_portal_slug,match_basis'),
-    published('flock_public_original_sharing_evidence','source_key,source_agency_id,publisher_name,source_url,source_kind,source_section,captured_scope,source_observed_on,recipient_label,recipient_source_agency_id,identity_basis,source_status,recipient_observed_on')
+    published('flock_public_original_sharing_evidence','source_key,source_agency_id,publisher_name,source_url,source_kind,source_section,captured_scope,source_observed_on,recipient_label,recipient_source_agency_id,identity_basis,source_status,recipient_observed_on'),
+    published('flock_original_civic_milestones','milestone_key,jurisdiction_label,event_type,event_date,date_basis,title,summary,source_url,amount_usd,amount_basis,evidence_tier')
   ]);
-  return build(events,portals,cameras,programs,secondary,retention,watchEvents,portalMatches,originalSharing);
+  return build(events,portals,cameras,programs,secondary,retention,watchEvents,portalMatches,originalSharing,civicMilestones);
  }
  return Object.freeze({locality,labelForKey,build,updateItems,safeRead,follow,
    unfollow,changes,markSeen,load,safeUrl,sourceDate});
