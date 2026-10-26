@@ -1,0 +1,45 @@
+name: Source-qualified opt-in government watch alerts
+on:
+  schedule:
+    - cron: '42 15 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync_agency_watch_events.py'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'scripts/test_government_watch_alerts.py'
+      - '.github/workflows/send_government_watch_alerts.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-verified-opt-in-watch-mailer
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+      WATCH_SMTP_HOST: ${{ secrets.WATCH_SMTP_HOST }}
+      WATCH_SMTP_PORT: ${{ secrets.WATCH_SMTP_PORT }}
+      WATCH_SMTP_USER: ${{ secrets.WATCH_SMTP_USER }}
+      WATCH_SMTP_PASSWORD: ${{ secrets.WATCH_SMTP_PASSWORD }}
+      WATCH_SMTP_FROM: ${{ secrets.WATCH_SMTP_FROM }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test source identities and email opt-in authorization
+        run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+      - name: Require owner-only Supabase API key
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Reconcile source-dated government decisions and vendor structural observations
+        run: python scripts/sync_agency_watch_events.py
+      - name: Deliver only user-confirmed opt-in Watch emails via encrypted SMTP
+        run: python scripts/send_government_watch_alerts.py
