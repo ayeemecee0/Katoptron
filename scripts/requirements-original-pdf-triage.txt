@@ -1,0 +1,3 @@
+# Verified PyPI pypdf 6.19.0 pure-Python wheel (2026-09-16).
+# Do not allow dependency ranges or unreviewed upgrades in private PDF parsing.
+pypdf==6.19.0 --hash=sha256:7e5d6e730e7dae87d560a2cee218b852f6498c8be61966f3cd02ead971e48d14
