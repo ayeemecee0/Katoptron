@@ -12,7 +12,7 @@ import urllib.request
 
 ROOT='https://api.github.com/repos/ayeemecee0/Katoptron'
 REPO='ayeemecee0/Katoptron'
-MAX_BYTES=180_000
+MAX_BYTES=450_000
 # Accepted age budgets include ordinary GitHub scheduled-workflow delays.
 REQUIRED={
  'validate.yml':7,
@@ -29,7 +29,7 @@ def fetch_runs(workflow,token):
  if workflow not in REQUIRED:raise ValueError('Unapproved workflow probe')
  if not token:raise ValueError('GitHub Actions read-only token required')
  url=ROOT+'/actions/workflows/'+workflow+'/runs?'+urllib.parse.urlencode({
-   'branch':'main','per_page':15})
+   'branch':'main','per_page':8})
  request=urllib.request.Request(url,headers={
    'Authorization':'Bearer '+token,
    'Accept':'application/vnd.github+json',
