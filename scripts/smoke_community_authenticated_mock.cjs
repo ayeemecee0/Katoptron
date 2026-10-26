@@ -286,12 +286,20 @@ window.__QA={reports,activity};
    await page.goto(new URL('submit.html?scenario=recovery',base).href,{waitUntil:'load'});
    await page.locator('#recoveryPanel').waitFor({state:'visible',timeout:12000});
    assert.equal(await page.locator('#authPanel').isHidden(),true);
+   assert.equal(await page.evaluate(()=>document.activeElement?.id),'newPassword',
+     'Recovery form must place keyboard focus on the new password field');
+   assert.equal(await page.locator('#newPassword').getAttribute('aria-describedby'),
+     'recoveryPasswordRequirements','Recovery password rules need a programmatic description');
    assert.equal(await page.locator('#reportPanel').isHidden(),true,
      'Recovery must complete password update before private reports appear');
    await page.locator('#newPassword').fill('123456789012-safe');
    await page.locator('#confirmNewPassword').fill('does-not-match-this');
    await page.locator('#saveNewPassword').click();
    assert.match(await page.locator('#notice').textContent(),/must match/);
+   assert.equal(await page.locator('#confirmNewPassword').getAttribute('aria-invalid'),'true',
+     'Recovery mismatch must expose invalid state to assistive technology');
+   assert.equal(await page.evaluate(()=>document.activeElement?.id),'confirmNewPassword',
+     'Keyboard focus must go to the invalid confirmation field');
    assert.equal(await page.evaluate(()=>window.__QA.activity.passwordUpdates.length),0);
    await page.locator('#confirmNewPassword').fill('123456789012-safe');
    await page.locator('#saveNewPassword').click();

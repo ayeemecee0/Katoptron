@@ -34,7 +34,8 @@
 <h2 id="recoveryHeading">Set a new password</h2>
 <p>Use this form only after opening the recovery link sent to your email address. Choose a new password of at least 12 characters. Never share the recovery link.</p>
 <form id="recoveryForm">
-<label>New password<input type="password" id="newPassword" autocomplete="new-password" required minlength="12"></label>
+<label>New password<input type="password" id="newPassword" autocomplete="new-password" required minlength="12" aria-describedby="recoveryPasswordRequirements"></label>
+<p class="report-note" id="recoveryPasswordRequirements">At least 12 characters. Use a unique password.</p>
 <label>Confirm new password<input type="password" id="confirmNewPassword" autocomplete="new-password" required minlength="12"></label>
 <button type="submit" id="saveNewPassword">Update password</button>
 </form></section>
@@ -185,9 +186,17 @@ $('recoveryForm').addEventListener('submit',async event=>{
   event.preventDefault();
   if(!recoveryActive){status('Open a valid password-recovery email link first.');return;}
   const newPassword=$('newPassword').value;
-  if(newPassword.length<12){status('New passwords must be at least 12 characters.');return;}
+  $('newPassword').removeAttribute('aria-invalid');
+  $('confirmNewPassword').removeAttribute('aria-invalid');
+  if(newPassword.length<12){
+    $('newPassword').setAttribute('aria-invalid','true');
+    status('New passwords must be at least 12 characters.');
+    $('newPassword').focus();return;
+  }
   if(newPassword!==$('confirmNewPassword').value){
-    status('The two new passwords must match.');return;
+    $('confirmNewPassword').setAttribute('aria-invalid','true');
+    status('The two new passwords must match.');
+    $('confirmNewPassword').focus();return;
   }
   const button=$('saveNewPassword');button.disabled=true;
   try{
@@ -200,7 +209,7 @@ $('recoveryForm').addEventListener('submit',async event=>{
     $('recoveryPanel').hidden=true;
     await syncSession();
     status('Password updated. Your account is signed in.');
-  }catch(error){status(error.message||'Password recovery failed.');}
+  }catch(error){status(error.message||'Password recovery failed.');$('newPassword').focus();}
   finally{button.disabled=false;}
 });
 $('signout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();status(error?error.message:'Signed out.');await syncSession();});
