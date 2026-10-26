@@ -61,6 +61,18 @@ production launch readiness.
 
 ## Milestones 7–9 — Analytics, accessibility and launch controls (October 23, 2026)
 
+**M9 unattended production preparation ~90% (October 26):**
+[Read the current production hardening and residual launch gates](./docs/m9-unattended-production-hardening-2026-10-26.md).
+Service-role-only private quota monitoring passes; public GIS no longer exposes
+anonymous SECURITY DEFINER source predicates; browser, Auth/Storage, public health
+and release workflows have fresh successful checks; the first nine-workflow
+release heartbeat passed. **Full private-account production is NOT certified**
+until owner-controlled actual email delivery and confirmation, encrypted private
+Auth/DB/Storage backup restore, account-side key/quota safeguards and independent
+human accessibility/beta tests are approved. The public evidence-limited beta
+remains available without claiming nationwide camera completeness.
+
+
 - [Public evidence analytics](./analytics.html) now accurately separates **293 original government GIS points source-labeled Flock**, **23 generic government LPR points whose manufacturer is unconfirmed**, **0 independently corroborated published sites** and **12 source-attributed unconfirmed municipal observations**. Those categories may not be added to claim unique operating devices. The latest original-government total is **316** GIS points, with **24** documented government programs, **34** accountability records and **17** states with some public evidence (October 26, 2026). This is **not** a national surveillance census.
 - **M7 analytics engineering 100% accepted:** [M7 signed-off original source reconciliation](./docs/m7-evidence-analytics-engineering-signoff-2026-10-26.md) fixes a prior false "12 corroborated" chart, verifies exact database row counts and reconciles Flock/generic/unknown manufacturer labels nationally and by state. Full browser, database, privacy, accessible UI and CSV checks pass.
 - [Evidence analytics design and source limitations](./docs/milestone-7-evidence-analytics.md): security-invoker SQL views, dated monthly **records**, state comparison and safeguarded CSV export. No telemetry or private contributions.
