@@ -17,6 +17,23 @@ assert.equal(summary.approx,1);
 assert.equal(summary.overdue,0);
 assert.equal(summary.unknown,0);
 assert.equal(C.summarize(route,[provisional],Geo).nearby,0);
+const cityGenericLpr=at('live-oak-city-lpr',38.83,-104.8,{
+  jurisdiction_label:'Live Oak, TX',
+  source_url:'https://services9.arcgis.com/xdpiCgT89eSIEpbi/arcgis/rest/services/LiveOakCameras/FeatureServer/0'
+});
+assert.equal(C.eligibleForFlockRoute(cityGenericLpr),false,
+  'Original city mapped generic LPR is not manufacturer-confirmed Flock');
+assert.equal(C.summarize(route,[cityGenericLpr],Geo).nearby,0,
+  'Live Oak LPR must not inflate Flock-only route encounters');
+const unknownManufacturer=at('generic-device',38.83,-104.8,{
+  evidence_summary:'Agency map confirms point, NOT per-device manufacturer identity.'
+});
+assert.equal(C.summarize(route,[unknownManufacturer],Geo).nearby,0);
+assert.equal(C.summarize(route,[at('city-attributed-only',38.83,-104.8,
+  {evidence_tier:'source_attributed_unconfirmed'})],Geo).nearby,0);
+assert.equal(C.eligibleForFlockRoute(first),true,
+  'Existing independently Flock-labelled government GIS remains eligible');
+
 assert.equal(C.summarize(route,[],Geo).nearby,0);
 assert.ok(!('riskScore' in summary),'no invented confidence or risk score');
 summary=C.summarize(route,[at('stale',38.83,-104.8,{
