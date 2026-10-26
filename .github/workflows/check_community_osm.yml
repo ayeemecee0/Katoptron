@@ -14,6 +14,7 @@ on:
       - 'scripts/smoke_community_route.cjs'
       - 'scripts/smoke_dense_community_corridor.cjs'
       - 'scripts/smoke_dense_community_viewport.cjs'
+      - 'scripts/smoke_osm_canvas_pan_alignment.cjs'
       - 'community-route.js'
       - 'community-overlay.js'
       - 'index.html'
@@ -44,6 +45,7 @@ jobs:
         run: |
           node scripts/smoke_nearby.cjs
           node scripts/smoke_community_osm.cjs
+          node scripts/smoke_osm_canvas_pan_alignment.cjs
           node scripts/smoke_community_overlay.cjs
           node scripts/smoke_community_route.cjs
           node scripts/smoke_dense_community_corridor.cjs
