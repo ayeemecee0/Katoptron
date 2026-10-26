@@ -1338,6 +1338,7 @@ jobs:
           node scripts/test_routing_provider.js
           node scripts/test_publish_provider_health.cjs
           python scripts/test_community_frontend_syntax.py
+          node --check scripts/smoke_m8_adversarial_accessibility.cjs
           python -m unittest discover -s scripts -p 'test_monitor_production_capacity.py' -v
           python -m unittest discover -s scripts -p 'test_monitor_release_gates.py' -v
           node --check analytics-data.js
