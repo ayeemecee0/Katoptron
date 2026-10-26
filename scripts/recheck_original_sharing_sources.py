@@ -15,6 +15,7 @@ import urllib.parse
 import urllib.request
 import urllib.error
 from html.parser import HTMLParser
+from datetime import datetime,timezone
 
 ALLOWED_HOSTS={'elkgrove.gov','www.cityofwoodland.gov',
                'transparency.flocksafety.com'}
@@ -146,7 +147,7 @@ def main():
         if x['check_result']=='all_previously_published_names_still_present':
             params='source_key=eq.'+urllib.parse.quote(x['source_key'])
             write(url,token,'flock_original_sharing_sources',
-                [{'last_successfully_rechecked_at':'now()'}],
+                [{'last_successfully_rechecked_at':datetime.now(timezone.utc).isoformat()}],
                 method='PATCH',extra=params)
     print('Original publisher source checks:',len(results),
           'complete=',sum(x['check_result']=='all_previously_published_names_still_present' for x in results),
