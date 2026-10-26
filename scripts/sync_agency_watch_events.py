@@ -57,7 +57,12 @@ def build_events(government,portals,contracts,today=None):
         if not isinstance(event_id,str) or not event_id:continue
         key="gov_"+fingerprint("|".join([event_id,str(row.get("event_date")),
                         str(row.get("source_url")),str(row.get("evidence_level"))]))
-        obj=as_event(key,"government_decision",
+        # Executed contracts are documents, not decisions on their own.
+        # A new signed agreement can interest contract subscribers without
+        # being mislabelled as a renewal.
+        kind=("contract_document" if row.get("event_type")=="executed_contract"
+              else "government_decision")
+        obj=as_event(key,kind,
           str(row.get("title") or "Original government source event"),
           (str(row.get("summary") or "Original government source event")+
            " This record does not prove current camera installation, contract execution unless explicitly signed, or any actual plate search."),
