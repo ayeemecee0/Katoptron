@@ -170,9 +170,35 @@ def page_all(url,secret,table,columns):
   if len(batch)<500:return rows
  raise ValueError("Acquisition snapshot exceeds bounded scan")
 
-def scan(fetcher=fetch):
+def reviewed_seeds(url,secret,when=None,limit=22):
+ # Review status originates in the existing original-government program
+ # inventory. Only .gov links are used; redirects and alternate domains
+ # still fail the separate URL and public-IP checks.
+ when=when or dt.datetime.now(dt.timezone.utc).date()
+ rows=page_all(url,secret,"flock_documented_programs",
+               "jurisdiction_label,official_evidence_url,record_status")
+ out={}
+ for row in rows:
+  if row.get("record_status")!="verified":continue
+  source=normalize_url(row.get("official_evidence_url") or "",
+                      row.get("official_evidence_url") or "")
+  label=str(row.get("jurisdiction_label") or "")
+  if not source or not label or len(label)>150:continue
+  out[source]=label
+ # Keep hand-curated high-yield original government entries every run,
+ # rotate additional vetted original sources for national expansion.
+ for url,label in SEEDS:out[url]=label
+ priorities=list(SEEDS)
+ other=sorted((url,label) for url,label in out.items() if url not in dict(SEEDS))
+ spare=max(0,limit-len(priorities))
+ if len(other)>spare and spare:
+  start=when.toordinal()%len(other)
+  other=(other[start:]+other[:start])[:spare]
+ return tuple(priorities+other[:spare])
+
+def scan(fetcher=fetch,seeds=SEEDS):
  out={};recipients={};successful=0;errors=[]
- for seed,label in SEEDS:
+ for seed,label in seeds:
   try:
    html,kind=fetcher(seed,MAX_PAGE)
    if not kind.lower().startswith("text/html"):
@@ -194,7 +220,7 @@ def scan(fetcher=fetch):
    errors.append((url,type(exc).__name__,str(exc)[:100]))
  return out,recipients,successful,errors
 
-def save(out,recipients,successful,errors,url,secret):
+def save(out,recipients,successful,errors,url,secret,seeded_count=len(SEEDS)):
  existing={r["document_url"] for r in page_all(url,secret,"flock_original_document_leads","document_url")}
  new=[v for k,v in out.items() if k not in existing]
  if new:
@@ -214,7 +240,7 @@ def save(out,recipients,successful,errors,url,secret):
  primary=page_all(url,secret,"flock_original_sharing_edges","source_key,recipient_label")
  sources=page_all(url,secret,"flock_original_sharing_sources","source_key")
  stamp=dt.datetime.now(dt.timezone.utc).date().isoformat()
- metrics={"metric_date":stamp,"seeded_pages":len(SEEDS),"successfully_read_pages":successful,
+ metrics={"metric_date":stamp,"seeded_pages":seeded_count,"successfully_read_pages":successful,
    "total_discovered_links":len(all_leads),
    "total_reviewed_documents":sum(r["review_status"]=="document_content_verified" for r in all_leads),
    "raw_named_recipient_candidates":len(named),
@@ -225,7 +251,7 @@ def save(out,recipients,successful,errors,url,secret):
    params={"on_conflict":"metric_date"},body=[metrics],
    prefer="resolution=merge-duplicates,return=minimal")
  rest(url,secret,"flock_original_document_scan_runs",method="POST",
-   body=[{"seeded_pages":len(SEEDS),"successfully_read_pages":successful,
+   body=[{"seeded_pages":seeded_count,"successfully_read_pages":successful,
      "new_document_links":len(new),"seen_document_links":len(out),
      "named_recipient_candidates":len(candidate_rows),
      "source_errors":len(errors),
@@ -234,15 +260,16 @@ def save(out,recipients,successful,errors,url,secret):
  return metrics,len(new)
 
 def main():
- data,names,ok,errors=scan()
- print("Original .gov sources successful:",ok,"/",len(SEEDS),
-  "linked document leads:",len(data),"CSV recipient candidates:",sum(map(len,names.values())),
-  "held source errors:",len(errors))
- for root,kind,why in errors:print("Held",urllib.parse.urlsplit(root).hostname,kind,why[:80])
  url=os.environ.get("SUPABASE_URL","")
  secret=os.environ.get("SUPABASE_SERVICE_ROLE_KEY","")
  if not url or not secret:raise RuntimeError("Original-gov private acquisition credentials missing")
- metrics,created=save(data,names,ok,errors,url,secret)
+ seeds=reviewed_seeds(url,secret)
+ data,names,ok,errors=scan(seeds=seeds)
+ print("Original .gov sources successful:",ok,"/",len(seeds),
+  "linked document leads:",len(data),"CSV recipient candidates:",sum(map(len,names.values())),
+  "held source errors:",len(errors))
+ for root,kind,why in errors:print("Held",urllib.parse.urlsplit(root).hostname,kind,why[:80])
+ metrics,created=save(data,names,ok,errors,url,secret,seeded_count=len(seeds))
  print("New original government document leads:",created,
        "Existing/new total:",metrics["total_discovered_links"],
        "content-verified:",metrics["total_reviewed_documents"],
