@@ -14,7 +14,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from uuid import UUID
-from datetime import datetime,timezone,timedelta
 
 BASE="https://bpvkapswslmgfazbzpsv.supabase.co"
 BUCKET="katoptron-community-evidence"
@@ -92,56 +91,6 @@ def query(table,select,filter_path,key):
     return result
 
 
-def cleanup_recent_orphaned_qa_photo(secret):
-    """Remove only very recent orphaned QA evidence with absent Auth and case.
-
-    This is recovery for an earlier failed test, NOT a general Storage janitor.
-    Never touch an object that belongs to an existing account or report.
-    """
-    root=call("POST","/storage/v1/object/list/"+BUCKET,secret,
-              {"prefix":"","limit":100})
-    require(isinstance(root,list) and len(root)<100,"QA cleanup bucket root too large")
-    cleaned=0
-    for folder in root:
-        name=folder.get("name","")
-        try:UUID(name)
-        except (ValueError,TypeError,AttributeError):continue
-        cases=call("POST","/storage/v1/object/list/"+BUCKET,secret,
-                   {"prefix":name,"limit":100})
-        require(isinstance(cases,list) and len(cases)<100,"QA cleanup folder too large")
-        for entry in cases:
-            caseid=entry.get("name","")
-            try:UUID(caseid)
-            except (ValueError,TypeError,AttributeError):continue
-            photos=call("POST","/storage/v1/object/list/"+BUCKET,secret,
-                {"prefix":name+"/"+caseid,"limit":20})
-            if not isinstance(photos,list) or len(photos)!=1:
-                continue
-            photo=photos[0]
-            if photo.get("name")!="evidence.png":continue
-            created=photo.get("created_at")
-            if not isinstance(created,str):continue
-            try:stamp=datetime.fromisoformat(created.replace("Z","+00:00"))
-            except ValueError:continue
-            age=datetime.now(timezone.utc)-stamp
-            if not timedelta(seconds=0)<=age<=timedelta(minutes=60):continue
-            # service_role has intentionally NO SELECT on private
-            # submissions. Never widen it for QA. The foreign key to
-            # auth.users is ON DELETE CASCADE; require the owner gone.
-            try:
-                call("GET","/auth/v1/admin/users/"+name,secret)
-                continue
-            except CheckFailed as ex:
-                if "HTTP 404" not in str(ex):raise
-            target=name+"/"+caseid+"/evidence.png"
-            call("DELETE","/storage/v1/object/"+BUCKET,secret,
-                 {"prefixes":[target]},expect=(200,204))
-            remaining=call("POST","/storage/v1/object/list/"+BUCKET,secret,
-                {"prefix":name+"/"+caseid,"limit":20})
-            require(not remaining,"Old QA photo object deletion not confirmed")
-            cleaned+=1
-    if cleaned:print("RECOVERY PASS: orphaned recent disposable QA Storage object deleted.")
-
 def run():
     require(os.getenv("GITHUB_ACTIONS")=="true" and
             os.getenv("GITHUB_REPOSITORY")=="ayeemecee0/Katoptron" and
@@ -150,7 +99,7 @@ def run():
     secret=os.environ.get("SUPABASE_SERVICE_ROLE_KEY","")
     require(secret.startswith(("sb_secret_","eyJ")),"Missing CI server credential")
     prefix=secrets.token_hex(12)
-    cleanup_recent_orphaned_qa_photo(secret)
+    # Only clean up exact disposable identities and the photo created in this test.
     users=[]
     case=None
     path=None
@@ -248,15 +197,42 @@ def run():
         after=call("POST","/rest/v1/rpc/community_report_attachment_paths",
                    reviewer["token"],{"p_report":case})
         require(after==[],"Reviewer retained new access to withdrawn photo")
+        # Verify an unrelated signed-in user cannot erase this withdrawn
+        # report, and that the owner cannot erase records while real Storage
+        # photo bytes still exist. Both are true JWT-backed API calls.
+        other_erased=call("POST","/rest/v1/rpc/delete_withdrawn_community_report",
+                          bystander["token"],{"p_id":case})
+        require(other_erased is False,"Bystander could erase another report")
+        try:
+            call("POST","/rest/v1/rpc/delete_withdrawn_community_report",
+                 owner["token"],{"p_id":case})
+        except CheckFailed as denied:
+            require("HTTP 400" in str(denied),
+                    "Owner deletion blocked until photo bytes are removed")
+        else:
+            raise CheckFailed("Photo data still exists but report erasure succeeded")
+        # The contributor's JWT (not a service key) deletes actual Storage
+        # bytes using the same route as supabase-js bucket.remove().
+        call("DELETE","/storage/v1/object/"+BUCKET,owner["token"],
+             {"prefixes":[path]},expect=(200,204))
+        remaining=call("POST","/storage/v1/object/list/"+BUCKET,owner["token"],
+                       {"prefix":owner["id"]+"/"+case,"limit":10})
+        require(remaining==[],"Owner Storage delete left private photo bytes")
+        erased=call("POST","/rest/v1/rpc/delete_withdrawn_community_report",
+                    owner["token"],{"p_id":case})
+        require(erased is True,"Owner cannot permanently erase withdrawn report")
+        require(not query("flock_community_submissions","submission_id",
+                         "submission_id=eq."+case,owner["token"]),
+                "Permanently deleted reporter-owned data still exists")
         public=query("flock_camera_locations","record_key",
           "latitude=eq.38.5816&longitude=eq.-121.4944",PUBLISHABLE)
         # Other genuine cameras may share the public test coordinate; assert only
         # that our synthetic report ID cannot appear as a source record key.
         require(all(case not in str(x) for x in public),
                 "Synthetic private case linked to a public camera")
-        print("LIVE AUTH/STORAGE ACCEPTANCE PASS: three actual Auth JWTs; RLS; "
+        print("LIVE AUTH/STORAGE/ERASURE ACCEPTANCE PASS: three actual Auth JWTs; RLS; "
               "private report; reviewer grant/decision; real photo upload/restore; "
-              "withdrawal and reviewer cutoff. Email delivery untested.")
+              "owner-authorized photo delete, withdrawal, reviewer cutoff, permanent erasure. Email delivery untested.")
     finally:
         # Fail closed. Cleanup uses known exact test-created identifiers only.
         if path:
