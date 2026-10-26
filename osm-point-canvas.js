@@ -50,6 +50,19 @@
   return {x:(lon+180)/360*scale-origin.x,
     y:(0.5-Math.log((1+sin)/(1-sin))/(4*Math.PI))*scale-origin.y};
  }
+ // Leaflet's overlay pane is translated with the map pane while the
+ // canvas is anchored to containerPoint [0,0]. Canvas pixel coordinates and
+ // click events are therefore CONTAINER points, not Leaflet LAYER points.
+ // getPixelOrigin() alone yields layer points and creates a growing offset
+ // from coastlines as the user pans (the reported offshore/camera drift bug).
+ function containerPixelOrigin(pixelOrigin,canvasLayerOffset){
+  if(!pixelOrigin||!canvasLayerOffset||
+     !Number.isFinite(pixelOrigin.x)||!Number.isFinite(pixelOrigin.y)||
+     !Number.isFinite(canvasLayerOffset.x)||!Number.isFinite(canvasLayerOffset.y))
+   throw Error('Invalid Leaflet canvas origin');
+  return {x:pixelOrigin.x+canvasLayerOffset.x,
+          y:pixelOrigin.y+canvasLayerOffset.y};
+ }
  function nearest(data,px,py,zoom,origin,bounds,radius=9){
   if(!data||!Number.isFinite(px)||!Number.isFinite(py)||
      !Number.isFinite(zoom)||!origin||!bounds)return null;
@@ -96,10 +109,13 @@
     this._canvas.height=Math.ceil(sz.y*ratio);
     this._canvas.style.width=sz.x+'px';
     this._canvas.style.height=sz.y+'px';
-    L.DomUtil.setPosition(this._canvas,m.containerPointToLayerPoint([0,0]));
+    const canvasLayerOffset=m.containerPointToLayerPoint([0,0]);
+    L.DomUtil.setPosition(this._canvas,canvasLayerOffset);
     const ctx=this._canvas.getContext('2d',{alpha:true});
     ctx.setTransform(ratio,0,0,ratio,0,0);
-    const z=m.getZoom(),origin=m.getPixelOrigin(),b=this.getBounds();
+    const z=m.getZoom(),
+          origin=containerPixelOrigin(m.getPixelOrigin(),canvasLayerOffset),
+          b=this.getBounds();
     const radius=z<6?1:z<10?1.5:2.8;
     ctx.fillStyle='rgba(179,64,109,0.76)';
     // One actual underlying reported position per drawn dot. Close points
@@ -115,12 +131,14 @@
    },
    handleClick(event){
     const m=this._map,p=event.containerPoint;
-    const hit=nearest(data,p.x,p.y,m.getZoom(),m.getPixelOrigin(),
+    const origin=containerPixelOrigin(m.getPixelOrigin(),
+      m.containerPointToLayerPoint([0,0]));
+    const hit=nearest(data,p.x,p.y,m.getZoom(),origin,
       this.getBounds(),m.getZoom()<8?6:9);
     if(hit)onPick(hit.point,hit.distancePixels);
    }
   });
   return new Layer().addTo(map);
  }
- return Object.freeze({decode,coordinates,mercator,nearest,install});
+ return Object.freeze({decode,coordinates,mercator,nearest,containerPixelOrigin,install});
 });
