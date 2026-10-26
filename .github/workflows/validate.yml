@@ -127,6 +127,8 @@ on:
       - 'supabase/migrations/124_watch_delivery_receipt_event_fk_index.sql'
       - 'supabase/migrations/125_original_source_sharing_evidence.sql'
       - 'supabase/migrations/126_original_government_vendor_directional_edges.sql'
+      - 'supabase/migrations/127_original_sharing_source_recheck_audit.sql'
+      - 'scripts/test_recheck_original_sharing_sources.py'
       - 'scripts/test_original_sharing_provenance.sql'
       - 'agency-original-sharing.js'
       - 'scripts/test_exact_portal_identity_crosswalk.sql'
@@ -753,6 +755,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/126_original_government_vendor_directional_edges.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/127_original_sharing_source_recheck_audit.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -1186,6 +1190,7 @@ jobs:
           node --check agency-network.js
           node --check agency-original-sharing.js
           node scripts/test_original_sharing_evidence.cjs
+          python -m unittest discover -s scripts -p 'test_recheck_original_sharing_sources.py' -v
           node --check watch-email.js
           python -m unittest discover -s scripts -p 'test_import_licensed_agency_network.py' -v
           python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
