@@ -153,8 +153,11 @@ function recordCard(x){
  article.append(elem('p',x.summary));
  if(x.camera_count!=null)article.append(elem('div','Source-reported cameras: '+x.camera_count+' (not verified active locations)','eyebrow'));
  if(x.amount_usd!=null)article.append(elem('div',
-    (x.event_type==='original_government_estimate'?'Government-reported estimate (NOT actual spending): 
- if(x.person_label)article.append(elem('p','Named person evidenced: '+x.person_label+' ('+(x.person_role||'role not provided')+')'));
+  (x.event_type==='original_government_estimate'
+    ?'Government-reported estimate (NOT actual spending): USD '
+    :'Verified executed contract amount: USD ')+
+  Number(x.amount_usd).toLocaleString('en-US'),'eyebrow'));
+  if(x.person_label)article.append(elem('p','Named person evidenced: '+x.person_label+' ('+(x.person_role||'role not provided')+')'));
  const a=link(x.source_url,'Original evidence: '+(x.source_label||'Open source')+' ↗');
  if(a)article.append(a);
  return article;
