@@ -34,6 +34,23 @@ class LicensedAgencyImport(unittest.TestCase):
         self.assertNotIn("latitude",out[0])
         self.assertNotIn("longitude",out[0])
         self.assertEqual(out[0]["source_tier"],"secondary_aggregated_portal_snapshot")
+    def test_empty_sharing_is_real_snapshot_and_detects_changes(self):
+        import hashlib
+        byid=M.validate(self.meta,self.nodes,self.links)
+        previous=list(M.rows(byid,self.meta,self.links))
+        target=previous[0]
+        prior=target["sharing_list_sha256"]
+        self.assertEqual(len(prior),64)
+        self.links["agency-00001"]=[]
+        newest=list(M.rows(byid,self.meta,self.links))
+        digest=newest[0]["sharing_list_sha256"]
+        self.assertEqual(digest,hashlib.sha256(b"").hexdigest())
+        self.assertNotEqual(digest,prior)
+        ev=M.structural_events([newest[0]],{"agency-00001":prior},
+                               byid,self.meta)
+        self.assertEqual(len(ev),1)
+        self.assertEqual(ev[0]["kind"],"sharing_list_changed")
+
     def test_reject_unknown_target(self):
         self.links["agency-00001"][0]="phantom"
         with self.assertRaisesRegex(ValueError,"Invalid, duplicate"):
