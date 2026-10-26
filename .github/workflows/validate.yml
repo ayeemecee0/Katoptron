@@ -142,6 +142,11 @@ on:
       - 'supabase/migrations/139_community_report_erasure_and_independent_rate_ledger.sql'
       - 'supabase/migrations/140_m5_daily_expired_rate_event_privacy_prune.sql'
       - 'supabase/migrations/141_m7_source_tier_analytics_reconciliation.sql'
+      - 'supabase/migrations/142_m9_private_launch_capacity_aggregation.sql'
+      - 'scripts/monitor_production_capacity.py'
+      - 'scripts/test_monitor_production_capacity.py'
+      - 'scripts/test_m9_private_launch_capacity.sql'
+      - '.github/workflows/monitor_production_capacity.yml'
       - 'analytics-data.js'
       - 'scripts/test_analytics_data.js'
       - 'scripts/test_m5_private_rate_prune.sql'
@@ -853,6 +858,10 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/141_m7_source_tier_analytics_reconciliation.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/142_m9_private_launch_capacity_aggregation.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_m9_private_launch_capacity.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_original_government_pdf_receipt_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_positive_flock_source_label_route_gate.sql
@@ -1317,6 +1326,7 @@ jobs:
           node scripts/test_routing_provider.js
           node scripts/test_publish_provider_health.cjs
           python scripts/test_community_frontend_syntax.py
+          python -m unittest discover -s scripts -p 'test_monitor_production_capacity.py' -v
           node --check analytics-data.js
           node scripts/test_analytics_data.js
           python scripts/test_public_accessibility.py
