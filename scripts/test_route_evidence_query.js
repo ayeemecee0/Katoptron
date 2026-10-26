@@ -30,7 +30,7 @@ async function run(){
  let splitReads=0;
  async function dense(box){
   calls++;
-  if(box.east-box.west>0.005){
+  if(box.east-box.west>0.06){
    splitReads++;
    return {official:page([strong],1001),tiered:empty()};
   }
