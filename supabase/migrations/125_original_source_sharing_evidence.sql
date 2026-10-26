@@ -10,6 +10,7 @@ create table if not exists public.flock_original_sharing_sources (
  first_observed_on date not null,
  last_successfully_rechecked_at timestamptz,
  source_section text not null check(length(source_section) between 5 and 160),
+ captured_scope text not null default 'published_list_excerpt' check(captured_scope in ('published_list_excerpt','complete_published_list')),
  interpretation text not null default 'publisher_listed_outbound_access_as_of_snapshot'
    check (interpretation='publisher_listed_outbound_access_as_of_snapshot'),
  check(first_observed_on<=current_date+1)
@@ -48,7 +49,7 @@ create policy flock_original_sharing_edge_read on public.flock_original_sharing_
 create or replace view public.flock_public_original_sharing_evidence
  with (security_invoker=true) as
 select e.source_key,s.source_agency_id,s.publisher_name,s.source_url,s.source_kind,
- s.source_section,s.published_at,s.first_observed_on as source_observed_on,
+ s.source_section,s.captured_scope,s.published_at,s.first_observed_on as source_observed_on,
  s.last_successfully_rechecked_at,e.recipient_label,e.recipient_source_agency_id,
  e.identity_basis,e.source_status,e.first_observed_on as recipient_observed_on,
  s.interpretation
