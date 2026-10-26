@@ -57,6 +57,14 @@ const {chromium}=require('playwright');
   const sharingStatus=await page.locator('#status').textContent();
   assert.ok(sharingStatus.includes('directional published links'),sharingStatus);
   assert.ok((await page.locator('main').textContent()).includes('does not demonstrate'));
+  await page.locator('#filter').fill('Portage IN PD');
+  await page.locator('#cards button').first().click();
+  await page.waitForFunction(()=>document.querySelector('#originalSummary')?.textContent?.includes('7 publisher-listed outbound'),
+    null,{timeout:25000});
+  assert.ok((await page.locator('#originalOutbound').textContent()).includes('U.S. Marshals'));
+  assert.ok((await page.locator('#originalOutbound').textContent()).includes('Original government-published named access'));
+  assert.ok((await page.locator('#originalOutbound a').first().getAttribute('href'))
+    .includes('portagein.gov/547/Flock-Information-Center'));
   await page.locator('#filter').fill('Folsom CA PD');
   await page.locator('#cards button').first().click();
   assert.ok((await page.locator('#selectedName').textContent()).includes('Folsom'));
