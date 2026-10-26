@@ -35,6 +35,14 @@ for filename, required in {
     doc = (ROOT / filename).read_text(encoding="utf-8")
     for marker in required:
         assert marker in doc, (filename, "missing", marker)
+    if filename == "accountability.html":
+        # A previous truncated inline edit silently appended an entire second
+        # page after </html>. JS parsing alone did not catch the resulting
+        # anonymous text node and 1466px horizontal mobile overflow.
+        assert doc.rstrip().endswith("</body></html>"), (
+            filename, "unexpected trailing content after final document")
+        assert doc.count("</body></html>") == 1, (
+            filename, "duplicate document footer / stray raw text")
     parser = ScriptParser()
     parser.feed(doc)
     assert parser.scripts, filename
