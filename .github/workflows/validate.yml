@@ -121,6 +121,7 @@ on:
       - 'supabase/migrations/118_opt_in_government_watch_alerts.sql'
       - 'supabase/migrations/119_sharing_fingerprints_and_contract_end_dates.sql'
       - 'supabase/migrations/120_watch_delivery_post_opt_in_boundaries.sql'
+      - 'supabase/migrations/121_secondary_retention_history.sql'
       - 'scripts/test_agency_watch_security.sql'
       - 'agency-network.js'
       - 'watch-email.js'
@@ -729,6 +730,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/120_watch_delivery_post_opt_in_boundaries.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/121_secondary_retention_history.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -1157,6 +1160,11 @@ jobs:
           node --check watch-email.js
           python -m unittest discover -s scripts -p 'test_import_licensed_agency_network.py' -v
           python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+          python -m unittest discover -s scripts -p 'test_import_licensed_retention.py' -v
+          python -m unittest discover -s scripts -p 'test_mirror_licensed_agency_network.py' -v
+          node --check agency-intelligence.js
+          node --check agency-network.js
+          node --check watch-email.js
           node --check routing-routes.js
           node --check routing-provider.js
           node --check geoapify-adapter.js
