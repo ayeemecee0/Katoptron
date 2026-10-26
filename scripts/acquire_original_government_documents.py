@@ -204,7 +204,7 @@ def reviewed_seeds(url,secret,when=None,limit=22):
   other=(other[start:]+other[:start])[:spare]
  return tuple(priorities+other[:spare])
 
-def scan(fetcher=fetch,seeds=SEEDS):
+def scan(fetcher=fetch,seeds=SEEDS,observed_pages=None):
  out={};recipients={};successful=0;errors=[]
  for seed,label in seeds:
   try:
@@ -213,6 +213,11 @@ def scan(fetcher=fetch,seeds=SEEDS):
     raise ValueError("Original page did not return HTML")
    items=extract_links(html,seed,label)
    successful+=1
+   # Record appearance history only for fully parsed, successfully retrieved
+   # original government pages. Errors MUST NOT count as missing documents.
+   if observed_pages is not None:
+    observed_pages[seed]={"sha256":hashlib.sha256(html).hexdigest(),
+                          "urls":[x["document_url"] for x in items]}
    for x in items:
     out.setdefault(x["document_url"],x)
   except Exception as exc:
@@ -228,14 +233,29 @@ def scan(fetcher=fetch,seeds=SEEDS):
    errors.append((url,type(exc).__name__,str(exc)[:100]))
  return out,recipients,successful,errors
 
-def save(out,recipients,successful,errors,url,secret,seeded_count=len(SEEDS)):
- existing={r["document_url"] for r in page_all(url,secret,"flock_original_document_leads","document_url")}
+def save(out,recipients,successful,errors,url,secret,seeded_count=len(SEEDS),observed_pages=None):
+ prior_rows=page_all(url,secret,"flock_original_document_leads","document_url,government_page_url")
+ existing={r["document_url"] for r in prior_rows}
  new=[v for k,v in out.items() if k not in existing]
  if new:
   for i in range(0,len(new),125):
    rest(url,secret,"flock_original_document_leads",method="POST",
     params={"on_conflict":"document_url"},body=new[i:i+125],
     prefer="resolution=ignore-duplicates,return=minimal")
+ # The original source-link observation ledger is updated atomically once
+ # the new links have been committed. It never updates document review_status
+ # or interprets absent links as revoked contracts/permissions.
+ if observed_pages is not None:
+  root_by_url={r["document_url"]:r["government_page_url"] for r in prior_rows}
+  root_by_url.update({u:item["government_page_url"] for u,item in out.items()
+                      if u not in root_by_url})
+  for root,observation in sorted(observed_pages.items()):
+   included=sorted({u for u in observation["urls"] if root_by_url.get(u)==root})
+   rest(url,secret,"rpc/record_original_document_link_scan",method="POST",
+    body={"p_government_page_url":root,
+          "p_document_urls":included,
+          "p_page_sha256":observation["sha256"]},
+    prefer="return=minimal")
  candidate_rows=[{"document_url":u,"recipient_label":name,
   "extraction_basis":"csv_named_recipient_column_unreviewed","review_status":"review_required"}
   for u,names in recipients.items() for name in names]
@@ -245,6 +265,13 @@ def save(out,recipients,successful,errors,url,secret,seeded_count=len(SEEDS)):
    prefer="resolution=ignore-duplicates,return=minimal")
  all_leads=page_all(url,secret,"flock_original_document_leads","document_url,review_status")
  named=page_all(url,secret,"flock_original_sharing_extraction_candidates","document_url,recipient_label")
+ if observed_pages is None:
+  missing_links=0
+ else:
+  missing_links=sum(r["link_status"]=="not_linked_after_two_successful_scans"
+    for r in page_all(url,secret,"flock_original_document_link_observations","link_status"))
+ triaged=sum(r["triage_status"] in ("readable_document_indicators_only","no_extractable_text")
+   for r in page_all(url,secret,"flock_original_pdf_content_triage","triage_status"))
  primary=page_all(url,secret,"flock_original_sharing_edges","source_key,recipient_label")
  sources=page_all(url,secret,"flock_original_sharing_sources","source_key")
  stamp=dt.datetime.now(dt.timezone.utc).date().isoformat()
@@ -254,7 +281,9 @@ def save(out,recipients,successful,errors,url,secret,seeded_count=len(SEEDS)):
    "raw_named_recipient_candidates":len(named),
    "verified_original_sharing_edges":len(primary),
    "verified_original_publishers":len(sources),
-   "source_errors":len(errors)}
+   "source_errors":len(errors),
+   "pdf_content_triaged_documents":triaged,
+   "original_links_missing_two_successful_scans":missing_links}
  rest(url,secret,"flock_original_acquisition_public_metrics",method="POST",
    params={"on_conflict":"metric_date"},body=[metrics],
    prefer="resolution=merge-duplicates,return=minimal")
@@ -272,12 +301,13 @@ def main():
  secret=os.environ.get("SUPABASE_SERVICE_ROLE_KEY","")
  if not url or not secret:raise RuntimeError("Original-gov private acquisition credentials missing")
  seeds=reviewed_seeds(url,secret)
- data,names,ok,errors=scan(seeds=seeds)
+ observed_pages={}
+ data,names,ok,errors=scan(seeds=seeds,observed_pages=observed_pages)
  print("Original .gov sources successful:",ok,"/",len(seeds),
   "linked document leads:",len(data),"CSV recipient candidates:",sum(map(len,names.values())),
   "held source errors:",len(errors))
  for root,kind,why in errors:print("Held",urllib.parse.urlsplit(root).hostname,kind,why[:80])
- metrics,created=save(data,names,ok,errors,url,secret,seeded_count=len(seeds))
+ metrics,created=save(data,names,ok,errors,url,secret,seeded_count=len(seeds),observed_pages=observed_pages)
  print("New original government document leads:",created,
        "Existing/new total:",metrics["total_discovered_links"],
        "content-verified:",metrics["total_reviewed_documents"],
