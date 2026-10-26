@@ -12,6 +12,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime,timezone
 from import_licensed_agency_network import BASE
+from sync_agency_watch_events import source_key
 
 SRC="https://eyesonflock.com/api/v1/data"
 LIMIT=25_000_000
@@ -78,7 +79,8 @@ def paginate(url,key,table,fields):
         if len(result)<500:return rows
     raise ValueError("Source history too large for bounded import")
 
-def history_events(current,older):
+def history_events(current,older,agency_names=None):
+    agency_names=agency_names or {}
     prior={}
     for old in sorted(older,key=lambda r:str(r.get("observed_on"))):
         if old.get("retention_days") is not None:
@@ -101,7 +103,7 @@ def history_events(current,older):
          "source_url":new["source_url"],
          "source_date":new["observed_on"],
          "evidence_tier":"secondary_aggregated_portal_snapshot",
-         "locality_key":None
+         "locality_key":source_key(agency_names.get(new["source_agency_id"]))
         })
     return events
 
@@ -110,15 +112,16 @@ def main():
     key=os.getenv("SUPABASE_SERVICE_ROLE_KEY")
     if not url or not key:raise RuntimeError("No protected source sync credentials")
     agencies=paginate(url,key,"flock_secondary_portal_agencies",
-                      "source_agency_id,portal_slug,is_reporting_portal")
+                      "source_agency_id,agency_name,portal_slug,is_reporting_portal")
     reg={x["portal_slug"]:x["source_agency_id"]
          for x in agencies if x.get("is_reporting_portal") and x.get("portal_slug")}
+    agency_names={x["source_agency_id"]:x["agency_name"] for x in agencies}
     raw=get_json(SRC)
     now=datetime.now(timezone.utc).date().isoformat()
     rows=normalize(raw,reg,now)
     prior=paginate(url,key,"flock_secondary_portal_retention_history",
                    "source_agency_id,retention_days,observed_on")
-    events=history_events(rows,prior)
+    events=history_events(rows,prior,agency_names)
     for start in range(0,len(rows),150):
         server(url,key,
          "flock_secondary_portal_retention_history?on_conflict=source_agency_id,observed_on",
