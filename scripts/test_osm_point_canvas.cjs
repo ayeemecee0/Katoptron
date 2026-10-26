@@ -26,6 +26,25 @@ const selected=O.nearest(data,p.x,p.y,z,origin,
 assert.ok(selected);
 assert.ok(selected.distancePixels<6,'Point must be at ACTUAL OSM source coordinate');
 assert.ok(selected.point[0]>=38.5&&selected.point[1]< -120,'Offshore grid center not allowed');
+
+// Leaflet mapPane translate separates layer pixels from viewport pixels.
+// Canvas is pinned at container origin (-mapPanePos) while original map
+// projection and getPixelOrigin() produce layer coordinates. An uncorrected
+// 200px pan used to leave OSM dots roughly 200px off the map and make
+// source clicks miss.
+const shift={x:230,y:-140},previousOrigin={x:1200,y:840};
+const corrected=O.containerPixelOrigin(previousOrigin,shift);
+assert.deepEqual(corrected,{x:1430,y:700});
+const sourceLat=many[0][0],sourceLon=many[0][1];
+const layerPixel=O.mercator(sourceLat,sourceLon,z,previousOrigin);
+const correctContainerPixel=O.mercator(sourceLat,sourceLon,z,corrected);
+assert.ok(Math.abs(layerPixel.x-correctContainerPixel.x-230)<1e-7);
+assert.ok(Math.abs(layerPixel.y-correctContainerPixel.y+140)<1e-7);
+assert.throws(()=>O.containerPixelOrigin({x:NaN,y:0},shift),/Invalid/);
+const postPan=O.nearest(data,correctContainerPixel.x,correctContainerPixel.y,
+ z,corrected,{south:38,north:40,west:-122,east:-120});
+assert.ok(postPan&&postPan.distancePixels<6,
+ 'Nearest OSM dot must use the same viewport origin as canvas drawing');
 assert.equal(O.nearest(data,-100,-100,z,origin,{south:38,north:40,west:-122,east:-120}),null);
 assert.throws(()=>O.decode({...fixture(many),point_count:MIN+1}),/reconcile/);
 const corrupt=fixture(many); corrupt.coordinates_base64='@@';
