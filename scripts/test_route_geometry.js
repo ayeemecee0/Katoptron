@@ -23,5 +23,16 @@ for(let i=0;i<=100;i++){
 }
 assert.throws(()=>g.corridorBoxes([[0,0],[1,1]]),/outside/);
 assert.throws(()=>g.corridorBoxes([[39,-104],[39,0]],{maxBoxes:1}));
+// A realistic high-resolution router can return 20,000 closely spaced road
+// vertices. Query-box construction must remain linear and not freeze the UI.
+const detailed=Array.from({length:20000},(_,i)=>[
+  38.80+0.07*(i/19999),-121.5+0.4*(i/19999)
+]);
+const detailedBoxes=g.corridorBoxes(detailed);
+assert.ok(detailedBoxes.length>=1&&detailedBoxes.length<32);
+for(const p of [detailed[0],detailed[5000],detailed[19999]])
+ assert.ok(detailedBoxes.some(b=>b.south<=p[0]&&b.north>=p[0]&&
+   b.west<=p[1]&&b.east>=p[1]));
+assert.throws(()=>g.corridorBoxes([[39,-104],[39,-99],[39,-50]]),/outside/);
 assert.throws(()=>g.closestOnRoute([99,0],route));
 console.log('Route geometry tests passed: segment proximity, elapsed-distance timing, nationwide corridor completeness');
