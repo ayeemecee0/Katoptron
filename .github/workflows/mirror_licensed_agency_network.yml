@@ -1,0 +1,43 @@
+name: Mirror licensed directional agency network for Katoptron
+on:
+  schedule:
+    - cron: '9 11 * * 3'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/mirror_licensed_agency_network.py'
+      - 'scripts/test_mirror_licensed_agency_network.py'
+      - '.github/workflows/mirror_licensed_agency_network.yml'
+permissions:
+  contents: write
+concurrency:
+  group: katoptron-network-snapshot-mirror
+  cancel-in-progress: false
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test no fake camera positions, evidence identity integrity
+        run: python -m unittest discover -s scripts -p 'test_mirror_licensed_agency_network.py' -v
+      - name: Validate and mirror complete licensed network without geographical coordinates
+        run: python scripts/mirror_licensed_agency_network.py
+      - name: Commit validated dated network if source changed
+        run: |
+          set -euo pipefail
+          git config user.name "katoptron-source-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/agency-intelligence/
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh CC BY-SA source-attributed directional agency sharing snapshots [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "Agency source snapshot unchanged; no new commit"
+          fi
