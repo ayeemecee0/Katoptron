@@ -89,3 +89,20 @@ main p a, main li a, .leaflet-control-attribution a{
   .sidebar-section{overflow-wrap:anywhere}
   .map-toolbar,.map-actions{flex-wrap:wrap}
 }
+
+/* The skip link must be visible on keyboard focus even if the host/browser's
+   forced-colors mode does not classify focus as :focus-visible. This override
+   also beats site-specific transforms that push unfocused links offscreen. */
+a.skip-link:focus{
+  transform:none!important;
+  outline:3px solid currentColor!important;
+  outline-offset:2px!important;
+}
+@media(forced-colors:active){
+  a.skip-link:focus{
+    background:Canvas!important;
+    color:CanvasText!important;
+    border-color:Highlight!important;
+    outline:3px solid Highlight!important;
+  }
+}
