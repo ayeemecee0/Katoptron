@@ -32,6 +32,11 @@ begin
  if exists(select 1 from public.flock_community_submissions
   where submission_id=current_setting('katoptron.m5_case_a')::uuid)
  then raise exception 'Owner content persisted after deletion';end if;
+
+end $check$;
+reset role;
+do $check$
+begin
  if exists(select 1 from public.flock_point_evidence_cases
   where case_key='tier_'||md5(current_setting('katoptron.m5_case_a')))
  then raise exception 'Withdrawn candidate persisted after report erasure';end if;
@@ -39,6 +44,7 @@ begin
   where case_key='tier_'||md5(current_setting('katoptron.m5_case_a')))
  then raise exception 'Derived attestation persisted after report erasure';end if;
 end $check$;
+set local role authenticated;
 with report as(
  insert into public.flock_community_submissions
  (latitude,longitude,description,consent_to_review,publication_consent)
