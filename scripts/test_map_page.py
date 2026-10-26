@@ -57,7 +57,7 @@ class MapPageTests(unittest.TestCase):
         self.assertIn('government-endorsed EXTERNAL ArcGIS point',self.script)
         self.assertIn('government-operated GIS point',self.script)
         self.assertIn('./config.js',self.src)
-        self.assertIn('./osm-viewport-density.js',self.src)
+        self.assertIn('./osm-point-canvas.js',self.src)
         self.assertIn('flock_public_cross_source_proximity',self.script)
         self.assertIn('./map.css',self.html)
 
