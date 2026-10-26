@@ -70,7 +70,16 @@
     if(row.recipient_source_agency_id&&row.identity_basis==='exact_source_agency_name'){
       const recipient=byAgency.get(row.recipient_source_agency_id);
       const key=recipient&&locality(recipient.agency_name);
-      if(key&&map.has(key))map.get(key).originalIncoming.push(row);
+      if(key){
+        // A source-qualified inward recipient supports a limited dossier
+        // even when the recipient agency has no own public Flock portal.
+        // This does NOT imply they share their own data outward.
+        if(!map.has(key))map.set(key,{
+          key,label:labelForKey(key),events:[],portals:[],cameras:[],
+          programs:[],secondary:[],secondaryRetention:[],watchEvents:[],
+          identityMatches:[],originalOutgoing:[],originalIncoming:[],matchedLabels:new Set()});
+        map.get(key).originalIncoming.push(row);
+      }
     }
   }
   // Join only original Flock vendor portal URL slug matches. A city match
