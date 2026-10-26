@@ -18,7 +18,14 @@ const assert=require('node:assert/strict');
   },null,{timeout:45000});
   const count=await page.locator('#communityCount').textContent();
   assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
-  assert.ok((await page.locator('#status').textContent()).includes('density cells'));
+  assert.ok((await page.locator('#status').textContent()).includes('3° OSM report clusters'));
+  await page.waitForFunction(()=>densityPoints.getLayers().length>0,null,{timeout:22000});
+  const validSourceAnchor=await page.evaluate(()=>{
+   const layer=densityPoints.getLayers()[0];
+   return !!(layer&&Number.isFinite(layer.getLatLng().lat)&&
+     Number.isFinite(layer.getLatLng().lng)&&layer.getTooltip().getContent().includes('Click to inspect'));
+  });
+  assert.ok(validSourceAnchor,'Community aggregates must be clickable labeled source clusters');
   assert.ok((await page.locator('#sourceDate').textContent()).includes('snapshot'));
   await page.waitForFunction(()=>Number((document.querySelector('#uniqueCoordinateCount')?.textContent||'').replaceAll(',',''))>100000,null,{timeout:22000});
   const observed=Number(count.replaceAll(',',''));
@@ -40,6 +47,14 @@ const assert=require('node:assert/strict');
     return r.json();
   });
   assert.ok(Array.isArray(density)&&density.length===1&&density[0].community_report_count>0);
+
+  // Clicking an approximate national cluster must resolve a genuine original
+  // OSM report, not zoom to a mathematical offshore 3-degree center.
+  await page.evaluate(()=>densityPoints.getLayers()[0].fire('click'));
+  await page.waitForFunction(()=>community.getZoom()>=13,null,{timeout:25000});
+  const popup=await page.locator('.leaflet-popup-content').textContent();
+  assert.ok(popup.includes('Example OSM report inside this cluster'),popup);
+  assert.ok(popup.includes('Inspect this OSM report'),popup);
 
   // Retrieve ONE already-published community-source coordinate to prove the
   // viewport-scoped map can display an actual database-backed camera record.
