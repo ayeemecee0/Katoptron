@@ -1,0 +1,37 @@
+name: Import licensed source-dated retention history
+on:
+  schedule:
+    - cron: '13 12 * * 4'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_licensed_retention.py'
+      - 'scripts/test_import_licensed_retention.py'
+      - '.github/workflows/import_licensed_retention.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-licensed-retention-history
+  cancel-in-progress: false
+jobs:
+  retention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate retention dates, licensed-source identities and no camera promotion
+        run: python -m unittest discover -s scripts -p 'test_import_licensed_retention.py' -v
+      - name: Require owner-only API credential
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Import dated secondary retention evidence, never government-verified points
+        run: python scripts/import_licensed_retention.py
