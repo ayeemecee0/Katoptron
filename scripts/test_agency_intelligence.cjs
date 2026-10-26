@@ -61,6 +61,26 @@ assert.equal(tie.secondary.length,2,
  'Locality names may overlap but only the exact portal URL qualifies as an identity tie');
 assert.equal(A.build([],original,[],[],secondary,[],[],[])[0].identityMatches.length,0,
  'No inference of portal operator from city name alone');
+const agencyOnly=[{
+ source_key:'elk_grove_original_government',
+ source_agency_id:'elk-grove-ca-pd',
+ recipient_label:'Roseville CA PD',
+ recipient_source_agency_id:'roseville-ca-pd',
+ identity_basis:'exact_source_agency_name',
+ source_kind:'original_government',
+ source_url:'https://elkgrove.gov/traffic/automated-license-plate-readers-alpr'
+}];
+const regionOnly=A.build([],[],[],[],[
+ {source_agency_id:'elk-grove-ca-pd',agency_name:'Elk Grove CA PD',
+  is_reporting_portal:false,source_tier:'secondary_aggregated_portal_snapshot'},
+ {source_agency_id:'roseville-ca-pd',agency_name:'Roseville CA PD',
+  is_reporting_portal:false,source_tier:'secondary_aggregated_portal_snapshot'}
+],[],[],[],agencyOnly);
+assert.equal(regionOnly.find(g=>g.key==='elk grove|CA')?.originalOutgoing.length,1);
+assert.equal(regionOnly.find(g=>g.key==='roseville|CA')?.originalIncoming.length,1,
+ 'Exact original named recipient must get an evidence-limited dossier even without its own portal');
+assert.equal(regionOnly.find(g=>g.key==='roseville|CA')?.originalOutgoing.length,0,
+ 'No reverse relationship can be inferred by creating incoming recipient profile');
 assert.equal(A.safeUrl('http://example.org'),null);
 assert.equal(A.safeUrl('https://example.org/path'),'https://example.org/path');
 assert.equal(A.safeUrl('https://user:pass@example.org'),null);
