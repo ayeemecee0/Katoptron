@@ -2,6 +2,22 @@
 
 Katoptron is a **nationwide Flock Safety camera-map and route-surveillance education project**. Its primary product combines an evidence-backed map, an optional planned-driving-route simulator, and separately linked government records. The map NEVER invents camera coordinates: exact pins and approximate areas require distinct source verification. All simulated detections are hypothetical; the site never accesses private Flock plate reads or tracks actual vehicles. The legacy synthetic simulator remains available separately.
 
+## Map and route engineering acceptance (October 26, 2026)
+
+**M4 Maps & Routing engineering scope: 100% signed off** after live-origin
+Geoapify, main map, independent community-route, accessible mobile browser,
+and exact-count official-source corridor tests passed. Read the
+[M4 engineering sign-off and evidence limits](./docs/m4-maps-routing-engineering-signoff-2026-10-26.md).
+The [M4 code fix](https://github.com/ayeemecee0/Katoptron/pull/17)
+prevents 1,000-row database response caps from silently hiding mapped sources:
+dense regions are subdivided for complete route checking; if full retrieval
+cannot be proven, results are **UNKNOWN** and simulated replay is withheld.
+The [expanded browser test](https://github.com/ayeemecee0/Katoptron/actions/runs/40376719470)
+independently confirms opt-in OSM comparisons do not change the Flock-only
+model. Engineering completion is **not** national source completeness, a
+verification of real detections, an external-provider quota guarantee, or M9
+production launch readiness.
+
 ## Searchable published OSM nearby evidence and routing sample health (October 25, 2026)
 
 - **[Search nearby community camera records](./nearby.html)** queries the latest complete persisted [OSM 15m proximity audit](./supabase/migrations/097_published_osm_nearby_candidates.sql) with exact OSM source-ID matching, distance bands and pagination. Each source link opens the original OSM node/way. The labels **possible geographic overlap** and **not confirmed same hardware** must never be promoted to active-camera or deployment claims.
