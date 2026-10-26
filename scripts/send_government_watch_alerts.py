@@ -19,7 +19,8 @@ from email.message import EmailMessage
 def eligible(category, user):
     return {
       "government_decision": user.get("watch_government") is True,
-      "contract_document": user.get("watch_government") is True,
+      "contract_document": (user.get("watch_government") is True or
+                            user.get("watch_renewals") is True),
       "contract_renewal": user.get("watch_renewals") is True,
       "vendor_portal_snapshot": user.get("watch_vendor") is True,
       "vendor_count_changed": user.get("watch_vendor") is True,
