@@ -60,7 +60,7 @@
     <input id="cameraTextFilter" type="search" placeholder="Filter sourced entries" maxlength="100" autocomplete="off">
     <p id="filterStatus" class="micro" role="status">Showing all source-backed map records.</p>
     <label class="toggle"><input id="showCommunity" type="checkbox" checked><span class="dot community"></span> <strong>Nationwide community-reported locations</strong> (OSM)</label>
-    <p id="communityOverlayStatus" class="micro" role="status" aria-live="polite">Loading nationwide community density. At low zoom, circles represent coarse report counts, not precise camera coordinates.</p>
+    <p id="communityOverlayStatus" class="micro" role="status" aria-live="polite">Loading original OSM community coordinate dots at every zoom. Each pink dot is an unverified reported position, not a government-verified installation.</p>
     <label class="toggle"><input id="showExact" type="checkbox" checked><span class="dot exact"></span> <strong>Government source-mapped camera positions</strong> (reviewed GIS; hardware status may be unknown)</label>
     <p class="micro">Teal government pins: original GIS checked within 72 hours. Amber pins: check overdue or timestamp unavailable. All official points remain distinct from community reports and neither color proves a device is active.</p>
     <label class="toggle"><input id="showApprox" type="checkbox" checked><span class="dot approx"></span> Government-documented approximate areas (where independently sourced)</label>
@@ -166,7 +166,7 @@
 <script src="./geoapify-adapter.js"></script>
 <script src="./routing-routes.js"></script>
 <script src="./route-comparison.js"></script>
-<script src="./osm-viewport-density.js"></script>
+<script src="./osm-point-canvas.js"></script>
 <script src="./community-overlay.js"></script>
 <script src="./community-route.js"></script>
 <script src="./map.js"></script>
