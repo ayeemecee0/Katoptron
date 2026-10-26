@@ -22,6 +22,22 @@ grant select,insert,update on public.flock_original_document_pdf_receipts to ser
 comment on table public.flock_original_document_pdf_receipts is
 'PRIVATE original government-hosted PDF SHA/byte receipts, with no raw document retained. Historical downloaded bytes only; no confirmation of any legal, financial, sharing or hardware fact.';
 
+-- Private fair-scheduling ledger: outages are not revocation or evidence.
+create table if not exists public.flock_original_pdf_attempts (
+  document_url text primary key
+    references public.flock_original_document_leads(document_url) on delete cascade,
+  last_checked_at timestamptz not null,
+  next_retry_at timestamptz not null,
+  last_outcome text not null check(last_outcome in (
+    'pdf_bytes_observed','held_fetch_error','held_non_pdf_or_invalid_bytes')),
+  check(next_retry_at > last_checked_at)
+);
+alter table public.flock_original_pdf_attempts enable row level security;
+revoke all on public.flock_original_pdf_attempts from public,anon,authenticated;
+grant select,insert,update on public.flock_original_pdf_attempts to service_role;
+comment on table public.flock_original_pdf_attempts is
+'PRIVATE bounded original PDF byte rechecks; outages do not revoke historical provenance or source status.';
+
 create table if not exists public.flock_original_pdf_scan_runs (
   scan_id uuid primary key default gen_random_uuid(),
   scanned_at timestamptz not null default now(),
