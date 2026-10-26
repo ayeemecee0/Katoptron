@@ -31,8 +31,8 @@
   if(!key)return null;
   return {key,source,row};
  }
- function build(events,portals,cameras,programs,secondary=[],retention=[]){
-  if(![events,portals,cameras,programs,secondary,retention].every(Array.isArray))
+ function build(events,portals,cameras,programs,secondary=[],retention=[],watchEvents=[]){
+  if(![events,portals,cameras,programs,secondary,retention,watchEvents].every(Array.isArray))
    throw Error('Incomplete published agency evidence');
   const map=new Map();
   function include(source,rows){
@@ -41,7 +41,7 @@
     if(!rec)continue;
     if(!map.has(rec.key))map.set(rec.key,{
       key:rec.key,label:labelForKey(rec.key),
-      events:[],portals:[],cameras:[],programs:[],secondary:[],secondaryRetention:[],matchedLabels:new Set()});
+      events:[],portals:[],cameras:[],programs:[],secondary:[],secondaryRetention:[],watchEvents:[],matchedLabels:new Set()});
     const entry=map.get(rec.key);
     entry[source==='event'?'events':source==='portal'?'portals':source==='camera'?'cameras':source==='secondary'?'secondary':'programs'].push(row);
     entry.matchedLabels.add(source+':'+(row.jurisdiction_label||row.agency_label||row.agency_name));
@@ -61,6 +61,13 @@
    const group=map.get(key);
    if(group)group.secondaryRetention.push(entry);
   }
+  const structuralTypes=new Set(['sharing_list_changed','retention_changed',
+      'contract_renewal','vendor_count_changed']);
+  for(const event of watchEvents){
+    if(!structuralTypes.has(event.kind)||!map.has(event.locality_key))continue;
+    const g=map.get(event.locality_key);
+    g.watchEvents.push(event);
+  }
   return [...map.values()].sort((a,b)=>a.label.localeCompare(b.label));
  }
  function sourceDate(row){return String(row.event_date||row.source_date||'').slice(0,10)}
@@ -71,6 +78,13 @@
      id:'gov:'+r.event_key+':'+r.event_date,date:r.event_date,
      type:'Government record',title:r.title,source_url:r.source_url,
      confidence:'Government record; event date basis: '+(r.date_basis||'source-dated')
+   })),
+   ...group.watchEvents.filter(r=>r.observed_at&&r.event_key).map(r=>({
+     id:'change:'+r.event_key,
+     date:String(r.source_date||r.observed_at).slice(0,10),
+     type:'Source change',title:r.title,source_url:r.source_url,
+     confidence:'Newly observed '+r.evidence_tier+
+      ' record; publisher date and notification date may differ'
    })),
    ...group.portals.filter(r=>r.source_date&&r.portal_url).map(r=>({
      id:'vendor:'+r.agency_key+':'+r.source_date,date:r.source_date,
@@ -137,15 +151,16 @@
   throw Error('Public evidence pagination truncated; cannot claim complete inventory');
  }
  async function load(){
-  const [events,portals,cameras,programs,secondary,retention]=await Promise.all([
+  const [events,portals,cameras,programs,secondary,retention,watchEvents]=await Promise.all([
     published('flock_accountability_events','event_key,event_type,jurisdiction_label,event_date,date_basis,title,summary,source_url,amount_usd,camera_count'),
     published('flock_vendor_portal_snapshots','agency_key,agency_label,state_code,portal_url,source_date,reported_total_cameras,camera_count_scope,retention_days,reported_search_sessions_30d,reported_hotlist_hits_30d,disclosure_status','disclosure_status=eq.verified_source_snapshot'),
     published('flock_camera_locations','record_key,jurisdiction_label,verification_status,location_accuracy,source_url,evidence_summary','verification_status=eq.verified&location_accuracy=eq.exact'),
     published('flock_documented_programs','program_key,jurisdiction_label,record_status,source_date,program_status,official_evidence_url,official_camera_map_url','record_status=eq.verified'),
     published('flock_secondary_portal_agencies','source_agency_id,agency_name,state_code,agency_type,is_reporting_portal,portal_slug,source_reported_mixed_cameras,source_reported_network_links,source_snapshot_at,source_url,source_tier','is_reporting_portal=eq.true'),
-    published('flock_secondary_portal_retention_history','source_agency_id,observed_on,retention_days,portal_slug,source_url,evidence_tier')
+    published('flock_secondary_portal_retention_history','source_agency_id,observed_on,retention_days,portal_slug,source_url,evidence_tier'),
+    published('flock_agency_watch_events','event_key,locality_key,kind,title,source_url,source_date,evidence_tier,observed_at')
   ]);
-  return build(events,portals,cameras,programs,secondary,retention);
+  return build(events,portals,cameras,programs,secondary,retention,watchEvents);
  }
  return Object.freeze({locality,labelForKey,build,updateItems,safeRead,follow,
    unfollow,changes,markSeen,load,safeUrl,sourceDate});
