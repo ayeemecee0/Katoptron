@@ -157,7 +157,7 @@
     published('flock_camera_locations','record_key,jurisdiction_label,verification_status,location_accuracy,source_url,evidence_summary','verification_status=eq.verified&location_accuracy=eq.exact'),
     published('flock_documented_programs','program_key,jurisdiction_label,record_status,source_date,program_status,official_evidence_url,official_camera_map_url','record_status=eq.verified'),
     published('flock_secondary_portal_agencies','source_agency_id,agency_name,state_code,agency_type,is_reporting_portal,portal_slug,source_reported_mixed_cameras,source_reported_network_links,source_snapshot_at,source_url,source_tier','is_reporting_portal=eq.true'),
-    published('flock_secondary_portal_retention_history','source_agency_id,observed_on,retention_days,portal_slug,source_url,evidence_tier'),
+    published('flock_public_agency_retention_recent','source_agency_id,observed_on,retention_days,portal_slug,source_url,evidence_tier'),
     published('flock_agency_watch_events','event_key,locality_key,kind,title,source_url,source_date,evidence_tier,observed_at')
   ]);
   return build(events,portals,cameras,programs,secondary,retention,watchEvents);
