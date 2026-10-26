@@ -7,7 +7,7 @@
 main{max-width:1180px;margin:0 auto;padding:2rem clamp(1rem,3vw,2.5rem) 5rem}
 h1{font-size:clamp(1.6rem,3vw,2.3rem)}h2{font-size:1.25rem;margin-top:2rem}
 p{line-height:1.6;color:#bdcdd9}.notice{padding:1rem;border-left:3px solid #91bed0;background:#152736}
-.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.8rem;margin:1.6rem 0}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;margin:1.6rem 0}
 .metric{border:1px solid #385363;border-radius:10px;background:#122431;padding:1rem}
 .metric strong{font-size:clamp(1.35rem,2.5vw,2rem);display:block;font-variant-numeric:tabular-nums;color:#dff6fb}
 .metric span{font-size:.77rem;color:#a8c0cd;line-height:1.5;display:block}
@@ -37,22 +37,26 @@ a{color:#9cdeee}:focus-visible{outline:3px solid #93d9ed;outline-offset:3px}
 <p id="status" role="status" aria-live="polite">Loading published evidence…</p>
 <section aria-labelledby="overviewHeading"><h2 id="overviewHeading">Verified evidence snapshot</h2>
 <div class="metrics">
-<div class="metric"><strong id="exact">—</strong><span>Government-sourced exact camera points</span></div>
-<div class="metric"><strong id="corroborated">—</strong><span>Separately corroborated points, not government-verified</span></div>
+<div class="metric"><strong id="flock">—</strong><span>Government GIS positions source-labeled Flock; device operation NOT established</span></div>
+<div class="metric"><strong id="generic">—</strong><span>Government GIS generic LPR positions; manufacturer not established</span></div>
+<div class="metric"><strong id="unknown">—</strong><span>Other exact government GIS positions without a known manufacturer</span></div>
+<div class="metric"><strong id="exact">—</strong><span>All exact government GIS camera/LPR positions, including generic and unknown labels</span></div>
+<div class="metric"><strong id="corroborated">—</strong><span>Independently corroborated published points, distinct from government GIS</span></div>
+<div class="metric"><strong id="provisional">—</strong><span>Source-attributed unconfirmed positions, NOT independently corroborated</span></div>
 <div class="metric"><strong id="programs">—</strong><span>Dated government program disclosures</span></div>
 <div class="metric"><strong id="states">—</strong><span>States with some documented Flock evidence</span></div>
 <div class="metric"><strong id="accountability">—</strong><span>Source-linked government-accountability records</span></div>
 </div>
 <p id="overviewDetail" class="footnote"></p></section>
 <section aria-labelledby="stateHeading"><h2 id="stateHeading">Documented evidence by state</h2>
-<p>Point counts represent published exact coordinates. States with documented programs but zero verified exact pins are shown as <em>location unknown</em>, not camera-free.</p>
+<p>GIS labels represent original-source claims, not installed or operating equipment. Generic LPR and unknown-manufacturer positions are excluded from Flock-only synthetic routes. A state with no positively source-labeled locations may still have cameras.</p>
 <div class="filters">
 <label>Sort state table
-<select id="sort"><option value="points">Verified exact points</option><option value="programs">Government program records</option><option value="name">State A–Z</option></select></label>
+<select id="sort"><option value="points">Flock-source-labeled GIS positions</option><option value="programs">Government program records</option><option value="name">State A–Z</option></select></label>
 <button type="button" id="download" disabled>Export state summary CSV</button>
 </div>
 <div class="scroller" role="region" aria-label="Scrollable state evidence table" tabindex="0"><table aria-label="Source-documented government evidence by state">
-<thead><tr><th scope="col">State</th><th scope="col" class="num">Exact points</th><th scope="col">Relative count</th><th scope="col" class="num">Dated programs</th><th scope="col" class="num">Terminated at source date</th><th scope="col" class="num">Accountability records</th></tr></thead>
+<thead><tr><th scope="col">State</th><th scope="col" class="num">Flock-labeled GIS</th><th scope="col" class="num">Generic LPR</th><th scope="col" class="num">Manufacturer unknown</th><th scope="col">Relative Flock-labeled count</th><th scope="col" class="num">Dated programs</th><th scope="col" class="num">Terminated at source date</th><th scope="col" class="num">Accountability records</th></tr></thead>
 <tbody id="stateRows"></tbody></table></div>
 </section>
 <section aria-labelledby="timelineHeading"><h2 id="timelineHeading">Source-dated government records</h2>
@@ -63,20 +67,14 @@ a{color:#9cdeee}:focus-visible{outline:3px solid #93d9ed;outline-offset:3px}
 </section>
 <p class="footnote">Public, read-only statistics. No user routes, plate numbers, identifiable traveler data, or private community reports are gathered by this dashboard. Records change when sources are independently verified or revoked. <a href="./accountability.html">Inspect original government sources</a> · <a href="./privacy.html">Privacy</a>.</p>
 <p class="footnote"><a href="https://github.com/ayeemecee0/Katoptron/issues/new/choose" target="_blank" rel="noopener noreferrer">Request a public evidence correction</a>. Do not submit plates, faces, or personal routes.</p></main>
-<script src="./config.js"></script><script>
+<script src="./config.js"></script><script src="./analytics-data.js"></script><script>
 'use strict';
 const cfg=window.KATOPTRON_CONFIG;
 const $=id=>document.getElementById(id);
 let stateData=[],timeData=[];
 function count(n){return Number(n??0).toLocaleString('en-US');}
 async function read(table){
- if(!cfg?.supabaseUrl||!cfg?.supabasePublishableKey)throw Error('Public connection unavailable');
- const response=await fetch(cfg.supabaseUrl+'/rest/v1/'+table+'?select=*&limit=500',
-   {headers:{apikey:cfg.supabasePublishableKey},cache:'no-store',referrerPolicy:'no-referrer'});
- if(!response.ok)throw Error(table+' HTTP '+response.status);
- const rows=await response.json();
- if(!Array.isArray(rows)||rows.length>=500)throw Error(table+' invalid or truncated');
- return rows;
+ return window.KatoptronAnalyticsData.read(table,cfg.supabaseUrl,cfg.supabasePublishableKey);
 }
 function element(tag,value,cls){const e=document.createElement(tag);if(value!=null)e.textContent=String(value);if(cls)e.className=cls;return e;}
 function put(id,value){$(id).textContent=value;}
@@ -89,14 +87,16 @@ function renderStates(){
  const sorted=[...stateData],s=$('sort').value;
  sorted.sort((a,b)=>s==='name'?a.state_code.localeCompare(b.state_code):
   s==='programs'?Number(b.source_dated_program_records)-Number(a.source_dated_program_records)||a.state_code.localeCompare(b.state_code):
-   Number(b.verified_exact_gis_points)-Number(a.verified_exact_gis_points)||a.state_code.localeCompare(b.state_code));
- const max=Math.max(1,...sorted.map(x=>Number(x.verified_exact_gis_points)));
+   Number(b.source_flock_labeled_points)-Number(a.source_flock_labeled_points)||a.state_code.localeCompare(b.state_code));
+ const max=Math.max(1,...sorted.map(x=>Number(x.source_flock_labeled_points)));
  const body=$('stateRows');body.replaceChildren();
  for(const r of sorted){
   const tr=document.createElement('tr');
   tr.append(element('th',r.state_code));tr.lastChild.setAttribute('scope','row');
-  tr.append(element('td',Number(r.verified_exact_gis_points)===0?'Unknown (no exact pins)':count(r.verified_exact_gis_points),'num'));
-  const barCell=element('td');barCell.append(bar(Number(r.verified_exact_gis_points)/max*100));tr.append(barCell);
+  tr.append(element('td',count(r.source_flock_labeled_points),'num'));
+  tr.append(element('td',count(r.generic_lpr_points),'num'));
+  tr.append(element('td',count(r.unknown_manufacturer_points),'num'));
+  const barCell=element('td');barCell.append(bar(Number(r.source_flock_labeled_points)/max*100));tr.append(barCell);
   for(const key of ['source_dated_program_records','terminated_as_of_source','accountability_records'])tr.append(element('td',count(r[key]),'num'));
   body.append(tr);
  }
@@ -124,7 +124,7 @@ function csvEscape(x){
  return '"'+value.replaceAll('"','""')+'"';
 }
 $('download').addEventListener('click',()=>{
- const cols=['state_code','verified_exact_gis_points','verified_point_jurisdictions','source_dated_program_records','terminated_as_of_source','accountability_records','agenda_mentions','signed_contracts'];
+ const cols=['state_code','verified_exact_gis_points','source_flock_labeled_points','generic_lpr_points','unknown_manufacturer_points','verified_point_jurisdictions','source_dated_program_records','terminated_as_of_source','accountability_records','agenda_mentions','signed_contracts'];
  const csv=[cols.join(','),...stateData.map(r=>cols.map(k=>csvEscape(r[k])).join(','))].join('\r\n');
  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
  const a=document.createElement('a');a.href=url;a.download='katoptron-source-evidence-by-state.csv';a.click();
@@ -138,8 +138,15 @@ async function start(){
    read('flock_analytics_overview'),read('flock_analytics_states'),read('flock_analytics_monthly_evidence')
   ]);
   if(overview.length!==1)throw Error('No unique national overview returned');
-  const o=overview[0];stateData=states;timeData=months;
-  put('exact',count(o.exact_government_points));put('corroborated',count(o.separately_corroborated_points));
+  const o=overview[0];
+  window.KatoptronAnalyticsData.reconcile(o,states);
+  stateData=states;timeData=months;
+  put('exact',count(o.exact_government_points));
+  put('flock',count(o.source_flock_labeled_points));
+  put('generic',count(o.generic_lpr_points));
+  put('unknown',count(o.unknown_manufacturer_points));
+  put('corroborated',count(o.separately_corroborated_points));
+  put('provisional',count(o.source_attributed_unconfirmed_points));
   put('programs',count(o.source_dated_programs));put('states',count(o.states_with_any_documented_evidence));
   put('accountability',count(o.accountability_records));
   put('overviewDetail',count(o.terminated_at_source_date)+' program records indicate termination as of source date; '+
@@ -147,8 +154,8 @@ async function start(){
     count(o.documented_signed_contracts)+' signed agreements and '+count(o.documented_individual_positions)+
     ' explicitly documented individual official positions currently published.');
   renderStates();renderMonths();$('download').disabled=false;
-  put('status','Loaded current published evidence. Counts update from the database when original-source records change.');
- }catch(error){put('status','Published evidence analytics unavailable: '+error.message);}
+  put('status','Loaded fully reconciled published evidence. Counts describe original-source records, NOT current operating devices or nationwide camera totals.');
+ }catch(error){$('download').disabled=true;stateData=[];timeData=[];put('status','Published evidence analytics unavailable or incomplete: '+error.message);}
 }
 start();
 </script></body></html>
