@@ -47,12 +47,16 @@ const browserErrors=[];
    await page.keyboard.press('Tab');
    assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('href')),
      '#main-content',file+' keyboard skip link not first');
-   assert.equal(await page.evaluate(()=>{
+   const skipFocus=await page.evaluate(()=>{
      const link=document.activeElement,style=getComputedStyle(link);
      const rect=link.getBoundingClientRect();
-     return rect.height>=24&&rect.top>=-1&&rect.left>=-1&&
-       style.outlineStyle!=='none'&&parseFloat(style.outlineWidth)>=2;
-   }),true,file+' focused skip target invisible in system high contrast');
+     return {height:rect.height,top:rect.top,left:rect.left,
+       outlineStyle:style.outlineStyle,outlineWidth:style.outlineWidth,
+       transform:style.transform,scrollY:scrollY};
+   });
+   assert.ok(skipFocus.height>=24&&skipFocus.top>=-1&&skipFocus.left>=-1&&
+     skipFocus.outlineStyle!=='none'&&parseFloat(skipFocus.outlineWidth)>=2,
+     file+' focused skip target invisible in system high contrast: '+JSON.stringify(skipFocus));
    // WCAG 1.4.12 letter + word + paragraph spacing stress, with no document
    // horizontal overflow. These are CSS overrides, not speech synthesis.
    await page.addStyleTag({content:`
