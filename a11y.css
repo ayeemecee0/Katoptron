@@ -20,3 +20,72 @@ button,input,select,textarea,a{touch-action:manipulation}
 /* Map attribution must stay legible on mobile and remain distinguishable as links. */
 .leaflet-container .leaflet-control-attribution{background:#f5f8fa!important;color:#173746!important;opacity:1!important}
 .leaflet-container .leaflet-control-attribution a{color:#00517a!important;background:transparent!important;text-decoration:underline!important;text-underline-offset:2px;font-weight:650}
+
+/* M8 WCAG 2.2 operability: predictable control areas, without enlarging
+   inline prose citations. Native checkboxes remain inside label targets.
+   24 CSS px is the AA minimum unless target spacing/inline exceptions apply. */
+button:not([hidden]),select:not([hidden]),summary,
+a.skip-link,.masthead nav a,
+.leaflet-control-zoom a,.leaflet-control a{
+  min-height:28px;
+}
+button:not([hidden]),select:not([hidden]),summary{
+  max-width:100%;
+}
+button:not([hidden]),.masthead nav a,summary{
+  touch-action:manipulation;
+}
+summary{cursor:pointer}
+:target{scroll-margin-block:16px}
+:focus-visible{scroll-margin-block:12px}
+/* Link affordance, not color alone. The native link remains visually
+   distinguishable in paragraphs, source records and provider attributions. */
+main p a, main li a, .leaflet-control-attribution a{
+  text-decoration:underline;
+  text-underline-offset:.14em;
+}
+/* High contrast is not a theme inversion: forced-colors users select their
+   own system palette, so let OS colors control text, surfaces and focus. */
+@media(forced-colors:active){
+  :focus-visible{
+    outline:3px solid Highlight!important;
+    outline-offset:3px;
+  }
+  .skip-link,.skip-link:focus{
+    background:Canvas!important;
+    color:CanvasText!important;
+    border:2px solid Highlight!important;
+    forced-color-adjust:auto;
+  }
+  button,input,select,textarea,.comparison-choice{
+    border:1px solid ButtonText!important;
+    color:ButtonText;
+    forced-color-adjust:auto;
+  }
+  .dot,.legend-dot{
+    background:CanvasText!important;
+    border:2px solid CanvasText!important;
+    forced-color-adjust:none;
+  }
+  .comparison-choice.selected,.masthead nav a.current{
+    outline:2px solid Highlight!important;
+    outline-offset:1px;
+  }
+  .leaflet-container .leaflet-control-attribution{
+    color:CanvasText!important;
+    background:Canvas!important;
+  }
+  .leaflet-container .leaflet-control-attribution a{
+    color:LinkText!important;
+  }
+  a{ text-decoration:underline }
+}
+/* Dense labels and button groups must reflow without a page-wide horizontal
+   scroll at 320 CSS px; intentional data tables keep their own scroll area. */
+@media(max-width:400px){
+  button,select,textarea,input{max-width:100%}
+  .masthead,.workspace,main,section,aside{min-width:0}
+  .masthead nav{max-width:100%}
+  .sidebar-section{overflow-wrap:anywhere}
+  .map-toolbar,.map-actions{flex-wrap:wrap}
+}

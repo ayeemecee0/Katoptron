@@ -12,7 +12,7 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
  let severe=0,moderate=0;
  const host='http://127.0.0.1:8765/';
  try{
-  for(const width of [390,1280]){
+  for(const width of [320,390,1280]){
    const context=await browser.newContext({viewport:{width,height:850},reducedMotion:'reduce'});
    const page=await context.newPage();
    for(const file of pages){
@@ -39,7 +39,7 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
     ' moderate_or_minor='+moderate);
   assert.equal(severe,0,'Serious or critical WCAG rule violations remain');
   assert.equal(moderate,0,'Moderate or minor WCAG rule violations remain');
-  console.log('WCAG AUTOMATED PASS: evaluated rules on anonymous pages, two viewports.');
+  console.log('WCAG AUTOMATED PASS: evaluated rules on anonymous pages, three viewports, including 320px reflow.');
   console.log('Manual NVDA/VoiceOver, touch, zoom and provider account checks still required.');
  }catch(error){
   console.error('WCAG AUTOMATED AUDIT FAILED:',error.message);

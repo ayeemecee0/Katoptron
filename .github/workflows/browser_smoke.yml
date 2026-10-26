@@ -27,6 +27,7 @@ on:
       - 'portals.html'
       - 'scripts/smoke_accessibility.cjs'
       - 'scripts/smoke_zoom_accessibility.cjs'
+      - 'scripts/smoke_m8_adversarial_accessibility.cjs'
       - 'a11y.css'
       - 'map.css'
       - 'analytics.html'
@@ -87,6 +88,7 @@ jobs:
           node scripts/smoke_vendor_portals.cjs
           node scripts/smoke_accessibility.cjs
           node scripts/smoke_zoom_accessibility.cjs
+          node scripts/smoke_m8_adversarial_accessibility.cjs
       - name: Verify live free Geoapify from the authorized GitHub Pages origin
         if: github.event_name == 'workflow_run' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event_name == 'push'
         env:
