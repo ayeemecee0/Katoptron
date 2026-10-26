@@ -27,15 +27,26 @@ The expanded synthetic form-state scan is checked by the same [axe script](../sc
 - The private review rationale textarea is now named programmatically for its report and marked required. An invalid review rationale exposes `aria-invalid`, announces the corrective instruction through the status region, returns keyboard focus to the field, and clears the invalid flag as the text is corrected. The authenticated fake-client browser acceptance asserts all of these behaviors.
 - The signup/recovery component now already includes keyboard focus and invalid-field announcements; the live human functional email run validates the links, **not** whether an actual screen reader perceives those announcements.
 
+## October 26 owner acceptance: beta-release waiver (not a test pass)
+
+**Decision:** The project owner explicitly declined to run NVDA manual screen-reader testing and instructed that it not block progress. **Disposition: WAIVED / RISK ACCEPTED FOR LIMITED BETA**, rather than "NVDA PASSED." No human screen-reader results were produced or inferred. This is an acceptance decision, not evidence of WCAG conformance.
+
+**Observed human browser checks on October 26:**
+- Chrome 400% zoom: owner could navigate to required forms. This is an observed reachability check, not a complete responsive-layout audit.
+- Keyboard skip-to-content: an actual user found that Enter appeared to do nothing; [PR #27](https://github.com/ayeemecee0/Katoptron/pull/27) made all 11 main landmarks programmatically focusable and visibly outlined. Following [PR #28](https://github.com/ayeemecee0/Katoptron/pull/28), painted-focus/forced-colors regression passed. The owner independently re-tested and reported the keyboard fix **PASSED**.
+- Real signup, confirmation, password recovery, and subsequent sign-in: owner completed the full email flow; production Auth logs corroborated the events.
+
+**M8 beta disposition: ACCEPTED WITH EXPLICIT ACCESSIBILITY WAIVER.** The engineering milestone can be treated as closed for the limited public beta workflow; do not claim independent NVDA/VoiceOver, real-device touch/high-contrast, accessibility of private report deletion, full user acceptance, or WCAG 2.2 AA conformance. Retain those as a separately tracked, unverified accessibility assurance backlog. If a real user reports a barrier, reopen M8 immediately and prioritize remediation. The prior **~95% full accessibility-assurance estimate** remains an estimate and does not become a 100% verification claim because tests were waived.
+
 ## Important limitations and remaining real-world acceptance
 
 This is a **95% planning estimate**, not 95% of WCAG criteria mathematically verified. The remaining scope cannot be completed by unattended CI:
 
 | Independent acceptance | Evidence still required |
 |---|---|
-| NVDA on Windows + Firefox and/or Chrome | Human tester actually hears correct main, heading, link, region, form-error and dialog names; map alternative remains operable |
+| NVDA on Windows + Firefox and/or Chrome | **Waived by project owner for limited beta; NOT TESTED, NOT PASSED.** Still unverified: correct spoken main, heading, link, region, form-error and dialog names, operable map alternative |
 | VoiceOver on macOS/iOS and/or TalkBack Android | Human tester navigates all 11 public pages, selects government source records, identifies filters and consent, and can escape/interact with Leaflet map |
-| Actual browser 200% and 400% zoom | Real browser zoom on supported desktop browsers; proxy 640/320 CSS-pixel viewport tests do **not** exercise browser chrome or OS magnification exactly |
+| Actual browser 200% and 400% zoom | **Manual 400% zoom reachability check PASSED** on Chrome per owner. Other browser/device combinations and comprehensive reflow remain unverified; proxy 640/320 CSS-pixel tests do not reproduce all magnification behavior |
 | Genuine system high-contrast mode and physical touch/keyboard | Confirm Android, iOS and Windows system preferences, hover-independent navigation, small targets, external link discoverability, and map gestures |
 | Form error correction, consent and real email links | **Live email signup, confirmation, recovery and new-password sign-in passed October 26.** Still need real assistive-technology observation of error correction, and separately a consented private report submission/withdrawal/erasure test |
 | Independent WCAG review and user feedback | Qualitative keyboard/screen-reader observation, actual accessibility bug triage, documented manual pass/fail and remediation |
@@ -52,4 +63,4 @@ A verified human-accessibility report with test date, browser/OS, actual assisti
 
 ## Conclusion
 
-**M8 ≈95%**. Developer-controlled static/audited behavior and measurable negative cases are implemented, deployed and passing. No simulated test may be represented as actual NVDA, VoiceOver, touchscreen or independent human certification. **M9 remains separately open** for encrypted recovery backups, provider account controls, actual operational ownership and reliable sender reputation. Functional owner-tested email confirmation and password recovery no longer block it.
+**M8 limited-beta release ACCEPTED WITH WAIVERS; independent accessibility assurance remains ≈95% estimated and unverified.** Developer-controlled static/audited behavior and measurable negative cases are implemented, deployed and passing. No simulated test may be represented as actual NVDA, VoiceOver, touchscreen or independent human certification. **M9 remains separately open** for encrypted recovery backups, provider account controls, actual operational ownership and reliable sender reputation. Functional owner-tested email confirmation and password recovery no longer block it.
