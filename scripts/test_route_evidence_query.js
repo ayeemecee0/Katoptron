@@ -73,7 +73,7 @@ async function run(){
    official:page([strong],0),tiered:empty()
  }),compare.eligibleForFlockRoute),/row counts/);
  // Conflicting source identity for same record key across query boxes is held.
- const trip={points:[[38.8,-104.8],[38.8,-102.8]],distance:100000,duration:3600};
+ const trip={points:[[38.8,-104.8],[38.8,-95]],distance:950000,duration:36000};
  let i=0;
  await assert.rejects(()=>q.collect(trip,geo,async()=>{
   i++;
