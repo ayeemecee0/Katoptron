@@ -26,6 +26,24 @@ const {chromium}=require('playwright');
   await page.locator('#kind').selectOption('scheduled_contract_end');
   assert.ok((await page.locator('#timeline').textContent()).includes('That does not mean no event occurred.'),
     'Absence of signed contract must not imply a known renewal/termination');
+  r=await page.goto(new URL('agency-timeline.html?place=palo%20alto%7CCA',base).href,
+    {waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('dated records displayed'),
+    null,{timeout:45000});
+  const palo=await page.locator('#timeline').textContent();
+  assert.ok(palo.includes('2023-04-03')&&palo.includes('Palo Alto council voted'),
+   'Original 2023 recorded council decision must be dated, not an inferred installation');
+  assert.ok(palo.includes('2026-04-21')&&palo.includes('partially redacted'),
+   'Original source-date search log publication missing');
+  const undated=await page.locator('#undated').textContent();
+  assert.ok(undated.includes('three-year Flock cost estimate')&&undated.includes('165,900'),
+   'Original undated government estimate must be shown separately from signed expenditure');
+  r=await page.goto(new URL('agency-timeline.html?place=mill%20valley%7CCA',base).href,
+    {waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('dated records displayed'),
+    null,{timeout:45000});
+  assert.ok((await page.locator('#timeline').textContent()).includes('2026-09-09'));
+  assert.ok((await page.locator('#timeline').textContent()).includes('reported disabling'));
   r=await page.goto(new URL('original-acquisition.html',base).href,
     {waitUntil:'domcontentloaded',timeout:25000});
   assert.equal(r?.status(),200);
