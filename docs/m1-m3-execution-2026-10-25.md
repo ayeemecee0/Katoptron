@@ -1,5 +1,14 @@
 # Katoptron M1–M3 development execution and acceptance — October 25, 2026
 
+> **Latest October 26 engineering checkpoint:** M3 evidence verification
+> **engineering safeguards signed off at 100%**, following source-label,
+> timestamp-freshness and auto-import anti-promotion protections and
+> production acceptance. This does **not** certify nationwide individual
+> Flock devices, physical operation or resolution of the six privately
+> held publisher-endorsement GIS sources. Read the
+> [M3 engineering acceptance and remaining source gaps](./m3-evidence-verification-engineering-signoff-2026-10-26.md).
+
+
 ## Production audit (directly queried)
 
 | Control | Observed result |
