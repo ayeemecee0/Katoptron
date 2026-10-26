@@ -31,6 +31,13 @@ const {chromium}=require('playwright');
   await page.waitForURL(/government-watch\.html/, {timeout:16000});
   await page.waitForFunction(()=>document.querySelector('#status')
      ?.textContent?.includes('localities loaded'),null,{timeout:40000});
+  await page.waitForFunction(()=>window.KatoptronWatchMail &&
+     (document.querySelector('#watchAuthStatus')?.textContent?.includes('Sign in')||
+      document.querySelector('#watchAuthStatus')?.textContent?.includes('Authenticated')),
+     null,{timeout:40000});
+  assert.equal(await page.locator('#watchSubscribe').isDisabled(),true,
+    'Anonymous visitors cannot subscribe to government watch email');
+
   assert.ok((await page.locator('#cities').textContent()).includes('Folsom'));
   assert.ok((await page.locator('#updates').textContent()).includes('Vendor disclosure'));
   await page.locator('#review').click();
