@@ -4,16 +4,19 @@ Runs after triage, not another geometry scraper. Archived leads are never
 deleted; exact approved sources and already-published points cease counting as
 new coverage. Repeated runs preserve original hold dates until facts change.
 """
+import argparse
 from collections import Counter
 from auto_verify_flock_agenda import api_request
 from paged_supabase import fetch_all
 
 MAX=200
 
-def run(api=api_request):
+def run(api=api_request, reactivate_only=False):
     results={}
-    for rpc in ('reconcile_flock_gis_candidate_lifecycle',
-                'reconcile_flock_gis_point_case_dispositions'):
+    rpcs=('reactivate_changed_gis_source_evidence',) if reactivate_only else (
+        'reconcile_flock_gis_candidate_lifecycle',
+        'reconcile_flock_gis_point_case_dispositions')
+    for rpc in rpcs:
         r=api('rpc/'+rpc,method='POST',payload={})
         if not isinstance(r,dict):
             raise ValueError('Private GIS lifecycle reconciliation returned incomplete receipt')
@@ -38,6 +41,10 @@ def run(api=api_request):
     return results
 
 if __name__=='__main__':
-    try:run()
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--reactivate-only',action='store_true',
+      help='Preflight new/changed evidence without delaying overdue research')
+    args=parser.parse_args()
+    try:run(reactivate_only=args.reactivate_only)
     except Exception as exc:
         raise SystemExit('Private source reconciliation held: '+type(exc).__name__) from None
