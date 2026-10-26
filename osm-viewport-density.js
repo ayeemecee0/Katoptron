@@ -1,5 +1,6 @@
 /* Density fallback for crowded OpenStreetMap community-only map viewports.
- * Every marker is an aggregate CELL CENTER, never an inferred camera location.
+ * Every marker is an aggregate cluster at a real example OSM source coordinate,
+ * never a mathematical cell center or inferred verified camera location.
  * Never affects government verified records, simulated detections, or routing.
  */
 (function(root,factory){
@@ -35,7 +36,7 @@
    p_cell_degrees:String(cell)
   });
   const response=await request(cfg.supabaseUrl.replace(/\/$/,'')+
-    '/rest/v1/rpc/flock_public_osm_viewport_density?'+p.toString(),{
+    '/rest/v1/rpc/flock_public_osm_viewport_density_with_anchor?'+p.toString(),{
     headers:{apikey:cfg.supabasePublishableKey},
     cache:'no-store',referrerPolicy:'no-referrer',signal
   });
@@ -46,11 +47,17 @@
   let sum=0;
   for(const r of rows){
    const lat=Number(r.cell_latitude),lon=Number(r.cell_longitude);
+   const exampleLat=Number(r.example_latitude),exampleLon=Number(r.example_longitude);
    const count=Number(r.community_report_count);
    if(!Number.isFinite(lat)||!Number.isFinite(lon)||
+      !Number.isFinite(exampleLat)||!Number.isFinite(exampleLon)||
       !Number.isSafeInteger(count)||count<=0||
-      lat<16.5||lat>72.5||lon< -180.5||lon> -63.5)
-    throw Error('Community density geometry or count invalid');
+      lat<16.5||lat>72.5||lon< -180.5||lon> -63.5||
+      exampleLat<Math.max(lat-cell/2,box.south)-0.000001||
+      exampleLat>Math.min(lat+cell/2,box.north)+0.000001||
+      exampleLon<Math.max(lon-cell/2,box.west)-0.000001||
+      exampleLon>Math.min(lon+cell/2,box.east)+0.000001)
+    throw Error('Community density source-anchor geometry or count invalid');
    sum+=count;
    if(!Number.isSafeInteger(sum))throw Error('Community aggregate sum overflow');
   }
