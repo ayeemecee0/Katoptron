@@ -1,10 +1,12 @@
 """Offline failure-path acceptance for production M1-M3 audit."""
 import copy
+import datetime as dt
 import unittest
 import audit_m1_m3_production as audit
 
 URL='https://city.example.gov/rest/Flock/FeatureServer/0'
 CITY='City, ST'
+NOW=dt.datetime.now(dt.timezone.utc)
 def snapshot():
     return (
         [{'record_key':'gis-authority-1','label':'Agency camera',
@@ -13,14 +15,15 @@ def snapshot():
           'evidence_summary':'Original government camera location',
           'verification_status':'verified','location_accuracy':'exact',
           'verification_method':'official_georeferenced_camera_record_v1',
-          'last_source_recheck_at':'2026-10-25T19:00:00+00:00'}],
+          'last_source_recheck_at':NOW.isoformat(),
+          'source_flock_label_status':'unconfirmed'}],
         [{'source_key':'authority','gis_layer_url':URL,
           'jurisdiction_label':CITY,'source_status':'verified'}],
         [{'case_key':'tier-1','source_key':'second','source_url':URL+'-alt',
           'jurisdiction_label':'Other, ST','latitude':39.1,'longitude':-122.1,
           'evidence_sha256':'b'*64,
           'caveat':'NOT independently hardware verified or currently operational',
-          'publication_status':'active','source_checked_at':'2026-10-25T19:00:00+00:00'}],
+          'publication_status':'active','source_checked_at':NOW.isoformat()}],
         [{'source_key':'second','gis_layer_url':URL+'-alt',
           'jurisdiction_label':'Other, ST','policy_status':'approved'}],
         [{'gis_layer_url':'https://gis.example.org/candidate','trust_status':'unverified'}],
@@ -84,10 +87,52 @@ class SourceTierAcceptance(unittest.TestCase):
     def test_live_oak_generic_lpr_requires_disclaimer(self):
         sample=list(copy.deepcopy(snapshot()))
         sample[1][0]['source_key']='live_oak_tx'
-        with self.assertRaisesRegex(ValueError,'manufacturer'):
+        with self.assertRaisesRegex(ValueError,'Generic Live Oak LPR'):
             audit.check(sample,1)
         sample[0][0]['evidence_summary']+='; NOT per-device manufacturer'
+        sample[0][0]['source_flock_label_status']='generic_lpr'
         self.assertEqual(audit.check(sample,1)['live_oak_source_positions'],1)
+
+    def test_source_flock_label_undocumented_or_missing_rejected(self):
+        sample=list(copy.deepcopy(snapshot()))
+        sample[0][0]['source_flock_label_status']='source_flock_identified'
+        with self.assertRaisesRegex(ValueError,'reviewed source key'):
+            audit.check(sample,1)
+        sample[0][0]['source_flock_label_status']=None
+        with self.assertRaisesRegex(ValueError,'not classified'):
+            audit.check(sample,1)
+
+    def test_positive_label_only_for_pinned_flock_source(self):
+        sample=list(copy.deepcopy(snapshot()))
+        sample[1][0]['source_key']='monroe_wa'
+        sample[0][0]['source_flock_label_status']='source_flock_identified'
+        result=audit.check(sample,1)
+        self.assertEqual(result['source_labeled_flock_points'],1)
+        self.assertEqual(result['generic_lpr_source_points'],0)
+        sample[0][0]['source_flock_label_status']='unconfirmed'
+        with self.assertRaisesRegex(ValueError,'unexpectedly changed'):
+            audit.check(sample,1)
+
+    def test_government_recheck_freshness_and_future_skew(self):
+        sample=list(copy.deepcopy(snapshot()))
+        sample[0][0]['last_source_recheck_at']=(NOW-dt.timedelta(days=366)).isoformat()
+        with self.assertRaisesRegex(ValueError,'freshness'):
+            audit.check(sample,1,now=NOW)
+        sample[0][0]['last_source_recheck_at']=(NOW+dt.timedelta(minutes=11)).isoformat()
+        with self.assertRaisesRegex(ValueError,'freshness'):
+            audit.check(sample,1,now=NOW)
+        sample[0][0]['last_source_recheck_at']='not-a-date'
+        with self.assertRaisesRegex(ValueError,'freshness'):
+            audit.check(sample,1,now=NOW)
+
+    def test_low_confidence_source_recheck_freshness(self):
+        sample=list(copy.deepcopy(snapshot()))
+        sample[2][0]['source_checked_at']=(NOW-dt.timedelta(days=15)).isoformat()
+        with self.assertRaisesRegex(ValueError,'Unconfirmed source-publication'):
+            audit.check(sample,1,now=NOW)
+        sample[2][0]['source_checked_at']=(NOW+dt.timedelta(minutes=15)).isoformat()
+        with self.assertRaisesRegex(ValueError,'Unconfirmed source-publication'):
+            audit.check(sample,1,now=NOW)
 
     def test_invalid_gis_coordinates_fail(self):
         sample=list(copy.deepcopy(snapshot()))
