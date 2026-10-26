@@ -115,7 +115,7 @@ class MapPageTests(unittest.TestCase):
         self.assertIn('state.evidenceAbort?.abort()',self.script)
         self.assertIn('RouteEvidence.collect(route,Geo,routeCameraRows',self.script)
         self.assertIn('route-evidence-query.js',self.html)
-        self.assertIn('Prefer:\\'count=exact\\'',self.script)
+        self.assertIn("Prefer:'count=exact'",self.script)
         self.assertIn('RouteEvidence.exactCount',self.script)
         self.assertIn('if(state.route===route){',self.script)
         self.assertIn('displaySelectedRouteEvidence();',self.script)
