@@ -33,7 +33,8 @@ def build(meta,network,edges):
         }})
     # Preserve data use/attribution. DO NOT copy vendor geocoded lat/lon.
     provenance=dict(
-     updated=meta["generatedAt"],source="EyesOnFlock via deflock-data R2",
+     updated=meta["generatedAt"],generatedAt=meta["generatedAt"],
+     source="EyesOnFlock via deflock-data R2",
      source_url="https://deflockdata.dontgetflocked.com/sharing-network-meta.json",
      license="CC BY-SA 4.0",
      license_url="https://creativecommons.org/licenses/by-sa/4.0/",
