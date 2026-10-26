@@ -590,13 +590,15 @@
   async function cameraRows(bounds, signal) {
     const response = await fetch(publicCameraUrl(bounds), {
       // Publishable API keys are not user JWTs.
-      headers: { apikey: CFG.supabasePublishableKey },
+      headers: { apikey: CFG.supabasePublishableKey,Prefer:'count=exact' },
       signal, cache:'no-store'
     });
     if (!response.ok) throw new Error('Camera API HTTP ' + response.status);
     const rows = await response.json();
-    if (!Array.isArray(rows) || rows.length>=MAX_VISIBLE)
-      throw new Error('Camera evidence page incomplete or source density exceeds limit');
+    if(!RouteEvidence)throw Error('Camera viewport completeness verifier missing');
+    const count=RouteEvidence.exactCount(response.headers.get('content-range'),rows);
+    if (count>rows.length || rows.length>=MAX_VISIBLE)
+      throw new Error('Camera viewport exceeds complete source response; zoom in to reduce density');
     if(rows.some(x=>!x || !validCoord(Number(x.latitude),Number(x.longitude)) ||
       !['exact','approximate'].includes(x.location_accuracy) ||
       typeof x.record_key!=='string' || !x.record_key))
@@ -617,12 +619,14 @@
   }
   async function tieredRows(bounds,signal) {
     const response=await fetch(publicTieredUrl(bounds),{
-      headers:{apikey:CFG.supabasePublishableKey},signal,cache:'no-store'
+      headers:{apikey:CFG.supabasePublishableKey,Prefer:'count=exact'},signal,cache:'no-store'
     });
     if(!response.ok)throw new Error('Tiered camera API HTTP '+response.status);
     const rows=await response.json();
-    if(!Array.isArray(rows)||rows.length>=MAX_VISIBLE)
-      throw new Error('Tiered source list unavailable or truncated; camera coverage unknown');
+    if(!RouteEvidence)throw Error('Tiered viewport completeness verifier missing');
+    const count=RouteEvidence.exactCount(response.headers.get('content-range'),rows);
+    if(count>rows.length||rows.length>=MAX_VISIBLE)
+      throw new Error('Tiered source map viewport incomplete; zoom in to narrow evidence density');
     if(rows.some(row=>!row || !validCoord(Number(row.latitude),Number(row.longitude)) ||
         !['government_verified','independently_corroborated','source_attributed_unconfirmed'].includes(row.evidence_tier)))
       throw new Error('Tiered source contained invalid location or classification');
