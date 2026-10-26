@@ -9,6 +9,14 @@ import unittest
 SCRIPT=(Path(__file__).resolve().parent/"verify_owner_private_backup_restore.ps1").read_text(encoding="utf-8")
 
 class OwnerRestoreSafety(unittest.TestCase):
+ def test_no_duplicated_script_or_truncated_powershell_strings(self):
+  self.assertEqual(SCRIPT.count("param("),1)
+  self.assertEqual(SCRIPT.count("$preflight=@'"),1)
+  self.assertEqual(SCRIPT.count("$audit=@'"),1)
+  self.assertEqual(SCRIPT.count("--single-transaction"),1)
+  self.assertEqual(SCRIPT.count("LOCAL AUTH/DATABASE RESTORE PASS"),1)
+  self.assertLess(len(SCRIPT),9000)
+  self.assertIn("if ($env:PGDATABASE -notmatch '^katoptron_recovery_[a-z0-9_]{4,50}$') {",SCRIPT)
  def test_never_run_in_ci(self):
   self.assertIn("$env:GITHUB_ACTIONS -eq 'true'",SCRIPT)
   self.assertIn("LOCAL_DISPOSABLE_ONLY",SCRIPT)
@@ -21,7 +29,7 @@ class OwnerRestoreSafety(unittest.TestCase):
   self.assertIn("current_database() !~",SCRIPT)
   self.assertIn("rolsuper",SCRIPT)
   self.assertIn("object_count<>0",SCRIPT)
-  self.assertIn("Recovery target is not EMPTY",SCRIPT)
+  self.assertIn("Recovery destination is not EMPTY",SCRIPT)
   self.assertIn("--single-transaction",SCRIPT)
   self.assertLess(SCRIPT.index("$preflight=@'"),SCRIPT.index("--file $paths['roles.sql']"))
   self.assertIn("--command $preflight --file $paths['roles.sql']",SCRIPT)
