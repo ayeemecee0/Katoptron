@@ -10,21 +10,22 @@ const assert=require('node:assert/strict');
  try{
   const r=await page.goto(new URL('community-map.html',base).href,{waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(r?.status(),200);
-  await page.waitForFunction(()=>document.querySelector('#communityCount')?.textContent?.includes(','),null,{timeout:30000});
+  await page.waitForFunction(()=>window.exactSnapshot?.count>90000,null,{timeout:60000});
   await page.evaluate(()=>{
     community.fitBounds([[33.747,-84.503],[34.003,-84.247]]);
     if(community.getZoom()<10)community.setView([33.875,-84.375],10);
   });
-  await page.waitForTimeout(7000);
+  await page.waitForTimeout(800);
   const overview=await page.evaluate(()=>({
     zoom:community.getZoom(),
-    bounds:community.getBounds().toBBoxString(),
+    count:exactSnapshot.count,
+    canvas:document.querySelectorAll('.katoptron-osm-exact-canvas').length,
+    blobs:document.querySelectorAll('.leaflet-overlay-pane .leaflet-interactive').length,
     status:document.querySelector('#status')?.textContent||''
   }));
-  assert.ok(overview.zoom>=10&&overview.status.includes('approximate reporting cells'),
-    'Dense city viewport did not show complete aggregate coverage: '+JSON.stringify(overview));
-  assert.ok(!overview.status.includes('unavailable'),'Dense source aggregation failed');
-  assert.ok(Number.parseInt(overview.status.replaceAll(',',''),10)>1000,overview.status);
+  assert.ok(overview.zoom>=10&&overview.count>100000&&
+    overview.canvas===1&&overview.blobs===0,
+    'Dense metro must use original OSM dots, never invented regions: '+JSON.stringify(overview));
   // A closer view must display only a completely returned result.
   const point=await page.evaluate(async()=>{
    const cfg=window.KATOPTRON_CONFIG;
@@ -42,14 +43,16 @@ const assert=require('node:assert/strict');
    return data[0];
   });
   await page.evaluate(({latitude,longitude})=>community.setView([latitude,longitude],16),point);
-  await page.waitForFunction(()=>{
-   const status=document.querySelector('#status')?.textContent||'';
-   return status.includes('complete source query')||status.includes('unavailable');
-  },null,{timeout:35000});
-  const small=await page.locator('#status').textContent();
-  assert.ok(small.includes('complete source query')&&
-    Number.parseInt(small.replaceAll(',',''),10)>=1,small);
-  console.log('COMMUNITY VIEWPORT COMPLETENESS PASS: complete metro density fallback plus precise source-linked points when zoomed');
+  await page.waitForTimeout(900);
+  const exact=await page.evaluate(()=>({
+    zoom:community.getZoom(),
+    canvas:document.querySelectorAll('.katoptron-osm-exact-canvas').length,
+    data:exactSnapshot.count,
+    status:document.querySelector('#status')?.textContent||''
+  }));
+  assert.ok(exact.zoom>=16&&exact.canvas===1&&exact.data>100000&&
+    exact.status.includes('individual community coordinates'),JSON.stringify(exact));
+  console.log('COMMUNITY VIEWPORT COMPLETENESS PASS: nationally and locally visible true OSM coordinates, no approximation clusters');
  }catch(e){console.error('COMMUNITY VIEWPORT COMPLETENESS FAILED',e.message);process.exitCode=1}
  finally{await browser.close()}
 })().catch(e=>{console.error('Viewport test harness failed',e.message);process.exitCode=1});
