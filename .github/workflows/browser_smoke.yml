@@ -14,6 +14,7 @@ on:
       - 'scripts/smoke_mobile.cjs'
       - 'scripts/smoke_geoapify.cjs'
       - 'scripts/smoke_route_completeness.cjs'
+      - 'scripts/smoke_community_route.cjs'
       - 'route-evidence-query.js'
       - 'scripts/smoke_geoapify_live.cjs'
       - 'scripts/smoke_community.cjs'
@@ -75,6 +76,7 @@ jobs:
         run: |
           node scripts/smoke_browser.cjs
           node scripts/smoke_route_completeness.cjs
+          node scripts/smoke_community_route.cjs
           node scripts/smoke_community_overlay.cjs
           node scripts/smoke_mobile.cjs
           node scripts/smoke_geoapify.cjs
