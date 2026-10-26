@@ -282,13 +282,16 @@ async function loadVisible(){
    for(const cell of grid.rows){
     const count=Number(cell.community_report_count);
     const cLat=Number(cell.cell_latitude),cLon=Number(cell.cell_longitude);
+    const sampleLat=Number(cell.example_latitude),sampleLon=Number(cell.example_longitude);
     const view={south:b.getSouth(),north:b.getNorth(),
                 west:b.getWest(),east:b.getEast()};
-    L.circleMarker([cLat,cLon],{
+    // Use one real OSM report as a display anchor. Its surrounding records
+    // may lie across the entire grid cell; the badge is not a camera pin.
+    L.circleMarker([sampleLat,sampleLon],{
      radius:Math.min(22,Math.max(6,Math.log10(count+1)*6)),
      weight:2,color:'#ffffff',dashArray:'3 3',fillColor:'#a43061',fillOpacity:.7
     }).bindTooltip(count.toLocaleString()+
-     ' OSM source reports grouped in a '+grid.cell+'° area, NOT an exact camera pin. Click to inspect source.')
+     ' OSM reports in a '+grid.cell+'° area; marker anchored on one original report, NOT every camera. Click to inspect source.')
       .on('click',()=>inspectSourceCell(cLat,cLon,grid.cell,view))
       .addTo(crowdedPoints);
    }
