@@ -19,14 +19,38 @@ button{cursor:pointer}button:hover{background:#24475d}input{min-width:200px;flex
 <header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Main navigation"><a href="./agency-xray.html">AGENCY X-RAY</a><a href="./sharing-explorer.html">SHARING EXPLORER</a><a href="./accountability.html">GOVERNMENT RECORDS</a></nav></header>
 <main id="main-content"><h1>Local Government Watch</h1>
 <p>Follow a city and check the latest published government events and Flock vendor disclosures against what you've already viewed. Each item opens its underlying source.</p>
-<div class="note"><strong>Current release: private browser watchlist, not background alerts.</strong> Watched localities and read/unread state stay on this device. The page checks for new records when opened; it does not send email, push notifications or monitor the web while closed. An original event date is not necessarily its Katoptron publication date, and a new historical record may appear later.</div>
+<div class="note"><strong>Local watch and optional email alerts:</strong> Browser-only follows still work without an account. A signed-in user can separately opt in to source-dated email alerts with a confirmed account mailbox. Email delivery depends on an encrypted SMTP sender configuration. No addresses, plates or travel routes are gathered. Existing historical source records are not replayed to new subscribers.</div>
 <div class="search"><label for="query">Add a locality</label><input type="search" id="query" maxlength="120" placeholder="Search Folsom, Menifee, WA…"><button id="add" type="button">Follow</button></div>
 <p id="status" role="status" aria-live="polite">Loading published evidence…</p>
+<section class="panel" aria-labelledby="emailWatchHeading">
+<h2 id="emailWatchHeading">Email alerts (optional, OFF by default)</h2>
+<p id="watchAuthStatus" role="status">Checking your Katoptron account…</p>
+<form id="watchAuth" class="search">
+<label for="watchEmail">Email</label><input id="watchEmail" type="email" autocomplete="email" maxlength="254" required>
+<label for="watchPassword">Password</label><input id="watchPassword" type="password" minlength="12" autocomplete="current-password" required>
+<button type="submit">Sign in</button>
+<button type="button" id="watchSignup">Create account (email confirmation required)</button>
+<button type="button" id="watchSignout" hidden>Sign out</button>
+</form>
+<p>Select a watched locality below, then choose the source evidence categories you consent to receive.</p>
+<div class="actions">
+<label><input type="checkbox" id="watchGov" checked> Government decisions</label>
+<label><input type="checkbox" id="watchVendor" checked> Vendor disclosures and retention changes</label>
+<label><input type="checkbox" id="watchSharing" checked> Dated sharing-list changes</label>
+<label><input type="checkbox" id="watchRenewal" checked> Documented contract end dates</label>
+</div><div class="actions">
+<button id="watchSubscribe" type="button" disabled>Enable email for selected locality</button>
+<button id="watchUnsubscribe" type="button" disabled>Disable email for selected locality</button>
+</div>
+<p id="watchEmailStatus" role="status" aria-live="polite">No email preference selected. Notifications are not sent unless a sender is configured.</p>
+</section>
 <div class="wrap">
 <section class="panel" aria-labelledby="following"><h2 id="following">Followed localities</h2><div id="cities"></div></section>
 <section class="panel" aria-labelledby="activity"><h2 id="activity">Documented activity</h2><p id="hint">Choose a followed locality to review its dated evidence.</p><div id="updates"></div><div class="actions"><button type="button" id="review" disabled>Mark current records reviewed</button><a id="open" href="./agency-xray.html">Open Agency X-Ray</a></div></section>
 </div><p>Unobserved contracts, city votes, sharing changes or website updates cannot be inferred. <a href="./sharing-explorer.html">Read about the access-and-sharing evidence</a> or <a href="./agency-xray.html">inspect a city profile</a>.</p>
-</main><script src="./config.js"></script><script src="./agency-intelligence.js"></script><script>
+</main><script src="./config.js"></script><script src="./agency-intelligence.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="./watch-email.js"></script><script>
 'use strict';
 const I=window.KatoptronIntelligence,$=id=>document.getElementById(id);
 let groups=[],selected=null;
@@ -40,6 +64,7 @@ function follow(){
 }
 function select(g){
  selected=g;$('updates').replaceChildren();$('review').disabled=false;
+ if(window.KatoptronWatchMail)window.KatoptronWatchMail.select(g);
  $('open').href='./agency-xray.html?place='+encodeURIComponent(g.key);
  const s=I.safeRead(),changed=new Set(I.changes(g,s).map(x=>x.id));
  const list=I.updateItems(g);
