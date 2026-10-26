@@ -77,6 +77,67 @@ class GovernmentWatchSafety(unittest.TestCase):
         self.assertIn("not a travel route",mail.get_content())
         with self.assertRaisesRegex(ValueError,"Timezone"):
             M.iso_datetime("2026-10-25T10:00:00")
+    def test_sender_does_not_replay_prior_events_or_duplicate_delivery(self):
+        # Fake all protected DB/API and encrypted SMTP interactions. This
+        # tests real delivery orchestration without sending actual messages.
+        original=M.api
+        receipts=set()
+        sent=[]
+        subscribers=[{
+          "user_id":"test-user-uuid","email":"verified@example.org",
+          "locality_key":"folsom|CA",
+          "watch_government":True,"watch_vendor":False,
+          "watch_sharing":False,"watch_renewals":False,
+          "subscribed_at":"2026-10-25T20:00:00Z"
+        }]
+        records=[
+          {"event_key":"before","kind":"government_decision",
+           "title":"Historical record","summary":"Historical evidence.",
+           "source_url":"https://agency.example.gov/old",
+           "source_date":"2026-10-01","evidence_tier":"original_government",
+           "observed_at":"2026-10-25T19:00:00Z"},
+          {"event_key":"new","kind":"government_decision",
+           "title":"New verified government source","summary":"A new published decision.",
+           "source_url":"https://agency.example.gov/new",
+           "source_date":"2026-10-25","evidence_tier":"original_government",
+           "observed_at":"2026-10-25T21:00:00Z"},
+          {"event_key":"not-opted","kind":"sharing_list_changed",
+           "title":"Secondary sharing observation","summary":"Source reported list changed.",
+           "source_url":"https://eyesonflock.com/portal/folsom-ca-pd",
+           "source_date":"2026-10-25",
+           "evidence_tier":"secondary_aggregated_portal_snapshot",
+           "observed_at":"2026-10-25T22:00:00Z"}
+        ]
+        def fake_api(url,secret,path,method="GET",payload=None):
+            if path=="rpc/flock_watch_delivery_candidates":
+                return subscribers
+            if path.startswith("flock_agency_watch_events?"):
+                return records
+            if path.startswith("flock_watch_deliveries?") and method=="GET":
+                return [{"event_key":x} for x in receipts]
+            if path.startswith("flock_watch_deliveries?") and method=="POST":
+                receipts.update(row["event_key"] for row in payload)
+                return None
+            raise AssertionError("Unexpected private Watch request: "+path)
+        M.api=fake_api
+        try:
+            settings=("smtp.example.org",587,"user","secret","alerts@example.org")
+            def fake_send(message,connection):
+                self.assertEqual(connection,settings)
+                self.assertIn("New verified government source",message.get_content())
+                self.assertNotIn("Historical record",message.get_content())
+                self.assertNotIn("Secondary sharing observation",message.get_content())
+                sent.append(message)
+            self.assertEqual(M.deliver("https://example.supabase.co","protected",settings,send=fake_send),1)
+            self.assertEqual(receipts,{"new"})
+            self.assertEqual(len(sent),1)
+            self.assertEqual(M.deliver("https://example.supabase.co","protected",settings,send=fake_send),0)
+            self.assertEqual(len(sent),1)
+            subscribers.clear()  # Actual unsubscribe removes recipient from protected query.
+            self.assertEqual(M.deliver("https://example.supabase.co","protected",settings,send=fake_send),0)
+        finally:
+            M.api=original
+
     def test_missing_source_url_cannot_be_alert(self):
         self.assertEqual(S.build_events([{"event_key":"a",
           "event_type":"recorded_legislative_decision",
