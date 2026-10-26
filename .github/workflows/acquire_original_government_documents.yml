@@ -8,6 +8,7 @@ on:
     paths:
       - 'scripts/acquire_original_government_documents.py'
       - 'scripts/test_original_government_documents.py'
+      - 'supabase/migrations/135_m2_source_link_lifecycle_and_private_pdf_content_triage.sql'
       - '.github/workflows/acquire_original_government_documents.yml'
 permissions:
   contents: read
