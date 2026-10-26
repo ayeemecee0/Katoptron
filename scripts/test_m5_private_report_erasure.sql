@@ -77,11 +77,16 @@ end $check$;
 insert into public.flock_community_submissions
  (latitude,longitude,description,consent_to_review,publication_consent)
  values(38.5818,-121.4944,'Rollback-only third report for 24-hour limit even after first report deletion.',true,false);
+reset role;
 do $check$
 begin
  if (select count(*) from public.flock_private_submission_rate_events
  where user_id=current_setting('katoptron.m5_owner')::uuid)<>3
  then raise exception 'Rate ledger lost erased report';end if;
+end $check$;
+set local role authenticated;
+do $check$
+begin
  begin
   insert into public.flock_community_submissions
    (latitude,longitude,description,consent_to_review,publication_consent)
