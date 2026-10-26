@@ -15,6 +15,17 @@ class EvidenceLabels(unittest.TestCase):
         self.assertIn('individual manufacturers are not separately confirmed',html)
         self.assertIn('23 city-police-linked LPR map positions',html)
         self.assertIn('excluded from verified GIS totals',html)
+    def test_source_mapped_generic_lpr_excluded_only_from_flock_simulation(self):
+        map_js=(ROOT/'map.js').read_text(encoding='utf8')
+        compare=(ROOT/'route-comparison.js').read_text(encoding='utf8')
+        methodology=(ROOT/'methodology.html').read_text(encoding='utf8')
+        self.assertIn('.filter(Comparison.eligibleForFlockRoute)',map_js)
+        self.assertIn('!Comparison.eligibleForFlockRoute(row)',map_js)
+        self.assertIn('GENERIC_CITY_LPR_LAYER',compare)
+        self.assertIn('if(!eligibleForFlockRoute(r))continue',compare)
+        self.assertIn('excluded from Flock-only planned-route proximity',methodology)
+        self.assertIn('individual device manufacturer is not confirmed',map_js)
+
     def test_map_popup_remains_qualified(self):
         js=(ROOT/'map.js').read_text(encoding='utf8')
         self.assertIn('actual detections not available',js)
