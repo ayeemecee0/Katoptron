@@ -16,6 +16,9 @@
   function eligibleForFlockRoute(record) {
     if(!record||typeof record!=='object')return false;
     if(record.evidence_tier && record.evidence_tier!=='government_verified')return false;
+    // Fail closed: government-mapped generic/unknown LPR positions are not
+    // Flock-labeled source observations, even if their agency uses Flock.
+    if(record.source_flock_label_status!=='source_flock_identified')return false;
     if(record.source_url===GENERIC_CITY_LPR_LAYER)return false;
     if(typeof record.evidence_summary==='string' &&
        /NOT per-device manufacturer/i.test(record.evidence_summary))return false;
