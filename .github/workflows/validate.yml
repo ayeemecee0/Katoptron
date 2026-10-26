@@ -126,6 +126,7 @@ on:
       - 'supabase/migrations/123_verified_vendor_secondary_portal_identity_view.sql'
       - 'supabase/migrations/124_watch_delivery_receipt_event_fk_index.sql'
       - 'scripts/test_exact_portal_identity_crosswalk.sql'
+      - 'scripts/test_watch_subscription_rls_impersonation.sql'
       - 'scripts/test_agency_watch_security.sql'
       - 'agency-network.js'
       - 'watch-email.js'
@@ -771,6 +772,8 @@ jobs:
             -f scripts/test_osm_exact_snapshot_sql.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_agency_watch_security.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_watch_subscription_rls_impersonation.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_exact_portal_identity_crosswalk.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
