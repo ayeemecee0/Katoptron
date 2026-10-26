@@ -117,6 +117,13 @@ on:
       - 'supabase/migrations/114_community_density_real_observation_anchors.sql'
       - 'supabase/migrations/115_osm_viewport_density_source_anchors.sql'
       - 'supabase/migrations/116_public_osm_exact_canvas_snapshot.sql'
+      - 'supabase/migrations/117_secondary_portal_agency_directory.sql'
+      - 'supabase/migrations/118_opt_in_government_watch_alerts.sql'
+      - 'supabase/migrations/119_sharing_fingerprints_and_contract_end_dates.sql'
+      - 'supabase/migrations/120_watch_delivery_post_opt_in_boundaries.sql'
+      - 'scripts/test_agency_watch_security.sql'
+      - 'agency-network.js'
+      - 'watch-email.js'
       - 'scripts/test_osm_exact_snapshot_sql.sql'
       - 'scripts/test_osm_point_canvas.cjs'
       - 'osm-point-canvas.js'
@@ -351,7 +358,13 @@ jobs:
           # Temporary Auth schema simulates Supabase auth.uid() and user IDs.
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 <<'SQL'
           create schema auth;
-          create table auth.users(id uuid primary key);
+          create table auth.users(
+            id uuid primary key,
+            email text,
+            email_confirmed_at timestamptz,
+            deleted_at timestamptz,
+            is_anonymous boolean not null default false
+          );
           create function auth.uid() returns uuid
             language sql stable
             as 'select nullif(current_setting(''request.jwt.claim.sub'',true),'''')::uuid';
@@ -708,6 +721,14 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/116_public_osm_exact_canvas_snapshot.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/117_secondary_portal_agency_directory.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/118_opt_in_government_watch_alerts.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/119_sharing_fingerprints_and_contract_end_dates.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/120_watch_delivery_post_opt_in_boundaries.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -735,6 +756,8 @@ jobs:
             -f scripts/test_osm_viewport_original_anchor.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_exact_snapshot_sql.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_agency_watch_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_analytics_m7.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
@@ -1130,6 +1153,10 @@ jobs:
           node scripts/test_osm_point_canvas.cjs
           node --check agency-intelligence.js
           node scripts/test_agency_intelligence.cjs
+          node --check agency-network.js
+          node --check watch-email.js
+          python -m unittest discover -s scripts -p 'test_import_licensed_agency_network.py' -v
+          python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
           node --check routing-routes.js
           node --check routing-provider.js
           node --check geoapify-adapter.js
