@@ -50,7 +50,7 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 <div class="stat"><strong id="overlapCount">—</strong><span>Official-source locations with at least one OSM observation within 30m (possible overlap only)</span></div>
 <p id="crossSourceStatus" class="small" role="status">Checking possible proximity matches across sources…</p>
 <p id="status" role="status" aria-live="polite">Loading nationwide community data…</p>
-<div class="note"><strong>Numbered circles are report clusters, never camera pins.</strong> Each national cluster covers a 3° grid region and is now displayed at a real example OSM-report coordinate, not the geometric cell center (which could be offshore). <strong>Click a cluster</strong> to zoom to its underlying reports. At crowded closer zooms, click a smaller cluster again. OSM camera identities and active status remain unverified.</div>
+<div class="note"><strong>Each pink dot is an actual OpenStreetMap-reported coordinate, visible at every zoom level, including the national view.</strong> Nearby dots can overlap on the screen. These are community reports, not manufacturer-verified cameras or confirmed active installations. Click a dot to inspect its original OSM source. An OSM-reported coordinate can itself be wrong, including offshore.</div>
 <form id="jumpForm"><label for="coordinates">Find latitude,longitude</label><input id="coordinates" autocomplete="off" maxlength="60" placeholder="38.5816,-121.4944" required><button type="submit">Go to location</button></form>
 <p class="small">Original records © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>, ODbL 1.0. Camera observations originate with OpenStreetMap and are distributed through <a href="https://github.com/flockhopper3/deflock-data" target="_blank" rel="noopener noreferrer">DeFlock's open-data feed</a>. Data can be incomplete. Map and routing simulations remain separated from privately submitted reports.</p>
 </aside>
@@ -58,7 +58,7 @@ button{font:inherit;padding:.7rem 1rem;margin-top:.6rem;color:#142530;background
 </main>
 <script src="./config.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./osm-viewport-density.js"></script>
+<script src="./osm-point-canvas.js"></script>
 <script>
 'use strict';
 const cfg=window.KATOPTRON_CONFIG;
@@ -68,7 +68,7 @@ const community=L.map('map',{preferCanvas:true}).setView([39.83,-98.58],4);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© OpenStreetMap contributors'
 }).addTo(community);
-let points=L.layerGroup().addTo(community),densityPoints=L.layerGroup().addTo(community),crowdedPoints=L.layerGroup(),requestNumber=0,abort=null;
+let communityCanvas=null,exactSnapshot=null;
 const sourceLink=key=>{
  if(!/^(node|way)\/[1-9][0-9]{0,17}$/.test(key||''))return null;
  return 'https://www.openstreetmap.org/'+key;
@@ -84,85 +84,61 @@ async function api(table,params,signal){
  if(!Array.isArray(data))throw Error('Malformed community data response');
  return data;
 }
-// Strictly distinguish a reporting cell from a physical camera. For
-// crowded viewports, drill into one ORIGINAL OSM observation inside both the
-// cell and current view. Never pretend a numerical grid center is equipment.
-function cellBounds(lat,lon,degrees,viewport){
- if(![lat,lon,degrees].every(Number.isFinite)||degrees<=0||degrees>3)
-  throw Error('Invalid community reporting region');
- const half=degrees/2;
- return {south:Math.max(lat-half,viewport?.south??17),
-         north:Math.min(lat+half,viewport?.north??72),
-         west:Math.max(lon-half,viewport?.west??-180),
-         east:Math.min(lon+half,viewport?.east??-64)};
-}
-async function inspectSourceCell(lat,lon,degrees,viewport){
+async function showOSMSource(coordinate){
  try{
-  const b=cellBounds(lat,lon,degrees,viewport);
-  if(b.south>=b.north||b.west>=b.east)
-   throw Error('Source cluster does not intersect the current view');
-  status('Locating an original OSM report within the selected region…');
-  const query=new URLSearchParams({
-   select:'osm_key,latitude,longitude',
-   latitude:'gte.'+b.south.toFixed(7),longitude:'gte.'+b.west.toFixed(7),
-   order:'osm_key.asc',limit:'1'
+  const [lat,lon]=coordinate;
+  status('Looking up the original OpenStreetMap record at this coordinate…');
+  const q=new URLSearchParams({
+   select:'osm_key,latitude,longitude,source_timestamp,source_snapshot_date',
+   latitude:'gte.'+(lat-0.00000011).toFixed(8),
+   longitude:'gte.'+(lon-0.00000011).toFixed(8),
+   order:'osm_key.asc',limit:'3'
   });
-  query.append('latitude','lte.'+b.north.toFixed(7));
-  query.append('longitude','lte.'+b.east.toFixed(7));
-  const matches=await api('flock_osm_community_points',query);
-  if(matches.length!==1)throw Error('No original OSM observation currently matches this report cluster');
-  const row=matches[0],p=[Number(row.latitude),Number(row.longitude)];
-  if(!p.every(Number.isFinite)||p[0]<b.south-0.000001||p[0]>b.north+0.000001||
-     p[1]<b.west-0.000001||p[1]>b.east+0.000001)
-    throw Error('Source observation outside selected report region');
-  const zoom=Math.min(19,Math.max(13,community.getZoom()+2));
-  community.setView(p,zoom);
-  // Show the user a verifiable original source immediately even if another
-  // aggregate fallback is needed because the city contains >1000 reports.
-  const panel=document.createElement('div');
-  const heading=document.createElement('strong');
-  heading.textContent='Example OSM report inside this cluster';
-  panel.append(heading);
-  const desc=document.createElement('p');
-  desc.textContent='The entire cluster does NOT occupy this point. Community mapping is not independent verification of installed or active Flock hardware.';
-  panel.append(desc);
-  const link=sourceLink(row.osm_key);
-  if(link){
-    const a=document.createElement('a');a.href=link;a.target='_blank';
-    a.rel='noopener noreferrer';a.textContent='Inspect this OSM report';
-    panel.append(a);
+  q.append('latitude','lte.'+(lat+0.00000011).toFixed(8));
+  q.append('longitude','lte.'+(lon+0.00000011).toFixed(8));
+  const rows=await api('flock_osm_community_points',q);
+  const record=rows.find(x=>Math.abs(Number(x.latitude)-lat)<0.00000011 &&
+    Math.abs(Number(x.longitude)-lon)<0.00000011);
+  if(!record)throw Error('Original OSM report no longer appears in the current source');
+  const div=document.createElement('div');
+  const strong=document.createElement('strong');
+  strong.textContent='OSM community-reported Flock camera';
+  div.append(strong);
+  const para=document.createElement('p');
+  para.textContent='This is an OpenStreetMap coordinate, NOT a government-verified device or evidence of a live camera. The original point itself could be wrong.';
+  div.append(para);
+  const url=sourceLink(record.osm_key);
+  if(url){
+    const a=document.createElement('a');a.href=url;a.target='_blank';
+    a.rel='noopener noreferrer';a.textContent='Inspect original OSM record';
+    div.append(a);
   }
-  L.popup().setLatLng(p).setContent(panel).openOn(community);
- }catch(err){status('Cannot drill into source cluster: '+err.message)}
+  if(record.source_timestamp){
+    const date=document.createElement('p');
+    date.textContent='OSM record last edited: '+String(record.source_timestamp).slice(0,10)+
+      '. Not a camera inspection date.';
+    div.append(date);
+  }
+  L.popup().setLatLng(coordinate).setContent(div).openOn(community);
+  status(exactSnapshot.count.toLocaleString()+
+    ' individual community coordinates available at all zoom levels. Actual equipment verification unknown.');
+ }catch(err){status('Community report inspection unavailable: '+err.message)}
 }
-async function loadDensity(){
+async function loadExactPoints(expected){
  try{
-  const rows=await api('flock_public_osm_community_density',
-    new URLSearchParams({select:'cell_latitude,cell_longitude,community_report_count,example_latitude,example_longitude',limit:'500'}));
-  if(rows.length>=500)throw Error('Coarse community grid unexpectedly truncated');
-  densityPoints.clearLayers();
-  for(const row of rows){
-   const lat=Number(row.cell_latitude),lon=Number(row.cell_longitude);
-   const n=Number(row.community_report_count);
-   const sampleLat=Number(row.example_latitude),sampleLon=Number(row.example_longitude);
-   const box=cellBounds(lat,lon,3);
-   if(!Number.isInteger(n)||n<=0||!Number.isFinite(sampleLat)||
-       !Number.isFinite(sampleLon)||
-       sampleLat<box.south||sampleLat>=box.north||
-       sampleLon<box.west||sampleLon>=box.east)
-      throw Error('National report cluster has no valid original-source anchor');
-   // Circle is an aggregate badge, located at ONE underlying OSM record,
-   // not a fictional point in open water at the 3-degree grid midpoint.
-   const marker=L.circleMarker([sampleLat,sampleLon],{
-      radius:Math.min(24,Math.max(6,Math.log10(n+1)*7)),
-      weight:2,color:'#ffffff',dashArray:'3 3',
-      fillColor:'#a43061',fillOpacity:.7});
-   marker.bindTooltip(n.toLocaleString()+
-     ' community OSM reports in a 3° area. Numbered cluster, NOT a camera pin. Click to inspect an actual source.');
-   marker.on('click',()=>inspectSourceCell(lat,lon,3));
-   densityPoints.addLayer(marker);
-  }
- }catch(err){status('Coarse regional coverage unavailable: '+err.message)}
+  status('Loading all original OSM community coordinates as small dots…');
+  const rows=await api('rpc/flock_public_osm_exact_render_snapshot',
+    new URLSearchParams({select:'point_count,source_snapshot_date,coordinates_base64'}));
+  if(rows.length!==1)throw Error('No complete national coordinate snapshot');
+  const data=window.KatoptronOsmCanvas.decode(rows[0]);
+  if(data.count!==expected)throw Error('National point snapshot does not match source inventory');
+  if(communityCanvas)community.removeLayer(communityCanvas);
+  communityCanvas=window.KatoptronOsmCanvas.install(community,data,showOSMSource);
+  exactSnapshot=data;
+  status(data.count.toLocaleString()+
+    ' original OSM coordinates shown as individual small points, at all zoom levels. Not verified hardware.');
+ }catch(err){status('Community exact-location layer unavailable: '+err.message+
+    '. No approximate substitute locations will be drawn.')}
 }
 async function loadNearbyPairs(){
  try{
@@ -231,107 +207,12 @@ async function loadSummary(){
   $('communityCount').textContent=rows[0].reported_flock_points.toLocaleString();
   $('sourceDate').textContent='OpenStreetMap source snapshot imported: '+(rows[0].last_dataset_snapshot_date||'Unknown');
   loadOfficialCount();
-  loadDensity();
+  loadExactPoints(rows[0].reported_flock_points);
   loadQuality();
   loadNearbyPairs();
   loadPossibleOverlaps();
-  loadVisible();
  }catch(err){status('Community summary unavailable: '+err.message)}
 }
-async function apiCounted(table,params,signal){
- if(!cfg?.supabaseUrl||!cfg?.supabasePublishableKey)
-  throw Error('Public Supabase configuration unavailable');
- const url=cfg.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+table+'?'+params.toString();
- const res=await fetch(url,{headers:{apikey:cfg.supabasePublishableKey,Prefer:'count=exact'},
-  signal,cache:'no-store',referrerPolicy:'no-referrer'});
- if(!res.ok)throw Error('Community records HTTP '+res.status);
- const rows=await res.json();
- const match=/^(?:[0-9]+-[0-9]+|[*])\/([0-9]+)$/.exec(res.headers.get('content-range')||'');
- if(!Array.isArray(rows)||!match)throw Error('Community viewport exact count unavailable');
- const total=Number(match[1]);
- if(!Number.isSafeInteger(total)||total<rows.length)throw Error('Malformed viewport count');
- return {rows,total};
-}
-async function loadVisible(){
- const seq=++requestNumber;
- if(abort)abort.abort();
- abort=new AbortController();
- points.clearLayers();
- crowdedPoints.clearLayers();
- if(community.hasLayer(crowdedPoints))community.removeLayer(crowdedPoints);
- if(community.getZoom()<10){
-  if(!community.hasLayer(densityPoints))densityPoints.addTo(community);
-  status('National view shows 3° OSM report clusters, not exact camera locations. Each cluster sits at an example reported coordinate; click to inspect that source.');
-  return;
- }
- if(community.hasLayer(densityPoints))community.removeLayer(densityPoints);
- const b=community.getBounds();
- const search=new URLSearchParams({select:'osm_key,latitude,longitude,source_timestamp,source_snapshot_date,last_seen_sync_at',
-   'latitude':'gte.'+b.getSouth().toFixed(6),'longitude':'gte.'+b.getWest().toFixed(6),
-   order:'osm_key.asc',limit:'1000'});
- search.append('latitude','lte.'+b.getNorth().toFixed(6));
- search.append('longitude','lte.'+b.getEast().toFixed(6));
- try{
-  const result=await apiCounted('flock_osm_community_points',search,abort.signal);
-  if(seq!==requestNumber)return;
-  if(result.total>result.rows.length){
-   const grid=await window.KatoptronViewportDensity.fetchCells(cfg,{
-    south:b.getSouth(),north:b.getNorth(),west:b.getWest(),east:b.getEast()
-   },community.getZoom(),result.total,abort.signal);
-   if(seq!==requestNumber)return;
-   for(const cell of grid.rows){
-    const count=Number(cell.community_report_count);
-    const cLat=Number(cell.cell_latitude),cLon=Number(cell.cell_longitude);
-    const sampleLat=Number(cell.example_latitude),sampleLon=Number(cell.example_longitude);
-    const view={south:b.getSouth(),north:b.getNorth(),
-                west:b.getWest(),east:b.getEast()};
-    // Use one real OSM report as a display anchor. Its surrounding records
-    // may lie across the entire grid cell; the badge is not a camera pin.
-    L.circleMarker([sampleLat,sampleLon],{
-     radius:Math.min(22,Math.max(6,Math.log10(count+1)*6)),
-     weight:2,color:'#ffffff',dashArray:'3 3',fillColor:'#a43061',fillOpacity:.7
-    }).bindTooltip(count.toLocaleString()+
-     ' OSM reports in a '+grid.cell+'° area; marker anchored on one original report, NOT every camera. Click to inspect source.')
-      .on('click',()=>inspectSourceCell(cLat,cLon,grid.cell,view))
-      .addTo(crowdedPoints);
-   }
-   if(!community.hasLayer(crowdedPoints))crowdedPoints.addTo(community);
-   status(result.total.toLocaleString()+' community observations grouped into '+grid.rows.length+
-    ' approximate reporting cells, not physical camera pins. Click a cluster to inspect an underlying OSM observation.');
-   return;
-  }
-  for(const row of result.rows){
-   const lat=Number(row.latitude),lon=Number(row.longitude);
-   if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
-   const m=L.circleMarker([lat,lon],{radius:5,color:'#b55e79',fillColor:'#a32d56',fillOpacity:.85,weight:1});
-   const popup=document.createElement('div');
-   const label=document.createElement('strong');label.textContent='Community-reported Flock ALPR';popup.append(label);
-   const p=document.createElement('p');p.textContent='OpenStreetMap observation, not official confirmation of installation or operation.';popup.append(p);
-   const link=sourceLink(row.osm_key);
-   if(link){const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Check original OSM source';popup.append(a)}
-   if(row.source_timestamp){const edit=document.createElement('small');edit.textContent='OSM last edited: '+String(row.source_timestamp).slice(0,10)+'. This is not a camera inspection date.';popup.append(edit)}
-   if(row.source_snapshot_date){
-     const receipt=document.createElement('p');
-     receipt.textContent='Last included in imported OSM dataset: '+String(row.source_snapshot_date).slice(0,10)+'. This does not confirm physical camera operation.';
-     popup.append(receipt);
-   }
-   if(row.source_timestamp&&row.source_snapshot_date){
-     const edited=Date.parse(row.source_timestamp);
-     const imported=Date.parse(String(row.source_snapshot_date).slice(0,10)+'T00:00:00Z');
-     if(Number.isFinite(edited)&&Number.isFinite(imported)&&
-       imported-edited>365*86400000){
-       const stale=document.createElement('p');
-       stale.textContent='Mapping freshness: OSM entry last edited over one year before this import. Camera activity remains unknown.';
-       popup.append(stale);
-     }
-   }
-   m.bindPopup(popup);points.addLayer(m);
-  }
-  status(result.total.toLocaleString()+' community Flock locations shown in this map view (complete source query, not an active-camera census).');
- }catch(err){if(seq===requestNumber&&err.name!=='AbortError')status('Community locations unavailable: '+err.message)}
-}
-let delayed=null;
-community.on('moveend',()=>{clearTimeout(delayed);delayed=setTimeout(loadVisible,300)});
 $('jumpForm').addEventListener('submit',event=>{
  event.preventDefault();
  const match=/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/.exec($('coordinates').value.trim());
