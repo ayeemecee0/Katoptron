@@ -1,5 +1,15 @@
 # Milestone 6 — Flock Safety government accountability
 
+> **Current checkpoint (October 25–26, 2026): M6 engineering accepted at 100%.**
+> Historical counts below describe the initial October 23 integration, not the
+> latest production state. New original-government records include Bellevue's
+> five named council votes and Salem's source-dated nonrenewal announcement.
+> Six original civic milestones and five individually supported official
+> positions are published. Nationwide document-content verification and
+> signed-contract acquisition remain ongoing research, **not 100% coverage**.
+> [Read the M6 engineering acceptance and exact caveats](./m6-government-accountability-engineering-signoff-2026-10-25.md).
+
+
 ## Scope and implementation
 
 **Implemented October 23, 2026.** Project URL: https://ayeemecee0.github.io/Katoptron/accountability.html
