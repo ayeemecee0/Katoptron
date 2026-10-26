@@ -10,7 +10,7 @@ const assert=require('node:assert/strict');
  try{
   const r=await page.goto(new URL('community-map.html',base).href,{waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(r?.status(),200);
-  await page.waitForFunction(()=>window.exactSnapshot?.count>90000,null,{timeout:60000});
+  await page.waitForFunction(()=>typeof exactSnapshot!=='undefined'&&exactSnapshot?.count>90000,null,{timeout:60000});
   await page.evaluate(()=>{
     community.fitBounds([[33.747,-84.503],[34.003,-84.247]]);
     if(community.getZoom()<10)community.setView([33.875,-84.375],10);
