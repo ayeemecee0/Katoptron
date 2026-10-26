@@ -1,0 +1,32 @@
+name: Prune expired community report rate events
+on:
+  schedule:
+    - cron: '41 14 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/prune_expired_community_rate_events.py'
+      - 'supabase/migrations/140_m5_daily_expired_rate_event_privacy_prune.sql'
+      - '.github/workflows/prune_community_rate_events.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-privacy-minimized-community-rate-ledger
+  cancel-in-progress: false
+jobs:
+  prune:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    env:
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Expire private rolling 24-hour rate timestamps
+        run: python scripts/prune_expired_community_rate_events.py

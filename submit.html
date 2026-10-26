@@ -51,7 +51,7 @@
 <label class="check"><input type="checkbox" id="publicationConsent"><span>Optional: If my report is independently verified and approved, I permit this report's camera coordinates and evidence source URL to appear publicly. My account identity will not be published. Leaving this unchecked keeps my submitted case private.</span></label>
 <label class="check"><input type="checkbox" id="consent" required><span>I confirm this is a good-faith report and consent to its private review. I have excluded personal information and understand it will not automatically appear on the public map.</span></label>
 <button id="send" type="submit">Submit private report</button>
-<p><small>Limit: 3 submissions per account per 24 hours. Coordinates and account ID are retained privately for review. You can see your own submission status, but other contributors cannot see it.</small></p>
+<p><small>Limit: 3 submissions per account per rolling 24 hours, including reports later erased. Withdrawn reports can be permanently deleted after private photo removal. Coordinates and account ID are retained privately for review until erased. You can see your own submission status, but other contributors cannot see it.</small></p>
 </form>
 <h2>My private reports</h2><p>Only you can see these records. Proximity checks do not establish a verified camera.</p>
 <button type="button" id="refreshReports">Refresh status</button><ol id="myReports" aria-live="polite"></ol>
@@ -266,6 +266,27 @@ async function loadOwnReports(){
      finally{retry.disabled=false;}
    });
    li.append(' ',retry);
+   const erase=document.createElement('button');
+   erase.type='button';erase.textContent='Permanently delete withdrawn report';
+   erase.setAttribute('aria-label','Permanently erase report '+report.submission_id.slice(0,8));
+   erase.addEventListener('click',async()=>{
+     if(!window.confirm('Permanently erase this withdrawn report, coordinates, description and private review history? This cannot be undone.'))return;
+     erase.disabled=true;
+     try{
+       // Delete actual photo bytes through contributor's authenticated Storage
+       // API before removing report metadata in the owner-only database RPC.
+       await removeOwnPhotoEvidence(report.submission_id);
+       const {data:deleted,error}=await client.rpc('delete_withdrawn_community_report',
+         {p_id:report.submission_id});
+       if(error||deleted!==true)throw Error(error?.message||'Report could not be erased.');
+       await loadOwnReports();
+       status('Report, private review details and derived evidence permanently erased. The 24-hour private submission rate counter remains until expiry.');
+     }catch(error){
+       status('Permanent deletion could not be confirmed: '+error.message+
+         '. The withdrawn report remains private. Retry photo deletion, then erase again.');
+     }finally{erase.disabled=false;}
+   });
+   li.append(' ',erase);
  }
  box.append(li);
  }

@@ -2,10 +2,16 @@ name: Disposable real community Auth and Storage acceptance
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '29 15 * * 1'
   push:
     branches: [main]
     paths:
       - 'scripts/accept_live_community_auth_storage.py'
+      - 'supabase/migrations/139_community_report_erasure_and_independent_rate_ledger.sql'
+      - 'scripts/test_m5_private_report_erasure.sql'
+      - 'submit.html'
+      - 'scripts/smoke_community_authenticated_mock.cjs'
       - '.github/workflows/live_community_acceptance.yml'
 
 permissions:
