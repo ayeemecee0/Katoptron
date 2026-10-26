@@ -51,6 +51,21 @@ class GovernmentWatchSafety(unittest.TestCase):
         for other in ("sharing_list_changed","retention_changed",
                       "vendor_portal_snapshot","contract_renewal"):
             self.assertFalse(M.eligible(other,account))
+    def test_contract_watch_detects_signed_documents_without_claiming_renewal(self):
+        signed={"event_key":"signed-2026-01","event_type":"executed_contract",
+          "evidence_level":"editorially_verified_signed_agreement",
+          "title":"Signed Flock agreement","summary":"Source-dated signed agreement",
+          "jurisdiction_label":"Folsom, CA",
+          "event_date":"2026-10-20","source_url":"https://gov.example.org/signed"}
+        e=S.build_events([signed],[],[],date(2026,10,25))
+        self.assertEqual(len(e),1)
+        self.assertEqual(e[0]["kind"],"contract_document")
+        self.assertTrue(M.eligible("contract_document",{
+          "watch_renewals":True,"watch_government":False}))
+        self.assertFalse(M.eligible("contract_document",{
+          "watch_renewals":False,"watch_government":False}))
+        self.assertNotIn("renewal",e[0]["title"].lower())
+
     def test_confirmed_sender_compose_never_mentions_plates_or_tracks_route(self):
         mail=M.make_email("confirmed@example.org","folsom|CA",[
           {"title":"City source record","summary":"Original council decision.",
