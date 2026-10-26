@@ -72,13 +72,13 @@ jobs:
           psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE authenticated"
           psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE supabase_admin"
           psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE ROLE qa_operator LOGIN PASSWORD 'ci-disposable-only'"
-          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE katoptron_recovery_ci"
+          psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE katoptron_recovery_ciqa"
           psql -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE katoptron_recovery_user"
           # Reproduce the Oct 24 dangerous inherited anonymous default grants.
-          psql -d katoptron_recovery_ci -v ON_ERROR_STOP=1 -c "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT ON TABLES TO anon,authenticated"
-          psql -d katoptron_recovery_ci -X -v ON_ERROR_STOP=1 --single-transaction -f /tmp/m9-owner-preflight.sql
-          psql -d katoptron_recovery_ci -v ON_ERROR_STOP=1 -c "CREATE TABLE public.qa_only_fixture (id integer)"
-          psql -d katoptron_recovery_ci -v ON_ERROR_STOP=1 <<'SQL'
+          psql -d katoptron_recovery_ciqa -v ON_ERROR_STOP=1 -c "ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT ON TABLES TO anon,authenticated"
+          psql -d katoptron_recovery_ciqa -X -v ON_ERROR_STOP=1 --single-transaction -f /tmp/m9-owner-preflight.sql
+          psql -d katoptron_recovery_ciqa -v ON_ERROR_STOP=1 -c "CREATE TABLE public.qa_only_fixture (id integer)"
+          psql -d katoptron_recovery_ciqa -v ON_ERROR_STOP=1 <<'SQL'
           DO $check$
           BEGIN
             IF has_table_privilege('anon','public.qa_only_fixture','SELECT')
@@ -89,7 +89,7 @@ jobs:
           END $check$;
           SQL
           # Existing table must refuse a second import; no silent overwrite.
-          if psql -d katoptron_recovery_ci -X -v ON_ERROR_STOP=1 -f /tmp/m9-owner-preflight.sql >/dev/null 2>&1; then
+          if psql -d katoptron_recovery_ciqa -X -v ON_ERROR_STOP=1 -f /tmp/m9-owner-preflight.sql >/dev/null 2>&1; then
             echo "FAIL: preflight allowed an existing user table"; exit 1
           fi
           # Wrong database name and ordinary user must both be rejected.
