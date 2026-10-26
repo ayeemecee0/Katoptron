@@ -33,7 +33,7 @@ begin
    where verification_status='verified' and location_accuracy='exact'
      and source_flock_label_status='generic_lpr') then
    raise exception 'M7 generic LPR manufacturer uncertainty hidden';end if;
- if m.source_flock_labeled_points + m.generic_lpr_points>m.exact_government_points then
+ if m.source_flock_labeled_points + m.generic_lpr_points + m.unknown_manufacturer_points<>m.exact_government_points then
    raise exception 'M7 source labels total exceeds original-source GIS inventory';end if;
  if m.separately_corroborated_points<>(
    select count(*) from public.flock_public_tiered_camera_points
@@ -45,6 +45,12 @@ begin
    select count(*) from public.flock_public_tiered_camera_points
    where evidence_tier='government_verified') then
    raise exception 'M7 published tiers silently conflated unconfirmed with verified';end if;
+ if m.unknown_manufacturer_points<>(
+   select count(*) from public.flock_camera_locations
+    where verification_status='verified' and location_accuracy='exact'
+     and (source_flock_label_status not in ('source_flock_identified','generic_lpr')
+       or source_flock_label_status is null)) then
+   raise exception 'M7 unexpected source-label or unidentified manufacturer discarded';end if;
  if (select count(*) from public.flock_analytics_states)<>m.states_with_any_documented_evidence then
    raise exception 'M7 state evidence denominator inconsistent with state table';end if;
  if (select coalesce(sum(source_flock_labeled_points),0) from public.flock_analytics_states)
@@ -53,8 +59,8 @@ begin
    <>m.generic_lpr_points then
    raise exception 'M7 national and state source-label counts disagree';end if;
  if exists(select 1 from public.flock_analytics_states where
-   source_flock_labeled_points<0 or generic_lpr_points<0 or
-   source_flock_labeled_points+generic_lpr_points>verified_exact_gis_points) then
+   source_flock_labeled_points<0 or generic_lpr_points<0 or unknown_manufacturer_points<0 or
+   source_flock_labeled_points+generic_lpr_points+unknown_manufacturer_points<>verified_exact_gis_points) then
    raise exception 'M7 state manufacturer source-tier inflation';end if;
  if m.states_with_any_documented_evidence < m.states_with_exact_gis_evidence then
    raise exception 'State-level evidence accounting inconsistent';end if;
