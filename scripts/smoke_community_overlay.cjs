@@ -28,30 +28,32 @@ const assert=require('node:assert/strict');
     return (await r.json())[0];
   });
   assert.ok(p&&Number.isFinite(p.latitude)&&Number.isFinite(p.longitude));
-  // National community density must load on FIRST render, without any click.
+  // Exact OSM coordinate canvas must load on FIRST render, without any click.
   await page.waitForFunction(()=>{
     const s=document.querySelector('#communityOverlayStatus')?.textContent||'';
     const normalized=s.toLowerCase();
-    return normalized.includes('community-report density')||normalized.includes('community density unavailable');
+    return normalized.includes('original osm report coordinates')||normalized.includes('original-coordinate layer unavailable');
   },null,{timeout:30000});
-  const density=await page.locator('#communityOverlayStatus').textContent();
-  assert.ok(!density.includes('unavailable'),'Community density was inaccessible: '+density);
+  const dotsStatus=await page.locator('#communityOverlayStatus').textContent();
+  assert.ok(!dotsStatus.includes('unavailable'),'Original OSM position canvas unavailable: '+dotsStatus);
   const higherOfficialPane=await page.locator('.leaflet-pane').evaluateAll(
     panes=>panes.some(p=>p.style.zIndex==='460'&&p.classList.length>1));
   assert.equal(higherOfficialPane,true,
     'Government GIS points require a separate higher-stacking map pane');
   const nationalDots=await page.locator('.leaflet-overlay-pane canvas, .leaflet-overlay-pane path').count();
-  assert.ok(nationalDots>0,'National community density cells did not render');
+  assert.ok(nationalDots>0,'National OSM exact-coordinate dots did not render');
+  assert.equal(await page.locator('.katoptron-osm-exact-canvas').count(),1,
+   'Community all-zoom canvas missing');
   // Map search recenters both layers. Still no route plan.
   await page.locator('#mapSearch').fill(p.latitude+','+p.longitude);
   await page.locator('#mapSearchForm button').click();
   await page.waitForFunction(()=>{
     const s=document.querySelector('#communityOverlayStatus')?.textContent||'';
-    return s.includes('community-reported camera observations shown')||
-      s.includes('Community locations unavailable')||s.includes('More than 1,500');
+    return s.includes('original OSM report coordinates')||
+      s.includes('original-coordinate layer unavailable');
   },null,{timeout:45000});
   const status=await page.locator('#communityOverlayStatus').textContent();
-  assert.ok(status.includes('community-reported camera observations shown'),status);
+  assert.ok(status.includes('original OSM report coordinates'),status);
   assert.ok(Number.parseInt(status.replaceAll(',',''),10)>0,status);
   assert.equal(await page.locator('#showCommunity').isChecked(),true);
   assert.equal(await page.locator('#routeComparisonList li').count(),0,
@@ -71,7 +73,7 @@ const assert=require('node:assert/strict');
   assert.equal(await page.locator('#showCommunity').isChecked(),true,
     'Nationwide layer must be independently restorable');
   assert.deepEqual(failures,[]);
-  console.log('NATIONAL OSM COMMUNITY OVERLAY PASS, default nationwide density, original-source points and official evidence independently selectable');
+  console.log('NATIONAL OSM COMMUNITY OVERLAY PASS, original exact OSM dots at every zoom, official pins and route evidence separate');
  }catch(err){
   console.error('NATIONAL OSM COMMUNITY OVERLAY FAIL:',err.stack||err);
   process.exitCode=1;
