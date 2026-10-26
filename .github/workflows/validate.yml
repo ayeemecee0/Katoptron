@@ -115,6 +115,10 @@ on:
       - 'supabase/migrations/112_due_candidate_preflight_without_cooldown.sql'
       - 'supabase/migrations/113_monterey_original_flock_portal_snapshot.sql'
       - 'supabase/migrations/114_community_density_real_observation_anchors.sql'
+      - 'supabase/migrations/115_osm_viewport_density_source_anchors.sql'
+      - 'scripts/test_osm_viewport_original_anchor.sql'
+      - 'scripts/test_osm_viewport_source_anchors.cjs'
+      - 'osm-viewport-density.js'
       - 'scripts/test_community_density_real_anchors.sql'
       - 'scripts/test_monterey_vendor_without_camera_points.sql'
       - 'scripts/test_due_source_triage_preflight.sql'
@@ -692,6 +696,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/114_community_density_real_observation_anchors.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/115_osm_viewport_density_source_anchors.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_government_vendor_directory.sql
@@ -715,6 +721,8 @@ jobs:
             -f scripts/test_monterey_vendor_without_camera_points.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_community_density_real_anchors.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_osm_viewport_original_anchor.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_analytics_m7.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
@@ -1104,6 +1112,8 @@ jobs:
           node --check map.js
           node --check vendor-agency-layer.js
           node scripts/test_vendor_agency_layer.cjs
+          node --check osm-viewport-density.js
+          node scripts/test_osm_viewport_source_anchors.cjs
           node --check routing-routes.js
           node --check routing-provider.js
           node --check geoapify-adapter.js
