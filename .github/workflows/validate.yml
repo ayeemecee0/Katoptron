@@ -138,6 +138,8 @@ on:
       - 'supabase/migrations/135_m2_source_link_lifecycle_and_private_pdf_content_triage.sql'
       - 'supabase/migrations/136_m2_independent_original_content_review_receipt.sql'
       - 'supabase/migrations/137_m2_original_document_fk_covering_indexes.sql'
+      - 'supabase/migrations/138_m3_positive_flock_source_label_insert_guard.sql'
+      - 'scripts/test_m3_source_label_integrity.sql'
       - 'scripts/test_m2_discovery_signoff_sql.sql'
       - 'scripts/test_m2_original_content_review_acceptance.sql'
       - 'scripts/seed_m2_original_document_review_ci_fixture.sql'
@@ -821,6 +823,10 @@ jobs:
             -f supabase/migrations/137_m2_original_document_fk_covering_indexes.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_m2_discovery_signoff_sql.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/138_m3_positive_flock_source_label_insert_guard.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f scripts/test_m3_source_label_integrity.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_original_government_pdf_receipt_security.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
