@@ -19,11 +19,11 @@ th{color:#cedce6}small{color:#bdd0dc}
 <nav aria-label="Main"><a href="./agency-xray.html">AGENCY X-RAY</a><a href="./sharing-explorer.html">SHARING</a><a href="./accountability.html">ACCOUNTABILITY</a></nav></header>
 <main id="main"><h1>Original Source Acquisition Scorecard</h1>
 <p>Track whether automated government-document discovery is producing new, reviewable primary evidence rather than recycling secondary network relationships.</p>
-<div class="note"><strong>What these counts mean:</strong> An original government page linking a contract, policy or CSV is a research lead, not proof that a contract was executed, permissions were granted or cameras are active. Extracted names remain private candidates until separately verified. Public counts include only aggregate queue sizes, never raw unreviewed contents.</div>
+<div class="note"><strong>What these counts mean:</strong> An original government page linking a contract, policy or CSV is a research lead, not proof that a contract was executed, permissions were granted or cameras are active. Extracted names remain private candidates until separately verified. PDF byte receipts prove only that bounded bytes were retrieved, not the PDF's factual contents. Public counts include only aggregate queue sizes, never raw unreviewed contents.</div>
 <p id="status" role="status" aria-live="polite">Loading acquisition statistics…</p>
 <div class="grid" id="stats" aria-label="Latest source acquisition counts"></div>
 <h2>Last recorded scan history</h2>
-<table><thead><tr><th>Date</th><th>Original document leads</th><th>Reviewed documents</th><th>Original publisher-named edges</th><th>Source errors</th></tr></thead>
+<table><thead><tr><th>Date</th><th>Original document leads</th><th>Reviewed documents</th><th>PDF bytes retrieved (unreviewed)</th><th>Original publisher-named edges</th><th>Source errors</th></tr></thead>
 <tbody id="history"></tbody></table>
 <h2>Interpreting progress</h2>
 <p>The secondary sharing-network catalog is far larger than the independently sourced original publisher evidence. That difference is evidence coverage, not a software-completion percentage. A growing number of original document leads is only useful when review converts them into confirmed original-source facts. We report both separately.</p>
@@ -38,7 +38,7 @@ function metric(label,value){const p=document.createElement('div');p.className='
 (async()=>{
  try{
   const c=window.KATOPTRON_CONFIG;
-  const q=new URLSearchParams({select:'metric_date,seeded_pages,successfully_read_pages,total_discovered_links,total_reviewed_documents,raw_named_recipient_candidates,verified_original_sharing_edges,verified_original_publishers,source_errors',order:'metric_date.desc',limit:'45'});
+  const q=new URLSearchParams({select:'metric_date,seeded_pages,successfully_read_pages,total_discovered_links,total_reviewed_documents,pdf_downloaded_unreviewed_documents,raw_named_recipient_candidates,verified_original_sharing_edges,verified_original_publishers,source_errors',order:'metric_date.desc',limit:'45'});
   const response=await fetch(c.supabaseUrl+'/rest/v1/flock_original_acquisition_public_metrics?'+q,{
     headers:{apikey:c.supabasePublishableKey},cache:'no-store'});
   if(!response.ok)throw Error('Source scorecard HTTP '+response.status);
@@ -51,6 +51,7 @@ function metric(label,value){const p=document.createElement('div');p.className='
    metric('Successfully retrieved pages',latest.successfully_read_pages),
    metric('Document link leads for review',latest.total_discovered_links),
    metric('Document content independently reviewed',latest.total_reviewed_documents),
+   metric('Government PDF byte receipts (NOT independently reviewed)',latest.pdf_downloaded_unreviewed_documents),
    metric('Private named-recipient extraction candidates',latest.raw_named_recipient_candidates),
    metric('Publisher-named original sharing observations',latest.verified_original_sharing_edges),
    metric('Original publisher source URLs',latest.verified_original_publishers),
@@ -59,7 +60,7 @@ function metric(label,value){const p=document.createElement('div');p.className='
   for(const row of rows){
    const tr=document.createElement('tr');
    for(const value of [row.metric_date,row.total_discovered_links,row.total_reviewed_documents,
-    row.verified_original_sharing_edges,row.source_errors]){
+    row.pdf_downloaded_unreviewed_documents,row.verified_original_sharing_edges,row.source_errors]){
     const td=document.createElement('td');td.textContent=String(value);tr.append(td);
    }
    $('history').append(tr);
