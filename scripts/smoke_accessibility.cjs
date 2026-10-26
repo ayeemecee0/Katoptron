@@ -26,6 +26,17 @@ const assert=require('node:assert/strict');
         'Keyboard navigation cannot focus map');
     }
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+    if(overflow>4) {
+      const offenders=await page.evaluate(()=>
+        [...document.querySelectorAll('main *, header *')]
+          .map(n=>({tag:n.tagName,id:n.id,className:typeof n.className==='string'?n.className:'',
+            right:Math.round(n.getBoundingClientRect().right),
+            left:Math.round(n.getBoundingClientRect().left),
+            width:Math.round(n.getBoundingClientRect().width)}))
+          .filter(n=>n.right>innerWidth+4||n.left< -4)
+          .sort((a,b)=>b.right-a.right).slice(0,10));
+      console.error('ACCESSIBILITY MOBILE OVERFLOW ELEMENTS',path,width,JSON.stringify(offenders));
+    }
     assert.ok(overflow<=4,path+' unexpectedly overflows '+width+'px viewport: '+overflow);
    }
    await page.close();
