@@ -930,7 +930,9 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('anon','public.programme_flock_polygon_evidence_history','SELECT')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select has_function_privilege('anon','public.is_current_flock_polygon_camera_gis_source(text)','EXECUTE')" | grep -qx t
+            "select has_function_privilege('anon','public.is_current_flock_polygon_camera_gis_source(text)','EXECUTE')" | grep -qx f
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
+            "select has_function_privilege('anon','katoptron_internal.is_current_flock_polygon_camera_gis_source(text)','EXECUTE')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('anon','public.trusted_flock_gis_sources','SELECT')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
@@ -1119,9 +1121,9 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_function_privilege('service_role','public.promote_owner_bound_gis_source(text,text,text)','EXECUTE')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select public.gis_camera_authority_current('https://gis.monroewa.gov/citygis/rest/services/UtilityData/Street_Layers/MapServer/22','Monroe, WA')" | grep -qx t
+            "select katoptron_internal.gis_camera_authority_current('https://gis.monroewa.gov/citygis/rest/services/UtilityData/Street_Layers/MapServer/22','Monroe, WA')" | grep -qx t
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
-            "select public.gis_camera_authority_current('https://unapproved.example/FeatureServer/0','Monroe, WA')" | grep -qx f
+            "select katoptron_internal.gis_camera_authority_current('https://unapproved.example/FeatureServer/0','Monroe, WA')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
             "select has_table_privilege('anon','public.flock_gis_source_candidates','SELECT')" | grep -qx f
           psql -h 127.0.0.1 -U postgres -d katoptron_test -Atc \
