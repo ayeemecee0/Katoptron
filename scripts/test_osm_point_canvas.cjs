@@ -13,8 +13,12 @@ function fixture(coords){
 const many=Array.from({length:MIN},(_,i)=>[38.5816+(i%50)*0.00001,-121.4944+Math.floor(i/50)*0.00001]);
 const data=O.decode(fixture(many));
 assert.equal(data.count,MIN);
-assert.deepEqual(O.coordinates(data,0),many[0]);
-assert.deepEqual(O.coordinates(data,51),many[51]);
+for(const index of [0,51,89000]){
+ const actual=O.coordinates(data,index),expected=many[index];
+ assert.ok(Math.abs(actual[0]-expected[0])<=0.00000011&&
+           Math.abs(actual[1]-expected[1])<=0.00000011,
+           'Coordinate must retain at least 1e-7 degree source precision');
+}
 const origin={x:0,y:0},z=4;
 const p=O.mercator(many[0][0],many[0][1],z,origin);
 const selected=O.nearest(data,p.x,p.y,z,origin,
