@@ -4,7 +4,8 @@ const C=require('../route-comparison.js');
 const route={points:[[38.83,-104.81],[38.83,-104.79]],distance:2400,duration:220};
 const at=(key,lat,lon,other={})=>({
  record_key:key,latitude:lat,longitude:lon,location_accuracy:'exact',
- last_source_recheck_at:new Date().toISOString(),...other});
+ last_source_recheck_at:new Date().toISOString(),
+ source_flock_label_status:'source_flock_identified',...other});
 const first=at('verified-1',38.83,-104.8);
 const other=at('verified-2',38.836,-104.8);
 const provisional=at('provisional-1',38.83,-104.8,
@@ -19,10 +20,24 @@ assert.equal(summary.unknown,0);
 assert.equal(C.summarize(route,[provisional],Geo).nearby,0);
 const cityGenericLpr=at('live-oak-city-lpr',38.83,-104.8,{
   jurisdiction_label:'Live Oak, TX',
-  source_url:'https://services9.arcgis.com/xdpiCgT89eSIEpbi/arcgis/rest/services/LiveOakCameras/FeatureServer/0'
+  source_url:'https://services9.arcgis.com/xdpiCgT89eSIEpbi/arcgis/rest/services/LiveOakCameras/FeatureServer/0',
+  source_flock_label_status:'generic_lpr'
 });
 assert.equal(C.eligibleForFlockRoute(cityGenericLpr),false,
   'Original city mapped generic LPR is not manufacturer-confirmed Flock');
+const genericDifferentSource=at('future-generic-lpr',38.83,-104.8,{
+  source_url:'https://city.gov/other-generic-alpr-inventory',
+  source_flock_label_status:'generic_lpr',
+  evidence_summary:'Police city ALPR camera map near a Flock program'
+});
+assert.equal(C.summarize(route,[genericDifferentSource],Geo).nearby,0,
+  'A future generic government LPR source cannot silently become a Flock route encounter');
+assert.equal(C.summarize(route,[at('unknown-source',38.83,-104.8,{
+  source_flock_label_status:'unconfirmed',
+  evidence_summary:'Agency participates in Flock but this generic GIS point lacks manufacturer evidence'
+})],Geo).nearby,0,'Unconfirmed Flock source label must fail closed');
+assert.equal(C.eligibleForFlockRoute({record_key:'legacy-no-field'}),false,
+  'Legacy/missing manufacturer source evidence must fail closed');
 assert.equal(C.summarize(route,[cityGenericLpr],Geo).nearby,0,
   'Live Oak LPR must not inflate Flock-only route encounters');
 const unknownManufacturer=at('generic-device',38.83,-104.8,{
