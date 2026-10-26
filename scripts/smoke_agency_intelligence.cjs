@@ -34,12 +34,21 @@ const {chromium}=require('playwright');
   r=await page.goto(new URL('sharing-explorer.html',base).href,
     {waitUntil:'domcontentloaded',timeout:16000});
   assert.equal(r.status(),200);
-  const copy=await page.locator('main').textContent();
-  assert.ok(copy.includes('Las Cruces Police Department (NM)'));
-  assert.ok(copy.includes('secondary-source snapshots'));
-  await page.locator('#filter').fill('Temple');
-  assert.equal(await page.locator('#cards .card').count(),1);
-  assert.ok((await page.locator('#cards').textContent()).includes('1,191'));
+  await page.waitForFunction(()=>{
+    const s=document.querySelector('#status')?.textContent||'';
+    return s.includes('directional published links')||
+           s.includes('source network unavailable')||
+           s.includes('Verified external sharing dataset unavailable');
+  },null,{timeout:60000});
+  const sharingStatus=await page.locator('#status').textContent();
+  assert.ok(sharingStatus.includes('directional published links'),sharingStatus);
+  assert.ok((await page.locator('main').textContent()).includes('does not demonstrate'));
+  await page.locator('#filter').fill('Folsom CA PD');
+  await page.locator('#cards button').first().click();
+  assert.ok((await page.locator('#selectedName').textContent()).includes('Folsom'));
+  assert.ok((await page.locator('#selectedContext').textContent()).includes('snapshot'));
+  assert.ok((await page.locator('#outcount').textContent()).includes('directed outgoing'));
+  assert.ok((await page.locator('#incount').textContent()).includes('incoming'));
   assert.deepEqual(problems,[]);
   console.log('AGENCY INTELLIGENCE PASS: live sourced X-Ray dossier, local watch persistence and reviewed-state, secondary access explorer');
  }catch(e){console.error('AGENCY INTELLIGENCE FAILED:',e.stack||e);console.error(problems.slice(0,5));process.exitCode=1}
