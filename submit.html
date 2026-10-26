@@ -28,7 +28,15 @@
 <form id="authForm">
 <label>Email<input type="email" id="email" autocomplete="username" required maxlength="254"></label>
 <label>Password<input type="password" id="password" autocomplete="current-password" required minlength="8"></label>
-<button type="submit">Sign in</button><button type="button" id="register">Create account</button>
+<button type="submit">Sign in</button><button type="button" id="register">Create account</button><button type="button" id="forgotPassword">Forgot password?</button>
+</form></section>
+<section class="report-panel" id="recoveryPanel" hidden aria-labelledby="recoveryHeading">
+<h2 id="recoveryHeading">Set a new password</h2>
+<p>Use this form only after opening the recovery link sent to your email address. Choose a new password of at least 12 characters. Never share the recovery link.</p>
+<form id="recoveryForm">
+<label>New password<input type="password" id="newPassword" autocomplete="new-password" required minlength="12"></label>
+<label>Confirm new password<input type="password" id="confirmNewPassword" autocomplete="new-password" required minlength="12"></label>
+<button type="submit" id="saveNewPassword">Update password</button>
 </form></section>
 <section class="report-panel" id="reportPanel" hidden><h2>Private evidence report</h2>
 <p id="sessionLabel"></p><button type="button" id="signout">Sign out</button>
@@ -67,6 +75,15 @@ const cfg=window.KATOPTRON_CONFIG;
 const client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey);
 const $=id=>document.getElementById(id);
 function status(message){$('notice').textContent=message;}
+let recoveryActive=false;
+function showPasswordRecovery(){
+  recoveryActive=true;
+  $('authPanel').hidden=true;
+  $('reportPanel').hidden=true;
+  $('recoveryPanel').hidden=false;
+  $('newPassword').focus();
+  status('Recovery link accepted. Set a new password to regain access.');
+}
 async function sanitizePhoto(file){
   const bitmap=await createImageBitmap(file);
   try{
@@ -98,6 +115,13 @@ async function syncSession(){
     }
     user=verified.data.user;
   }
+  if(recoveryActive){
+    $('authPanel').hidden=true;
+    $('reportPanel').hidden=true;
+    $('recoveryPanel').hidden=false;
+    return;
+  }
+  $('recoveryPanel').hidden=true;
   $('authPanel').hidden=!!user;
   $('reportPanel').hidden=!user;
   $('sessionLabel').textContent=user?'Signed in as '+(user.email||'contributor'):'';
@@ -140,6 +164,44 @@ $('register').addEventListener('click',async()=>{
   }else{
     status('Registration requested. If email confirmation is enabled, follow the verification link in your inbox or spam folder, then return here to sign in. If no email arrives, check your address and try again later.');
   }
+});
+$('forgotPassword').addEventListener('click',async()=>{
+  const email=$('email');
+  if(!email.value.trim()||!email.checkValidity()){
+    status('Enter a valid email address, then request a password reset.');
+    email.focus();return;
+  }
+  const button=$('forgotPassword');button.disabled=true;
+  try{
+    const redirectTo=new URL('./submit.html',location.href).href;
+    const {error}=await client.auth.resetPasswordForEmail(email.value.trim(),{redirectTo});
+    status(error?'Password reset could not be requested. Try again later.':
+      'If an account exists for that email, a recovery link will be sent. Check your inbox and spam folder. The link may expire.');
+  }catch{
+    status('Password reset could not be requested. Try again later.');
+  }finally{button.disabled=false;}
+});
+$('recoveryForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(!recoveryActive){status('Open a valid password-recovery email link first.');return;}
+  const newPassword=$('newPassword').value;
+  if(newPassword.length<12){status('New passwords must be at least 12 characters.');return;}
+  if(newPassword!==$('confirmNewPassword').value){
+    status('The two new passwords must match.');return;
+  }
+  const button=$('saveNewPassword');button.disabled=true;
+  try{
+    const {data:{user},error:userError}=await client.auth.getUser();
+    if(userError||!user)throw Error('Recovery session is invalid or expired. Request a new link.');
+    const {error}=await client.auth.updateUser({password:newPassword});
+    if(error)throw Error('Password could not be updated. Check password strength or request a new link.');
+    $('recoveryForm').reset();
+    recoveryActive=false;
+    $('recoveryPanel').hidden=true;
+    await syncSession();
+    status('Password updated. Your account is signed in.');
+  }catch(error){status(error.message||'Password recovery failed.');}
+  finally{button.disabled=false;}
 });
 $('signout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();status(error?error.message:'Signed out.');await syncSession();});
 // A withdrawn report may leave an orphaned private blob if the network fails.
@@ -326,6 +388,9 @@ $('reportForm').addEventListener('submit',async event=>{
   }catch(error){status('Submission not accepted: '+error.message);}
   finally{$('send').disabled=false;}
 });
-client.auth.onAuthStateChange(()=>{queueMicrotask(syncSession);});
+client.auth.onAuthStateChange(event=>{
+  if(event==='PASSWORD_RECOVERY'){showPasswordRecovery();return;}
+  queueMicrotask(syncSession);
+});
 syncSession();
 </script></body></html>
