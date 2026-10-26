@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '53 19 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/monitor_release_gates.yml'
+      - 'scripts/monitor_release_gates.py'
+      - 'scripts/test_monitor_release_gates.py'
 permissions:
   contents: read
   actions: read
