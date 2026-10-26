@@ -27,7 +27,7 @@ class Page(HTMLParser):
             if ident in self.ids:self.duplicates.add(ident)
             self.ids.add(ident)
         if tag=="html" and a.get("lang")=="en":self.lang=True
-        if tag=="main" and ident=="main-content":self.has_main=True
+        if tag=="main" and ident=="main-content":self.has_main=a.get("tabindex")=="-1"
         if tag=="a" and a.get("class","").find("skip-link")>=0 and a.get("href")=="#main-content":self.has_skip=True
         if tag=="link" and a.get("href")=="./a11y.css":self.stylesheet=True
 
