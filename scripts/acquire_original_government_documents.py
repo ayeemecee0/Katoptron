@@ -184,7 +184,7 @@ def scan(fetcher=fetch):
   except Exception as exc:
    errors.append((seed,type(exc).__name__,str(exc)[:130]))
  for url,item in list(out.items()):
-  if item["document_class"]!="sharing_export" or not (url.lower().split("?")[0].endswith(".csv") or re.search(r"\\.csv\\b",item["link_label"],re.I)):
+  if item["document_class"]!="sharing_export" or not (url.lower().split("?")[0].endswith(".csv") or re.search(r"\.csv\b",item["link_label"],re.I)):
    continue
   try:
    body,_=fetcher(url,MAX_CSV)
