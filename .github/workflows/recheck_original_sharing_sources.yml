@@ -1,0 +1,37 @@
+name: Audit original government and Flock sharing sources
+on:
+  schedule:
+    - cron: '37 12 * * 2'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/recheck_original_sharing_sources.py'
+      - 'scripts/test_recheck_original_sharing_sources.py'
+      - '.github/workflows/recheck_original_sharing_sources.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-first-party-sharing-source-recheck
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate publisher source parser, provenance and fail-closed checks
+        run: python -m unittest discover -s scripts -p 'test_recheck_original_sharing_sources.py' -v
+      - name: Require service-only publisher recheck credentials
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Recheck original sources without assuming revocation on 403 or missing text
+        run: python scripts/recheck_original_sharing_sources.py
