@@ -122,6 +122,7 @@ on:
       - 'supabase/migrations/119_sharing_fingerprints_and_contract_end_dates.sql'
       - 'supabase/migrations/120_watch_delivery_post_opt_in_boundaries.sql'
       - 'supabase/migrations/121_secondary_retention_history.sql'
+      - 'supabase/migrations/122_bounded_agency_retention_public_view.sql'
       - 'scripts/test_agency_watch_security.sql'
       - 'agency-network.js'
       - 'watch-email.js'
@@ -731,6 +732,8 @@ jobs:
             -f supabase/migrations/120_watch_delivery_post_opt_in_boundaries.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f supabase/migrations/121_secondary_retention_history.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/122_bounded_agency_retention_public_view.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_source_reset_and_attributed_publication.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
