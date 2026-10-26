@@ -36,7 +36,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <div id="list" aria-label="Localities with published evidence"></div>
 <section id="profile" hidden aria-label="Selected locality source dossier">
 <h2 id="profileTitle"></h2>
-<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a></div>
+<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a></div>
 <div class="grid" id="metrics"></div>
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
@@ -97,6 +97,7 @@ function select(group){
  $('profileDetail').textContent='Published source evidence grouped by locality name. One place can have multiple agencies; this grouping does not establish record ownership or an active deployment.';
  const url=new URL(location.href);url.searchParams.set('place',group.key);
  $('permalink').href=url.toString();
+ $('brief').href='./agency-brief.html?place='+encodeURIComponent(group.key);
  $('follow').textContent=API.safeRead().follows.includes(group.key)?'Following in Government Watch':'Follow in Government Watch';
  $('metrics').replaceChildren(metric('Government source-mapped positions',group.cameras.length),
  metric('Government records',group.events.length),
