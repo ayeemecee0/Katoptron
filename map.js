@@ -10,6 +10,7 @@
   const Provider = window.KatoptronProvider;
   const providerClient = Provider?.client();
   const Comparison = window.KatoptronRouteComparison;
+  const RouteEvidence = window.KatoptronRouteEvidence;
   const MAX_VISIBLE = 1200;
   const CAMERA_NEAR_ROUTE_M = 120; // Demonstration proximity threshold, NOT a device read range.
   const USA_CENTER = [39, -98];
@@ -589,13 +590,15 @@
   async function cameraRows(bounds, signal) {
     const response = await fetch(publicCameraUrl(bounds), {
       // Publishable API keys are not user JWTs.
-      headers: { apikey: CFG.supabasePublishableKey },
+      headers: { apikey: CFG.supabasePublishableKey,Prefer:'count=exact' },
       signal, cache:'no-store'
     });
     if (!response.ok) throw new Error('Camera API HTTP ' + response.status);
     const rows = await response.json();
-    if (!Array.isArray(rows) || rows.length>=MAX_VISIBLE)
-      throw new Error('Camera evidence page incomplete or source density exceeds limit');
+    if(!RouteEvidence)throw Error('Camera viewport completeness verifier missing');
+    const count=RouteEvidence.exactCount(response.headers.get('content-range'),rows);
+    if (count>rows.length || rows.length>=MAX_VISIBLE)
+      throw new Error('Camera viewport exceeds complete source response; zoom in to reduce density');
     if(rows.some(x=>!x || !validCoord(Number(x.latitude),Number(x.longitude)) ||
       !['exact','approximate'].includes(x.location_accuracy) ||
       typeof x.record_key!=='string' || !x.record_key))
@@ -616,12 +619,14 @@
   }
   async function tieredRows(bounds,signal) {
     const response=await fetch(publicTieredUrl(bounds),{
-      headers:{apikey:CFG.supabasePublishableKey},signal,cache:'no-store'
+      headers:{apikey:CFG.supabasePublishableKey,Prefer:'count=exact'},signal,cache:'no-store'
     });
     if(!response.ok)throw new Error('Tiered camera API HTTP '+response.status);
     const rows=await response.json();
-    if(!Array.isArray(rows)||rows.length>=MAX_VISIBLE)
-      throw new Error('Tiered source list unavailable or truncated; camera coverage unknown');
+    if(!RouteEvidence)throw Error('Tiered viewport completeness verifier missing');
+    const count=RouteEvidence.exactCount(response.headers.get('content-range'),rows);
+    if(count>rows.length||rows.length>=MAX_VISIBLE)
+      throw new Error('Tiered source map viewport incomplete; zoom in to narrow evidence density');
     if(rows.some(row=>!row || !validCoord(Number(row.latitude),Number(row.longitude)) ||
         !['government_verified','independently_corroborated','source_attributed_unconfirmed'].includes(row.evidence_tier)))
       throw new Error('Tiered source contained invalid location or classification');
@@ -635,37 +640,50 @@
          ?'source_attributed_gis_unconfirmed_v1':'independent_corroboration_v1'
     }));
   }
+  async function routeSourcePage(url,signal){
+    if(!RouteEvidence)throw Error('Full-route completeness verifier unavailable');
+    const target=new URL(url);
+    target.searchParams.set('limit',String(RouteEvidence.PAGE_LIMIT));
+    // PostgREST may cap the response below the requested limit. An exact
+    // Content-Range total is required before the region can be certified.
+    const response=await fetch(target.href,{
+      headers:{apikey:CFG.supabasePublishableKey,Prefer:'count=exact'},
+      signal,cache:'no-store',referrerPolicy:'no-referrer'
+    });
+    if(!response.ok)throw Error('Original camera evidence HTTP '+response.status);
+    const rows=await response.json();
+    const total=RouteEvidence.exactCount(response.headers.get('content-range'),rows);
+    return {rows,total};
+  }
   async function routeCameraRows(bounds,signal) {
     const [official,tiered]=await Promise.all([
-      cameraRows(bounds,signal),tieredRows(bounds,signal)
+      routeSourcePage(publicCameraUrl(bounds),signal),
+      routeSourcePage(publicTieredUrl(bounds),signal)
     ]);
-    // Generic city-mapped LPR coordinates do NOT establish a Flock device.
-    // Keep them visible on the provenance map, not Flock-only simulation.
-    return official.concat(tiered.filter(row=>row.evidence_tier==='government_verified'))
-      .filter(Comparison.eligibleForFlockRoute);
+    if(official.rows.some(row=>!row||!validCoord(Number(row.latitude),Number(row.longitude))||
+       !['exact','approximate'].includes(row.location_accuracy) ||
+       typeof row.record_key!=='string'||!row.record_key))
+      throw Error('Government source returned malformed route camera coordinates');
+    if(tiered.rows.some(row=>!row||!validCoord(Number(row.latitude),Number(row.longitude))||
+       !['government_verified','independently_corroborated','source_attributed_unconfirmed'].includes(row.evidence_tier)))
+      throw Error('Government source returned invalid alternative evidence tier');
+    tiered.rows=tiered.rows.map(row=>({
+      ...row,record_key:'tiered-'+row.case_key,location_accuracy:'exact',
+      uncertainty_radius_m:0,last_source_recheck_at:null
+    }));
+    return {official,tiered};
   }
-  // Each OSRM alternative must independently finish its entire corridor scan.
-  // Aborted, incomplete or overloaded evidence is UNKNOWN, never zero cameras.
+  // Each real route alternative must finish every source query region. A
+  // truncated 1000-row PostgREST response is UNKNOWN, NEVER zero cameras.
   async function collectRouteEvidence(route,signal) {
-    if(!Geo||!Comparison)throw new Error('Route evidence verification library unavailable');
-    const boxes=Geo.corridorBoxes(route.points);
-    const collected=new Map();
-    let next=0;
-    async function worker() {
-      while(next<boxes.length) {
-        if(signal.aborted)throw new Error('Route evidence check canceled');
-        const box=boxes[next++];
-        const rows=await routeCameraRows(box,signal);
-        if(rows.length>=MAX_VISIBLE)
-          throw new Error('Camera evidence density exceeds corridor query limit');
-        for(const row of rows)collected.set(row.record_key,row);
-      }
-    }
-    await Promise.all(Array.from({length:Math.min(3,boxes.length)},()=>worker()));
-    if(signal.aborted)throw new Error('Route evidence check canceled');
-    const records=[...collected.values()];
-    const summary=Comparison.summarize(route,records,Geo,CAMERA_NEAR_ROUTE_M);
-    return {status:'complete',records,summary,checkedRegions:boxes.length};
+    if(!Geo||!Comparison||!RouteEvidence)
+      throw Error('Route evidence verification library unavailable');
+    const scanned=await RouteEvidence.collect(route,Geo,routeCameraRows,
+      Comparison.eligibleForFlockRoute,signal);
+    const summary=Comparison.summarize(route,scanned.records,Geo,CAMERA_NEAR_ROUTE_M);
+    return {status:'complete',records:scanned.records,summary,
+      checkedRegions:scanned.checkedRegions,queryRegions:scanned.queries,
+      subdivisionCount:scanned.splitRegions};
   }
   function renderRouteComparisons() {
     const list=$('routeComparisonList');
@@ -728,9 +746,10 @@
       state.routeCoverage='complete';
       state.routeRecords=evidence.records;
       computeObservations();
-      setText('routeStatus','Checked '+evidence.checkedRegions+
-        ' evidence region(s) across this route. Results model published records only. '+
-        'Unpublished cameras may still exist.');
+      setText('routeStatus','Checked '+evidence.queryRegions+
+        ' verified-response camera evidence request(s) across '+evidence.checkedRegions+
+        ' complete region(s)'+(evidence.subdivisionCount?' after '+evidence.subdivisionCount+' density subdivision(s)':'')+
+        '. Counts cover PUBLISHED records only. Unpublished cameras may still exist.');
       $('play').disabled=false;
     }else if(evidence.status==='unavailable') {
       state.routeCoverage='unavailable';

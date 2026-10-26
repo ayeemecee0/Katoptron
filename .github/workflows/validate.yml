@@ -254,6 +254,9 @@ on:
       - 'map.js'
       - 'route-geometry.js'
       - 'route-comparison.js'
+      - 'route-evidence-query.js'
+      - 'scripts/test_route_evidence_query.js'
+      - 'scripts/smoke_route_completeness.cjs'
       - 'routing-provider.js'
       - 'geoapify-adapter.js'
       - 'scripts/test_geoapify_adapter.js'
@@ -1299,6 +1302,8 @@ jobs:
           python scripts/test_static_release_security.py
           node --check route-comparison.js
           node scripts/test_route_comparison.js
+          node --check route-evidence-query.js
+          node scripts/test_route_evidence_query.js
           node --check community-route.js
           node scripts/test_community_route.js
           node scripts/test_routing_routes.js
