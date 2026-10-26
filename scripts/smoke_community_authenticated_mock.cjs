@@ -257,12 +257,24 @@ window.__QA={reports,activity};
    await page.locator('#login button').click();
    await page.locator('#workspace').waitFor({state:'visible',timeout:12000});
    assert.equal(await page.locator('#cases article').count(),1);
+   const rationale=page.locator('#cases textarea');
+   assert.match(await rationale.getAttribute('aria-label'),/Required evidence assessment.*report /,
+     'Each private reviewer rationale must have a report-specific accessible name');
+   assert.equal(await rationale.getAttribute('aria-required'),'true');
+   await page.getByRole('button',{name:'Reject'}).click();
+   assert.equal(await rationale.getAttribute('aria-invalid'),'true',
+     'Missing rationale must expose invalid field to assistive technologies');
+   assert.equal(await page.evaluate(()=>document.activeElement?.tagName),'TEXTAREA',
+     'Failed moderation should focus the corrective rationale field');
+   assert.match(await page.locator('#notice').textContent(),/at least 15 characters/);
    await page.locator('#cases button').first().click();
    await page.waitForFunction(()=>window.__QA.activity.signed.length===1,undefined,{timeout:12000});
    assert.equal(await page.evaluate(()=>window.__QA.activity.signed[0].seconds),60,
       'Reviewer photo links must expire within one minute');
    await page.locator('#cases textarea').fill(
       'This is a deliberately fictional QA reviewer assessment with an original source URL.');
+   assert.equal(await rationale.getAttribute('aria-invalid'),null,
+     'Corrected reviewer rationale must clear stale invalid state');
    await page.getByRole('button',{name:'Reject'}).click();
    await page.waitForFunction(()=>window.__QA.activity.reviewed.length===1,undefined,{timeout:12000});
    const reviewed=await page.evaluate(()=>window.__QA.activity.reviewed[0]);

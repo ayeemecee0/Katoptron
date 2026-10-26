@@ -1,5 +1,6 @@
 /* Automated WCAG 2.2 A/AA screening. Not manual AT certification.
- * Local test server only, anonymous pages only: never exercise real login.
+ * Local site only. Check anonymous pages and synthetic unlocked form markup;
+ * NEVER exercise real login, create a report, or read private records.
  * Logs rules/impact/counts, never URLs, user input, or private content.
  */
 const {chromium}=require('playwright');
@@ -19,19 +20,34 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
     const r=await page.goto(host+file,{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(r?.status(),200,'Missing audited page '+file);
     await page.waitForTimeout(150);
-    const audit=await new AxeBuilder({page})
-      .withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa'])
-      .analyze();
-    const problems=audit.violations.map(x=>({
-      id:x.id,impact:x.impact,count:x.nodes.length,
-      targets:x.nodes.slice(0,5).map(node=>node.target)
-    }));
-    for(const item of problems){
-      if(item.impact==='critical'||item.impact==='serious')severe+=item.count;
-      else moderate+=item.count;
+    const states=[{name:'anonymous'}];
+    if(file==='submit.html'){
+      states.push({name:'recovery-form',show:'recoveryPanel',hide:['authPanel','reportPanel']});
+      states.push({name:'private-report-form',show:'reportPanel',hide:['authPanel','recoveryPanel']});
+    }else if(file==='community-review.html'){
+      states.push({name:'reviewer-workspace-skeleton',show:'workspace',hide:['login']});
     }
-    console.log('WCAG SCAN',file,width,'violations',
-      JSON.stringify(problems));
+    for(const state of states){
+      if(state.show){
+        await page.evaluate(({show,hide})=>{
+          for(const id of hide)document.getElementById(id).hidden=true;
+          document.getElementById(show).hidden=false;
+        },state);
+      }
+      const audit=await new AxeBuilder({page})
+        .withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa'])
+        .analyze();
+      const problems=audit.violations.map(x=>({
+        id:x.id,impact:x.impact,count:x.nodes.length,
+        targets:x.nodes.slice(0,5).map(node=>node.target)
+      }));
+      for(const item of problems){
+        if(item.impact==='critical'||item.impact==='serious')severe+=item.count;
+        else moderate+=item.count;
+      }
+      console.log('WCAG SCAN',file,state.name,width,'violations',
+        JSON.stringify(problems));
+    }
    }
    await context.close();
   }
@@ -39,7 +55,7 @@ const pages=['index.html','records.html','accountability.html','analytics.html',
     ' moderate_or_minor='+moderate);
   assert.equal(severe,0,'Serious or critical WCAG rule violations remain');
   assert.equal(moderate,0,'Moderate or minor WCAG rule violations remain');
-  console.log('WCAG AUTOMATED PASS: evaluated rules on anonymous pages, three viewports, including 320px reflow.');
+  console.log('WCAG AUTOMATED PASS: 42 page/states across 320, 390 and 1280px, including synthetic recovery, report and reviewer forms.');
   console.log('Manual NVDA/VoiceOver, touch, zoom and provider account checks still required.');
  }catch(error){
   console.error('WCAG AUTOMATED AUDIT FAILED:',error.message);

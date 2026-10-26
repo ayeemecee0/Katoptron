@@ -18,7 +18,14 @@ The shared [a11y.css](../a11y.css) now includes:
 4. Clearer source link underlines in records and public map attribution, non-drag button access, explicit scroll margins for focused/targeted elements, and wrap-safe narrow-screen button/toolbar labels.
 5. Preference-sensitive motion suppression without changing the privacy/evidence map's data eligibility or route logic.
 
-The [320px high-contrast acceptance script](../scripts/smoke_m8_adversarial_accessibility.cjs) is independently release-triggered through [accept_m8_adversarial_accessibility.yml](../.github/workflows/accept_m8_adversarial_accessibility.yml), **not blocked by unrelated OSRM/OSM or API service failures**. The same script also runs inside combined browser smoke. [WCAG axe automated scan](../scripts/audit_wcag_axe.cjs) now covers three viewport widths rather than two.
+The expanded synthetic form-state scan is checked by the same [axe script](../scripts/audit_wcag_axe.cjs). The [320px high-contrast acceptance script](../scripts/smoke_m8_adversarial_accessibility.cjs) is independently release-triggered through [accept_m8_adversarial_accessibility.yml](../.github/workflows/accept_m8_adversarial_accessibility.yml), **not blocked by unrelated OSRM/OSM or API service failures**. The same script also runs inside combined browser smoke. [WCAG axe automated scan](../scripts/audit_wcag_axe.cjs) now covers three viewport widths rather than two.
+
+## October 26: extended signed-out, recovery, and authenticated-form coverage
+
+- The owner completed a **real** live email confirmation and password-recovery cycle, independently consistent with Supabase production Auth events: signup request HTTP 200, confirmation verification HTTP 303, recovery request HTTP 200, recovery verification HTTP 303, and password update HTTP 200. The owner confirmed signing back in with the new password. This closes the **functional email-link dependency**, not screen-reader accessibility certification.
+- The WCAG 2.2 axe script now screens **42 page/state/viewport combinations** (11 anonymous screens plus synthetic visible recovery form, contributor private-report form and reviewer workspace, at 320, 390 and 1280 CSS pixels). These extra three states are **synthetic visual/DOM checks** only; they do not access or create any actual private records, authenticate users, or constitute an independent human accessibility audit.
+- The private review rationale textarea is now named programmatically for its report and marked required. An invalid review rationale exposes `aria-invalid`, announces the corrective instruction through the status region, returns keyboard focus to the field, and clears the invalid flag as the text is corrected. The authenticated fake-client browser acceptance asserts all of these behaviors.
+- The signup/recovery component now already includes keyboard focus and invalid-field announcements; the live human functional email run validates the links, **not** whether an actual screen reader perceives those announcements.
 
 ## Important limitations and remaining real-world acceptance
 
@@ -30,7 +37,7 @@ This is a **95% planning estimate**, not 95% of WCAG criteria mathematically ver
 | VoiceOver on macOS/iOS and/or TalkBack Android | Human tester navigates all 11 public pages, selects government source records, identifies filters and consent, and can escape/interact with Leaflet map |
 | Actual browser 200% and 400% zoom | Real browser zoom on supported desktop browsers; proxy 640/320 CSS-pixel viewport tests do **not** exercise browser chrome or OS magnification exactly |
 | Genuine system high-contrast mode and physical touch/keyboard | Confirm Android, iOS and Windows system preferences, hover-independent navigation, small targets, external link discoverability, and map gestures |
-| Form error correction, consent and real email links | Complete registration/confirmation/recovery and private submission with an opted-in real person; verify the error can be perceived, located and corrected |
+| Form error correction, consent and real email links | **Live email signup, confirmation, recovery and new-password sign-in passed October 26.** Still need real assistive-technology observation of error correction, and separately a consented private report submission/withdrawal/erasure test |
 | Independent WCAG review and user feedback | Qualitative keyboard/screen-reader observation, actual accessibility bug triage, documented manual pass/fail and remediation |
 
 A verified human-accessibility report with test date, browser/OS, actual assistive technology version, recorded pass/fail by page, evidence of corrective re-tests and named accountable reviewer is necessary before declaring **full** WCAG 2.2 AA conformance or M8 100%.
@@ -45,4 +52,4 @@ A verified human-accessibility report with test date, browser/OS, actual assisti
 
 ## Conclusion
 
-**M8 ≈95%**. Developer-controlled static/audited behavior and measurable negative cases are implemented, deployed and passing. No simulated test may be represented as actual NVDA, VoiceOver, touchscreen or independent human certification. **M9 remains ≈90%** and separately requires owner-controlled real mail acceptance, encrypted recovery and account-level provider controls.
+**M8 ≈95%**. Developer-controlled static/audited behavior and measurable negative cases are implemented, deployed and passing. No simulated test may be represented as actual NVDA, VoiceOver, touchscreen or independent human certification. **M9 remains separately open** for encrypted recovery backups, provider account controls, actual operational ownership and reliable sender reputation. Functional owner-tested email confirmation and password recovery no longer block it.
