@@ -26,7 +26,7 @@ SEEDS=(
  ("https://www.shakopeemn.gov/public_safety/police_department/reports___transparency.php","Shakopee, MN"),
  ("https://www.paloalto.gov/Departments/Police/Public-Information-Portal/Automated-License-Plate-Recognition-ALPR","Palo Alto, CA"),
  ("https://www.alexandriava.gov/police-department/license-plate-reader-dashboard-and-response-to-city-council-questions-on-flock","Alexandria, VA"),
- ("https://www.millvalley.gov/","Mill Valley, CA"),
+ ("https://www.cityofwoodland.gov/1704/Automated-License-Plate-Readers-ALPR","Woodland, CA"),
 )
 MAX_PAGE=900_000
 MAX_CSV=250_000
@@ -184,7 +184,7 @@ def scan(fetcher=fetch):
   except Exception as exc:
    errors.append((seed,type(exc).__name__,str(exc)[:130]))
  for url,item in list(out.items()):
-  if item["document_class"]!="sharing_export" or not url.lower().split("?")[0].endswith(".csv"):
+  if item["document_class"]!="sharing_export" or not (url.lower().split("?")[0].endswith(".csv") or re.search(r"\\.csv\\b",item["link_label"],re.I)):
    continue
   try:
    body,_=fetcher(url,MAX_CSV)
