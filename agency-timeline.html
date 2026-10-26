@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Source-dated Agency Accountability Timeline</title>
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font-family:Inter,system-ui,sans-serif;background:#0c1621;color:#e7f0f7;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0}a{color:#9dddeb}
+header{padding:1.15rem max(1rem,4vw);background:#122330;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-bottom:1px solid #405164}
+.brand{letter-spacing:.14em;text-decoration:none;color:inherit;font-weight:800}
+nav{display:flex;gap:1rem;flex-wrap:wrap;font-size:.85rem}
+main{max-width:1000px;margin:auto;padding:2rem 1.2rem 4rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);margin:.2rem 0}h2{margin-top:2.1rem}
+p{line-height:1.55;color:#bcd1e0}
+select,button{background:#172e40;color:inherit;border:1px solid #7792a4;border-radius:7px;font:inherit;padding:.6rem;cursor:pointer}
+.callout{background:#142b3d;border-left:3px solid #83aabc;padding:1rem}
+.timeline{border-left:2px solid #476c81;margin:1.4rem 0 0 1rem;padding-left:1.4rem}
+.event{position:relative;background:#152a3b;border:1px solid #39596f;border-radius:10px;padding:1rem;margin:0 0 1rem;overflow-wrap:anywhere}
+.event::before{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:#83c3d0;left:-2.15rem;top:1rem;border:2px solid #0c1621}
+.event time{color:#d3e7f0;font-weight:700}.event h3{font-size:1.06rem;margin:.4rem 0}
+.label{font-size:.75rem;color:#a9c2d4;text-transform:uppercase;letter-spacing:.06em}
+.event small{display:block;color:#bad0df;line-height:1.5}
+#undated article{background:#152a3b;padding:.7rem;border-radius:9px;margin:.6rem 0;border:1px solid #344c5d}
+[hidden]{display:none!important}:focus-visible{outline:3px solid #9de0ee;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to timeline</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Main">
+<a href="./agency-xray.html">AGENCY X-RAY</a><a href="./government-watch.html">GOVERNMENT WATCH</a><a href="./sharing-explorer.html">ACCESS & SHARING</a><a href="./agency-brief.html">RESEARCH BRIEFS</a></nav></header>
+<main id="main"><h1 id="title">Agency Accountability Timeline</h1>
+<p>Source-dated government decisions, vendor disclosures, contract milestones, original published sharing lists and observed retention differences.</p>
+<div class="callout"><strong>Dates are not interchangeable.</strong> A source publication or collection date does not prove that cameras were installed or turned off on that day. Contract end dates are scheduled, not proof of renewal or termination. Changes are reported only when two comparable dated source observations exist. Missing records are unknown.</div>
+<p><label for="kind">Filter timeline category</label> <select id="kind"><option value="all">All dated evidence</option>
+<option value="recorded_decision">Recorded government actions</option>
+<option value="government_record">Other government records</option>
+<option value="program_disclosure">Program disclosures</option>
+<option value="contract_execution">Signed agreements</option>
+<option value="scheduled_contract_end">Scheduled contract end dates</option>
+<option value="vendor_snapshot">Original Flock vendor snapshots</option>
+<option value="sharing_observation">Original publisher sharing lists</option>
+<option value="retention_difference">Dated secondary retention differences</option>
+</select></p>
+<p id="status" role="status" aria-live="polite">Loading public source evidence…</p>
+<div id="timeline" class="timeline" aria-label="Dated source-supported events"></div>
+<section aria-labelledby="undatedTitle"><h2 id="undatedTitle">Relevant records without a documented date</h2>
+<p>Undated government disclosures are retained here rather than assigned an invented event date.</p><div id="undated"></div></section>
+<section><h2>Evidence limitations</h2><p id="limitations">Unknown fields cannot establish a surveillance program did not exist. Source evidence does not imply actual ALPR searches or an agency's future actions.</p></section>
+</main><script src="./config.js"></script><script src="./agency-intelligence.js"></script><script src="./agency-timeline.js"></script>
+<script>
+'use strict';
+const A=window.KatoptronIntelligence,T=window.KatoptronTimeline,$=id=>document.getElementById(id);
+const key=new URL(location.href).searchParams.get('place');
+let dossier=null,events=null;
+function elem(tag,value,cls){const n=document.createElement(tag);if(value!=null)n.textContent=String(value);if(cls)n.className=cls;return n}
+function card(record,container){
+ const item=elem('article',null,'event');
+ if(record.date){const time=elem('time',record.date);time.dateTime=record.date;item.append(time)}
+ item.append(elem('div',record.kind.replaceAll('_',' ')+' · '+record.tier,'label'),
+  elem('h3',record.title||'Untitled public record'),
+  elem('p',record.detail||'Original source statement'),
+  elem('small','Date basis: '+record.date_basis+
+    (record.scheduled?'. Scheduled future date; outcome not independently established.':'')));
+ const safe=T.safe(record.source_url);
+ if(safe){const a=elem('a','Read original cited source');a.href=safe;a.target='_blank';a.rel='noopener noreferrer';item.append(a)}
+ container.append(item);
+}
+function render(){
+ $('timeline').replaceChildren();$('undated').replaceChildren();
+ if(!events)return;
+ const chosen=T.filter(events.dated,$('kind').value);
+ for(const e of chosen)card(e,$('timeline'));
+ if(!chosen.length)$('timeline').append(elem('p','No dated published records of this category. That does not mean no event occurred.'));
+ for(const e of events.undated)card(e,$('undated'));
+ if(!events.undated.length)$('undated').append(elem('p','No undated source-backed entries in the current dossier.'));
+ $('status').textContent=chosen.length+' dated records displayed · '+events.undated.length+
+  ' undated records kept separate · sourced as of this live data request. Not a complete historical census.';
+}
+$('kind').addEventListener('change',render);
+if(!key||!/^[-a-z0-9 ]+\|[A-Z]{2}$/.test(key)){
+ $('status').textContent='Choose a locality from Agency X-Ray; no unsupported agency timeline was fabricated.';
+}else A.load().then(async groups=>{
+ dossier=groups.find(g=>g.key===key);
+ if(!dossier){$('status').textContent='No source-backed agency dossier published for this locality.';return}
+ $('title').textContent='Accountability Timeline: '+dossier.label;
+ let contracts=[],contractIssue=null;
+ try{contracts=await T.contractsFor(dossier.label)}
+ catch(err){contractIssue=err.message}
+ events=T.build(dossier,contracts);render();
+ if(contractIssue)$('limitations').textContent+=' Signed contract source is currently unavailable ('+contractIssue+'); no implied missing contracts or false zeroes.';
+ else if(!contracts.length)$('limitations').textContent+=' No independently reviewed executed Flock agreement with a signed/end date is available in this locality profile, so contract spending and renewal dates remain unknown.';
+}).catch(error=>{
+ $('status').textContent='Could not verify public timeline sources: '+error.message;
+});
+</script></body></html>
