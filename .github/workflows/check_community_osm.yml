@@ -15,6 +15,8 @@ on:
       - 'sharing-explorer.html'
       - 'scripts/smoke_agency_intelligence.cjs'
       - 'scripts/smoke_watch_email_preferences.cjs'
+      - 'agency-brief.html'
+      - 'scripts/smoke_agency_research_brief.cjs'
       - 'scripts/test_osm_point_canvas.cjs'
       - 'nearby.html'
       - 'scripts/smoke_nearby.cjs'
@@ -55,6 +57,7 @@ jobs:
           node scripts/smoke_nearby.cjs
           node scripts/smoke_agency_intelligence.cjs
           node scripts/smoke_watch_email_preferences.cjs
+          node scripts/smoke_agency_research_brief.cjs
           node scripts/smoke_community_osm.cjs
           node scripts/smoke_osm_canvas_pan_alignment.cjs
           node scripts/smoke_community_overlay.cjs
