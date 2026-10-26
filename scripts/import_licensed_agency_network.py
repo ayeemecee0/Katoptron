@@ -10,6 +10,7 @@ Fails shut on incomplete files before writing any records.
 """
 import argparse
 import json
+import hashlib
 import os
 import re
 import sys
@@ -86,11 +87,15 @@ def as_optional_int(value):
     return value
 
 
-def rows(byid,meta):
+def rows(byid,meta,adjacency=None):
     for agency_id,prop in byid.items():
         state=prop.get("state")
+        edges=(adjacency or {}).get(agency_id)
+        fingerprint=(hashlib.sha256(("\\n".join(edges)).encode("utf8")).hexdigest()
+                      if edges is not None and prop.get("isPortal") is True else None)
         yield dict(
             source_agency_id=agency_id,
+            sharing_list_sha256=fingerprint,
             agency_name=prop["name"],
             state_code=state if isinstance(state,str) and re.fullmatch("[A-Z]{2}",state) else None,
             agency_type=prop.get("type") if prop.get("type") in
@@ -134,21 +139,96 @@ def publish(data, url, token, sender=None, batch_size=175):
     return completed
 
 
+def previous_fingerprints(url, token, fetcher=None):
+    fetcher=fetcher or urllib.request.urlopen
+    out={}
+    base=url.rstrip("/")+"/rest/v1/flock_secondary_portal_agencies"
+    for offset in range(0,5000,500):
+        query="?select=source_agency_id,sharing_list_sha256&is_reporting_portal=eq.true&limit=500&offset="+str(offset)
+        req=urllib.request.Request(base+query,headers={"apikey":token,"Authorization":"Bearer "+token})
+        with fetcher(req,timeout=30) as resp:
+            rows=json.load(resp)
+        if not isinstance(rows,list):
+            raise ValueError("Old source history truncated")
+        for r in rows:
+            out[r["source_agency_id"]]=r.get("sharing_list_sha256")
+        if len(rows)<500:return out
+    raise ValueError("Old source history exceeds maximum page count")
+
+
+def locality(prop):
+    name=prop.get("name","")
+    m=re.fullmatch(r"(.+?) ([A-Z]{2}) (?:PD|SO)",name)
+    if not m:return None
+    place=re.sub(r"[^a-z0-9 ]","",m.group(1).lower()).strip()
+    return place+"|"+m.group(2) if place else None
+
+
+def structural_events(data,previous,byid,meta):
+    events=[]
+    for row in data:
+        key=row["source_agency_id"]
+        old=previous.get(key)
+        new=row.get("sharing_list_sha256")
+        if not old or not new or old==new:continue
+        prop=byid[key]
+        source=BASE+"sharing-network-adjacency.json"
+        slug=prop.get("portalSlug")
+        if isinstance(slug,str) and re.fullmatch("[a-z0-9-]{2,160}",slug):
+            source="https://eyesonflock.com/portal/"+slug
+        digest=hashlib.sha256((key+"|"+new).encode("utf8")).hexdigest()
+        events.append({
+            "event_key":"share_"+digest,
+            "locality_key":locality(prop),
+            "source_agency_id":key,
+            "kind":"sharing_list_changed",
+            "title":(prop["name"]+" source-reported sharing list changed")[:280],
+            "summary":"The dated secondary portal network changed the named outbound recipient list. This is not proof of an actual plate search, current permission, or government-certified access. Review the original vendor portal.",
+            "source_url":source,
+            "source_date":meta["generatedAt"][:10],
+            "evidence_tier":"secondary_aggregated_portal_snapshot"
+        })
+    return events
+
+
+def publish_events(events,url,token,sender=None):
+    if not events:return 0
+    sender=sender or urllib.request.urlopen
+    endpoint=url.rstrip("/")+"/rest/v1/flock_agency_watch_events?on_conflict=event_key"
+    for at in range(0,len(events),150):
+        req=urllib.request.Request(endpoint,
+          data=json.dumps(events[at:at+150],separators=(",",":")).encode("utf8"),
+          method="POST",
+          headers={"apikey":token,"Authorization":"Bearer "+token,
+                   "Content-Type":"application/json",
+                   "Prefer":"resolution=ignore-duplicates,return=minimal"})
+        with sender(req,timeout=45) as response:
+            if getattr(response,"status",204) not in (200,201,204):
+                raise ValueError("Secondary structural watch publication held")
+    return len(events)
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--dry-run",action="store_true")
     args=parser.parse_args()
     meta,source,links=(download(name) for name in KEYS)
     indexed=validate(meta,source,links)
-    batch=list(rows(indexed,meta))
+    batch=list(rows(indexed,meta,links))
     print("External source reconciled:",len(batch),"agency IDs,",
           meta["portalCount"],"dated portal identities,",
           meta["directedEdges"],"directional links")
     if args.dry_run:
         print("DRY RUN: zero database records published")
         return
-    n=publish(batch,os.getenv("SUPABASE_URL",""),
-              os.getenv("SUPABASE_SERVICE_ROLE_KEY",""))
+    url=os.getenv("SUPABASE_URL","")
+    token=os.getenv("SUPABASE_SERVICE_ROLE_KEY","")
+    if not url or not token:raise ValueError("Protected import secrets missing")
+    previous=previous_fingerprints(url,token)
+    structural=structural_events(batch,previous,indexed,meta)
+    publish_events(structural,url,token)
+    n=publish(batch,url,token)
+    print("New genuine structural sharing changes:",len(structural))
     print("Secondary agency directory imported:",n,
           "(government camera locations inserted: ZERO)")
 
