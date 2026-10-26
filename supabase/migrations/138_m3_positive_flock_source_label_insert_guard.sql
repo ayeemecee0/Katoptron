@@ -25,6 +25,5 @@ for each row execute function public.guard_m3_positive_source_label_on_insert();
 comment on function public.guard_m3_positive_source_label_on_insert() is
 'Prevents service-role ingestion from choosing positive Flock-source or generic LPR classifications. New GIS positions default unconfirmed until independently owner-reviewed source evidence exists. Does not affect prior reviewed classifications.';
 
-create index if not exists flock_camera_source_flock_label_status_idx
- on public.flock_camera_locations(source_flock_label_status)
- where verification_status='verified';
+-- No additional source-label index: the verified camera inventory is small,
+-- and classification audits scan it in full to avoid stale partial reads.
