@@ -23,6 +23,9 @@ class ScriptParser(HTMLParser):
             self.scripts[-1] += data
 
 for filename, required in {
+    "community-map.html": ["example_latitude", "example_longitude",
+      "inspectSourceCell", "flock_osm_community_points",
+      "Numbered circles are report clusters", "officialCount"],
     "submit.html": ["withdraw_own_community_report", "sanitizePhoto", "flock_community_submissions"],
     "community-review.html": ["list_community_review_queue", "set_community_review_status", "community_report_attachment_paths"],
     "accountability.html": ["flock_accountability_directory", "flock_accountability_roles", "safeCsvValue"],
