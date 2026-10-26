@@ -1,4 +1,7 @@
 # Milestone 9 — Production launch gates and incident response
+
+> **October 26 production engineering update:** M9 unattended operational preparation is now estimated **90%** (previously 75%) after two migrations, real private quota monitoring, elimination of both anonymously callable public privileged GIS functions without losing source-backed map access, and the first **passing live nine-workflow release heartbeat**. The M7 original GIS/program-state vs accountability-extended state denominator health regression was resolved and production checks reran green. **This is NOT 100% full launch authorization**: actual owner-controlled Auth email delivery, encrypted real Auth/Storage/database backup-and-restore, provider account-side cost/allowed origins, independent human accessibility and operational incident ownership still require authorized participation. See [M9 unattended production hardening and exact open gates](./m9-unattended-production-hardening-2026-10-26.md).
+
 Status as of October 23, 2026: engineering safeguards implemented; **not approved for full production**.
 
 ## Deployment policy
