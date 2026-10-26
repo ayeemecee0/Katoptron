@@ -18,6 +18,13 @@ const {chromium}=require('playwright');
   assert.ok(metrics.includes('Government source-mapped positions'));
   assert.ok(metrics.includes('Flock vendor snapshots'));
   assert.ok((await page.locator('#portals').textContent()).includes('Vendor-reported cameras'));
+  assert.ok((await page.locator('#identityMatches').textContent()).includes(
+    'Exact original Flock transparency portal URL identifier'),
+    'Original Flock portal exact-identity crosswalk missing from Folsom dossier');
+  assert.ok((await page.locator('#identityMatches a').first().getAttribute('href'))
+    .startsWith('https://transparency.flocksafety.com/'),
+    'Crosswalk must cite the original Flock vendor portal URL');
+
   // Original vendor numbers may be unpublished: no implied zero counts.
   assert.ok((await page.locator('#unknowns').textContent()).includes('unknown'));
   await page.locator('#follow').click();
