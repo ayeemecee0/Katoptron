@@ -33,6 +33,16 @@ PRIVATE_RPC={
     'community_report_attachment_paths': {
         'p_report':'00000000-0000-0000-0000-000000000000',
     },
+    # These two government-source booleans used to be anonymous-callable
+    # SECURITY DEFINER RPCs. They now live behind RLS in a non-exposed
+    # schema; no external caller may probe their deprecated public aliases.
+    'gis_camera_authority_current': {
+        'p_url':'https://testing.gov/not-a-real-source',
+        'p_jurisdiction':'Synthetic, XX',
+    },
+    'is_current_flock_polygon_camera_gis_source': {
+        'p_source_key':'synthetic-nonexistent-source',
+    },
 }
 DENIED=(401,403)
 MAX_CHECKS=20
