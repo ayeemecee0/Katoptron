@@ -18,62 +18,83 @@ ul{line-height:1.7}hr{border:0;border-top:1px solid #30495a;margin:1.5rem 0}:foc
 <main id="main-content"><h1>Documented Access & Sharing Explorer</h1>
 <p>Discover what an agency or a dated transparency-portal analysis <em>says</em> about other organizations being permitted to query its Flock network. This is not a record of plate reads or a complete list of agencies.</p>
 <div class="note"><strong>Direction matters.</strong> An agency sharing its records <em>with</em> another agency does not establish reciprocal access. A listed organization having potential access does not prove it ever conducted a search. The observations below are <strong>secondary-source snapshots</strong>; they have not yet been independently rechecked against every live Flock portal. A missing list is unknown, not zero. These figures never become exact camera pins.</div>
-<div class="controls"><label for="filter">Search published sharing summaries</label><input id="filter" type="search" maxlength="90" placeholder="Agency or state"><select id="sort" aria-label="Sort reported sharing counts"><option value="count">Largest disclosed counts</option><option value="name">Agency name</option></select></div>
-<p id="status" role="status" aria-live="polite"></p><div id="cards" class="cards"></div>
-<hr>
-<h2>Source-documented named relationship example</h2>
-<div class="card">
-<strong>Las Cruces Police Department (NM) → New Mexico State Police</strong>
-<p>The independent portal research reports the New Mexico State Police among organizations named in Las Cruces' sharing list. This is a <em>secondary report of permitted access</em>, not an observed search, current permission certification, or proof of reciprocal data sharing.</p>
-<small>Evidence class: EyesOnFlock-derived secondary research · index captured September 2026</small>
-<p><a href="https://everythingisperfect.org/flock/portal" target="_blank" rel="noopener noreferrer">Read original secondary analysis</a> · <a href="https://lascruces.gov/safety/police-department/lcpd-transparency/" target="_blank" rel="noopener noreferrer">City police transparency page</a></p>
-</div>
-<h2>Before adding more directional links</h2>
-<p>Katoptron must save for each link: <strong>which agency owns the data, which named agency is authorized to search it, the original portal or policy URL, the source/snapshot date, and whether the reading is direct or secondary</strong>. A policy-based access permission is not the same as an audit log showing a search. Proposed one-click briefs will use only those source-qualified observations.</p>
-<p><strong>Reuse and attribution:</strong> These six secondary summary observations are a subset of the EyesOnFlock portal dataset, presented through <a href="https://everythingisperfect.org/flock/portal" target="_blank" rel="noopener noreferrer">Perfect World's September 2026 source index</a>. Katoptron selected records, reformatted their display, and added evidence-tier qualifications. The reused data is attributed to EyesOnFlock and distributed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>; Katoptron is not affiliated with Flock Safety or these research projects.</p>
-<p>The wider <a href="https://flockcameralocations.com/network" target="_blank" rel="noopener noreferrer">EyesOnFlock-derived sharing dataset</a> provides named network relationships under CC BY-SA 4.0. It is a useful acquisition candidate, but must go through identity normalization, license attribution, snapshot completeness checks and original-source qualification before we claim independent verification.</p>
-<p><a href="./agency-xray.html">Examine local agency evidence</a> · <a href="./government-watch.html">Follow a locality's published changes</a></p>
-</main><script>
+<div class="controls"><label for="filter">Find an agency, city or state</label>
+<input id="filter" type="search" maxlength="100" placeholder="e.g. Folsom CA PD">
+<button type="button" id="loadNetwork">Load full source network</button></div>
+<p id="status" role="status" aria-live="polite">The network is separate sourced data; loading the public snapshot requires a network connection.</p>
+<div id="cards" class="cards"></div>
+<section id="selected" hidden>
+<h2 id="selectedName"></h2><p id="selectedContext"></p>
+<div class="cards">
+<section class="card"><h3>Agencies this portal lists as permitted recipients</h3>
+<strong id="outcount"></strong><div id="outbound"></div></section>
+<section class="card"><h3>Portals that list this agency as a permitted recipient</h3>
+<strong id="incount"></strong><div id="inbound"></div></section>
+</div></section>
+<hr><h2>What a link means</h2>
+<p><strong>A → B</strong> means agency A's publicly aggregated portal sharing list named agency B as a permitted user at the source snapshot date. It does not demonstrate that B searched A, that B reciprocates, or that any present permissions remain active. Missing outbound lists mean UNKNOWN or undisclosed, never zero access.</p>
+<p>The full network is derived from EyesOnFlock transparency-portal data and normalized by <a href="https://github.com/flockhopper3/deflock-data/tree/main/eyesonflock" target="_blank" rel="noopener noreferrer">deflock-data</a>, redistributed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Changes in this view: searchable exact source IDs, inbound relationships computed from original outbound links, locality-based navigation and explicit evidence uncertainties. Its agency coordinates are geography centroids, not ALPR camera positions. An independent government/first-party recheck is still required to elevate an edge to first-party-verified status.</p>
+<p><a href="./agency-xray.html">Agency X-Ray</a> · <a href="./government-watch.html">Local Government Watch</a></p>
+</main><script src="./agency-network.js"></script><script>
 'use strict';
-// Clearly source-attributed secondary observations from the dated Perfect
-// World / EyesOnFlock portal index (snapshot September 2026). Counts mean
-// organizations named as eligible to access *the named agency's* cameras.
-// These are not physical camera counts, confirmed current permissions, or
-// a comprehensive national access census.
-const source='https://everythingisperfect.org/flock/portal';
-const data=[
- {agency:'Temple TX PD',state:'TX',shared:1191},
- {agency:'Frisco TX PD',state:'TX',shared:396},
- {agency:'Las Cruces PD',state:'NM',shared:20},
- {agency:'Tempe AZ PD',state:'AZ',shared:0},
- {agency:'Dallas TX PD',state:'TX',shared:null},
- {agency:'Tucson AZ PD',state:'AZ',shared:null}
-];
-const $=id=>document.getElementById(id);
-const element=(tag,text)=>{const el=document.createElement(tag);el.textContent=String(text);return el;};
+const N=window.KatoptronNetwork,$=id=>document.getElementById(id);
+let network=null,chosen=null;
+function el(tag,val){const n=document.createElement(tag);if(val!=null)n.textContent=String(val);return n}
+function link(parent,url,label){try{const x=new URL(url);if(x.protocol!=='https:')return;
+ const a=el('a',label);a.href=x.href;a.target='_blank';a.rel='noopener noreferrer';parent.append(a)}catch{}}
+function selected(id){
+ const result=N.details(network,id);
+ if(!result)return;
+ chosen=id;$('selected').hidden=false;
+ $('selectedName').textContent=result.agency.name;
+ $('selectedContext').textContent='Network snapshot '+result.snapshot+
+  '. Source identity '+id+'. Source class: secondary portal aggregation, not a search audit or reciprocal agreement.';
+ $('outcount').textContent=result.outboundCount.toLocaleString()+' directed outgoing source links';
+ $('incount').textContent=result.inboundCount.toLocaleString()+' separate incoming source links';
+ for(const [root,items] of [['outbound',result.outgoing],['inbound',result.incoming]]){
+  $(root).replaceChildren();
+  for(const other of items.slice(0,120)){
+   const b=el('button',other.name);b.type='button';
+   b.addEventListener('click',()=>selected(other.id));$(root).append(b);
+  }
+  if(items.length>120)$(root).append(el('p',(items.length-120).toLocaleString()+' more linked agencies omitted from this small-screen list; search by name.'));
+  if(!items.length)$(root).append(el('p','No published outgoing links in this snapshot. This does not prove no access exists.'));
+ }
+ const p=new URL(location.href);p.searchParams.set('agency',id);
+ history.replaceState(null,'',p);$('selected').scrollIntoView({block:'start'});
+}
 function render(){
- const q=$('filter').value.trim().toLowerCase();
- const rows=data.filter(row=>(row.agency+' '+row.state).toLowerCase().includes(q));
- rows.sort((a,b)=>$('sort').value==='name'
-  ?a.agency.localeCompare(b.agency)
-  :(b.shared??-1)-(a.shared??-1)||a.agency.localeCompare(b.agency));
  $('cards').replaceChildren();
- for(const row of rows){
-  const card=element('article','');card.className='card';
-  card.append(element('strong',row.agency),
-    element('span',row.shared===null?'Not disclosed':row.shared.toLocaleString()));
-  card.lastChild.className='figure';
-  const note=element('small',
-   row.shared===null?'Sharing-list count not published in this secondary snapshot.':
-    'Organizations reportedly on this agency\'s disclosed access list. Not actual searches.');
-  card.append(note);
-  const tag=element('div','Secondary EyesOnFlock-derived index · 2026-09-10');tag.className='tag';card.append(tag);
-  const link=document.createElement('a');link.href=source;link.target='_blank';
-  link.rel='noopener noreferrer';link.textContent='View source and its limitations';card.append(link);
+ const query=$('filter').value.trim();
+ if(!network){$('status').textContent='Load the source network first.';return;}
+ const results=N.matches(network,query);
+ $('status').textContent='Snapshot '+network.meta.generatedAt+' · '+
+  network.meta.portalCount.toLocaleString()+' source-reporting portals · '+
+  network.meta.directedEdges.toLocaleString()+' directional published links · '+
+  results.length+' matching agency names. These are not actual vehicle searches.';
+ for(const r of results){
+  const card=el('div');card.className='card';
+  const b=el('button',r.name);b.type='button';b.addEventListener('click',()=>selected(r.id));
+  card.append(b,el('small',(r.state||'Unresolved state')+' · '+
+    (r.isPortal?'Reporting portal':'Named recipient only')+' · reported links: '+r.connectionCount));
   $('cards').append(card);
  }
- $('status').textContent=rows.length+' deliberately limited, dated secondary observations shown. A larger directional dataset has not yet been imported or independently verified.';
+ if(!results.length)$('cards').append(el('p',query?'No published source identity matches.':'Enter an agency name to search the network.'));
 }
+async function loadNetwork(){
+ $('loadNetwork').disabled=true;
+ $('status').textContent='Importing full licensed source-network snapshot with identity, direction and count checks…';
+ try{
+   network=await N.load();
+   $('filter').value=new URL(location.href).searchParams.get('q')||'Folsom';
+   render();
+   const agency=new URL(location.href).searchParams.get('agency');
+   if(agency&&network.byId.has(agency))selected(agency);
+ }catch(e){$('status').textContent='Verified external sharing dataset unavailable: '+e.message+
+   '. The map and local government data remain accessible. No source relationship was invented.';}
+ finally{$('loadNetwork').disabled=false}
+}
+$('loadNetwork').addEventListener('click',loadNetwork);
 $('filter').addEventListener('input',render);
-$('sort').addEventListener('change',render);render();
+loadNetwork();
 </script></body></html>
