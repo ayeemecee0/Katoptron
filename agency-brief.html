@@ -36,6 +36,7 @@ button{font:inherit;background:#e8f2f5;border:1px solid #557487;border-radius:6p
 <section><h2>Government source-mapped equipment positions</h2><div id="map"></div></section>
 <section><h2>First-party Flock disclosures and retention</h2><div id="firstParty"></div></section>
 <section><h2>Secondary portal identities and retention history</h2><div id="secondary"></div></section>
+<section><h2>Original publisher-named outward access (historical)</h2><div id="sharing"></div></section>
 <section><h2>Confirmed portal identity crosswalk</h2><div id="identity"></div></section>
 <section><h2>Outstanding evidence gaps</h2><ul id="gaps"></ul></section>
 <section><h2>Methodology and attribution</h2>
@@ -105,6 +106,17 @@ if(!key||!/^[-a-z0-9 ]+\|[A-Z]{2}$/.test(key)){
    '. Not an independently confirmed current policy.',
    p.source_snapshot_at,p.source_url);
  }
+ for(const r of g.originalOutgoing.slice(0,250)){
+   item('sharing',r.publisher_name+' → '+r.recipient_label,
+     'Original '+(r.source_kind==='original_government'?'government':'Flock-hosted vendor')+
+     ' named outward access list, observed '+r.recipient_observed_on+'. Identity: '+
+     r.identity_basis+'. Historical source observation, NOT proof of active permission, reciprocal access or actual searches.',
+     r.recipient_observed_on,r.source_url);
+ }
+ if(g.originalOutgoing.length>250)$('sharing').append(el('p',
+   'Additional published names omitted from printable summary; open the full source link for the exact list.'));
+ if(g.originalIncoming.length)$('sharing').append(el('p',
+   g.originalIncoming.length+' original published source observation(s) name this exact agency as a potential recipient. Inbound does not imply reciprocal outbound access.'));
  for(const m of g.identityMatches)item('identity',
    m.first_party_agency_label+' ↔ '+m.secondary_agency_name,
    'Exact original Flock portal URL matched licensed secondary agency ID '+m.source_agency_id+
@@ -116,6 +128,7 @@ if(!key||!/^[-a-z0-9 ]+\|[A-Z]{2}$/.test(key)){
  fallback('firstParty','No original Flock vendor snapshot; retention and reporting unknown.');
  fallback('secondary','No exact matched secondary portal record in this locality.');
  fallback('identity','No original Flock portal identity match established.');
+ fallback('sharing','No original government/vendor sharing list indexed for this locality; sharing status unknown.');
  const gaps=[];
  if(!g.cameras.length)gaps.push('Original government exact camera GIS inventory not yet authenticated.');
  if(!g.portals.length)gaps.push('No original Flock portal snapshot for this locality.');
