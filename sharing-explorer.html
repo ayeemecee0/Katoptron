@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Documented Access & Sharing Explorer</title>
+<meta name="description" content="Understand disclosed Flock Safety inter-agency access using dated evidence and directional claims without treating every listed agency as an observed user.">
+<link rel="stylesheet" href="./a11y.css"><style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0a121a;color:#e8f0f6}
+*{box-sizing:border-box}body{margin:0}a{color:#a3deea}header{padding:1.1rem max(1rem,4vw);border-bottom:1px solid #375063;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;background:#10202c}
+nav{display:flex;gap:.9rem;flex-wrap:wrap;font-size:.82rem}.brand{text-decoration:none;color:inherit;font-weight:800;letter-spacing:.12em}
+main{max-width:1060px;margin:0 auto;padding:2rem 1.15rem 4rem}h1{font-size:clamp(1.7rem,4vw,2.4rem);margin:0}h2{font-size:1.18rem}
+p{color:#bdd0df;line-height:1.57}.note{background:#162a38;padding:1rem;border-left:3px solid #6ea8bd;margin:1rem 0}
+input,select{font:inherit;background:#14293a;border:1px solid #55718a;color:inherit;padding:.72rem;border-radius:8px}
+.controls{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.controls input{min-width:200px;flex:1}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:.75rem}
+.card{border:1px solid #40566a;border-radius:10px;background:#132534;padding:1rem}.card strong{display:block}.card small{display:block;color:#a3c1d1;margin:.5rem 0}
+.figure{font-size:1.8rem;font-weight:750;color:#bfe5ec;display:block;margin:.7rem 0}.tag{font-size:.73rem;color:#f0d8b2}
+ul{line-height:1.7}hr{border:0;border-top:1px solid #30495a;margin:1.5rem 0}:focus-visible{outline:3px solid #98dbe7;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main-content">Skip to content</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Main navigation"><a href="./agency-xray.html">AGENCY X-RAY</a><a href="./government-watch.html">GOVERNMENT WATCH</a><a href="./accountability.html">ACCOUNTABILITY</a></nav></header>
+<main id="main-content"><h1>Documented Access & Sharing Explorer</h1>
+<p>Discover what an agency or a dated transparency-portal analysis <em>says</em> about other organizations being permitted to query its Flock network. This is not a record of plate reads or a complete list of agencies.</p>
+<div class="note"><strong>Direction matters.</strong> An agency sharing its records <em>with</em> another agency does not establish reciprocal access. A listed organization having potential access does not prove it ever conducted a search. The observations below are <strong>secondary-source snapshots</strong>; they have not yet been independently rechecked against every live Flock portal. A missing list is unknown, not zero. These figures never become exact camera pins.</div>
+<div class="controls"><label for="filter">Search published sharing summaries</label><input id="filter" type="search" maxlength="90" placeholder="Agency or state"><select id="sort" aria-label="Sort reported sharing counts"><option value="count">Largest disclosed counts</option><option value="name">Agency name</option></select></div>
+<p id="status" role="status" aria-live="polite"></p><div id="cards" class="cards"></div>
+<hr>
+<h2>Source-documented named relationship example</h2>
+<div class="card">
+<strong>Las Cruces Police Department (NM) → New Mexico State Police</strong>
+<p>The independent portal research reports the New Mexico State Police among organizations named in Las Cruces' sharing list. This is a <em>secondary report of permitted access</em>, not an observed search, current permission certification, or proof of reciprocal data sharing.</p>
+<small>Evidence class: EyesOnFlock-derived secondary research · index captured September 2026</small>
+<p><a href="https://everythingisperfect.org/flock/portal" target="_blank" rel="noopener noreferrer">Read original secondary analysis</a> · <a href="https://lascruces.gov/safety/police-department/lcpd-transparency/" target="_blank" rel="noopener noreferrer">City police transparency page</a></p>
+</div>
+<h2>Before adding more directional links</h2>
+<p>Katoptron must save for each link: <strong>which agency owns the data, which named agency is authorized to search it, the original portal or policy URL, the source/snapshot date, and whether the reading is direct or secondary</strong>. A policy-based access permission is not the same as an audit log showing a search. Proposed one-click briefs will use only those source-qualified observations.</p>
+<p>The wider <a href="https://flockcameralocations.com/network" target="_blank" rel="noopener noreferrer">EyesOnFlock-derived sharing dataset</a> provides named network relationships under CC BY-SA 4.0. It is a useful acquisition candidate, but must go through identity normalization, license attribution, snapshot completeness checks and original-source qualification before we claim independent verification.</p>
+<p><a href="./agency-xray.html">Examine local agency evidence</a> · <a href="./government-watch.html">Follow a locality's published changes</a></p>
+</main><script>
+'use strict';
+// Clearly source-attributed secondary observations from the dated Perfect
+// World / EyesOnFlock portal index (snapshot September 2026). Counts mean
+// organizations named as eligible to access *the named agency's* cameras.
+// These are not physical camera counts, confirmed current permissions, or
+// a comprehensive national access census.
+const source='https://everythingisperfect.org/flock/portal';
+const data=[
+ {agency:'Temple TX PD',state:'TX',shared:1191},
+ {agency:'Frisco TX PD',state:'TX',shared:396},
+ {agency:'Las Cruces PD',state:'NM',shared:20},
+ {agency:'Tempe AZ PD',state:'AZ',shared:0},
+ {agency:'Dallas TX PD',state:'TX',shared:null},
+ {agency:'Tucson AZ PD',state:'AZ',shared:null}
+];
+const $=id=>document.getElementById(id);
+const element=(tag,text)=>{const el=document.createElement(tag);el.textContent=String(text);return el;};
+function render(){
+ const q=$('filter').value.trim().toLowerCase();
+ const rows=data.filter(row=>(row.agency+' '+row.state).toLowerCase().includes(q));
+ rows.sort((a,b)=>$('sort').value==='name'
+  ?a.agency.localeCompare(b.agency)
+  :(b.shared??-1)-(a.shared??-1)||a.agency.localeCompare(b.agency));
+ $('cards').replaceChildren();
+ for(const row of rows){
+  const card=element('article','');card.className='card';
+  card.append(element('strong',row.agency),
+    element('span',row.shared===null?'Not disclosed':row.shared.toLocaleString()));
+  card.lastChild.className='figure';
+  const note=element('small',
+   row.shared===null?'Sharing-list count not published in this secondary snapshot.':
+    'Organizations reportedly on this agency\'s disclosed access list. Not actual searches.');
+  card.append(note);
+  const tag=element('div','Secondary EyesOnFlock-derived index · 2026-09-10');tag.className='tag';card.append(tag);
+  const link=document.createElement('a');link.href=source;link.target='_blank';
+  link.rel='noopener noreferrer';link.textContent='View source and its limitations';card.append(link);
+  $('cards').append(card);
+ }
+ $('status').textContent=rows.length+' deliberately limited, dated secondary observations shown. A larger directional dataset has not yet been imported or independently verified.';
+}
+$('filter').addEventListener('input',render);
+$('sort').addEventListener('change',render);render();
+</script></body></html>
