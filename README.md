@@ -76,14 +76,23 @@ production launch readiness.
 - RLS-invoker public views, private-only review authority, source-provenance checks, SQL regressions, browser smoke and read-only health monitoring were implemented. The latest GitHub Pages/CI results still need separate release confirmation.
 - [Milestone 6 engineering and acceptance report](./docs/milestone-6-government-accountability.md).
 
-## Milestone 5: Community evidence submissions (October 23, 2026)
+## Milestone 5: Community evidence submissions (engineering signed off October 26, 2026)
+
+**M5 reporting engineering is 100% accepted**, following actual disposable
+authenticated-user JWT, real private Storage upload/download/owner deletion,
+editorial audit, withdrawal, account-owned permanent report erasure and cleanup.
+[See the full M5 engineering sign-off and retained launch caveats](./docs/m5-community-reporting-engineering-signoff-2026-10-26.md).
+The [live end-to-end QA](https://github.com/ayeemecee0/Katoptron/actions/runs/40381340892)
+passed and removed every disposable test identity and private photo. Real
+email delivery and confirmation-link usability are **not** established by the
+admin-confirmed temporary QA test accounts and remain an M9 launch gate.
 
 - [Report possible Flock cameras](./submit.html): signed-in intake, evidence URLs, dates and optional metadata-stripped private images, limited to three reports per contributor in a true rolling 24-hour window.
 - [Private reviewer dashboard](./community-review.html): allowlisted editorial reviewers inspect private screening matches, photos and supporting URLs, with written and audited reviewer outcomes.
 - **Automatically staged does not mean verified.** Eligible report details enter the separate private candidate queue only; no new report can certify itself, enter canonical verified counts or appear publicly without separately qualifying reviewed evidence.
-- Contributors can inspect their own report history, attach a requested missing private photo or original HTTPS link, withdraw reports and request Storage-API photo deletion. Rejection or withdrawal revokes linked case evidence.
+- Contributors can inspect their own report history, attach a requested missing private photo or original HTTPS link, withdraw reports and delete their own private photos through Storage. After successful photo removal, they can permanently erase the withdrawn report and its report-derived evidence without resetting the rolling three-report anti-spam allowance.
 - Public publication permission is separately requested and **off by default**. Public case eligibility still checks independent evidence provenance and review status.
-- [Milestone 5 release details](./docs/milestone-5-community-evidence.md) record successful CI/browser deployment checks and full multi-user/storage RLS rollback tests. Real email-confirmed Auth and an actual Storage HTTP upload/delete still require a signed-in tester.
+- [M5 final acceptance](./docs/m5-community-reporting-engineering-signoff-2026-10-26.md) confirms real Auth JWT and private Storage HTTP upload/download/owner-delete plus negative permission tests, all with disposable cleanup. Email link delivery to an actual human-owned mailbox remains untested.
 
 ## Current project status
 
