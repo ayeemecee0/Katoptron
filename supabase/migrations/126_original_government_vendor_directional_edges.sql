@@ -194,8 +194,6 @@ with source_names(source_key,recipient_label) as(
 ('los_altos_original_flock','Sunnyvale CA PD'),
 ('los_altos_original_flock','Town of Los Gatos CA'),
 ('los_altos_original_flock','Union City CA PD'),
-('los_altos_original_flock','University of California'),
-('los_altos_original_flock','Berkeley PD'),
 ('los_altos_original_flock','Watsonville CA PD'),
 ('snohomish_county_original_flock','Arlington PD (WA)'),
 ('snohomish_county_original_flock','Everett (WA) Police Department'),
