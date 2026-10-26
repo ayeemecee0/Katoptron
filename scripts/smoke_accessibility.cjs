@@ -47,6 +47,28 @@ const assert=require('node:assert/strict');
             .sort((a,b)=>(b.scrollWidth-b.clientWidth)-(a.scrollWidth-a.clientWidth))
             .slice(0,16).map(report)};
       });
+      const ranges=await page.evaluate(()=>{
+        const out=[];const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+        for(let node=walker.nextNode();node;node=walker.nextNode()){
+          if(!node.textContent?.trim()||!node.parentElement)continue;
+          const style=getComputedStyle(node.parentElement);
+          if(style.display==='none')continue;
+          const r=document.createRange();r.selectNodeContents(node);
+          const box=r.getBoundingClientRect();
+          if(box.right>innerWidth+5||box.left< -5){
+            out.push({parent:node.parentElement.tagName,id:node.parentElement.id,
+              text:node.textContent.trim().slice(0,130),
+              left:Math.round(box.left),right:Math.round(box.right),
+              width:Math.round(box.width)});
+          }
+        }
+        const br=document.body.getBoundingClientRect();
+        return {visibleTextOverflows:out.slice(0,15),
+          bodyDirectChildren:[...document.body.childNodes].slice(0,25).map(n=>
+            ({type:n.nodeType,node:n.nodeName,txt:n.textContent?.slice(0,50)})),
+          bodyBox:{left:br.left,right:br.right,width:br.width}};
+      });
+      console.error('ACCESSIBILITY TEXTNODE RANGE DIAGNOSTIC',path,width,JSON.stringify(ranges));
       console.error('ACCESSIBILITY OVERFLOW SCROLLWIDTH DIAGNOSTIC',path,width,JSON.stringify(probe));
       console.error('ACCESSIBILITY MOBILE OVERFLOW ELEMENTS',path,width,JSON.stringify(offenders));
     }
