@@ -75,7 +75,7 @@ begin
  select count(*) into total from pg_proc
  where pronamespace='public'::regnamespace and prosecdef
    and has_function_privilege('authenticated',oid,'EXECUTE');
- if total > 13 or total <> (
+ if total > 14 or total <> (
    select count(distinct proname) from pg_proc
    where pronamespace='public'::regnamespace and prosecdef
      and has_function_privilege('authenticated',oid,'EXECUTE')
@@ -96,7 +96,7 @@ begin
      'editorial_session','gis_camera_authority_current',
      'is_current_flock_polygon_camera_gis_source',
      'list_community_review_queue','set_community_review_status',
-     'withdraw_own_community_report'
+     'withdraw_own_community_report','delete_withdrawn_community_report'
    ) then raise exception 'M1: unreviewed authenticated privileged RPC %',fn.signature;end if;
    if fn.proname = 'set_community_review_status'
      and fn.args <> 'p_id uuid, p_status text, p_note text' then
