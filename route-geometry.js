@@ -64,39 +64,54 @@
     if(!Array.isArray(points)||points.length<2||points.length>90000)
       throw new Error('Unsupported route geometry length');
     if(!(span>0&&pad>0&&max>0))throw new Error('Invalid corridor settings');
-    let pointsInBox=[],boxes=[];
+    // Constant-memory geographic extrema per active box avoid O(n²)
+    // rescanning 20,000+ vertices from high-detail road providers.
+    let boxes=[],hasBox=false,previous=null;
+    let minLat=Infinity,maxLat=-Infinity,minLon=Infinity,maxLon=-Infinity;
+    const add=(p)=>{
+      minLat=Math.min(minLat,p[0]);maxLat=Math.max(maxLat,p[0]);
+      minLon=Math.min(minLon,p[1]);maxLon=Math.max(maxLon,p[1]);
+      previous=p;hasBox=true;
+    };
     const flush=()=>{
-      if(pointsInBox.length===0)return;
-      const lats=pointsInBox.map(p=>p[0]),lons=pointsInBox.map(p=>p[1]);
+      if(!hasBox)return;
       boxes.push({
-        south:Math.max(17,Math.min(...lats)-pad),
-        west:Math.max(-180,Math.min(...lons)-pad),
-        north:Math.min(72,Math.max(...lats)+pad),
-        east:Math.min(-64,Math.max(...lons)+pad)
+        south:Math.max(17,minLat-pad),
+        west:Math.max(-180,minLon-pad),
+        north:Math.min(72,maxLat+pad),
+        east:Math.min(-64,maxLon+pad)
       });
-      pointsInBox=[];
-      if(boxes.length>max)throw new Error('Route too long for reliable full-coverage search');
+      if(boxes.length>max)
+        throw new Error('Route too long for reliable full-coverage search');
+      hasBox=false;previous=null;
+      minLat=Infinity;maxLat=-Infinity;minLon=Infinity;maxLon=-Infinity;
     };
     for(let i=0;i<points.length-1;i++){
       const a=points[i],b=points[i+1];
       if(!valid(a)||!valid(b))throw new Error('Invalid coordinates');
-      if(a[0]<17||a[0]>72||a[1]<-180||a[1]>-64)
+      if(a[0]<17||a[0]>72||a[1]<-180||a[1]>-64||
+         b[0]<17||b[0]>72||b[1]<-180||b[1]>-64)
         throw new Error('Route outside the supported US search boundary');
-      const pieces=Math.max(1,Math.ceil(Math.max(Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]))/(span/2)));
+      const pieces=Math.max(1,Math.ceil(Math.max(Math.abs(b[0]-a[0]),
+        Math.abs(b[1]-a[1]))/(span/2)));
       for(let j=0;j<pieces;j++){
         const f=j/pieces,p=[a[0]+f*(b[0]-a[0]),a[1]+f*(b[1]-a[1])];
-        if(!pointsInBox.length)pointsInBox=[p];
-        const lats=pointsInBox.map(x=>x[0]),lons=pointsInBox.map(x=>x[1]);
-        if(Math.max(...lats,p[0])-Math.min(...lats,p[0])>span ||
-           Math.max(...lons,p[1])-Math.min(...lons,p[1])>span){
-          // Include the boundary point on BOTH requests to prevent gaps.
-          const previous=pointsInBox[pointsInBox.length-1];
-          flush();
-          pointsInBox=[previous,p];
-        }else pointsInBox.push(p);
+        if(!hasBox){add(p);continue}
+        if(Math.max(maxLat,p[0])-Math.min(minLat,p[0])>span||
+           Math.max(maxLon,p[1])-Math.min(minLon,p[1])>span){
+          // Include preceding edge endpoint on BOTH requests to avoid gaps.
+          const boundary=previous;
+          flush();add(boundary);
+        }
+        add(p);
       }
     }
-    pointsInBox.push(points[points.length-1]);
+    const final=points[points.length-1];
+    if(!hasBox)add(final);
+    else if(Math.max(maxLat,final[0])-Math.min(minLat,final[0])>span||
+      Math.max(maxLon,final[1])-Math.min(minLon,final[1])>span){
+      const boundary=previous;flush();add(boundary);add(final);
+    }else add(final);
     flush();
     return boxes.filter(b=>b.south<=b.north&&b.west<=b.east);
   }
