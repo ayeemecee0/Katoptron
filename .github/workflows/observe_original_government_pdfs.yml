@@ -1,0 +1,39 @@
+name: Observe original government PDF document bytes
+on:
+  schedule:
+    # After the original-source document-link inventory; no paid services.
+    - cron: '13 14 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/observe_original_government_pdfs.py'
+      - 'scripts/test_original_government_pdf_receipts.py'
+      - 'supabase/migrations/132_private_original_government_pdf_bytes_receipts.sql'
+      - '.github/workflows/observe_original_government_pdfs.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-original-government-pdf-receipts
+  cancel-in-progress: false
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Enforce government host and byte-only publication boundaries
+        run: python -m unittest discover -s scripts -p 'test_original_government_pdf_receipts.py' -v
+      - name: Require private server-only acquisition credentials
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Observe original PDF bytes privately without legal-fact promotion
+        run: python scripts/observe_original_government_pdfs.py
