@@ -1,0 +1,37 @@
+name: Acquire original government Flock documents
+on:
+  schedule:
+    - cron: '17 13 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/acquire_original_government_documents.py'
+      - 'scripts/test_original_government_documents.py'
+      - '.github/workflows/acquire_original_government_documents.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-original-gov-document-acquisition
+  cancel-in-progress: false
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate domain authority and unverified candidate boundaries
+        run: python -m unittest discover -s scripts -p 'test_original_government_documents.py' -v
+      - name: Require protected service-only source review credential
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Index original government documents privately, public aggregate stats only
+        run: python scripts/acquire_original_government_documents.py
