@@ -91,8 +91,11 @@ def rows(byid,meta,adjacency=None):
     for agency_id,prop in byid.items():
         state=prop.get("state")
         edges=(adjacency or {}).get(agency_id)
-        fingerprint=(hashlib.sha256(("\\n".join(edges)).encode("utf8")).hexdigest()
-                      if edges is not None and prop.get("isPortal") is True else None)
+        # A portal with NO listed recipients is still a known empty list,
+        # not a missing snapshot. Its SHA must detect first addition and
+        # removal of the final directed source relationship.
+        fingerprint=(hashlib.sha256(("\\n".join(edges or [])).encode("utf8")).hexdigest()
+                      if prop.get("isPortal") is True else None)
         yield dict(
             source_agency_id=agency_id,
             sharing_list_sha256=fingerprint,
