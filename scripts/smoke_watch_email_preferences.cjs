@@ -57,7 +57,8 @@ const {chromium}=require('playwright');
   await page.locator('#watchEmail').fill('test@example.org');
   await page.locator('#watchPassword').fill('correct-horse-battery-staple');
   await page.locator('#watchSignup').click();
-  assert.ok((await page.locator('#watchAuthStatus').textContent()).includes('Confirm'));
+  await page.waitForFunction(()=>
+    document.querySelector('#watchAuthStatus')?.textContent?.toLowerCase().includes('confirm'),null,{timeout:15000});
   assert.equal(await page.locator('#watchSubscribe').isDisabled(),true,
    'Sign-up alone must not turn alerts on');
   await page.locator('#watchAuth button[type=submit]').click();
