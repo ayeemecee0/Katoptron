@@ -21,7 +21,7 @@ const assert=require('node:assert/strict');
   },null,{timeout:45000});
   const count=await page.locator('#communityCount').textContent();
   assert.ok(Number(count.replaceAll(',',''))>=1000,'Not enough independently labeled community observations');
-  await page.waitForFunction(()=>window.exactSnapshot?.count>90000&&
+  await page.waitForFunction(()=>typeof exactSnapshot!=='undefined'&&exactSnapshot?.count>90000&&
     document.querySelector('.katoptron-osm-exact-canvas'),null,{timeout:60000});
   const canvasInfo=await page.evaluate(()=>({
     count:exactSnapshot.count,
