@@ -14,9 +14,9 @@ const assert=require('node:assert/strict');
   const url=new URL('portals.html',base);
   const r=await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(r?.status(),200,'Original vendor directory page not served');
-  await page.waitForFunction(()=>document.querySelector('#snapshotCount')?.textContent==='13',{timeout:30000});
-  assert.equal((await page.locator('#agencyCount').textContent()).trim(),'13');
-  assert.equal(await page.locator('#results .card').count(),13);
+  await page.waitForFunction(()=>document.querySelector('#snapshotCount')?.textContent==='14',{timeout:30000});
+  assert.equal((await page.locator('#agencyCount').textContent()).trim(),'14');
+  assert.equal(await page.locator('#results .card').count(),14);
   await page.locator('#search').fill('Menifee');
   assert.equal(await page.locator('#results .card').count(),1);
   const menifee=await page.locator('#results .card').innerText();
@@ -28,16 +28,20 @@ const assert=require('node:assert/strict');
   assert.equal(await page.locator('#results .card').count(),1);
   assert.ok((await page.locator('#results .card').innerText()).includes('Not reported'),
     'Missing camera count was fabricated as zero');
+  await page.locator('#search').fill('Monterey');
+  assert.equal(await page.locator('#results .card').count(),1,
+    'New original Monterey Flock disclosure absent');
+  assert.ok((await page.locator('#results .card').innerText()).includes('37'));
   await page.locator('#search').fill('College Place');
   assert.equal(await page.locator('#results .card').count(),1);
   assert.ok((await page.locator('#results .card').innerText()).includes('8'));
   await page.locator('#search').fill('');
   const links=await page.locator('#results .card a').evaluateAll(nodes=>
     nodes.map(a=>new URL(a.href).hostname));
-  assert.ok(links.length===13&&links.every(h=>h==='transparency.flocksafety.com'));
+  assert.ok(links.length===14&&links.every(h=>h==='transparency.flocksafety.com'));
   assert.ok((await page.locator('.explain').innerText()).includes('not a count of verified individual ALPR map pins'));
   assert.deepEqual(errors,[],'Source listing has browser JavaScript errors');
-  console.log('VENDOR PORTAL BROWSER PASS: 13 dated direct-source agency records / 5 states; no GIS camera mixing');
+  console.log('VENDOR PORTAL BROWSER PASS: 14 dated direct-source agency records / 5 states; no GIS camera mixing');
  }catch(e){
   console.error('VENDOR PORTAL BROWSER FAILED',e.message);
   process.exitCode=1;
