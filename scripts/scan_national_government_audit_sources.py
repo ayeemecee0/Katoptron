@@ -109,7 +109,12 @@ def candidates(source,html):
  for item in parser.links:
   url=canonical(urllib.parse.urljoin(source["url"],item["href"]),hosts)
   if not url or url==source["url"]:continue
-  label=" ".join((item["text"]+" "+item["tail"]).split())[:190]
+  # Only use neighboring text to disambiguate generic municipal archive
+  # anchors such as "Backup". A heading/footer label like "Serve The People"
+  # must not inherit an unrelated ALPR paragraph farther down the page.
+  direct=" ".join(item["text"].split())[:190]
+  generic=bool(re.fullmatch(r"(?i)(backup|download|attachment|view(?: document| file| pdf)?|pdf|link)",direct))
+  label=(" ".join((direct+" "+item["tail"]).split()) if generic else direct)[:190]
   topic=label+" "+urllib.parse.unquote(urllib.parse.urlsplit(url).path)
   if not KEYWORDS.search(topic):continue
   category=kind(topic,urllib.parse.urlsplit(url).path)
