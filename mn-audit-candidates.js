@@ -60,7 +60,7 @@
  }
  function plan(rows,manifest){
   if(!Array.isArray(rows)||rows.length<1||rows.length>500||
-     !manifest||manifest.schema_version!==1||!Array.isArray(manifest.reports)||manifest.reports.length>25)
+     !manifest||manifest.schema_version!==1||!Array.isArray(manifest.reports)||manifest.reports.length>200)
     throw Error('Incomplete or unbounded original-source inputs');
   if(!rows.every(official))throw Error('Non-official state index metadata');
   const identities=new Map(),reviewed=new Set(),seen=new Set();
