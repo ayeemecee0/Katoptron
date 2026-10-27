@@ -194,7 +194,7 @@ async function reviewedOriginals(){
   const r=await fetch('./data/verified-independent-audits.json',{cache:'no-store',referrerPolicy:'no-referrer'});
   if(!r.ok)throw Error('Reviewed original audit manifest not accessible');
   const j=await r.json();
-  if(j?.schema_version!==1||!Array.isArray(j.reports)||j.reports.length>25)throw Error('Invalid curated source catalog');
+  if(j?.schema_version!==1||!Array.isArray(j.reports)||j.reports.length>200)throw Error('Invalid curated source catalog');
   APP.manifest=j;
   for(const a of j.reports){
    if(!safe(a.source_url)||!/^[a-f0-9]{64}$/.test(a.content_sha256||'')||
