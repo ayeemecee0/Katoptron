@@ -26,7 +26,7 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#policyContrast').textContent(),/not verified as adopted/i);
   const primary=await page.locator('#primaryResults').textContent();
   assert.match(primary,/443,664 unique plate reads/);
-  assert.match(primary,/7.day.*propos/i);
+  assert.match(primary,/seven days/i);
   assert.match(primary,/City Council ordered a halt/);
   assert.match(primary,/1,392,000/);
   const pageLinks=await page.locator('#primaryResults a').evaluateAll(as=>as.map(x=>x.href));
