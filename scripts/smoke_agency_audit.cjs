@@ -72,7 +72,7 @@ const {chromium}=require('playwright');
    await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
      null,{timeout:55000});
    assert.equal(await page.locator('#reportTitle').textContent(),name);
-   assert.match(await page.locator('#counts').textContent(),new RegExp((name==='Woodbury, MN'?'4':name==='Richfield, MN'?'4':name==='Hennepin County, MN'?'3':name==='Brooklyn Center, MN'?'3':name==='Champlin, MN'?'2':name==='West Saint Paul, MN'?'2':'1')+'Independent original audit reports'));
+   assert.match(await page.locator('#counts').textContent(),new RegExp((name==='Woodbury, MN'?'5':name==='Richfield, MN'?'4':name==='Hennepin County, MN'?'4':name==='Brooklyn Center, MN'?'3':name==='Champlin, MN'?'2':name==='West Saint Paul, MN'?'2':'1')+'Independent original audit reports'));
    assert.ok((await page.locator('#sources').textContent()).includes(sourceFragment),
      'Publisher-attributed dated exact-identity observations should appear');
    assert.match(await page.locator('#disclaimer').textContent(),/NOT a legality/);
