@@ -63,7 +63,10 @@ def extract(source,raw):
   # Check the unnormalized relative href before URL joining.
   if re.search(r"(?:^|/)\.\.?/",href.split("?")[0]):continue
   url=exact_related(urllib.parse.urljoin(source["source_url"],href),source)
-  if not url or url==source["source_url"]:continue
+  # Exclude language selectors and the original page itself, even when site
+  # navigation alters only the URL query string.
+  if not url or urllib.parse.urlsplit(url).path==urllib.parse.urlsplit(source["source_url"]).path:continue
+  if re.search(r"(?i)(?:select this as your preferred language|choose a language|translate this page)",label):continue
   topic=urllib.parse.unquote(urllib.parse.urlsplit(url).path).replace("-"," ")+ " "+label
   if not TOPIC.search(topic) or EXCLUDE.search(topic) or not RELEVANT.search(topic):continue
   matched.append({"source_id":source["id"],"state":source["state"],"publisher":source["publisher"],
