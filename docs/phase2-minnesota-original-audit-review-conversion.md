@@ -1,0 +1,44 @@
+# Minnesota Flock-named audit conversion — original PDF receipts and reviewed pages
+
+**Development snapshot:** October 26, 2026 (America/Los_Angeles). This release **does not** independently certify a police department's legal compliance or current camera inventory.
+
+## What is newly useful
+
+- The official Minnesota state legislative ALPR audit registry identifies **16** reports whose titles explicitly name Flock (of **137** original state-indexed reports). Earlier counts refer to *index entries*, not audited PDF text.
+- All 16 Flock-titled PDFs were fetched directly from the original `www.lrl.mn.gov/docs/YYYY/mandated/NNNNNN.pdf` archive, each with **five pages** and extractable text, and assigned a **SHA-256 byte-level receipt**. This is automatic *machine-only provenance/triage*: the remaining reports are not independently reviewed for detailed claims.
+- Machine receipts (hash, byte count, page count, read-only Boolean topic flags) live in the RLS-protected `flock_private_mn_flock_audit_pdf_receipts` table. Service-role-only INSERT/UPDATE, no anon or authenticated access, no DELETE; no prose, plate reads, current camera positions, signature claims, model-generated findings, or names of individual drivers are saved.
+- A free GitHub Actions workflow checks the official registry and original PDFs weekly and writes only private receipts on `main`. If **any** archive file is missing or unreadable, the machine scan fails closed. An outage is not proof an audit was withdrawn. Previously reviewed documents have a **separate**, stricter, pinned digest and source-page verifier.
+
+## Newly page-reviewed source reports
+
+Two original published reports were inspected on their relevant original pages and then pinned to hashes from the exact downloaded source PDFs.
+
+### Stillwater Police Department — September 6, 2026
+- [Official five-page Minnesota report](https://www.lrl.mn.gov/docs/2026/mandated/261351.pdf), SHA-256 `6315eeb3b9061ff97098c850a712a7509a20d898724cbff08a96da8576bed1f9`.
+- **Page 2:** Independent Minnesota Security Consortium auditor says the agency had **17 stationary Flock ALPR units at the time of its audit** and reports manufacturer-default **30-day Flock retention**, citing a Flock Vehicle Reads report. These are historical auditor statements, not present-day hardware counts or independently tested settings.
+- **Page 3:** The auditor says its Flock console did not show out-of-state sharing in the Shared Network section at the time. This is *not* proof no other agencies ever accessed its records, nor an exhaustive recipient list.
+- Source period: August 1, 2024–July 31, 2026. No new camera coordinates or network-sharing edges are created.
+
+### Hennepin County Sheriff's Office — October 21, 2025
+- [Official five-page Minnesota report](https://www.lrl.mn.gov/docs/2025/mandated/251683.pdf), SHA-256 `e131a79aaf5c59a1477e30a47edbdf2b15ed9226c274a4e446e427b0383dfc70`.
+- **Page 2:** Auditor says **four active stationary Flock ALPR units** within the county and describes **30-day manufacturer-default retention** confirmed during its review.
+- **Page 3:** Auditor describes interagency ALPR requests being made/reviewed through agency command. This statement does **not** identify current recipients or prove ongoing network permissions.
+- Source period: June 1, 2023–July 31, 2025. No current compliance rating is implied.
+
+The already-reviewed Shakopee June 2026 audit remains its separate source-level record. Together the curated manifest contains **three** original page-reviewed independent audit reports, compared with one before this release. They are linked from the [state archive library](../mn-alpr-audits.html) and assigned exact original-source identity dossier links in the [Accountability Engine](../agency-audit.html). Source-only dossiers include their exact reviewed original record and show remaining civic/contract gaps as **unknown**, not inferred violations or equipment absence.
+
+## Why report trends are not automatically contradictions
+
+Stillwater's 17 units and Hennepin's four units describe **different agencies in different years**. They are not a year-over-year difference and should never become a manufacturer migration or a policy contradiction. To establish a historical change for one operator, Katoptron needs two independently page-reviewed, source-dated, same-agency reports about the same measurement and unit, plus attention to collection dates. Existing audit PDFs may contain historical statements; they cannot substitute for live console access or audit logs.
+
+## Testing and release
+
+- `python -m unittest discover -s scripts -p 'test_fingerprint_mn_flock_audits.py' -v`
+- `python -m unittest discover -s scripts -p 'test_verify_independent_audit_source.py' -v`
+- `python scripts/fingerprint_mn_flock_audits.py --preflight` for source-only dry-run, zero DB writes.
+- `.github/workflows/fingerprint_mn_flock_audits.yml` for all Flock-title byte fingerprints, optionally recurring main writes.
+- `.github/workflows/verify_original_independent_audits.yml` for the three specifically reviewed PDF fingerprints and page assertions.
+- `node scripts/smoke_agency_audit.cjs` validates exact-identity dossiers and original page receipts.
+- `node scripts/smoke_mn_alpr_audit_registry.cjs` checks state archive search and title-level identity labels.
+
+**Next:** Expand independently reviewed material across additional Flock-titled reports, preferably reports of the *same agency over multiple periods*, with page-specific findings and content fingerprints. When comparable observations exist, only then generate source-dated change timelines; never a violation score.
