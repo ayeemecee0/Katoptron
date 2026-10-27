@@ -29,7 +29,7 @@ OFFICIAL_HOSTS={
 }
 KEYWORDS=re.compile(r"\b(?:flock|alpr|automated license plate|license plate reader|plate recognition)\b",re.I)
 DOCWORDS=re.compile(r"\b(?:audit|report|review|assessment|oversight|jury|commission|policy|contract|agreement|flock|alpr|license plate|reader|privacy)\b",re.I)
-SKIP=re.compile(r"\b(?:raw search log|alpr search log|vehicle reads|individual plate reads|plate search log|live search audit|raw plate data|user audit log)\b",re.I)
+SKIP=re.compile(r"\b(?:raw\s+(?:alpr\s+)?search\s+logs?|alpr\s+search\s+logs?|vehicle\s+reads?|individual\s+plate\s+reads?|plate\s+search\s+logs?|live\s+search\s+audit|raw\s+plate\s+data|user\s+audit\s+logs?)\b",re.I)
 MAX_HTML=1_600_000
 MAX_PDF=8_000_000
 MAX_LINKS=400
