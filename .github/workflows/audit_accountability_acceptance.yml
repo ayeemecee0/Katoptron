@@ -9,6 +9,9 @@ on:
       - 'agency-audit.html'
       - 'mn-alpr-audits.html'
       - 'national-audits.html'
+      - 'nebraska-original-aggregate.js'
+      - 'data/verified-nebraska-original-aggregate-reports.json'
+      - 'scripts/test_nebraska_original_aggregate.cjs'
       - 'nationwide-jurisdictions.js'
       - 'data/nationwide-government-jurisdiction-registry.json'
       - 'data/nationwide-original-government-source-receipts.json'
@@ -90,6 +93,8 @@ jobs:
           node scripts/test_national_government_sources.cjs
           node --check nationwide-jurisdictions.js
           node scripts/test_nationwide_jurisdictions.cjs
+          node --check nebraska-original-aggregate.js
+          node scripts/test_nebraska_original_aggregate.cjs
           node --check city-alpr-operational-statements.js
           node scripts/test_city_alpr_operational_statements.cjs
           node --check national-primary-documents.js

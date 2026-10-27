@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "visually_reviewed_agency_authored_original_aggregate_not_independent_audit_or_flock_device_verification",
+  "documents": [
+    {
+      "id": "ne-dakota-county-sheriff-2025-state-alpr-aggregate",
+      "state": "NE",
+      "agency_name": "Dakota County Sheriff's Office",
+      "publisher": "Nebraska Commission on Law Enforcement and Criminal Justice",
+      "source_url": "https://ncc.nebraska.gov/sites/default/files/Dakota%20County%20FLOCK%20REPORT%202025%20TO%20STATE.pdf",
+      "source_sha256": "441961503a77e7838717713448426df07cd59aec4146f92af01830d4e3817eae",
+      "source_render_png_sha256": "02686973bfb2c942e98624048bdee0f9a3d54b241b2af432211c69506495fb27",
+      "source_bytes": 136060,
+      "page_count": 1,
+      "pages_reviewed": [
+        1
+      ],
+      "report_start": "2025-01-01",
+      "report_end": "2025-12-31",
+      "original_report_type": "agency_authored_state_filed_alpr_aggregate",
+      "verification_method": "original_pdf_sha256_and_original_page_visual_review",
+      "vendor_status": "filename_mentions_flock_actual_equipment_manufacturer_not_proven_by_form",
+      "metrics": {
+        "ncic_confirmed_matches": 43,
+        "ncic_noncorrelated_matches": 0,
+        "manual_plate_numbers_entered": 126,
+        "manual_entry_confirmed_matches": 19,
+        "manual_entry_noncorrelated_matches": 1
+      },
+      "source_note": "The government-hosted original one-page form shows agency Dakota County Sheriff's Office, 2025 calendar-year reporting period, NCIC 43 confirmed matches and 0 non-correlated matches, and manually-entered totals of 126 with 19 confirmed and 1 non-correlated. These are agency-reported aggregate statistics; no raw plate reads, user identities, installed camera locations or vendor telemetry obtained."
+    }
+  ],
+  "held_unverified_originals": [
+    {
+      "state": "NE",
+      "agency_name": "Buffalo County Sheriff's Office",
+      "source_url": "https://ncc.nebraska.gov/sites/default/files/Buffalo%20County%20Sheriff%27s%20Office%20Flock%20ALPR_Data_%20January%201%202025%20-%20December%2031%202025%20Year%20Report.pdf",
+      "issue": "source_filename_2025_but_visually_rendered_page_empty_no_numeric_data",
+      "can_publish_numeric_findings": false,
+      "evidence_note": "A rendered original of the state-listed 2025 file shows unfilled agency and numeric fields. Do not convert a report filename or template headings into annual statistics; original URL normalization/redirect is still to be rechecked before byte-pinned publication."
+    }
+  ]
+}

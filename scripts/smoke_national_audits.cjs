@@ -13,6 +13,23 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#nebraskaAggregateStatus')?.textContent?.startsWith('1 source-pinned, visually reviewed'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#nebraskaAggregateResults article').count(),1);
+  const ne=await page.locator('#nebraskaAggregateResults').textContent();
+  assert.match(ne,/Dakota County Sheriff's Office/);
+  assert.match(ne,/43 · NCIC list confirmed matches/);
+  assert.match(ne,/0 · NCIC list non-correlated matches/);
+  assert.match(ne,/126 · Manually entered plate-number queries/);
+  assert.match(ne,/19 · Manual-entry confirmed matches/);
+  assert.match(ne,/1 · Manual-entry non-correlated matches/);
+  assert.match(ne,/no populated reporting figures/);
+  assert.match(ne,/does not prove the equipment manufacturer/);
+  const neLinks=await page.locator('#nebraskaAggregateResults a').evaluateAll(as=>as.map(a=>a.href));
+  assert.equal(neLinks.length,1);
+  assert.ok(neLinks[0].startsWith('https://ncc.nebraska.gov/sites/default/files/Dakota%20County%20FLOCK%20REPORT%202025%20TO%20STATE.pdf'));
+  assert.ok(neLinks[0].endsWith('#page=1'));
+ 
   await page.waitForFunction(()=>document.querySelector('#nationalCoverageStatus')?.textContent?.startsWith('51 jurisdictions enrolled.'),
    null,{timeout:15000});
   assert.match(await page.locator('#nationalCoverageStatus').textContent(),/51 have an original-government publication seed; 0 lack one/);
