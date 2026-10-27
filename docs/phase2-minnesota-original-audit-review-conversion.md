@@ -40,7 +40,28 @@ The following original state-hosted five-page audit summaries were checked on PD
 - **Woodbury Public Safety (Feb 5, 2026)** — [Original audit](https://www.lrl.mn.gov/docs/2026/mandated/260248.pdf), SHA-256 `523876118f3e7da5b2754bd6695e7386e3967874543710a2b645834955723852`. P.2: auditor-reported **17 active stationary Flock ALPR units and no mobile Flock units**, plus **default 30-day retention**. P.3: describes documented interagency requests and case-number justification, not a permission graph.
 - **Brooklyn Center Police Department (Oct 28, 2025)** — [Original audit](https://www.lrl.mn.gov/docs/2025/mandated/251737.pdf), SHA-256 `6318fee178da621398a0a0c977b9852991638d707dbf39f7d0df5e9da6b1e28f`. P.2: auditor reported **9 active stationary ALPR units and no Flock mobile units** in its review of a Flock ALPR system, with **default 30-day retention**. P.3: documented interagency requests; no current sharing partner identities established.
 
-**Reviewed coverage now: 6/16 Flock-named audit reports.** All 16 still have machine-only private PDF receipt metadata; only six have independently reviewed page citations and pinned original-source document hashes. Other vendor-unspecified and non-Flock titles remain metadata only. The count must not be treated as 6 new agency live-camera inventories or 6 completed surveillance audits by Katoptron.
+**Previous reviewed coverage: 5/16 Flock-named audit reports, plus Shakopee's independently reviewed report (whose official archive title does not name Flock).** All 16 Flock-named documents have machine fingerprints, but prior to the next expansion only five had page-reviewed citations. Other vendor-unspecified and non-Flock titles remain metadata only. The count must not be treated as 6 new agency live-camera inventories or 6 completed surveillance audits by Katoptron.
+
+
+## Additional reviewed audit reports — October 26, 2026
+
+Nine additional original public auditor executive summaries were examined on their named original state-archive pages. Each has a fixed original PDF SHA-256 digest, strict page-text anchor verifier, source date, historical inventory observation, source-attributed 30-day default retention observation and a separate policy recommendation or sampled sharing-process observation. Every finding is historical, attributed to its original auditor, and **is not a present-day camera location, sharing permission or Katoptron legal determination**.
+
+| Agency | Source date | Historical auditor-reported devices | Additional observation (original PDF page) |
+|---|---|---|---|
+| [Champlin Police Department](https://www.lrl.mn.gov/docs/2025/mandated/251685.pdf) | 2025-10-22 | six active stationary/flex Flock ALPR devices and no mobile Flock units (p.2) | Breach-notification policy recommendation (p.4) |
+| [Corcoran Police Department](https://www.lrl.mn.gov/docs/2026/mandated/261008.pdf) | 2026-05-30 | nine active stationary Flock ALPR units and no squad-mounted mobile units (p.2) | Historical interagency sharing-request documentation (p.3) |
+| [Edina Police Department](https://www.lrl.mn.gov/docs/2025/mandated/251619.pdf) | 2025-10-15 | 18 active stationary Flock ALPR units and no mobile Flock units (p.2) | Historical interagency sharing-request documentation (p.3) |
+| [Hopkins Police Department](https://www.lrl.mn.gov/docs/2026/mandated/260144.pdf) | 2026-01-20 | 14 stationary Flock ALPR devices, comprising 13 fixed and one flex, and no mobile Flock units (p.2) | Historical interagency sharing-request documentation (p.3) |
+| [Minnetrista Police Department](https://www.lrl.mn.gov/docs/2026/mandated/260987.pdf) | 2026-06-08 | four stationary Flock ALPR units during the audited period (p.2) | Historical interagency sharing-request documentation (p.3) |
+| [Orono Police Department](https://www.lrl.mn.gov/docs/2025/mandated/251707.pdf) | 2025-10-29 | three active stationary/flex ALPR devices and no squad-mobile Flock units in its Flock-system audit (p.2) | Breach-notification policy recommendation (p.4) |
+| [Robbinsdale Police Department](https://www.lrl.mn.gov/docs/2025/mandated/251675.pdf) | 2025-10-23 | two active stationary Flock ALPR units and no mobile Flock units (p.2) | Historical interagency sharing-request documentation (p.3) |
+| [South Lake Minnetonka Police Department](https://www.lrl.mn.gov/docs/2026/mandated/260679.pdf) | 2026-04-10 | four stationary Flock ALPR units and no mobile Flock units (p.2) | Historical interagency sharing-request documentation (p.3) |
+| [University of Minnesota Police Department](https://www.lrl.mn.gov/docs/2025/mandated/251639.pdf) | 2025-10-15 | ten active stationary ALPR units in its Flock-system audit, with no mobile Flock units reported (p.2) | Historical interagency sharing-request documentation (p.3) |
+
+**Current independently page-reviewed Flock-named audit titles: 14 of 16 (87.5%).** The catalog separately also includes Shakopee, whose title does not mention Flock, so **15 total reports have curated original-source review entries**. The two remaining Flock-titled reports (West Saint Paul and Wyoming) remain *machine-fingerprinted-only*, because their original PDF pages were not independently accessible for review in this pass. They are not approved for source-specific public findings. Do not count 15/16 or misclassify Shakopee's title. All 16 continue to have private ingestion-level PDF hash receipts.
+
+The automated source verifier must fetch and validate all 15 reviewed PDFs and match exact relevant page strings before publication. Any missing or revised original source fails closed. It does not independently confirm statutory compliance or current manufacturer identity.
 
 ## Testing and release
 
@@ -48,8 +69,8 @@ The following original state-hosted five-page audit summaries were checked on PD
 - `python -m unittest discover -s scripts -p 'test_verify_independent_audit_source.py' -v`
 - `python scripts/fingerprint_mn_flock_audits.py --preflight` for source-only dry-run, zero DB writes.
 - `.github/workflows/fingerprint_mn_flock_audits.yml` for all Flock-title byte fingerprints, optionally recurring main writes.
-- `.github/workflows/verify_original_independent_audits.yml` for the three specifically reviewed PDF fingerprints and page assertions.
+- `.github/workflows/verify_original_independent_audits.yml` for the 15 specifically reviewed PDF fingerprints and page assertions.
 - `node scripts/smoke_agency_audit.cjs` validates exact-identity dossiers and original page receipts.
 - `node scripts/smoke_mn_alpr_audit_registry.cjs` checks state archive search and title-level identity labels.
 
-**Next:** Expand independently reviewed material across additional Flock-titled reports, preferably reports of the *same agency over multiple periods*, with page-specific findings and content fingerprints. When comparable observations exist, only then generate source-dated change timelines; never a violation score.
+**Next:** Independently review West Saint Paul and Wyoming when original PDFs are accessible; then prioritize comparable *same-agency* multi-period audits rather than treating two agencies as a time series. When comparable observations exist, only then generate source-dated change timelines; never a violation score.

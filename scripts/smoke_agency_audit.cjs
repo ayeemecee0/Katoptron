@@ -55,7 +55,10 @@ const {chromium}=require('playwright');
    ['hennepin%20county%7CMN','Hennepin County, MN','four active stationary Flock ALPR units'],
    ['richfield%7CMN','Richfield, MN','eight stationary Flock ALPR units'],
    ['woodbury%7CMN','Woodbury, MN','17 active stationary Flock ALPR units'],
-   ['brooklyn%20center%7CMN','Brooklyn Center, MN','nine active stationary ALPR units']
+   ['brooklyn%20center%7CMN','Brooklyn Center, MN','nine active stationary ALPR units'],
+   ['champlin%7CMN','Champlin, MN','six active stationary/flex Flock ALPR devices'],
+   ['corcoran%7CMN','Corcoran, MN','nine active stationary Flock ALPR units'],
+   ['orono%7CMN','Orono, MN','three active stationary/flex ALPR devices']
   ]){
    await page.goto(new URL('agency-audit.html?place='+id,base).href,
      {waitUntil:'domcontentloaded',timeout:40000});

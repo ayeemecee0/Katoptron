@@ -71,6 +71,106 @@ def get_pdf(url,fetcher=None):
   raise ValueError("PDF not bounded and readable")
  return body
 
+ADDITIONAL_REVIEWED_PAGE_ANCHORS = {
+  "champlin-mn-independent-flock-alpr-audit-2025": {
+    "2": [
+      "champlin police department",
+      "6 active stationary/flex flock alpr devices",
+      "default 30-"
+    ],
+    "4": [
+      "recommend that the champlin police department develop a breach policy"
+    ]
+  },
+  "corcoran-mn-independent-flock-alpr-audit-2026": {
+    "2": [
+      "corcoran police department",
+      "9 active stationary flock alpr units",
+      "default 30-day retention period"
+    ],
+    "3": [
+      "sample for the whole month of april",
+      "documented in the flock system by agency and justification"
+    ]
+  },
+  "edina-mn-independent-flock-alpr-audit-2025": {
+    "2": [
+      "edina police department",
+      "18 active stationary flock alpr units",
+      "default 30-"
+    ],
+    "3": [
+      "documented by agency name, reason and case number",
+      "redacted version of this tracking spreadsheet"
+    ]
+  },
+  "hopkins-mn-independent-flock-alpr-audit-2026": {
+    "2": [
+      "hopkins police department",
+      "14 devices, 13 fixed and one flex",
+      "default 30-"
+    ],
+    "3": [
+      "documented by agency name",
+      "requesting party and case number"
+    ]
+  },
+  "minnetrista-mn-independent-flock-alpr-audit-2026": {
+    "2": [
+      "minnetrista police department",
+      "4 stationary flock alpr units",
+      "default 30-day retention period"
+    ],
+    "3": [
+      "a sample of the whole month of may 2026",
+      "documented in the flock system by agency and justification"
+    ]
+  },
+  "orono-mn-independent-flock-alpr-audit-2025": {
+    "2": [
+      "orono police department",
+      "3 active stationary/flex alpr devices",
+      "default 30-"
+    ],
+    "4": [
+      "recommend that the orono police department develop a standalone breach policy"
+    ]
+  },
+  "robbinsdale-mn-independent-flock-alpr-audit-2025": {
+    "2": [
+      "robbinsdale police department",
+      "two active stationary flock alpr units",
+      "default 30-day retention period"
+    ],
+    "3": [
+      "documented by agency name",
+      "requesting party and case number"
+    ]
+  },
+  "south-lake-minnetonka-mn-independent-flock-alpr-audit-2026": {
+    "2": [
+      "south lake minnetonka police department",
+      "4 stationary flock alpr units",
+      "default 30-day retention period"
+    ],
+    "3": [
+      "whole month of december",
+      "documented in the flock system by agency and justification"
+    ]
+  },
+  "umn-mn-independent-flock-alpr-audit-2025": {
+    "2": [
+      "umn police department",
+      "10 active stationary alpr units",
+      "default 30-"
+    ],
+    "3": [
+      "documented by agency name",
+      "requesting party and case number"
+    ]
+  }
+}
+
 def verify_pdf(report,payload,reader_class=None):
  if not isinstance(payload,bytes) or len(payload)>MAX_BYTES or not payload.startswith(b"%PDF-"):
   raise ValueError("Invalid original audit PDF bytes")
@@ -139,6 +239,10 @@ def verify_pdf(report,payload,reader_class=None):
   for page,phrases in anchors.items():
    if not all(p in normalized(page) for p in phrases):
     raise ValueError("Brooklyn Center original auditor PDF page changed; hold for review")
+ elif report["id"] in ADDITIONAL_REVIEWED_PAGE_ANCHORS:
+  for page,phrases in ADDITIONAL_REVIEWED_PAGE_ANCHORS[report["id"]].items():
+   if not all(p in normalized(int(page)) for p in phrases):
+    raise ValueError("Additional original auditor PDF page text changed; hold for review")
  else:
   raise ValueError("New audit requires a scoped independent verifier")
  return len(pdf.pages)
