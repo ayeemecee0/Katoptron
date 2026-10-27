@@ -37,7 +37,7 @@ assert.equal(preReview.candidates.length,2);
 
 const agencyReports=require('../data/verified-agency-published-alpr-audits.json').reports;
 const internal=row('19-1260.pdf','Biennial Audit of the Hennepin County Sheriff\'s Office Automated License Plate Reader Program');
-assert.equal(H.plan([internal],original).candidates.length,1,'Agency's internal audit is not in external independent manifest');
+assert.equal(H.plan([internal],original).candidates.length,1,'Agency internal audit is not in external independent manifest');
 const reconciled=H.plan([internal],original,agencyReports);
 assert.equal(reconciled.candidates.length,0,'Already page-reviewed agency internal source must leave review backlog');
 assert.equal(reconciled.curated_reports,40,'Agency-internal source must not inflate independent-reviewed count');
