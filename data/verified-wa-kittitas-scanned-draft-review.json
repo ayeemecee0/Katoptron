@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "source_registry_url": "https://www.atg.wa.gov/ALPR",
+  "id": "kittitas-wa-original-four-page-scanned-draft-2026",
+  "agency_name": "Kittitas Police Department",
+  "state": "WA",
+  "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kittitas%20PD%20Policy.pdf?VersionId=kFMGZo4zqUbzsCu9cSrAdpkD1Ij.PutG",
+  "original_sha256": "8b6bb93e69589f7459cb4bc5adbd7991043e59687fa1b91180c149e5fc19368f",
+  "original_page_count": 4,
+  "manual_imprint_date": "2026-06-30",
+  "document_lifecycle": "draft_not_proven_adopted",
+  "original_page_review_method": "visually_inspected_original_sha256_pinned_raster_render",
+  "reviewed_pages": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "page_png_sha256": [
+    "f6bb7be5fa56fa23867b642e838b242b4d8c0e83bfc0294648821c437348eb89",
+    "1c1616914aea9641d7d4cc538d6c3426a027fe96dccffe35b068ab15942f9b1d",
+    "f6ce5574d6ef7556aa7838b0e319130971cfb2831feec00ddc422e987faeb407",
+    "1a91463fe3c239b4e62d54407988d7ff40a01efb1eed3e2b3ed288f94fc93065"
+  ],
+  "original_render_run_url": "https://github.com/ayeemecee0/Katoptron/actions/runs/40596859008",
+  "findings": [
+    {
+      "page": 1,
+      "category": "draft_not_adopted_and_flock_training_reference",
+      "statement": "Kittitas Police Department's scanned Policy 425 is marked DRAFT on its original first page, bearing a June 30, 2026 manual imprint. Section 425.2 refers to Flock online training modules. Neither the draft nor its training reference verifies that the department adopted the policy or installed Flock equipment."
+    },
+    {
+      "page": 2,
+      "category": "draft_default_retention_and_prohibited_uses",
+      "statement": "Page two of the Kittitas draft states a general 21-day limit on stored ALPR data with listed judicial or case-related exceptions and prohibits enumerated uses involving immigration enforcement, protected activities and certain facilities. These are proposed rules on a draft page, not validated retention practice."
+    },
+    {
+      "page": 3,
+      "category": "draft_internal_audit_and_access_rules",
+      "statement": "Page three of the Kittitas draft describes annual ALPR system auditing, two-year retention of audit-trail data, password-protected access and written procedures for outside agency requests. These provisions are draft policy language, not independently verified audits or actual sharing relationships."
+    },
+    {
+      "page": 4,
+      "category": "draft_data_release_request_approval",
+      "statement": "Page four of the Kittitas draft continues the data-release procedure by requiring the requesting person's name, intended purpose, approval by the Administration Chief or authorized designee and retention of the approved request. It does not establish that these steps have been adopted or followed."
+    }
+  ],
+  "limits": "Every original page is labeled DRAFT. The rendering shows the document text but does not establish council or department approval, effective date, installed Flock camera locations, active vendor access, actual data retention, independent legal compliance or current deployment. OCR terms were used only to locate candidate pages; all published findings were reviewed against the rendered source images."
+}
