@@ -4,7 +4,7 @@
 Output metadata only. Never print document contents or follow unapproved URL
 redirects. Do not automatically promote a reparsed PDF into verified findings.
 """
-import io,json,urllib.request
+import hashlib,io,json,urllib.request
 from pathlib import Path
 from pypdf import PdfReader
 ROOT=Path(__file__).resolve().parents[1]
@@ -29,8 +29,11 @@ def main():
     raw=res.read(16_000_001 if name=="Kirkland Police Department" else 8_000_001)
    info={"agency":name,"source_status":r["inspection_status"],"content_type":typ,
          "bytes":len(raw),"pdf_header":raw.startswith(b"%PDF-")}
+   if 100<=len(raw)<=(16_000_000 if name=="Kirkland Police Department" else 8_000_000):
+    info["sha256"]=hashlib.sha256(raw).hexdigest()
+   else:info["sha256"]=None
    if not 100<len(raw)<=(16_000_000 if name=="Kirkland Police Department" else 8_000_000) or not raw.startswith(b"%PDF-"):
-    info["diagnosis"]="NOT_PDF_OR_OUT_OF_BOUNDS"
+    info["diagnosis"]="OVERSIZE_PDF_BYTE_CAP" if name=="Kirkland Police Department" and raw.startswith(b"%PDF-") else "NOT_PDF_OR_OUT_OF_BOUNDS"
    else:
     for strict in (True,False):
      try:
@@ -68,7 +71,13 @@ def main():
         info.setdefault("page_structure_probes",[]).append(report)
      except Exception as exc:
       info["strict_"+str(strict).lower()]={"error_type":type(exc).__name__}
-    info["diagnosis"]="REQUIRES_SEPARATE_MANUAL_REVIEW"
+    if name=="Kittitas Police Department":
+     info["diagnosis"]="LENIENTLY_READABLE_IMAGE_ORIGINAL_STRICT_PDF_PARSE_FAILS"
+    elif name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}:
+     info["diagnosis"]="EMPTY_PDF_PAGES_NO_CONTENT_STREAMS"
+    elif name=="Yakima Police Department":
+     info["diagnosis"]="OVERSIZE_MANUAL_PAGE_COUNT"
+    else:info["diagnosis"]="PDF_DEPENDENCY_UNRESOLVED"
    print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps(info,sort_keys=True))
   except Exception as exc:
    print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps({"agency":name,"source_status":r["inspection_status"],
