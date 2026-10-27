@@ -54,7 +54,7 @@ small,.secondary{color:#afc6d1}.links{display:flex;flex-wrap:wrap;gap:1.2rem;mar
 <p class="secondary">This directory is refreshed from the original public index by a scheduled source collector. Changes and unavailability are not evidence that an earlier audit was withdrawn. The separate <a href="./agency-audit.html?place=shakopee%7CMN">Shakopee accountability dossier</a> includes independently reviewed, page-cited findings from one specific original report.</p>
 </main><script src="./config.js"></script><script>
 'use strict';
-const $=id=>document.getElementById(id),APP={rows:[]};
+const $=id=>document.getElementById(id),APP={rows:[],reviewed:new Map()};
 const title={flock_named_in_title:'Flock mentioned in title',
  other_vendor_named_in_title:'Different vendor mentioned in title',
  mixed_or_ambiguous_title:'Multiple vendors in title',
@@ -92,7 +92,29 @@ function render(){
   const d=node('a','Inspect original state mandate index');
   d.href='https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735';
   d.target='_blank';d.rel='noopener noreferrer';links.append(d);
-  card.append(links);$('reports').append(card);
+  card.append(links);
+  const independent=APP.reviewed.get(r.source_url);
+  if(independent){
+   const sourceSection=node('div',null,'notice');
+   sourceSection.append(node('strong',
+    'Katoptron page-reviewed original document · as of '+independent.reviewed_on));
+   sourceSection.append(node('p',
+    'Historical auditor statements only. The review covers specified pages of this PDF and does not certify present equipment, permissions or compliance.'));
+   for(const f of independent.findings.slice(0,3)){
+    if(!independent.pages_reviewed.includes(f.page))continue;
+    const p=node('p',f.statement);const a=node('a','Original page '+f.page);
+    a.href=r.source_url+'#page='+f.page;
+    a.rel='noopener noreferrer';a.target='_blank';
+    p.append(' ',a);sourceSection.append(p);
+   }
+   if(independent.jurisdiction_key){
+    const a=node('a','Open agency accountability dossier');
+    a.href='./agency-audit.html?place='+encodeURIComponent(independent.jurisdiction_key);
+    sourceSection.append(a);
+   }
+   card.append(sourceSection);
+  }
+  $('reports').append(card);
  }
  if(rows.length>250)$('reports').append(node('p','Showing first 250 results; narrow your search to inspect additional documents.'));
  if(rows.length===0)$('reports').append(node('p','No indexed report matches. This does not establish absence of an ALPR program or audit.'));
@@ -111,5 +133,21 @@ async function load(){
 $('query').addEventListener('input',render);$('scope').addEventListener('change',render);
 const q=new URL(location.href).searchParams.get('q');
 if(q)$('query').value=q.slice(0,120);
-load().catch(err=>{$('status').textContent='Public official audit archive data unavailable: '+err.message+'. No fabricated records shown.';});
+async function reviewedOriginals(){
+ try{
+  const r=await fetch('./data/verified-independent-audits.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!r.ok)throw Error('Reviewed original audit manifest not accessible');
+  const j=await r.json();
+  if(j?.schema_version!==1||!Array.isArray(j.reports)||j.reports.length>25)throw Error('Invalid curated source catalog');
+  for(const a of j.reports){
+   if(!safe(a.source_url)||!/^[a-f0-9]{64}$/.test(a.content_sha256||'')||
+      !Array.isArray(a.findings)||!Array.isArray(a.pages_reviewed)||!a.reviewed_on)continue;
+   APP.reviewed.set(a.source_url,a);
+  }
+ }catch(_err){APP.reviewed.clear();}
+}
+Promise.all([load(),reviewedOriginals()]).then(()=>render()).catch(err=>{
+ $('status').textContent='Official archive or verified-source information unavailable: '+
+  err.message+'. No fabricated records shown.';
+});
 </script></body></html>
