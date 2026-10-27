@@ -1,0 +1,39 @@
+name: Monitor original multistate government ALPR document sources
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/national-government-audit-source-portals.json'
+      - 'scripts/scan_national_government_audit_sources.py'
+      - 'scripts/test_scan_national_government_audit_sources.py'
+      - '.github/workflows/scan_national_government_audit_sources.yml'
+  schedule:
+    - cron: '23 18 * * 3'
+permissions:
+  contents: read
+concurrency:
+  group: national-government-original-source-watch
+  cancel-in-progress: false
+jobs:
+  review-queue:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Test official source provenance, unsafe links, privacy, deduplication and no-fact promotion
+        run: python -m unittest discover -s scripts -p 'test_scan_national_government_audit_sources.py' -v
+      - name: Acquire public original publisher index links and machine-only PDF receipts
+        run: python scripts/scan_national_government_audit_sources.py
+      - name: Store short-lived, metadata-only national source-review queue
+        uses: actions/upload-artifact@v4
+        with:
+          name: national-official-government-alpr-document-review
+          path: .katoptron-ci/national-government-source-candidates.json
+          retention-days: 14
+          if-no-files-found: error
