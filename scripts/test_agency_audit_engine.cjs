@@ -95,7 +95,7 @@ const independent=Audit.assess(shakopee,[],{
  contractStatus:'ok',auditArchiveStatus:'ok',asOf:'2026-10-26',
  independentAudits:auditManifest.reports
 });
-assert.equal(independent.counts.independentAuditorReports,1);
+assert.equal(independent.counts.independentAuditorReports,2);
 assert.ok(independent.inventory.some(x=>x.kind==='independent_auditor_report'&&
  x.sources.includes('https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf')));
 assert.ok(independent.inventory.some(x=>x.kind==='auditor_reported_observation'&&
@@ -115,6 +115,15 @@ const stillwaterAudit=Audit.assess(stillwater,[],{
  contractStatus:'ok',auditArchiveStatus:'ok',
  independentAudits:auditManifest.reports
 });
+const woodbury=base();
+woodbury.key='woodbury|MN';woodbury.label='Woodbury, MN';
+const woodburyAudit=Audit.assess(woodbury,[],{
+ contractStatus:'ok',auditArchiveStatus:'ok',
+ independentAudits:auditManifest.reports
+});
+assert.equal(woodburyAudit.counts.independentAuditorReports,2,
+ 'Do not collapse distinct source-dated independent audits');
+assert.ok(woodburyAudit.inventory.some(x=>x.sources.includes('https://www.lrl.mn.gov/docs/2024/mandated/240350.pdf')));
 assert.equal(stillwaterAudit.counts.independentAuditorReports,1);
 assert.ok(stillwaterAudit.inventory.some(x=>x.kind==='auditor_reported_observation'&&
  x.detail.includes('17 stationary Flock ALPR units')&&
