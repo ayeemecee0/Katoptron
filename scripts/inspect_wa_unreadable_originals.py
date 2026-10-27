@@ -23,13 +23,14 @@ def check_published_qualification(info):
   "manual_exceeds_160_page_triage_cap":"OVERSIZE_MANUAL_PAGE_COUNT"
  }[original["diagnosis"]]:return False
  if original["sha256_complete_original"] is not None:
-  return (info.get("sha256")==original["sha256_complete_original"] and
-   info.get("bytes")==original["bytes_complete_original"] and
-   (info.get("strict_true",{}).get("page_count") or info.get("strict_false",{}).get("page_count"))==
-    original["page_count_structurally_readable"] if original["page_count_structurally_readable"] is not None else
-    info.get("sha256")==original["sha256_complete_original"] and info.get("bytes")==original["bytes_complete_original"])
- return (info.get("sha256") is None and
-  info.get("bytes",0)>=original["minimum_observed_bytes"])
+  if info.get("sha256")!=original["sha256_complete_original"] or info.get("bytes")!=original["bytes_complete_original"]:
+   return False
+  expected_pages=original["page_count_structurally_readable"]
+  if expected_pages is not None:
+   observed_pages=info.get("strict_true",{}).get("page_count") or info.get("strict_false",{}).get("page_count")
+   return observed_pages==expected_pages
+  return True
+ return info.get("sha256") is None and info.get("bytes",0)>=original["minimum_observed_bytes"]
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise ValueError("SOURCE_REDIRECT_HELD")
