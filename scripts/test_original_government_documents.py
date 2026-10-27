@@ -88,4 +88,20 @@ class GovDocumentAcquisition(unittest.TestCase):
   self.assertFalse(names)
   self.assertEqual(next(iter(items.values()))["review_status"],"requires_document_review")
 
+
+ def test_generic_navigation_not_misclassified_as_flock_contract_or_policy(self):
+  page=b'''<html><p>Flock Safety ALPR Program</p>
+  <a href="/privacy-policy/">Privacy Policy</a>
+  <a href="/audit/">Internal Audit</a>
+  <a href="/lanterman-auditorium/">Lanterman Auditorium Reservation</a>
+  <a href="/Departments/Purchasing-Contract-Administration">Purchasing & Contract Administration</a>
+  <a href="/Documents/Flock Safety Contract.pdf">Flock Safety Contract</a>
+  <a href="/Documents/ALPR Policy.pdf">ALPR Policy</a>
+  <a href="/Documents/2024 License Plate Reader Audit Report.pdf">2024 License Plate Reader Audit Report</a>
+  </html>'''
+  r=M.extract_links(page,"https://www.shakopeemn.gov/public_safety/police_department/reports___transparency.php","Shakopee, MN")
+  self.assertEqual(len(r),3)
+  self.assertEqual({v["document_class"] for v in r},{"contract","policy","audit"})
+  self.assertTrue(all(M.relevant_document_link(x["link_label"],x["document_url"],x["document_class"]) for x in r))
+
 if __name__=="__main__":unittest.main()
