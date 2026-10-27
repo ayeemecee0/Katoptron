@@ -21,8 +21,13 @@
    const u=new URL(url);
    if(u.protocol!=='https:'||!HOSTS.has(u.hostname)||u.host!==u.hostname||
      u.username||u.password||u.hash||u.pathname.includes('..'))return null;
-   if(u.search&&(u.hostname!=='agportal-s3bucket.s3.us-west-2.amazonaws.com'||
-     !/^\?VersionId=[a-zA-Z0-9_.-]{1,100}$/.test(u.search)))return null;
+   if(u.search){
+    const s3=u.hostname==='agportal-s3bucket.s3.us-west-2.amazonaws.com'&&
+     /^\?VersionId=[a-zA-Z0-9_.-]{1,100}$/.test(u.search);
+    const municipal=new Set(['www.eastwenatcheewa.gov','www.everettwa.gov','www.libertylakewa.gov']).has(u.hostname)&&
+     /^\/DocumentCenter\/View\/[0-9]+\//.test(u.pathname)&&u.search==='?bidId=';
+    if(!s3&&!municipal)return null;
+   }
    return u.href;
   }catch(_){return null;}
  }
