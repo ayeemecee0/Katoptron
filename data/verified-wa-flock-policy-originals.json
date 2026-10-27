@@ -205,5 +205,14 @@
         }
       ]
     }
+  ],
+  "held_review_candidates": [
+    {
+      "registry_agency": "Sultan Police Department",
+      "status": "held_original_document_publisher_identity_mismatch",
+      "observed_document_heading": "Snohomish County Sheriff's Office ALPR Training",
+      "basis": "The original PDF named in the state Attorney General's Sultan row identifies a different agency in its header. The reviewed source also flags the training as not intended for public release. The original remains a state-listed link, but no Sultan-authored policy or verified Sultan Flock deployment is inferred.",
+      "publish_document_page_links": false
+    }
   ]
 }
