@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "verified_as_of": "2026-10-27",
+  "scope_note": "Original government-published documents, distinctly typed for internal monthly aggregate, adopted-version policy, proposed draft, vendor order form, oversight memo, derivative presentation, press advisory and nonbinding city commission recommendation. No individual plate reads, exact camera coordinates, current access claims, inferred policy adoption or confirmed contract execution.",
+  "documents": [
+    {
+      "id": "san-mateo-ca-press-advisory",
+      "state": "CA",
+      "agency": "San Mateo County Civil Grand Jury",
+      "publisher_role": "government_independent_oversight",
+      "kind": "official_press_release_derivative",
+      "status": "release_summarizes_existing_review_not_independent_new_audit",
+      "source_date": "2026-08-03",
+      "title": "Civil Grand Jury public press advisory for the 2025–2026 ALPR report",
+      "source_url": "https://sanmateo.courts.ca.gov/system/files/grand-jury/alpr-press-release.pdf",
+      "page_count": 2,
+      "findings": [
+        {
+          "page": 1,
+          "category": "oversight_public_communication",
+          "statement": "The San Mateo County Civil Grand Jury's August 3, 2026 press advisory summarizes its 2025–2026 ALPR oversight report, describing continuing gaps in policy maintenance, auditing and in-state data-sharing oversight. The advisory is a derivative summary of the separately reviewed grand jury report, not a second independent investigation."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "3b3c639c5ae2fc9fb6269b03b7fbc3392bf7b86e415d9391047b9962d2770154",
+      "pages_reviewed": [
+        1
+      ]
+    },
+    {
+      "id": "austin-tx-auditor-slides",
+      "state": "TX",
+      "agency": "Austin Office of the City Auditor",
+      "publisher_role": "government_independent_oversight",
+      "kind": "official_auditor_presentation_derivative",
+      "status": "presentation_summarizes_existing_review_not_separate_audit",
+      "source_date": null,
+      "source_date_note": "Presentation states May 2025, without a reliable exact day.",
+      "title": "APD License Plate Reader Audit Presentation, May 2025",
+      "source_url": "https://services.austintexas.gov/edims/document.cfm?id=452702",
+      "page_count": 10,
+      "findings": [
+        {
+          "page": 5,
+          "category": "independent_auditor_summary",
+          "statement": "Austin's City Auditor presentation reports approximately 117 million ALPR scans with data gaps in the program metrics and states that audits generally complied with requirements but could be improved. This is an auditor presentation summarizing its separate written May 2025 audit, not an additional new ALPR audit or proof of current data collection."
+        },
+        {
+          "page": 9,
+          "category": "contract_auditor_risk_summary",
+          "statement": "The May 2025 presentation flags unclear Flock Safety contract language as a possible risk of unintended use of motorists' data. This repeats an auditor concern, not verified misuse, a legal ruling, or a newly established current contractual term."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "dfd18a99d713f65b94df38a7921d626dd7eed035de68b97c91de8b0c5b123348",
+      "pages_reviewed": [
+        5,
+        9
+      ]
+    },
+    {
+      "id": "green-bay-wi-monthly-2026",
+      "state": "WI",
+      "agency": "Green Bay Police Department",
+      "publisher_role": "police_department",
+      "kind": "agency_monthly_aggregate_report",
+      "status": "publisher_monthly_aggregate_source_not_raw_read_log",
+      "source_date": "2026-10-01",
+      "title": "September 2026 Green Bay Police ALPR Monthly Report",
+      "source_url": "https://www.greenbaywi.gov/DocumentCenter/View/18823/Green-Bay-Police-Department-Monthly-ALPR-Report-September-2026",
+      "page_count": 1,
+      "findings": [
+        {
+          "page": 1,
+          "category": "aggregate_reported_activity",
+          "statement": "Green Bay Police Department's public report compiled October 1, 2026 lists 443,664 unique plate reads, 9,534 hotlist hits and 522 user search sessions over the preceding 30 days. These are the department's aggregate, historical counters; they are not individual plate observations or independently audited statistics."
+        },
+        {
+          "page": 1,
+          "category": "reported_access_recipients",
+          "statement": "In the same October 1 public report, Green Bay lists Brown County Sheriff's Office, De Pere Police Department, Hobart-Lawrence Police Department and University of Wisconsin–Green Bay Police Department as organizations granted access to Green Bay PD data. This is a dated, Green Bay-published access list, not proof of each agency's current permissions, use or reciprocal sharing."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "0df652d3264a08f983d491f56e24beb5270435399aedc9ce432ea953371d1574",
+      "pages_reviewed": [
+        1
+      ]
+    },
+    {
+      "id": "austin-tx-oversight-memo-2023",
+      "state": "TX",
+      "agency": "Austin Office of Police Oversight",
+      "publisher_role": "government_independent_oversight",
+      "kind": "original_government_oversight_memo",
+      "status": "independent_oversight_concerns_about_2023_proposed_policy",
+      "source_date": "2023-03-31",
+      "title": "Preliminary Analysis of APD's Proposed License Plate Reader Policy and Processes",
+      "source_url": "https://services.austintexas.gov/edims/document.cfm?id=452776",
+      "page_count": 23,
+      "findings": [
+        {
+          "page": 1,
+          "category": "independent_oversight_recommendation",
+          "statement": "In its March 31, 2023 preliminary analysis, Austin's Office of Police Oversight found that the proposed ALPR policy and procedures were still under development and might not yet meet the intent of City Council Resolution 56. It recommended further work on community input, fairness controls, data handling and auditing, without asserting final noncompliance by a deployed program."
+        },
+        {
+          "page": 3,
+          "category": "independent_oversight_public_participation",
+          "statement": "The 2023 Office of Police Oversight analysis described disruptions and access problems affecting Austin Police Department's February 2023 ALPR policy community meetings. It concluded the two sessions fell short of Resolution 56's community-input objectives. This is a historical finding about the 2023 consultation process, not a later ALPR policy status determination."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "f932f99bc1464a3e018aa37481b5e43a96039508ac13e7ca7f46edebae7a4528",
+      "pages_reviewed": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "green-bay-wi-policy-may-2026",
+      "state": "WI",
+      "agency": "Green Bay Police Department",
+      "publisher_role": "police_department",
+      "kind": "published_department_policy",
+      "status": "may_2026_published_policy_no_current_supersession_claim",
+      "source_date": "2026-05-04",
+      "title": "Green Bay Police Department Policy 424, May 2026 published version",
+      "source_url": "https://www.greenbaywi.gov/DocumentCenter/View/18791/Policy-424-Automated-License-Plate-Readers-ALPR-May-2026",
+      "page_count": 4,
+      "findings": [
+        {
+          "page": 2,
+          "category": "published_policy_retention",
+          "statement": "Green Bay Police Department's Policy 424 as published May 4, 2026 specifies a 30-day maximum for ordinary ALPR system data, while allowing separately retained investigative or intelligence records to follow their applicable rules. This is the published May policy text, not proof of system deletion performance or the policy currently in force."
+        },
+        {
+          "page": 2,
+          "category": "published_policy_protected_gatherings",
+          "statement": "Green Bay's May 2026 published policy states that ALPR readers are not to be used solely to obtain license plate data at political rallies, demonstrations or religious gatherings without a nexus to criminal activity. The provision does not itself verify operational compliance."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "3811cad37739128bb7e711157853f588f24b9307289a5e033c7c40968d4200c0",
+      "pages_reviewed": [
+        2
+      ]
+    },
+    {
+      "id": "green-bay-wi-policy-draft-sept-2026",
+      "state": "WI",
+      "agency": "Green Bay Police Department",
+      "publisher_role": "police_department",
+      "kind": "draft_policy_unadopted",
+      "status": "prominently_marked_draft_not_effective_or_approved",
+      "source_date": null,
+      "source_date_note": "Document is marked DRAFT and copyrighted September 13, 2026; this is not proof the draft was adopted or took effect.",
+      "title": "Green Bay Police Department proposed Policy 424 revision, September 2026 DRAFT",
+      "source_url": "https://www.greenbaywi.gov/DocumentCenter/View/19136/DRAFTED-REVISION---Policy-424-Automated-License-Plate-Readers-ALPR-September-2026",
+      "page_count": 6,
+      "findings": [
+        {
+          "page": 4,
+          "category": "draft_retention_proposal_not_effective",
+          "statement": "A Green Bay Police policy revision marked DRAFT in September 2026 proposes reducing ordinary ALPR plate-read retention to seven days, compared with 30 days in the separately published May 2026 policy. This is a proposal shown in an original draft, not a verified adopted policy change or a measured retention setting."
+        },
+        {
+          "page": 2,
+          "category": "draft_restricted_use_proposal",
+          "statement": "The September 2026 document marked DRAFT proposes explicitly prohibiting ALPR use for enforcement of other jurisdictions' laws, including immigration or tax law, and use based on protected characteristics. It is not proof the prohibition was adopted, enforced or violated."
+        },
+        {
+          "page": 6,
+          "category": "draft_audit_proposal",
+          "statement": "The September 2026 draft proposes monthly internal audits including a random sample of at least one percent of user searches. This is draft procedural language, not evidence of actual monthly audit sampling."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "d11b9959c69f84d7e7ab06641ee8008afdab439129c2e30e62ebc4c300762b55",
+      "pages_reviewed": [
+        2,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "green-bay-wi-flock-order-2025",
+      "state": "WI",
+      "agency": "Green Bay Police Department",
+      "publisher_role": "police_department",
+      "kind": "government_published_vendor_order_form",
+      "status": "original_published_form_execution_date_not_independently_verified",
+      "source_date": null,
+      "source_date_note": "Government file name refers to 2025; the reviewed order form's effective date depends on execution and is not independently confirmed here.",
+      "title": "Green Bay published Flock DFR and ALPR additional services order form",
+      "source_url": "https://www.greenbaywi.gov/DocumentCenter/View/19138/Flock-Safety-WI---Green-Bay-PD---DFR-and-ALPR-Law-Enforcement-Agreement-2025",
+      "page_count": 12,
+      "findings": [
+        {
+          "page": 2,
+          "category": "contract_order_form_terms",
+          "statement": "The Green Bay-published Flock order form lists 42 Flock LPR units, a 30-day data retention period, a 60-month initial term and 36-month renewal terms. These are quantities and proposed conditions on the original form, not confirmation of installed device coordinates or whether all options are operational."
+        },
+        {
+          "page": 4,
+          "category": "contract_order_form_schedule",
+          "statement": "The published order form lists annual scheduled amounts of $270,000 for years 1–3 and $291,000 for years 4–5, totaling $1,392,000 before tax, with other Flock drone and ALPR services included. These are document-stated amounts, not verification that every installment was paid or that the entire term was executed."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "7d57a74b469b0969c9fc6c04c2e17b145e7e1c167f585044ebc6f3dc383b9c14",
+      "pages_reviewed": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": "austin-tx-commission-recommendation",
+      "state": "TX",
+      "agency": "Austin Public Safety Commission",
+      "publisher_role": "government_advisory_commission",
+      "kind": "advisory_recommendation_not_binding_action",
+      "status": "approved_commission_recommendation_not_city_council_order",
+      "source_date": "2025-06-02",
+      "title": "Austin Public Safety Commission Recommendation 20250602-006",
+      "source_url": "https://services.austintexas.gov/edims/document.cfm?id=452847",
+      "page_count": 3,
+      "findings": [
+        {
+          "page": 3,
+          "category": "advisory_recommendation",
+          "statement": "On June 2, 2025 Austin's Public Safety Commission voted 6–0 to recommend an immediate halt to the Austin Police Department ALPR program, plus a broad data-sharing audit and safeguards. This establishes a commission recommendation, not that Austin City Council ordered a halt or APD shut down its system."
+        }
+      ],
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "2364cb27dbbf2e6035bca0ee79fec61d65a090c58813ca90020b0f280786095d",
+      "pages_reviewed": [
+        3
+      ]
+    }
+  ],
+  "source_review_held": [
+    {
+      "id": "san-bruno-ca-alpr-policy",
+      "source_url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9522/San-Bruno-PD---ALPR-Policy",
+      "reason": "Original URL consistently redirected during exact-government-origin bounded retrieval. No PDF byte hash or page statement independently verified; leave source as metadata-only."
+    }
+  ]
+}
