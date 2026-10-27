@@ -87,18 +87,25 @@ def verify(row,raw,reader=PdfReader):
   raise ValueError("Original government document hash drift")
  pdf=reader(io.BytesIO(raw),strict=True)
  if pdf.is_encrypted or len(pdf.pages)!=row["page_count"]:raise ValueError("Original page count or encryption changed")
- for page,need in ANCHORS[row["id"]].items():
-  text=" ".join((pdf.pages[page-1].extract_text() or "").lower().split())
-  if not all(x in text for x in need):
-   raise ValueError("Original page anchor drift: "+row["id"]+" p"+str(page)+" missing "+",".join(x for x in need if x not in text)[:120])
+ if row["id"]==MOLINE_ID:
+  # Raster-only city original. Exact PDF SHA256 and page count guard
+  # the visually reviewed content; never invent OCR/text anchors.
+  for page in VISUAL_PAGES:
+   if not pdf.pages[page-1].images:
+    raise ValueError("Visually reviewed scanned page images unavailable")
+ else:
+  for page,need in ANCHORS[row["id"]].items():
+   text=" ".join((pdf.pages[page-1].extract_text() or "").lower().split())
+   if not all(x in text for x in need):
+    raise ValueError("Original page anchor drift: "+row["id"]+" p"+str(page)+" missing "+",".join(x for x in need if x not in text)[:120])
  return len(pdf.pages)
 def main():
  ledger=json.loads(PATH.read_text(encoding="utf-8"))
  for row in valid(ledger):
-  pdf=fetch(row["id"])
+  pdf=fetch_scanned_moline_original() if row["id"]==MOLINE_ID else fetch(row["id"])
   print("GOVERNMENT_PRIMARY_ORIGINAL_VERIFIED",row["state"],row["id"],"PAGES",verify(row,pdf),
         "SHA",row["content_sha256"],"ROLE",row["kind"])
- print("EIGHT ORIGINALS VERIFIED; 1 BLOCKED SOURCE REMAINS HELD; no raw personal plate or nonpublic data")
+ print("NINE ORIGINALS VERIFIED; one blocked source held; scanned original verified with SHA256 and image pages")
 if __name__=="__main__":
  try:main()
  except Exception as exc:
