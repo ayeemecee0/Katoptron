@@ -160,11 +160,13 @@ def curated_original_urls():
  Existing reviews remain subject to their own byte/page CI verifiers.
  """
  seen=set()
- for name in ("verified-national-government-oversight.json","verified-agency-published-alpr-audits.json"):
+ for name,field in (("verified-national-government-oversight.json","reports"),
+                   ("verified-agency-published-alpr-audits.json","reports"),
+                   ("verified-national-government-documents.json","documents")):
   obj=json.loads((ROOT/"data"/name).read_text(encoding="utf-8"))
-  if obj.get("schema_version")!=1 or not isinstance(obj.get("reports"),list):
+  if obj.get("schema_version")!=1 or not isinstance(obj.get(field),list) or len(obj[field])<1:
    raise ValueError("Incomplete individually reviewed original source catalog")
-  for r in obj["reports"]:
+  for r in obj[field]:
    url=r.get("source_url")
    if not isinstance(url,str) or not re.fullmatch(r"[0-9a-f]{64}",r.get("content_sha256","")):
     raise ValueError("Unverified original content cannot be marked reviewed")
