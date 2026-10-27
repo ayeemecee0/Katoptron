@@ -13,9 +13,9 @@ class StateSources(unittest.TestCase):
   self.assertEqual(len(j),51)
   self.assertEqual(len({s["state"] for s in j}),51)
   self.assertIn("DC",{s["state"] for s in j})
-  self.assertGreaterEqual(len(seeds),30)
+  self.assertEqual(len(seeds),43)
   self.assertEqual(len(p),8)
-  self.assertEqual(len({s["state"] for s in seeds}|p),38)
+  self.assertEqual(len({s["state"] for s in seeds}|p),51)
  def test_ssrf_origins_and_path_escape_rejected(self):
   approved="https://www.okc.gov/Services/Public-Safety/Police/Flock-Safety-license-plate-reader-LPR-usage-in-Oklahoma-City"
   self.assertTrue(M.exact(approved))
@@ -43,11 +43,12 @@ class StateSources(unittest.TestCase):
   def denied(x):raise ValueError("original_redirect")
   result=M.watch(R,OLD,fetcher=denied,workers=3)
   self.assertEqual(result["jurisdictions_total"],51)
-  self.assertEqual(result["states_with_existing_or_new_official_seed_sources"],38)
+  self.assertEqual(result["states_with_existing_or_new_official_seed_sources"],51)
   self.assertEqual(len(result["seed_receipts"]),len(R["official_seed_sources"]))
   self.assertTrue(all(x["status"]=="held_redirect" for x in result["seed_receipts"]))
   self.assertTrue(all(x["camera_coverage_claimed"] is False and x["agency_inventory_complete"] is False for x in result["jurisdictions"]))
-  self.assertTrue(any(x["source_gap"]=="needs_authenticated_government_original" for x in result["jurisdictions"]))
+  self.assertEqual(result["states_without_official_sources_seeded"],[])
+  self.assertTrue(all(x["source_gap"]=="publisher_monitoring_started_not_statewide_evidence_complete" for x in result["jurisdictions"]))
  def test_source_change_and_missing_state_fail_closed(self):
   altered=json.loads(json.dumps(R));altered["jurisdictions"].pop()
   with self.assertRaisesRegex(ValueError,"complete"):M.catalog(altered,OLD)
