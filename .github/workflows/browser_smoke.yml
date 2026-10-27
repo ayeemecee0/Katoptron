@@ -22,6 +22,10 @@ on:
       - 'community-overlay.js'
       - 'scripts/smoke_community_authenticated_mock.cjs'
       - 'scripts/smoke_accountability.cjs'
+      - 'scripts/smoke_agency_audit.cjs'
+      - 'agency-audit.html'
+      - 'agency-audit-engine.js'
+      - 'agency-xray.html'
       - 'scripts/smoke_analytics.cjs'
       - 'scripts/smoke_vendor_portals.cjs'
       - 'portals.html'
@@ -84,6 +88,7 @@ jobs:
           node scripts/smoke_community.cjs
           node scripts/smoke_community_authenticated_mock.cjs
           node scripts/smoke_accountability.cjs
+          node scripts/smoke_agency_audit.cjs
           node scripts/smoke_analytics.cjs
           node scripts/smoke_vendor_portals.cjs
           node scripts/smoke_accessibility.cjs
