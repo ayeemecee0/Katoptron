@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "verified_as_of": "2026-10-27",
-  "scope_note": "Original government-published documents, distinctly typed for internal monthly aggregate, adopted-version policy, proposed draft, vendor order form, oversight memo, derivative presentation, press advisory and nonbinding city commission recommendation. No individual plate reads, exact camera coordinates, current access claims, inferred policy adoption or confirmed contract execution.",
+  "scope_note": "Original government-published documents, distinctly typed for internal monthly aggregate, adopted-version policy, proposed draft, vendor order form, oversight memo, derivative presentation, press advisory and nonbinding city commission recommendation. No individual plate reads, exact camera coordinates, current access claims, inferred policy adoption or confirmed contract execution. The September 2026 Moline pause is a signed agreement with future obligations, not confirmation that deactivation, removal or termination actually occurred.",
   "documents": [
     {
       "id": "san-mateo-ca-press-advisory",
@@ -275,6 +275,44 @@
           "page": 5,
           "category": "signed_execution_date",
           "statement": "The Moline Police Department and Flock Group signature blocks on page five are dated December 3 and December 4, 2024 respectively. The historical signed form does not independently establish the precise equipment activation date or continuing program operation."
+        }
+      ]
+    },
+    {
+      "id": "moline-il-signed-pause-2026",
+      "state": "IL",
+      "agency": "Moline Police Department",
+      "publisher_role": "police_department",
+      "kind": "signed_city_published_vendor_pause_agreement_scanned",
+      "status": "signed_pause_terms_not_proof_of_completed_deactivation",
+      "source_date": "2026-09-15",
+      "source_date_note": "Moline police chief's visible signature is dated September 14, 2026, and Flock legal officer's signature September 15, 2026. These are signed agreement terms, not verified completion of removal or deactivation.",
+      "title": "Moline signed Flock fixed-ALPR pause and termination agreement, September 2026",
+      "source_url": "https://moline.il.us/DocumentCenter/View/16700/Flock-Safety-Contract-Pause-September-2026",
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "13496c7ce0e83787d6010963dddedd6ca54473947b054f887488a02c23923c81",
+      "page_count": 1,
+      "pages_reviewed": [
+        1
+      ],
+      "verification_method": "visual_page_review_sha256_pinned_scanned_pdf",
+      "verification_note": "One-page city-hosted signed scanned agreement, with original printed page label 4. The image on the sole PDF page was reviewed visually. GitHub Actions independently retrieved original bytes, observed SHA-256, confirmed one nonencrypted page and scanned image; no OCR or searchable text anchor is asserted.",
+      "related_official_announcement_url": "https://www.moline.il.us/1955/License-Plate-Readers",
+      "findings": [
+        {
+          "page": 1,
+          "category": "signed_contract_pause_terms",
+          "statement": "A September 2026 signed Moline/Flock agreement states Flock will remove the City's fixed LPR devices, terminate the City's access to its platform, and pause the City's contracts for a one-time $4,500 fee; it sets a removal window of 30 days after execution, while allowing permitted poles to remain. These are contractual terms, not proof that the devices were actually removed or deactivated."
+        },
+        {
+          "page": 1,
+          "category": "signed_contract_conditional_future_terms",
+          "statement": "The signed pause agreement states that resuming Flock fixed LPR service before February 1, 2028 would resume prorated billing; installing another vendor's fixed ALPR before that date could trigger amounts otherwise due on the original contracts. It provides termination without an additional pause-related payment obligation if no such alternate installation occurs by that date. These are conditional terms, not evidence of what Moline subsequently did."
+        },
+        {
+          "page": 1,
+          "category": "signatures_and_date",
+          "statement": "The reviewed original agreement contains visible Moline and Flock signature blocks dated September 14 and September 15, 2026 respectively. A separate city announcement dated September 15 described a nine-camera program and expected deactivation within approximately 14 days; the announcement is a projection rather than independent verification that shutdown occurred."
         }
       ]
     }
