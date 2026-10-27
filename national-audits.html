@@ -270,7 +270,7 @@ async function load(){
  render();
 }
 $('q').addEventListener('input',()=>{render();renderOversight();renderPublishers();renderPrimary();renderCityStatements();});
-$('state').addEventListener('change',()=>{render();renderOversight();renderPublishers();renderPrimary();});
+$('state').addEventListener('change',()=>{render();renderOversight();renderPublishers();renderPrimary();renderCityStatements();});
 loadCityStatements().catch(e=>{$('cityStatusState').textContent=e.message+'; no unverified operational statements shown.';});
 loadPrimary().catch(e=>{$('primaryStatus').textContent=e.message+'; unverified findings not shown.';});
 load().catch(e=>{$('status').textContent=e.message+'; no inferred reports shown.';});
