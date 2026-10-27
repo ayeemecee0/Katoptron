@@ -9,6 +9,9 @@ on:
       - 'agency-audit.html'
       - 'mn-alpr-audits.html'
       - 'national-audits.html'
+      - 'nationwide-jurisdictions.js'
+      - 'data/nationwide-government-jurisdiction-registry.json'
+      - 'scripts/test_nationwide_jurisdictions.cjs'
       - 'city-alpr-operational-statements.js'
       - 'data/verified-city-alpr-operational-statements.json'
       - 'scripts/test_city_alpr_operational_statements.cjs'
@@ -84,6 +87,8 @@ jobs:
           node scripts/test_agency_published_audits.cjs
           node --check national-government-sources.js
           node scripts/test_national_government_sources.cjs
+          node --check nationwide-jurisdictions.js
+          node scripts/test_nationwide_jurisdictions.cjs
           node --check city-alpr-operational-statements.js
           node scripts/test_city_alpr_operational_statements.cjs
           node --check national-primary-documents.js
