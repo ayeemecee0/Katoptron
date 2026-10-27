@@ -1,0 +1,40 @@
+name: Monitor original government Flock records across all US jurisdictions
+on:
+  push:
+    paths:
+      - 'data/nationwide-government-jurisdiction-registry.json'
+      - 'data/national-government-audit-source-portals.json'
+      - 'scripts/watch_nationwide_government_originals.py'
+      - 'scripts/test_watch_nationwide_government_originals.py'
+      - '.github/workflows/watch_nationwide_government_originals.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '11 19 * * 1'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-nationwide-original-government-source-watch
+  cancel-in-progress: false
+jobs:
+  state-originals:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Validate 51 distinct jurisdictions and fail-closed public evidence tier
+        run: python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
+      - name: Fetch exact official government sources for newly seeded states
+        run: python scripts/watch_nationwide_government_originals.py --workers 6
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nationwide-all-51-government-source-receipts
+          path: .katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json
+          retention-days: 21
+          if-no-files-found: warn
