@@ -1,0 +1,46 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+(async()=>{
+ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ const problems=[],base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
+ const page=await browser.newPage({viewport:{width:390,height:844}});
+ page.on('pageerror',e=>problems.push(e.message));
+ try{
+  const r=await page.goto(new URL('agency-audit.html',base).href,{waitUntil:'domcontentloaded',timeout:40000});
+  assert.equal(r.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('indexed localities'),
+   null,{timeout:65000});
+  await page.locator('#q').fill('Folsom');
+  const option=page.locator('#matches button').filter({hasText:'Folsom, CA'}).first();
+  assert.equal(await option.count(),1,'Known source-backed Folsom locality not indexed');
+  await option.click();
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+    null,{timeout:55000});
+  assert.equal(await page.locator('#report').isVisible(),true);
+  assert.match(await page.locator('#reportTitle').textContent(),/Folsom/);
+  assert.match(await page.locator('#disclaimer').textContent(),/NOT a legality/);
+  assert.match(await page.locator('#counts').textContent(),/Flock portal snapshots/);
+  const refs=page.locator('#sources a');
+  assert.ok(await refs.count()>0,'Audit must show citable original source URLs');
+  for(const href of await refs.evaluateAll(as=>as.slice(0,10).map(a=>a.href)))
+    assert.ok(href.startsWith('https://'),'Source links must be HTTPS');
+  assert.ok(!(await page.locator('#findings').textContent()).includes('noncompliant'),
+    'Do not present inferred wrongdoing');
+  await page.locator('#draft').click();
+  assert.equal(await page.locator('#requestText').isVisible(),true);
+  assert.match(await page.locator('#requestText').inputValue(),/DRAFT ONLY — NOT SENT/);
+  assert.match(await page.locator('#requestText').inputValue(),/not requesting individual plate reads/i);
+  const link=page.url();
+  assert.ok(link.includes('place=folsom%7CCA'),'Reproducible permalink missing');
+  const width=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2);
+  assert.ok(width,'Mobile layout overflows viewport');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+    null,{timeout:65000});
+  assert.match(await page.locator('#reportTitle').textContent(),/Folsom/);
+  assert.deepEqual(problems,[],'Unexpected browser exceptions');
+  console.log('AUTOMATED ACCOUNTABILITY BROWSER PASS: live agency evidence, citations, safe draft, deep link, 390px viewport');
+ }catch(e){console.error('AUTOMATED ACCOUNTABILITY BROWSER FAILED:',e.stack||e,problems.slice(0,4));process.exitCode=1;}
+ finally{await browser.close();}
+})().catch(e=>{console.error(e.stack||e);process.exitCode=1;});
