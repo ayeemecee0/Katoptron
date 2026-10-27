@@ -41,10 +41,10 @@ def catalog(obj,existing):
   raise ValueError("Nationwide source registry not complete")
  state_names={}
  for x in obj["jurisdictions"]:
-  if x.get("state") in state_names or x.get("state") not in STATES or
+  if (x.get("state") in state_names or x.get("state") not in STATES or
      not isinstance(x.get("name"),str) or not 3<=len(x["name"])<=24 or
      x.get("discovery_status")!="enrolled_state_research_queue" or
-     not isinstance(x.get("search_terms"),list) or len(x["search_terms"])!=2:
+     not isinstance(x.get("search_terms"),list) or len(x["search_terms"])!=2):
    raise ValueError("Invalid or duplicated US state research jurisdiction")
   state_names[x["state"]]=x["name"]
  if set(state_names)!=set(STATES):raise ValueError("All 50 states and DC must be represented")
