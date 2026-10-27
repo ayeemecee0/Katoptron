@@ -54,6 +54,19 @@ The Washington Attorney General states that it has <strong>not independently ver
 <p id="flockOriginalStatus" role="status" aria-live="polite">Loading reviewed Flock policy originals…</p>
 <div id="flockOriginalResults" class="list"></div>
 </section>
+<section id="kittitasOriginalReview" aria-labelledby="kittitasOriginalHeading">
+<h2 id="kittitasOriginalHeading">Visually reviewed scanned original: Kittitas DRAFT</h2>
+<p>The original four-page Kittitas Police Department Policy 425 was independently rendered and its pages visually reviewed. <strong>All four original pages are marked DRAFT.</strong> A statement in the draft is not an adopted policy, verified Flock equipment, an installed camera location, or evidence of operational compliance.</p>
+<p id="kittitasDraftStatus" role="status" aria-live="polite">Loading original-image draft review…</p>
+<div id="kittitasDraftResults" class="list"></div>
+</section>
+<section id="externalOrigins" aria-labelledby="externalOriginsHeading">
+<h2 id="externalOriginsHeading">External original policy-link acquisition</h2>
+<p>The state agency registration index also links to municipal policy sites, university privacy pages, transit agencies and public document portals. Each listed URL is checked independently with no redirects or cross-host crawling. <strong>Retrieved original ≠ page-verified adopted policy, Flock manufacturer, or camera location.</strong></p>
+<p id="externalOriginsStatus" role="status" aria-live="polite">Loading non-archive government-linked source inspection…</p>
+<div id="externalOriginsMetrics" class="metrics"></div>
+<div id="externalOriginsResults" class="list"></div>
+</section>
 <section id="sourceTriageSection" aria-labelledby="sourceTriageHeading">
 <h2 id="sourceTriageHeading">Original-policy acquisition and review queue</h2>
 <p>The source-inspection layer checks byte hashes, page counts and extractable text for the exact version-pinned PDFs linked from the state's registration snapshot. <strong>Machine-readable does not mean policy-verified.</strong> A page mentioning “Flock Safety” is a review lead only, not proof of installed cameras, manufacturer relationship, equipment counts or live access.</p>
@@ -75,10 +88,10 @@ The Washington Attorney General states that it has <strong>not independently ver
 <p id="status" role="status" aria-live="polite">Loading original government source snapshot…</p>
 <div id="results" class="list"></div>
 <p class="muted">Each displayed policy link was present on the Attorney General's original published page at the snapshot date, not independently reverified with the agency. Links may change. The absence of an entry cannot establish noncompliance, and registration is not a camera or equipment census.</p>
-</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script src="./wa-held-original-diagnostics.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script>
+</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script src="./wa-held-original-diagnostics.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script src="./wa-external-policy-origins.js"></script><script src="./wa-kittitas-draft-review.js"></script><script>
 'use strict';
 const S=window.KatoptronWashingtonALPR;const $=x=>document.getElementById(x);
-const app={rows:[],captured:'',policyDocs:[],flockPolicyDocs:[],heldFlockReview:null,sourceReceipts:new Map(),heldSourceDiagnostics:[]};
+const app={rows:[],captured:'',policyDocs:[],flockPolicyDocs:[],heldFlockReview:null,sourceReceipts:new Map(),heldSourceDiagnostics:[],externalOrigins:[],kittitasDraft:null};
 function node(t,text,cls){const el=document.createElement(t);if(text!=null)el.textContent=String(text);if(cls)el.className=cls;return el;}
 function render(){
  const q=$('search').value.trim().toLowerCase();
@@ -108,6 +121,13 @@ function render(){
     window.KatoptronWAOriginalSourceTriage.receiptLabel(receipt),'muted'));
   }else if(r.policy_links_from_official_ago_page.length){
    item.append(node('p','Original linked policy requires separate inspection; no verified Flock vendor or deployment inferred','muted'));
+  }
+  const external=app.externalOrigins.find(d=>d.agency_name===r.agency_name);
+  if(external)item.append(node('p',window.KatoptronWAExternalOrigins.label(external.inspection_status),'muted'));
+  if(app.kittitasDraft?.agency_name===r.agency_name){
+   const a=node('a','Review four-page visually checked original DRAFT');
+   a.href='#kittitas-original-review';
+   item.append(node('p','Draft only: no adopted ALPR policy or installed Flock equipment proved.','muted'),a);
   }
   const reviewed=app.policyDocs.find(d=>d.agency_name===r.agency_name);
   const flockReview=app.flockPolicyDocs.find(d=>d.agency_name===r.agency_name);
@@ -264,6 +284,64 @@ async function loadTriage(){
  if(!response.ok)throw Error('Versioned original policy source receipts unavailable');
  renderTriage(await response.json());
 }
+function renderKittitasDraft(){
+ const d=app.kittitasDraft;
+ const results=$('kittitasDraftResults');results.replaceChildren();
+ $('kittitasDraftStatus').textContent='4 scanned original pages independently visually reviewed. Status: DRAFT, not proven adopted.';
+ const article=node('article');article.id='kittitas-original-review';
+ article.append(node('h3',d.agency_name+' · Policy 425 · DRAFT'),
+  node('p','Manual imprint: '+d.manual_imprint_date+' · All 4 pages visibly marked DRAFT · Original SHA-256 pinned','muted'));
+ const source=node('a','Original four-page state-linked PDF');
+ source.href=d.source_url;source.target='_blank';source.rel='noopener noreferrer';article.append(source);
+ for(const finding of d.findings){
+  const section=node('section');section.append(node('p',finding.statement));
+  const a=node('a','Visually reviewed original page '+finding.page);
+  a.href=d.source_url+'#page='+finding.page;a.target='_blank';a.rel='noopener noreferrer';
+  section.append(a);article.append(section);
+ }
+ article.append(node('p',d.limits,'muted'));results.append(article);
+}
+async function loadKittitasDraft(){
+ const response=await fetch('./data/verified-wa-kittitas-scanned-draft-review.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Visually reviewed scanned draft unavailable');
+ app.kittitasDraft=window.KatoptronKittitasDraftReview.review(await response.json(),app.rows,app.heldSourceDiagnostics);
+ renderKittitasDraft();render();
+}
+function renderExternalOrigins(data){
+ const result=window.KatoptronWAExternalOrigins.catalog(data,app.rows);
+ app.externalOrigins=result.rows;
+ $('externalOriginsStatus').textContent=result.total+' government registry-linked external policy references ('+
+  result.uniqueLinks+' distinct URLs). '+result.counts.retrieved+
+  ' origins retrieved for source metadata and '+result.counts.held+' held. No newly verified Flock deployments inferred.';
+ const m=$('externalOriginsMetrics');m.replaceChildren();
+ for(const [value,label] of [
+  [result.total,'Agency-linked source references'],
+  [result.uniqueLinks,'Distinct linked original URLs'],
+  [result.counts.pdf,'Original PDF responses retrieved'],
+  [result.counts.html,'Linked web pages retrieved'],
+  [result.counts.held,'Held, redirects or inaccessible']]){
+  const a=node('div');a.append(node('strong',value),node('span',label));m.append(a);
+ }
+ const target=$('externalOriginsResults');target.replaceChildren();
+ for(const x of result.rows){
+  const article=node('article');
+  article.append(node('h3',x.agency_name),
+   node('p',window.KatoptronWAExternalOrigins.label(x.inspection_status),'muted'));
+  if(x.inspection_status==='original_pdf_text_detected'||x.inspection_status==='original_pdf_image_only')
+   article.append(node('p','Source-reported PDF pages: '+x.page_count+'. No independent policy-content findings inferred.','muted'));
+  if(x.inspection_status.startsWith('original_')){
+   const a=node('a','View exact policy link supplied by Attorney General');
+   a.href=x.policy_source_url;a.target='_blank';a.rel='noopener noreferrer';article.append(a);
+  }
+  target.append(article);
+ }
+ render();
+}
+async function loadExternalOrigins(){
+ const response=await fetch('./data/wa-ag-external-policy-source-inspection.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('State-linked external original source catalog unavailable');
+ renderExternalOrigins(await response.json());
+}
 async function load(){
  const res=await fetch('./data/wa-original-agency-alpr-registrations.json',{cache:'no-store',referrerPolicy:'no-referrer'});
  if(!res.ok)throw Error('Washington Attorney General original registration snapshot unavailable');
@@ -275,6 +353,8 @@ async function load(){
  await loadTriage().catch(e=>{$('sourceTriageStatus').textContent=e.message+'; no unverified source claims shown.';});
  await loadFlockOriginals().catch(e=>{$('flockOriginalStatus').textContent=e.message+'; unverified policy claims not shown.';});
  await loadHeldDiagnostics().catch(e=>{$('heldOriginalStatus').textContent=e.message+'; no unverified source diagnoses shown.';});
+ await loadExternalOrigins().catch(e=>{$('externalOriginsStatus').textContent=e.message+'; no unverified source claims shown.';});
+ await loadKittitasDraft().catch(e=>{$('kittitasDraftStatus').textContent=e.message+'; unverified draft findings withheld.';});
 }
 $('search').addEventListener('input',render);
 load().catch(e=>{$('status').textContent=e.message+'; no unverified registrations are displayed.';});

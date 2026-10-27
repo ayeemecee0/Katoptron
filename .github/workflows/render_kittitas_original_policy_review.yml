@@ -1,0 +1,36 @@
+name: Render Kittitas AGO-pinned scanned ALPR policy for independent page review
+on:
+  push:
+    paths:
+      - 'scripts/render_kittitas_original_policy_review.py'
+      - '.github/workflows/render_kittitas_original_policy_review.yml'
+      - 'data/wa-held-original-policy-diagnostics.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7' 'pymupdf>=1.24,<1.27'
+      - name: Install English OCR for provisional text-only keyword indexing
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tesseract-ocr
+      - name: Render exactly four source-pinned Kittitas pages
+        env:
+          KATOPTRON_OCR_CANDIDATES: '1'
+        run: python scripts/render_kittitas_original_policy_review.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: original-kittitas-wa-pdf-4-pages-unreviewed
+          path: .katoptron-ci/kittitas-original-page-review/
+          retention-days: 21
+          if-no-files-found: error

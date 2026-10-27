@@ -18,6 +18,30 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#sourceTriageStatus')?.textContent?.includes('71 AGO-versioned'),
    null,{timeout:15000});
   assert.equal(await page.locator('#sourceTriageQueue article').count(),10);
+  await page.waitForFunction(()=>document.querySelector('#externalOriginsStatus')?.textContent?.includes('25 government registry-linked external policy'),
+   null,{timeout:15000});
+  await page.waitForFunction(()=>document.querySelector('#kittitasDraftStatus')?.textContent?.includes('DRAFT'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#externalOriginsResults article').count(),25);
+  assert.match(await page.locator('#externalOriginsStatus').textContent(),/24 distinct URLs/);
+  assert.match(await page.locator('#externalOriginsStatus').textContent(),/14 origins retrieved/);
+  assert.match(await page.locator('#externalOriginsStatus').textContent(),/11 held/);
+  assert.match(await page.locator('#externalOriginsMetrics').textContent(),/Original PDF responses retrieved/);
+  assert.match(await page.locator('#externalOriginsResults').textContent(),/Pasco Police Department/);
+  assert.match(await page.locator('#externalOriginsResults').textContent(),/Sound Transit Police Department/);
+  assert.match(await page.locator('#externalOriginsResults').textContent(),/redirects/);
+  assert.match(await page.locator('#externalOrigins').textContent(),/Retrieved original ≠ page-verified adopted policy/);
+  assert.equal(await page.locator('#kittitasDraftResults article').count(),1);
+  const kitText=await page.locator('#kittitasOriginalReview').textContent();
+  assert.match(kitText,/All four original pages are marked DRAFT/);
+  assert.match(kitText,/Flock online training/);
+  assert.match(kitText,/21-day limit/);
+  assert.match(kitText,/annual ALPR system auditing/);
+  assert.match(kitText,/does not establish/);
+  const kitLinks=await page.locator('#kittitasDraftResults a').evaluateAll(as=>as.map(x=>x.href));
+  assert.equal(kitLinks.length,5);
+  assert.ok(kitLinks.every(x=>x.includes('VersionId=kFMGZo4zqUbzsCu9cSrAdpkD1Ij.PutG')));
+  assert.equal(kitLinks.filter(x=>x.includes('#page=')).length,4);
   await page.waitForFunction(()=>document.querySelector('#heldOriginalStatus')?.textContent?.startsWith('7 original source'),
    null,{timeout:15000});
   assert.equal(await page.locator('#heldOriginalResults article').count(),7);
@@ -102,6 +126,13 @@ const {chromium}=require('playwright');
   await page.locator('#search').fill('Kelso Police');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/Original PDF pages have no extractable content/);
+  await page.locator('#search').fill('Kittitas Police');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/original DRAFT/);
+  assert.match(await page.locator('#results').textContent(),/no adopted ALPR policy/);
+  await page.locator('#search').fill('College Place');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/Linked web page retrieved/);
   await page.locator('#search').fill('Federal Way');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/individually verified original Flock-reference summary/);
