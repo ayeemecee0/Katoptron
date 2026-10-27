@@ -1,6 +1,6 @@
 # Katoptron M9 — Incident response and alert delivery drill
 
-**Version:** October 26, 2026. **Service tier:** evidence-limited public beta. **Status:** operating procedure documented; owner notification delivery and human incident drill still require observation. **No 24/7 on-call or SLA is claimed.**
+**Version:** October 26, 2026. **Service tier:** evidence-limited public beta. **Status:** operating procedure documented; owner reports receiving a failure-alert email, while an independently linkable drill-run receipt and full human incident exercise remain unverified. **No 24/7 on-call or SLA is claimed.**
 
 ## What is monitored
 
@@ -10,7 +10,7 @@
 - [Private launch](../.github/workflows/monitor_private_launch_gates.yml): checks private Storage and source-discovery metrics.
 - [Free-tier capacity and privacy retention](../.github/workflows/monitor_production_capacity.yml): checks conservative database usage/retention using aggregate-only private RPC. Organization-wide provider storage/billing must still be checked in provider dashboards.
 
-GitHub Actions are not independent of GitHub availability and scheduled runs can be delayed. The owner reports enabling failed-workflow email notifications on October 26. **An email alert has not yet been independently observed from a controlled failed run.**
+GitHub Actions are not independent of GitHub availability and scheduled runs can be delayed. The owner reports enabling failed-workflow email notifications on October 26. **The owner reported on October 26 that GitHub's failure notification worked after the manual alert test.** This is owner-reported receipt, not an independently inspected email or verified drill-run URL; the notification mechanism still depends on GitHub and owner account delivery.
 
 ## Severity and response
 
@@ -54,4 +54,4 @@ Backups must be renewed after changes and private submissions; private Storage o
 4. If no email arrives, fix notification preferences or establish an independent monitoring/alert service and repeat the drill. No positive acceptance without an actually received alert.
 5. Do **not** repeatedly dispatch this drill, add production secrets, intentionally fail real release monitors, or publicly post private contact addresses.
 
-**Remaining owner actions:** observe alert delivery, accept an incident-response window/private contact channel, and complete outside-user and assistive-technology beta tests. Until then M9 full production remains incomplete.
+**Remaining owner actions:** retain a private alert email or run-link as evidence if available; accept an incident-response window/private contact channel; plan ongoing fresh, encrypted offsite backups; and complete outside-user and assistive-technology beta tests. Until then M9 full production remains incomplete.
