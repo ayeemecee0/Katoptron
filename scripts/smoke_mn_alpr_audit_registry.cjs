@@ -66,12 +66,12 @@ const assert=require('node:assert/strict');
    title_scope:'flock_named_in_title',evidence_tier:'state_legislative_registry_index_metadata_only'
   });
   rows.push({
-   source_url:'https://www.lrl.mn.gov/docs/2019/mandated/191307.pdf',
+   source_url:'https://www.lrl.mn.gov/docs/2027/mandated/270188.pdf',
    registry_url:'https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735',
-   report_id:'19-1307.pdf',
+   report_id:'27-0188.pdf',
    report_title:'Woodbury Public Safety Department Automated License Plate Reader Audit: Executive Summary',
    listed_publishers:'Minnesota state archive',
-   publication_date:'2019-12-26',coverage_period:'2019',received_date:'2025-10-30',
+   publication_date:'2027-01-12',coverage_period:'2019',received_date:'2025-10-30',
    title_scope:'unspecified_alpr_title',evidence_tier:'state_legislative_registry_index_metadata_only'
   });
   await page.reload({waitUntil:'domcontentloaded'});
@@ -82,7 +82,7 @@ const assert=require('node:assert/strict');
   assert.equal(await queue.count(),1);
   assert.match(await queue.first().textContent(),/Woodbury/);
   assert.match(await queue.first().textContent(),/P1/);
-  assert.match(await queue.first().textContent(),/Different\/multiple vendors/);
+  assert.match(await queue.first().textContent(),/Manufacturer not identified in title/);
   assert.ok(!(await page.locator('#queueCards').textContent()).includes('verified current'));
   for(const alreadyReviewed of ['Wyoming Police','West Saint Paul','Shakopee']){
    assert.ok(!(await page.locator('#queueCards').textContent()).includes(alreadyReviewed),
