@@ -20,6 +20,9 @@ on:
       - 'wa-alpr-registrations.js'
       - 'wa-alpr-registrations.html'
       - 'wa-original-policies.js'
+      - 'wa-policy-source-triage.js'
+      - 'data/wa-ago-original-policy-source-inspection.json'
+      - 'scripts/test_wa_policy_source_triage.cjs'
       - 'data/verified-wa-agency-policies.json'
       - 'scripts/test_wa_original_policies.cjs'
       - 'scripts/test_wa_alpr_registrations.cjs'
@@ -77,6 +80,8 @@ jobs:
           node scripts/test_wa_alpr_registrations.cjs
           node --check wa-original-policies.js
           node scripts/test_wa_original_policies.cjs
+          node --check wa-policy-source-triage.js
+          node scripts/test_wa_policy_source_triage.cjs
       - name: Start local preview
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/audit-preview.log 2>&1 &

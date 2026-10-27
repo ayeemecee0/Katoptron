@@ -12,17 +12,34 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.startsWith('97 original Attorney General'),
     null,{timeout:12000});
   assert.equal(await page.locator('#results article').count(),97);
-  await page.waitForFunction(()=>document.querySelector('#reviewedPolicyStatus')?.textContent?.startsWith('2 original agency'),
+  await page.waitForFunction(()=>document.querySelector('#reviewedPolicyStatus')?.textContent?.startsWith('3 original agency'),
     null,{timeout:12000});
-  assert.equal(await page.locator('#reviewedPolicyResults article').count(),2);
+  assert.equal(await page.locator('#reviewedPolicyResults article').count(),3);
+  await page.waitForFunction(()=>document.querySelector('#sourceTriageStatus')?.textContent?.includes('71 AGO-versioned'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#sourceTriageQueue article').count(),10);
+  const triage=await page.locator('#sourceTriageStatus').textContent();
+  assert.match(triage,/64 machine-readable\/parseable PDF/);
+  assert.match(triage,/7 source\(s\) held/);
+  assert.match(triage,/3 separately page-reviewed/);
+  assert.match(await page.locator('#sourceTriageMetrics').textContent(),/Original policies independently page-reviewed/);
+  assert.match(await page.locator('#sourceTriageQueue').textContent(),/Arlington Police Department/);
+  assert.match(await page.locator('#sourceTriageQueue').textContent(),/Normandy Park Police Department/);
+  assert.match(await page.locator('#sourceTriageSection').textContent(),/not proof of installed cameras/);
+  assert.ok((await page.locator('#sourceTriageQueue a').evaluateAll(as=>as.map(a=>a.href))).every(x=>
+    x.startsWith('https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/')&&x.includes('#page=')));
+  
   assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Auburn Police Department/);
   assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Black Diamond Police Department/);
+  assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Normandy Park Police Department/);
+  assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Flock Safety camera system/);
   assert.match(await page.locator('#reviewedPolicyResults').textContent(),/21 days/);
   assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Scanned original visually reviewed/);
   assert.match(await page.locator('#reviewedPolicyEvidence').textContent(),/not independent findings of compliance/);
   const originals=await page.locator('#reviewedPolicyResults a').evaluateAll(as=>as.map(a=>a.href));
   assert.ok(originals.some(x=>x.includes('VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH#page=5')));
   assert.ok(originals.some(x=>x.includes('/DocumentCenter/View/4324/BDPD-ALPR-Policy#page=4')));
+  assert.ok(originals.some(x=>x.includes('VersionId=18O0TMpqPRPGCuXKIAFSRKWNSwGnRuaY#page=1')));
   assert.ok(originals.every(x=>x.startsWith('https://blackdiamondwa.gov/')||
     x.startsWith('https://agportal-s3bucket.s3.us-west-2.amazonaws.com/')));
   assert.match(await page.locator('main').textContent(),/has not independently verified/);
@@ -54,6 +71,12 @@ const {chromium}=require('playwright');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
   await page.locator('#search').fill('Black Diamond');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
+  await page.locator('#search').fill('Kelso Police');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/Source retrieval held/);
+  await page.locator('#search').fill('Normandy Park');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
   await page.locator('#search').fill('Aberdeen Police');

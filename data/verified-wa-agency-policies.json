@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "reviewed_on": "2026-10-27",
-  "basis": "Individually checked original policy PDFs linked directly by the Washington Attorney General public ALPR registration snapshot; agency-authored policy language only, not independent legal compliance audit.",
-  "scope_limits": "Do not infer Flock vendor, camera count, camera coordinates, actually implemented configurations, operational sharing, or statutory compliance. State registry is agency self-certification. Manual dates on PDFs do not independently prove policy enactment date.",
+  "basis": "Individually examined original policy PDFs linked directly by the Washington Attorney General public ALPR registration snapshot; includes source-attributed mentions of specific technology only when on verified original pages. These are policy texts, not independent compliance audits.",
+  "scope_limits": "Policy texts may reference Flock Safety, but do not establish active deployment, installed counts, coordinates, actual data handling, operational sharing, or statutory compliance. State registry is agency self-certification. Manual dates do not independently prove enactment.",
   "documents": [
     {
       "id": "auburn-wa-policy-july-2026",
@@ -72,6 +72,47 @@
           "page": 4,
           "category": "retention_policy_text",
           "statement": "Black Diamond Policy 434 section 434.6 directs deletion of ALPR data within 21 days except specified circumstances, including judicial process, parking enforcement, traffic studies, commercial-vehicle enforcement, and certain evidence. It also assigns registration and certification responsibilities to the department commander. This is policy language, not independently verified deletion or statutory compliance."
+        }
+      ]
+    },
+    {
+      "id": "normandy-park-wa-policy-june-2026",
+      "agency_name": "Normandy Park Police Department",
+      "state": "WA",
+      "ago_registration_date": "2026-07-07",
+      "policy_manual_imprint": "2026-06-30",
+      "policy_manual_number": "467",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Normandy%20Park%20PD%20Policy.pdf?VersionId=18O0TMpqPRPGCuXKIAFSRKWNSwGnRuaY",
+      "content_sha256": "b4b26800bc0d3966b83df83abd8ccd9eeb7485e61b4057f724adad2352e4e935",
+      "page_count": 5,
+      "pages_reviewed": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "source_tier": "agency_published_policy_via_state_ag_registry",
+      "verification_method": "original_pdf_sha256_page_text_anchors",
+      "findings": [
+        {
+          "page": 1,
+          "category": "policy_flock_equipment_reference",
+          "statement": "Normandy Park Police Department Policy 467 explicitly describes a Flock Safety camera system, names Flock Safety Camera Administrators and assigns responsibility for training and deployments. This establishes source-attributed agency policy language referencing Flock; it does not verify installed camera counts or active vendor access."
+        },
+        {
+          "page": 3,
+          "category": "policy_prohibited_uses_and_retention",
+          "statement": "Normandy Park Policy 467 prohibits using ALPR systems for federal immigration enforcement and various protected activities and specifies a general 21-day retention limit with listed exceptions, including judicial orders and preservation of evidence. The text refers to Flock Safety camera data but does not independently establish actual deletion or operational compliance."
+        },
+        {
+          "page": 4,
+          "category": "policy_audit_trail_and_controls",
+          "statement": "Normandy Park Policy 467 calls for at least annual internal ALPR audits, two-year retention of audit-trail data, and records of searches, exports and sharing. These are written audit requirements, not independently verified audits or a confirmed record of who accessed data."
+        },
+        {
+          "page": 5,
+          "category": "policy_data_release_controls",
+          "statement": "Normandy Park Policy 467 says ALPR information may be shared with outside law-enforcement or prosecutorial agencies as required in judicial proceedings or otherwise permitted by law, subject to documented written requests and supervisory approval. This does not prove any actual data sharing or live cross-agency platform permissions."
         }
       ]
     }

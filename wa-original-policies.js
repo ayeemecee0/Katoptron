@@ -1,4 +1,4 @@
-/* Only individually page-reviewed ALPR policy text from original WA AGO-listed PDFs.
+/* Individually page-reviewed ALPR policy text from original WA AGO-listed PDFs.
  * This is not a Flock manufacturer proof, live-device inventory, compliance ruling,
  * or established sharing-network edge. S3 VersionId is preserved exactly. */
 (function(root,factory){'use strict';const API=factory();
@@ -13,6 +13,12 @@
    sha:'484830933e46300a5471d3fccc4354f33ae1b683bc8401fa938b8a4d3f53863f',
    url:'https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Auburn%20PD%20ALPR%20Policy.pdf?VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH',
    reviewed:[2,5,6,7]},
+  'normandy-park-wa-policy-june-2026':{
+   agency:'Normandy Park Police Department',pages:5,imprint:'2026-06-30',
+   method:'original_pdf_sha256_page_text_anchors',
+   sha:'b4b26800bc0d3966b83df83abd8ccd9eeb7485e61b4057f724adad2352e4e935',
+   url:'https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Normandy%20Park%20PD%20Policy.pdf?VersionId=18O0TMpqPRPGCuXKIAFSRKWNSwGnRuaY',
+   reviewed:[1,3,4,5]},
   'black-diamond-wa-policy-june-2026':{
    agency:'Black Diamond Police Department',pages:7,imprint:'2026-06-23',
    method:'original_pdf_sha256_visually_reviewed_raster_pages',
@@ -35,7 +41,7 @@
    Array.isArray(row.pages_reviewed)&&
    row.pages_reviewed.length===x.reviewed.length&&
    row.pages_reviewed.every((p,i)=>p===x.reviewed[i])&&
-   (row.ago_registration_date==='2026-07-07'||row.ago_registration_date==='2026-07-08')&&
+   (row.ago_registration_date===(row.id==='black-diamond-wa-policy-june-2026'?'2026-07-08':'2026-07-07'))&&
    Array.isArray(row.findings)&&row.findings.length>=2&&row.findings.length<=5&&
    row.findings.every(f=>f&&x.reviewed.includes(f.page)&&
      typeof f.statement==='string'&&f.statement.length>=80&&f.statement.length<=900)&&
@@ -46,9 +52,9 @@
  }
  function catalog(obj){
   if(!obj||obj.schema_version!==1||!Array.isArray(obj.documents)||
-   obj.documents.length!==2||!obj.documents.every(valid)||
-   new Set(obj.documents.map(x=>x.id)).size!==2||
-   typeof obj.scope_limits!=='string'||!obj.scope_limits.includes('Flock vendor'))
+   obj.documents.length!==3||!obj.documents.every(valid)||
+   new Set(obj.documents.map(x=>x.id)).size!==3||
+   typeof obj.scope_limits!=='string'||!obj.scope_limits.includes('not establish active deployment'))
    throw Error('Unverified original Washington ALPR policy evidence');
   return obj.documents.slice().sort((a,b)=>a.agency_name.localeCompare(b.agency_name));
  }
