@@ -1445,6 +1445,54 @@
         }
       ],
       "content_sha256": "ee62cc69d51ba755e67dfeb235e5375ca08f6915d1dec72c9de53df003cc3a66"
+    },
+    {
+      "id": "mn-original-alpr-review-191307",
+      "jurisdiction_key": "woodbury|MN",
+      "agency_name": "Woodbury Public Safety",
+      "report_title": "Woodbury Public Safety Department Automated License Plate Reader Audit: Executive Summary (2019)",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191307.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "InfoSec Associates Ltd., original external auditor",
+      "report_date": "2019-12-26",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_mobile_alpr_inventory",
+          "page": 3,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The independent external auditor's December 2019 original Woodbury report describes BOSS/PAGIS administrative software and ALPR systems on two squad cars, with no stationary readers at that audit. Software names do not establish hardware manufacturer or earlier Flock cameras."
+        }
+      ],
+      "content_sha256": "5a09ce707e50685e5d56e4619ea9ee217bb42a3a724c77733be6ff00a9c00607"
+    },
+    {
+      "id": "mn-original-alpr-review-200290",
+      "jurisdiction_key": "hennepin county|MN",
+      "agency_name": "Hennepin County Sheriff's Office",
+      "report_title": "Hennepin County Sheriff's Office January 14, 2020 agreed-upon procedures",
+      "source_url": "https://www.lrl.mn.gov/docs/2020/mandated/200290.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Office of the State Auditor, original external auditor",
+      "report_date": "2020-01-14",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        7
+      ],
+      "findings": [
+        {
+          "key": "historical_pips_mobile_program",
+          "page": 7,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The Minnesota Office of the State Auditor's January 2020 agreed-upon procedures report says Hennepin County Sheriff's Office historically operated four mobile ALPR readers using PIPS technology and had not operated an ALPR after September 24, 2019. It reported no fixed stationary ALPRs. This is a 2019 historical program status, not an assertion about later Flock equipment."
+        }
+      ],
+      "content_sha256": "5d0c08601ca312d8ca814d62cfa4b93551d77bf79a3b5190924c5c61b60435aa"
     }
   ]
 }
