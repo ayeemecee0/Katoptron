@@ -23,6 +23,12 @@ input,select{width:100%;padding:.74rem;color:inherit;background:#183041;border:1
 .metrics strong{display:block;font-size:1.6rem;font-variant-numeric:tabular-nums}
 .metrics span{color:#bbceda;font-size:.78rem}
 .list{display:grid;gap:.8rem}
+.queue-list{display:grid;gap:.65rem;margin:.75rem 0 1.7rem}
+.queue-list article{background:#122936;border-color:#466273}
+.queue-list h3{font-size:1.02rem;margin:.3rem 0}
+.queue-meta{color:#c1d4df;font-size:.86rem}
+.queue-actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:.5rem}
+
 article{background:#122837;padding:1rem;border-radius:10px;border:1px solid #395569;overflow-wrap:anywhere}
 article h2{font-size:1.13rem;margin:.25rem 0}
 .meta{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
@@ -50,11 +56,18 @@ small,.secondary{color:#afc6d1}.links{display:flex;flex-wrap:wrap;gap:1.2rem;mar
 </div>
 <p id="status" role="status" aria-live="polite">Loading dated official archive listings…</p>
 <div id="metrics" class="metrics" aria-label="Official archive report counts"></div>
+<section aria-labelledby="queueHeading" id="queueSection">
+<h2 id="queueHeading">Automatically discovered audit review queue</h2>
+<p>Next original PDFs to inspect. The official state index is matched against Katoptron's independently reviewed agency records. <strong>This list does not verify the contents of any candidate PDF or claim earlier reports cover Flock.</strong></p>
+<p id="queueStatus" role="status" aria-live="polite">Checking original report history…</p>
+<div id="queueCounts" class="metrics" aria-label="Review queue counts"></div>
+<div id="queueCards" class="queue-list"></div>
+</section>
 <div id="reports" class="list"></div>
 <p class="secondary">This directory is refreshed from the original public index by a scheduled source collector. Changes and unavailability are not evidence that an earlier audit was withdrawn. The separate <a href="./agency-audit.html?place=shakopee%7CMN">Shakopee</a>, <a href="./agency-audit.html?place=richfield%7CMN">Richfield</a>, <a href="./agency-audit.html?place=woodbury%7CMN">Woodbury</a> and other exact-agency accountability dossiers provide independently page-reviewed historical statements where available. Remaining state-index records are title metadata only.</p>
-</main><script src="./config.js"></script><script>
+</main><script src="./config.js"></script><script src="./mn-audit-candidates.js"></script><script>
 'use strict';
-const $=id=>document.getElementById(id),APP={rows:[],reviewed:new Map()};
+const $=id=>document.getElementById(id),APP={rows:[],reviewed:new Map(),manifest:null};
 const title={flock_named_in_title:'Flock mentioned in title',
  other_vendor_named_in_title:'Different vendor mentioned in title',
  mixed_or_ambiguous_title:'Multiple vendors in title',
@@ -63,6 +76,49 @@ function node(t,s,cls){const v=document.createElement(t);if(s!=null)v.textConten
 function safe(url){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='www.lrl.mn.gov'&&
   /^\/docs\/20\d{2}\/mandated\/\d{6}\.pdf$/.test(u.pathname)&&!u.search&&!u.hash&&
  !u.username&&!u.password?u.href:null;}catch{return null;}}
+function renderReviewQueue(){
+ $('queueCards').replaceChildren();$('queueCounts').replaceChildren();
+ if(!APP.manifest){
+  $('queueStatus').textContent='The independently reviewed original audit catalog is unavailable. Cross-period candidates cannot be safely matched.';
+  return;
+ }
+ let result;
+ try{result=window.KatoptronHistoricalCandidates.plan(APP.rows,APP.manifest);}
+ catch(_err){$('queueStatus').textContent='Cannot verify historical review queue against the current original archive. No candidates shown.';return;}
+ $('queueStatus').textContent=result.candidates.length+' queued original state audit PDF(s), generated from the current source index and reviewed original-document catalog. Every candidate remains metadata-only until independent PDF review.';
+ for(const [count,label] of [
+  [result.flock_titles_unreviewed,'Flock-named report titles awaiting page review'],
+  [result.exact_agency_historical_candidates,'Additional same-agency original titles to examine'],
+  [result.curated_reports,'Already independently reviewed original reports']
+ ]){
+  const card=node('div');
+  card.append(node('strong',count),node('span',label));$('queueCounts').append(card);
+ }
+ for(const candidate of result.candidates.slice(0,28)){
+  const card=node('article');
+  const labels=node('div',null,'meta');
+  labels.append(node('span',candidate.priority,'tag'),node('span',
+   candidate.title_scope==='flock_named_in_title'?'Flock named in title':
+   candidate.title_scope==='unspecified_alpr_title'?'Manufacturer not identified in title':
+   'Different/multiple vendors in title','tag'));
+  card.append(labels,node('h3',candidate.report_title),
+    node('p',candidate.reason+'. No manufacturer, device count or audit finding is independently established for this candidate.'),
+    node('p','Official listing date: '+(candidate.publication_date||'not listed')+
+      '. '+(candidate.matched_agency?'Possible same-agency history: '+candidate.matched_agency+'.':'Agency identity not independently reconciled.')+
+      (candidate.coverage_period?' Listed audit period: '+candidate.coverage_period:''),
+     'queue-meta'));
+  const actions=node('div',null,'queue-actions'),source=safe(candidate.source_url);
+  if(source){const link=node('a','Open original PDF for review');link.href=source;link.rel='noopener noreferrer';link.target='_blank';actions.append(link);}
+  if(candidate.jurisdiction_key){
+   const dossier=node('a','Open reviewed agency dossier');
+   dossier.href='./agency-audit.html?place='+encodeURIComponent(candidate.jurisdiction_key);
+   actions.append(dossier);
+  }
+  card.append(actions);$('queueCards').append(card);
+ }
+ if(result.candidates.length>28)$('queueCards').append(node('p','Showing first 28 candidates in priority order. More candidates are monitored by the scheduled original-index scanner.'));
+ if(!result.candidates.length)$('queueCards').append(node('p','No qualifying unreviewed candidate was identified in the current indexed original sources. This does not establish a complete history.'));
+}
 function render(){
  const q=$('query').value.trim().toLowerCase(),s=$('scope').value;
  const rows=APP.rows.filter(r=>(s==='all'||r.title_scope===s)&&
@@ -139,14 +195,15 @@ async function reviewedOriginals(){
   if(!r.ok)throw Error('Reviewed original audit manifest not accessible');
   const j=await r.json();
   if(j?.schema_version!==1||!Array.isArray(j.reports)||j.reports.length>25)throw Error('Invalid curated source catalog');
+  APP.manifest=j;
   for(const a of j.reports){
    if(!safe(a.source_url)||!/^[a-f0-9]{64}$/.test(a.content_sha256||'')||
       !Array.isArray(a.findings)||!Array.isArray(a.pages_reviewed)||!a.reviewed_on)continue;
    APP.reviewed.set(a.source_url,a);
   }
- }catch(_err){APP.reviewed.clear();}
+ }catch(_err){APP.reviewed.clear();APP.manifest=null;}
 }
-Promise.all([load(),reviewedOriginals()]).then(()=>render()).catch(err=>{
+Promise.all([load(),reviewedOriginals()]).then(()=>{render();renderReviewQueue();}).catch(err=>{
  $('status').textContent='Official archive or verified-source information unavailable: '+
   err.message+'. No fabricated records shown.';
 });
