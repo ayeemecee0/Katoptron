@@ -57,10 +57,28 @@ def inspect(candidate,fetcher=fetch_bounded,reader=PdfReader):
          "pages":len(doc.pages),"bytes":len(body),
          "examination_status":"machine_original_receipt_only_no_page_facts"}
 
+def choose(queue,when=None):
+ """Always recheck P0, round-robin all other reviewed-agency candidates weekly.
+
+ Permanent failures do not monopolize the first available receipt slots.
+ The original index and prioritized candidate list remain complete.
+ """
+ if when is None:when=dt.date.today()
+ candidates=queue.get("candidates",[])
+ top=[c for c in candidates if c.get("priority")=="P0"]
+ rest=[c for c in candidates if c.get("priority")!="P0"]
+ if len(top)>=MAX_FETCH:return top[:MAX_FETCH]
+ slots=MAX_FETCH-len(top)
+ if not rest:return top
+ year,week,_=when.isocalendar()
+ first=((year-2026)*53+week-1)*slots%len(rest)
+ take=[rest[(first+i)%len(rest)] for i in range(min(slots,len(rest)))]
+ return top+take
+
 def scan(index,manifest,fetcher=fetch_bounded,reader=PdfReader,runner=None):
  queue=build(index,manifest,runner)
  results=[]
- for candidate in queue["candidates"][:MAX_FETCH]:
+ for candidate in choose(queue):
   try:
    results.append({**inspect(candidate,fetcher,reader),
       "report_id":candidate["report_id"],"priority":candidate["priority"]})
