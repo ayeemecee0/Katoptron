@@ -152,13 +152,13 @@ def publish(rows,api,secret):
  if not isinstance(current,list) or len(current)>=500:
   raise ValueError("Existing public registry scan incomplete")
  current_ids={r["source_url"] for r in current}
+ now=dt.datetime.now(dt.timezone.utc).isoformat()
  for offset in range(0,len(rows),100):
+  batch=[{**row,"last_observed_at":now} for row in rows[offset:offset+100]]
   rest(api,secret,API_TABLE,"POST",params={"on_conflict":"source_url"},
-       body=rows[offset:offset+100],
-       prefer="resolution=merge-duplicates,return=minimal")
+       body=batch,prefer="resolution=merge-duplicates,return=minimal")
  # Save private metrics only after all chunks succeed. Failures do not revoke
  # previously indexed original sources or constitute missing-policy evidence.
- now=dt.datetime.now(dt.timezone.utc).isoformat()
  rest(api,secret,"flock_private_mn_alpr_registry_scan_runs","POST",
       body={"scanned_at":now,"registry_sha256":rows[0]["registry_sha256"],
             "report_links":len(rows),
