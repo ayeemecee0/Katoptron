@@ -251,6 +251,366 @@
         }
       ],
       "content_sha256": "6318fee178da621398a0a0c977b9852991638d707dbf39f7d0df5e9da6b1e28f"
+    },
+    {
+      "id": "champlin-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "champlin|MN",
+      "jurisdiction_label": "Champlin, MN",
+      "agency_name": "Champlin Police Department",
+      "report_title": "Champlin Police Department 2025 ALPR Audit (Flock): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251685.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-22",
+      "period_start": "2023-10-01",
+      "period_end": "2025-07-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        4
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2025-10-22 original audit summary, the independent auditor reported six active stationary/flex Flock ALPR devices and no mobile Flock units at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_policy_recommendation",
+          "page": 4,
+          "statement": "The auditor recommended a separate breach-notification policy consistent with the cited Minnesota statutes. A recommendation in October 2025 is not proof of a current violation or unreported breach.",
+          "scope": "auditor_reported_policy_recommendation"
+        }
+      ],
+      "content_sha256": "7dd21b26b9361ccf017209eb25a58334b8114f733746e75074f1a02b2a5bf985"
+    },
+    {
+      "id": "corcoran-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "corcoran|MN",
+      "jurisdiction_label": "Corcoran, MN",
+      "agency_name": "Corcoran Police Department",
+      "report_title": "Corcoran Police Department 2026 ALPR Audit (Flock): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/261008.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-05-30",
+      "period_start": "2024-07-01",
+      "period_end": "2026-04-30",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2026-05-30 original audit summary, the independent auditor reported nine active stationary Flock ALPR units and no squad-mounted mobile units at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor reported reviewing an April 2026 sample of interagency Flock requests with documented justification. This does not establish a full or present-day sharing-permission network.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "53194cb26e179e2e78f01e9340adbbc4e7da806735a695289d64f8963aaf9b43"
+    },
+    {
+      "id": "edina-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "edina|MN",
+      "jurisdiction_label": "Edina, MN",
+      "agency_name": "Edina Police Department",
+      "report_title": "Edina Police Department 2025 ALPR Audit (Flock): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251619.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-15",
+      "period_start": "2023-10-01",
+      "period_end": "2025-07-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2025-10-15 original audit summary, the independent auditor reported 18 active stationary Flock ALPR units and no mobile Flock units at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor reported that outside requests were tracked by agency, reason and case number and that a redacted tracking spreadsheet was collected. Individual recipients and ongoing sharing permissions are not established.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "02bf85cbafa87f9b3bdc8786ee82e933de87525053d69a02fdec4a2e8be6e93e"
+    },
+    {
+      "id": "hopkins-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "hopkins|MN",
+      "jurisdiction_label": "Hopkins, MN",
+      "agency_name": "Hopkins Police Department",
+      "report_title": "Hopkins Police Department 2026 ALPR Audit (Flock System): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260144.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-01-20",
+      "period_start": "2024-01-01",
+      "period_end": "2025-12-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2026-01-20 original audit summary, the independent auditor reported 14 stationary Flock ALPR devices, comprising 13 fixed and one flex, and no mobile Flock units at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor said interagency requests were documented by requesting agency, requester and case number. It did not publish a current list of authorized sharing partners.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "ad97792572b20c9cbbcc3287b07183628de06285ebbc5e9c3c4cf774724d17f8"
+    },
+    {
+      "id": "minnetrista-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "minnetrista|MN",
+      "jurisdiction_label": "Minnetrista, MN",
+      "agency_name": "Minnetrista Police Department",
+      "report_title": "Minnetrista Police Department 2026 ALPR Audit (Flock System): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260987.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-06-08",
+      "period_start": "2024-06-01",
+      "period_end": "2026-05-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2026-06-08 original audit summary, the independent auditor reported four stationary Flock ALPR units during the audited period at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor reported a sample of May 2026 interagency requests, tracked by agency and justification. This is historical sampling, not a published access-control list.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "36f9fc62eb636eeae40d91e8be2f4160d0dd047d2abbd373cee3fd12db8030be"
+    },
+    {
+      "id": "orono-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "orono|MN",
+      "jurisdiction_label": "Orono, MN",
+      "agency_name": "Orono Police Department",
+      "report_title": "Orono Police Department 2025 ALPR Audit (Flock): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251707.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-29",
+      "period_start": "2023-08-01",
+      "period_end": "2025-07-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        4
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2025-10-29 original audit summary, the independent auditor reported three active stationary/flex ALPR devices and no squad-mobile Flock units in its Flock-system audit at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_policy_recommendation",
+          "page": 4,
+          "statement": "The auditor recommended developing a standalone breach-notification policy and noted breach provisions already existed within an ALPR policy. This is a historical policy recommendation, not an allegation of an actual breach.",
+          "scope": "auditor_reported_policy_recommendation"
+        }
+      ],
+      "content_sha256": "20d27b4af2c1daa7aa6c1001513279d9c48cef3eebd5219b1cfd8a505bd42891"
+    },
+    {
+      "id": "robbinsdale-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "robbinsdale|MN",
+      "jurisdiction_label": "Robbinsdale, MN",
+      "agency_name": "Robbinsdale Police Department",
+      "report_title": "Robbinsdale Police Department 2025 ALPR Audit (Flock System): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251675.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-23",
+      "period_start": "2023-11-01",
+      "period_end": "2025-09-30",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2025-10-23 original audit summary, the independent auditor reported two active stationary Flock ALPR units and no mobile Flock units at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor described interagency requests documented by agency, requester and case number. The summary does not establish ongoing sharing access to specific external agencies.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "5374d507c1853a37df377cfab5068a24f36df04935b0fd5d66c79a9e3740c010"
+    },
+    {
+      "id": "south-lake-minnetonka-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "south lake minnetonka|MN",
+      "jurisdiction_label": "South Lake Minnetonka, MN",
+      "agency_name": "South Lake Minnetonka Police Department",
+      "report_title": "South Lake Minnetonka Police Department 2026 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260679.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-04-10",
+      "period_start": "2024-01-01",
+      "period_end": "2025-12-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2026-04-10 original audit summary, the independent auditor reported four stationary Flock ALPR units and no mobile Flock units at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor reported a sample of December 2025 interagency requests and documented justifications. This is neither a current list of sharing partners nor proof of every request ever made.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "da2c398b75e625272741b0eaa4113503bb77003ba2aa82799251aaf0cdc2c5f2"
+    },
+    {
+      "id": "umn-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "university of minnesota|MN",
+      "jurisdiction_label": "University of Minnesota, MN",
+      "agency_name": "University of Minnesota Police Department",
+      "report_title": "UMN Police Department 2025 ALPR Audit (Flock): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251639.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-15",
+      "period_start": "2023-09-01",
+      "period_end": "2025-08-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "auditor_reported_historical_inventory",
+          "page": 2,
+          "statement": "In the 2025-10-15 original audit summary, the independent auditor reported ten active stationary ALPR units in its Flock-system audit, with no mobile Flock units reported at the time reviewed. This is a historical auditor statement, not independently verified current equipment or camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "auditor_reported_retention",
+          "page": 2,
+          "statement": "The summary describes Flock manufacturer's default 30-day retention and states that the auditor checked the setting using a Flock Vehicle Reads report. No later configuration or actual present-day deletion behavior is established.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "auditor_reported_sharing_sample",
+          "page": 3,
+          "statement": "The auditor described interagency requests tracked through a records department or Flock, by agency, requester and case number. This does not establish the identity of currently permitted sharing partners.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "a5ef3c6bddd0dcc01816055a2c3adea70ff9128dcccce2a954d91f5952d1e65e"
     }
   ]
 }
