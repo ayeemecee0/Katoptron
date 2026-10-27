@@ -48,16 +48,25 @@ The Washington Attorney General states that it has <strong>not independently ver
 <p id="reviewedPolicyStatus" role="status" aria-live="polite">Loading individually reviewed Washington policy originals…</p>
 <div id="reviewedPolicyResults" class="list"></div>
 </section>
+<section id="sourceTriageSection" aria-labelledby="sourceTriageHeading">
+<h2 id="sourceTriageHeading">Original-policy acquisition and review queue</h2>
+<p>The source-inspection layer checks byte hashes, page counts and extractable text for the exact version-pinned PDFs linked from the state's registration snapshot. <strong>Machine-readable does not mean policy-verified.</strong> A page mentioning “Flock Safety” is a review lead only, not proof of installed cameras, manufacturer relationship, equipment counts or live access.</p>
+<p id="sourceTriageStatus" role="status" aria-live="polite">Loading original PDF source receipts…</p>
+<div id="sourceTriageMetrics" class="metrics"></div>
+<h3>Documents mentioning Flock Safety, awaiting individual page review</h3>
+<div id="sourceTriageQueue" class="list"></div>
+<p class="muted">Source inspection snapshot: October 27, 2026. Links not hosted as version-pinned AGO PDFs require a separate evidence path. Held or inaccessible sources are not counted as verified.</p>
+</section>
 <div id="stats" class="metrics"></div>
 <label for="search">Search registered agencies</label>
 <p><input id="search" type="search" placeholder="Agency, county, university or department" maxlength="120" autocomplete="off"></p>
 <p id="status" role="status" aria-live="polite">Loading original government source snapshot…</p>
 <div id="results" class="list"></div>
 <p class="muted">Each displayed policy link was present on the Attorney General's original published page at the snapshot date, not independently reverified with the agency. Links may change. The absence of an entry cannot establish noncompliance, and registration is not a camera or equipment census.</p>
-</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script>
+</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script>
 'use strict';
 const S=window.KatoptronWashingtonALPR;const $=x=>document.getElementById(x);
-const app={rows:[],captured:'',policyDocs:[]};
+const app={rows:[],captured:'',policyDocs:[],sourceReceipts:new Map()};
 function node(t,text,cls){const el=document.createElement(t);if(text!=null)el.textContent=String(text);if(cls)el.className=cls;return el;}
 function render(){
  const q=$('search').value.trim().toLowerCase();
@@ -78,6 +87,12 @@ function render(){
   }
   if(!actions.childNodes.length)actions.append(node('span','No source policy URL published in this snapshot','muted'));
   item.append(actions);
+  const receipt=app.sourceReceipts.get(r.agency_name);
+  if(receipt){
+   item.append(node('p',window.KatoptronWAOriginalSourceTriage.receiptLabel(receipt),'muted'));
+  }else if(r.policy_links_from_official_ago_page.length){
+   item.append(node('p','Original linked policy requires separate inspection; no verified Flock vendor or deployment inferred','muted'));
+  }
   const reviewed=app.policyDocs.find(d=>d.agency_name===r.agency_name);
   if(reviewed){
    const a=node('a','Read individually page-reviewed original policy summary');
@@ -120,6 +135,43 @@ async function loadReviewedPolicies(){
  app.policyDocs=window.KatoptronWashingtonOriginalPolicies.catalog(await res.json());
  renderReviewedPolicies();
  if(app.rows.length)render();
+ if(app.sourceReceipts.size)await loadTriage();
+}
+function renderTriage(data){
+ const triage=window.KatoptronWAOriginalSourceTriage.catalog(data,app.rows);
+ app.sourceReceipts=triage.byAgency;
+ const reviewedIds=new Set(app.policyDocs.map(x=>x.agency_name));
+ $('sourceTriageStatus').textContent=triage.total+
+   ' AGO-versioned original PDF links examined. '+triage.counts.parsed+
+   ' machine-readable/parseable PDF(s); '+triage.counts.held+
+   ' source(s) held. '+reviewedIds.size+' separately page-reviewed policy original(s).';
+ const metrics=$('sourceTriageMetrics');metrics.replaceChildren();
+ for(const [count,label] of [
+  [triage.total,'Exact AGO-versioned original links'],
+  [triage.counts.parsed,'PDF originals successfully parsed'],
+  [triage.counts.held,'Held originals, no extracted facts'],
+  [triage.counts.candidates,'Documents mentioning Flock Safety, not vendor-confirmed'],
+  [reviewedIds.size,'Original policies independently page-reviewed']]){
+  const card=node('div');card.append(node('strong',count),node('span',label));metrics.append(card);
+ }
+ const queue=$('sourceTriageQueue');queue.replaceChildren();
+ for(const r of triage.receipts.filter(x=>x.potential_flock_term_pages.length)){
+  const reviewed=reviewedIds.has(r.agency_name);
+  const a=node('article');
+  a.append(node('h3',r.agency_name),
+   node('p','Text occurrence on original PDF page(s): '+r.potential_flock_term_pages.join(', ')+
+    '. '+(reviewed?'Separately page-reviewed findings available above.':'Unreviewed candidate; cannot establish deployed Flock equipment.'),'muted'));
+  const link=node('a','Inspect original PDF page '+r.potential_flock_term_pages[0]);
+  link.href=r.policy_source_url+'#page='+r.potential_flock_term_pages[0];
+  link.target='_blank';link.rel='noopener noreferrer';a.append(link);
+  queue.append(a);
+ }
+ render();
+}
+async function loadTriage(){
+ const response=await fetch('./data/wa-ago-original-policy-source-inspection.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Versioned original policy source receipts unavailable');
+ renderTriage(await response.json());
 }
 async function load(){
  const res=await fetch('./data/wa-original-agency-alpr-registrations.json',{cache:'no-store',referrerPolicy:'no-referrer'});
@@ -129,6 +181,7 @@ async function load(){
   const card=node('div');card.append(node('strong',n),node('span',label));$('stats').append(card);
  }
  render();
+ await loadTriage().catch(e=>{$('sourceTriageStatus').textContent=e.message+'; no unverified source claims shown.';});
 }
 $('search').addEventListener('input',render);
 load().catch(e=>{$('status').textContent=e.message+'; no unverified registrations are displayed.';});
