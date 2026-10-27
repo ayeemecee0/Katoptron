@@ -8,9 +8,9 @@ spec=importlib.util.spec_from_file_location("historical_mn_review",S)
 M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 ROOT=S.parents[1]
 MANIFEST=json.loads((ROOT/"data"/"verified-independent-audits.json").read_text())
-ROW={"source_url":"https://www.lrl.mn.gov/docs/2019/mandated/191307.pdf",
- "report_id":"19-1307.pdf","report_title":"Woodbury Public Safety Department Automated License Plate Reader Audit Executive Summary",
- "publication_date":"2019-12-26","title_scope":"unspecified_alpr_title",
+ROW={"source_url":"https://www.lrl.mn.gov/docs/2027/mandated/270188.pdf",
+ "report_id":"27-0188.pdf","report_title":"Woodbury Public Safety Department Automated License Plate Reader Audit Executive Summary",
+ "publication_date":"2027-01-12","title_scope":"unspecified_alpr_title",
  "evidence_tier":"state_legislative_registry_index_metadata_only"}
 PDF=b"%PDF-1.7\n"+b"x"*300
 class FakeReader:
