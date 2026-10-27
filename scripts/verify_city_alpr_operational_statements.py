@@ -54,7 +54,7 @@ def catalog(data):
    if row.get(key)!=value:raise ValueError("Original agency identity, date, or status boundary changed")
   if not isinstance(row.get("summary"),str) or len(row["summary"])<110:
    raise ValueError("Original source statement missing narrative caveat")
-  if ident.startswith("moline") and ("not confirm" not in row["summary"] or "unverified" not in row["evidence_limit"]):
+  if ident.startswith("moline") and (("neither" not in row["summary"].casefold() or "confirms" not in row["summary"].casefold()) or "unverified" not in row["evidence_limit"]):
    raise ValueError("Moline may not be upgraded to completed status without an additional source")
   if ident.startswith("mill-valley") and "not a third-party" not in row["evidence_limit"]:
    raise ValueError("City-reported status cannot become independent forensic verification")
