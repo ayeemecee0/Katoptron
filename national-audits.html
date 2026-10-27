@@ -103,6 +103,7 @@ function renderOversight(){
   meta.append(el('span',r.state,'tag'),el('span',
    r.publisher_type==='independent_government_oversight'?'Independent government oversight':'Agency-authored impact assessment, not independent','tag'));
   card.append(meta,el('h2',r.agency_name+' · '+r.report_title),
+   el('p','Original publishing body: '+r.publisher,'muted'),
    el('p',r.report_scope,'muted'),
    el('p','Original date: '+(r.source_date||'month only or unspecified')+
       (r.source_date_note?' · '+r.source_date_note:''),'muted'));
