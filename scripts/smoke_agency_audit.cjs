@@ -47,6 +47,11 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#counts').textContent(),/Independent original audit reports/);
   assert.match(await page.locator('#sources').textContent(),/Independent audit of Shakopee Police Department ALPR system/);
   assert.match(await page.locator('#sources').textContent(),/30-day retention setting/);
+  assert.match(await page.locator('#historicalFindings').textContent(),/Different ALPR technologies documented across audits/);
+  assert.match(await page.locator('#historicalFindings').textContent(),/Elsag/);
+  assert.match(await page.locator('#historicalFindings').textContent(),/Axon/);
+  assert.ok(!(await page.locator('#historicalFindings').textContent()).includes('(+'),
+   'Different mobile/fixed systems cannot be combined as a numeric increase');
   assert.ok((await page.locator('#sources a').evaluateAll(links=>
     links.some(a=>a.href.startsWith('https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf')))),
     'Original Minnesota archive evidence source must be directly inspectable');
@@ -65,11 +70,22 @@ const {chromium}=require('playwright');
    await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
      null,{timeout:55000});
    assert.equal(await page.locator('#reportTitle').textContent(),name);
-   assert.match(await page.locator('#counts').textContent(),/1Independent original audit reports/);
+   assert.match(await page.locator('#counts').textContent(),new RegExp((name==='Woodbury, MN'?'2':'1')+'Independent original audit reports'));
    assert.ok((await page.locator('#sources').textContent()).includes(sourceFragment),
      'Publisher-attributed dated exact-identity observations should appear');
    assert.match(await page.locator('#disclaimer').textContent(),/NOT a legality/);
   }
+  await page.goto(new URL('agency-audit.html?place=woodbury%7CMN',base).href,
+   {waitUntil:'domcontentloaded',timeout:40000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+   null,{timeout:55000});
+  const historical=page.locator('#historicalFindings');
+  assert.match(await historical.textContent(),/15 → 17 \(\+2\)/);
+  assert.match(await historical.textContent(),/not verified additions/);
+  const citations=await historical.locator('a').evaluateAll(items=>items.map(x=>x.href));
+  assert.ok(citations.some(x=>x.includes('/240350.pdf#page=2')));
+  assert.ok(citations.some(x=>x.includes('/260248.pdf#page=2')));
+  assert.equal(await page.locator('#reportTitle').textContent(),'Woodbury, MN');
   assert.deepEqual(problems,[],'Unexpected browser exceptions');
   console.log('AUTOMATED ACCOUNTABILITY BROWSER PASS: live agency evidence, citations, safe draft, deep link, 390px viewport');
  }catch(e){console.error('AUTOMATED ACCOUNTABILITY BROWSER FAILED:',e.stack||e,problems.slice(0,4));process.exitCode=1;}

@@ -243,6 +243,22 @@ def verify_pdf(report,payload,reader_class=None):
   for page,phrases in ADDITIONAL_REVIEWED_PAGE_ANCHORS[report["id"]].items():
    if not all(p in normalized(int(page)) for p in phrases):
     raise ValueError("Additional original auditor PDF page text changed; hold for review")
+ elif report["id"]=="woodbury-mn-independent-flock-alpr-audit-2024":
+  anchors={
+   2:("woodbury public safety department","flock alpr system","15 active stationary","retention period was set for 30 days"),
+   3:("sharing among law enforcement agencies","documented by agency name, requesting party and case number"),
+  }
+  for page,phrases in anchors.items():
+   if not all(p in normalized(page) for p in phrases):
+    raise ValueError("Woodbury 2024 original auditor PDF page changed; hold for review")
+ elif report["id"]=="shakopee-mn-alpr-independent-audit-2024":
+  anchors={
+   1:("shakopee police department","elsag plate hunter","three patrol vehicles","no stationary or fixed location readers"),
+   2:("elsag eoc","destroy alpr data 60 days","no data older than 60"),
+  }
+  for page,phrases in anchors.items():
+   if not all(p in normalized(page) for p in phrases):
+    raise ValueError("Shakopee 2024 original auditor PDF page changed; hold for review")
  else:
   raise ValueError("New audit requires a scoped independent verifier")
  return len(pdf.pages)

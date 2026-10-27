@@ -59,6 +59,12 @@ production launch readiness.
 - Source citations are exact original `transparency.flocksafety.com` URLs; new snapshots currently require individual source review. **No Flock API harvesting, browser scraping workflow, speculative coordinates, bulk sharing-partner republishing or unauthenticated database writing was introduced**. Confirm lawful authorized access before any automated feed.
 - [Methodology](./methodology.html) explains how a future Flock-published **individual georeferenced camera inventory** can qualify as primary evidence without duplicative government confirmation. No such vendor-provided coordinates have been identified in these portal reports.
 
+## Source-linked cross-period agency audits (October 27, 2026)
+
+The [Accountability Audit](./agency-audit.html) compares original, SHA-256-pinned Minnesota independent audits only when they identify the same agency, same equipment category and separately reviewed periods. The 2024 and 2026 Woodbury Flock reports document 15 and 17 stationary units respectively (a **+2 difference in historical auditor-reported counts**, not proof of live addition or camera locations). Shakopee's 2024 Elsag patrol ALPR and 2026 Flock-fixed/Axon squad reports produce a **qualitative platform-history event**, not a fabricated cross-technology count or a claim of wrongdoing. An agency without two independently reviewed periods is labeled **no comparable evidence**, never "unchanged".
+
+See [cross-period validation and sources](./docs/m10-cross-period-original-audit-history-2026-10-27.md); raw plates, user routes, and personal data are not fetched or displayed.
+
 ## Milestones 7–9 — Analytics, accessibility and launch controls (October 23, 2026)
 
 **M9 unattended production preparation ~90% (October 26):**

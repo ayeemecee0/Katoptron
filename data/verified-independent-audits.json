@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "verified_as_of": "2026-10-26",
+  "verified_as_of": "2026-10-27",
   "scope_note": "Source-dated independent auditor statements reproduced from original publicly hosted documents; Katoptron did not independently audit agency systems or confirm current settings.",
   "reports": [
     {
@@ -50,7 +50,24 @@
           "scope": "auditor_reported_finding"
         }
       ],
-      "content_sha256": "0a4e074adffc5be4723f02e3bdb097e191376afa8109151a4c527e671328e447"
+      "content_sha256": "0a4e074adffc5be4723f02e3bdb097e191376afa8109151a4c527e671328e447",
+      "cross_period": {
+        "agency_id": "shakopee-police-mn",
+        "systems": [
+          {
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "page": 1
+          },
+          {
+            "vendor": "Axon",
+            "deployment": "patrol_vehicle",
+            "page": 1
+          }
+        ],
+        "transition_note": "The 2026 auditor says Elsag use ended January 8, 2025; Axon squad readers began in January 2025 and Flock stationary readers began in June 2025.",
+        "transition_page": 1
+      }
     },
     {
       "id": "stillwater-mn-independent-flock-alpr-audit-2026",
@@ -210,7 +227,28 @@
           "scope": "auditor_reported_sharing_process"
         }
       ],
-      "content_sha256": "523876118f3e7da5b2754bd6695e7386e3967874543710a2b645834955723852"
+      "content_sha256": "523876118f3e7da5b2754bd6695e7386e3967874543710a2b645834955723852",
+      "cross_period": {
+        "agency_id": "woodbury-public-safety-mn",
+        "systems": [
+          {
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "page": 2
+          }
+        ],
+        "metrics": [
+          {
+            "key": "stationary_flock_alpr_units",
+            "value": 17,
+            "unit": "units",
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "measurement": "auditor_snapshot",
+            "page": 2
+          }
+        ]
+      }
     },
     {
       "id": "brooklyn-center-mn-independent-flock-alpr-audit-2025",
@@ -611,6 +649,112 @@
         }
       ],
       "content_sha256": "a5ef3c6bddd0dcc01816055a2c3adea70ff9128dcccce2a954d91f5952d1e65e"
+    },
+    {
+      "id": "woodbury-mn-independent-flock-alpr-audit-2024",
+      "jurisdiction_key": "woodbury|MN",
+      "jurisdiction_label": "Woodbury, MN",
+      "agency_name": "Woodbury Public Safety",
+      "report_title": "Woodbury Public Safety Department 2023 ALPR Audit Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2024/mandated/240350.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2024-02-16",
+      "period_start": "2022-01-01",
+      "period_end": "2023-12-31",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_flock_stationary_count",
+          "page": 2,
+          "statement": "The independent 2024 summary describes Woodbury's Flock ALPR system for January 2022–December 2023 and reports 15 active stationary ALPR units and no mobile units at audit time. This does not establish current equipment or geographic locations.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "historical_configured_retention",
+          "page": 2,
+          "statement": "The auditor reported a configured 30-day Flock data retention period and sampled for reads beyond 30 days. This historic testing method differs from the later 2026 summary's default-retention description; do not infer uninterrupted policy or technical enforcement.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "historical_sharing_process",
+          "page": 3,
+          "statement": "The auditor describes interagency requests documented by agency, requesting party and case number during the 2023 review. This does not identify standing permissions or current recipient relationships.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "b2901b1953aad9ae23dbaee126ee5e36df055407ea8724c017ae30c6974d456e",
+      "cross_period": {
+        "agency_id": "woodbury-public-safety-mn",
+        "systems": [
+          {
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "page": 2
+          }
+        ],
+        "metrics": [
+          {
+            "key": "stationary_flock_alpr_units",
+            "value": 15,
+            "unit": "units",
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "measurement": "auditor_snapshot",
+            "page": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "shakopee-mn-alpr-independent-audit-2024",
+      "jurisdiction_key": "shakopee|MN",
+      "jurisdiction_label": "Shakopee, MN",
+      "agency_name": "Shakopee Police Department",
+      "report_title": "Independent Audit of Shakopee Police Department ALPR System (2024)",
+      "source_url": "https://www.lrl.mn.gov/docs/2024/mandated/240981.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Lynn Lembcke Consulting",
+      "report_date": "2024-05-02",
+      "period_start": "2022-03-16",
+      "period_end": "2024-02-29",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        2
+      ],
+      "findings": [
+        {
+          "key": "elsag_mobile_only_2024",
+          "page": 1,
+          "statement": "The 2024 independent audit describes Elsag Plate Hunter ALPRs in three patrol vehicles, no stationary or fixed readers, and local Elsag EOC storage. This is an historical description, not a current camera count.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "elsag_retention_2024",
+          "page": 2,
+          "statement": "The 2024 auditor reported that Elsag EOC automatically destroyed ALPR data after 60 days and found no older data in its reviewed queries. The 2026 report discusses different Flock and Axon systems; those settings must not be compared as the same technology.",
+          "scope": "auditor_reported_retention"
+        }
+      ],
+      "content_sha256": "ef940332a5aea9c12614efa16a5f3d694f7f477e815985942cd95ccc3703a5e4",
+      "cross_period": {
+        "agency_id": "shakopee-police-mn",
+        "systems": [
+          {
+            "vendor": "Elsag",
+            "deployment": "patrol_vehicle",
+            "page": 1
+          }
+        ],
+        "metrics": []
+      }
     }
   ]
 }

@@ -1,0 +1,53 @@
+name: Inspect two historical Minnesota ALPR audit originals
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect_m10_historical_audits.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install PDF reader
+        run: python -m pip install 'pypdf>=5,<7'
+      - name: Print bounded immutable public-source receipts, no database write
+        run: |
+          python - <<'PY'
+          import hashlib, io, urllib.request
+          from pypdf import PdfReader
+          URLs = (
+             'https://www.lrl.mn.gov/docs/2024/mandated/240350.pdf',
+             'https://www.lrl.mn.gov/docs/2024/mandated/240981.pdf'
+          )
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+             def redirect_request(self,*a,**k):
+                raise ValueError('Original public archive must not redirect')
+          opener=urllib.request.build_opener(NoRedirect())
+          anchors={
+            '240350.pdf':{2:('woodbury public safety department','15 active stationary','30 days')},
+            '240981.pdf':{1:('shakopee police department','elsag plate hunter','three patrol vehicles','no stationary')}
+          }
+          for url in URLs:
+             request=urllib.request.Request(url,headers={'User-Agent':'Katoptron-public-source-preflight/1.0','Accept':'application/pdf'})
+             with opener.open(request,timeout=20) as response:
+                if response.status!=200 or response.geturl()!=url:raise ValueError('Unapproved original source response')
+                body=response.read(2_500_001)
+             if len(body)>2_500_000 or len(body)<1000 or not body.startswith(b'%PDF-'):
+                raise ValueError('Original PDF invalid')
+             pdf=PdfReader(io.BytesIO(body),strict=True)
+             if pdf.is_encrypted or not 1<=len(pdf.pages)<=10:raise ValueError('Unreadable or unbounded PDF')
+             for page,phrases in anchors[url.rsplit('/',1)[-1]].items():
+                text=' '.join((pdf.pages[page-1].extract_text() or '').lower().split())
+                if not all(phrase in text for phrase in phrases):
+                   raise ValueError('Historical PDF source textual anchors changed')
+             print('PUBLIC ORIGINAL PDF VERIFIED',url,'sha256='+hashlib.sha256(body).hexdigest(),'pages='+str(len(pdf.pages)),'bytes='+str(len(body)))
+          PY
