@@ -25,7 +25,7 @@ a:focus-visible,input:focus-visible{outline:3px solid #a2e8f8;outline-offset:3px
 <h1>Washington ALPR agency registrations</h1>
 <p>A searchable, date-stamped copy of the Washington Attorney General's public list of agencies that submitted ALPR registrations. Each agency entry links to the original policy location that appears in the state register.</p>
 <div class="notice"><strong>Self-certification is not independent verification.</strong>
-The Washington Attorney General states that it has <strong>not independently verified</strong> the certifications agencies submitted. An entry does not confirm use of <strong>Flock Safety</strong>, the number or positions of any cameras, current system operation, effective policy compliance, or sharing permissions. Some listings concern parking or university systems rather than police surveillance. Submitted policies are not independently page-verified by Katoptron merely because the state site links them. The entries below are a snapshot, not a continuously live feed.
+The Washington Attorney General states that it has <strong>not independently verified</strong> the certifications agencies submitted. An entry does not confirm use of <strong>Flock Safety</strong>, the number or positions of any cameras, current system operation, effective policy compliance, or sharing permissions. Some listings concern parking or university systems rather than police surveillance. State-linked policies are not automatically page-verified merely because the state site lists them. The separately marked original-policy reviews below have individual PDF page and source-byte checks. The entries below are a snapshot, not a continuously live feed.
 <p><a href="https://www.atg.wa.gov/ALPR" target="_blank" rel="noopener noreferrer">Read the original Attorney General registry and certification disclaimer</a>.</p></div>
 <section aria-labelledby="waLawHeading" id="washingtonLegalContext">
 <h2 id="waLawHeading">Washington state law: requirements and dates</h2>
@@ -42,16 +42,22 @@ The Washington Attorney General states that it has <strong>not independently ver
 <p><a href="https://app.leg.wa.gov/RCW/default.aspx?cite=10.130.070" rel="noopener noreferrer" target="_blank">Read RCW 10.130.070 (policies and reporting dates)</a></p></article>
 </div><p class="muted">Law reviewed October 27, 2026. Consult the linked official statutory text for changes, exceptions and applicability. Publication of a policy link does not independently establish its contents or how a system was configured.</p>
 </section>
+<section id="reviewedPolicyEvidence" aria-labelledby="verifiedPolicyHeading">
+<h2 id="verifiedPolicyHeading">Individually verified policy texts</h2>
+<p>These are independently source-checked <strong>agency-authored policy documents</strong>, not independent findings of compliance. Original PDF pages were reviewed for what the policies <em>say</em>, not whether officers or vendors followed them. The policies neither establish that the systems are manufactured by Flock nor reveal current camera inventories or active sharing relationships.</p>
+<p id="reviewedPolicyStatus" role="status" aria-live="polite">Loading individually reviewed Washington policy originals…</p>
+<div id="reviewedPolicyResults" class="list"></div>
+</section>
 <div id="stats" class="metrics"></div>
 <label for="search">Search registered agencies</label>
 <p><input id="search" type="search" placeholder="Agency, county, university or department" maxlength="120" autocomplete="off"></p>
 <p id="status" role="status" aria-live="polite">Loading original government source snapshot…</p>
 <div id="results" class="list"></div>
 <p class="muted">Each displayed policy link was present on the Attorney General's original published page at the snapshot date, not independently reverified with the agency. Links may change. The absence of an entry cannot establish noncompliance, and registration is not a camera or equipment census.</p>
-</main><script src="./wa-alpr-registrations.js"></script><script>
+</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script>
 'use strict';
 const S=window.KatoptronWashingtonALPR;const $=x=>document.getElementById(x);
-const app={rows:[],captured:''};
+const app={rows:[],captured:'',policyDocs:[]};
 function node(t,text,cls){const el=document.createElement(t);if(text!=null)el.textContent=String(text);if(cls)el.className=cls;return el;}
 function render(){
  const q=$('search').value.trim().toLowerCase();
@@ -72,9 +78,48 @@ function render(){
   }
   if(!actions.childNodes.length)actions.append(node('span','No source policy URL published in this snapshot','muted'));
   item.append(actions);
+  const reviewed=app.policyDocs.find(d=>d.agency_name===r.agency_name);
+  if(reviewed){
+   const a=node('a','Read individually page-reviewed original policy summary');
+   a.href='#original-policy-'+reviewed.id;
+   item.append(node('p','Page and original PDF hash checked. This does not verify legal compliance or manufacturer.','muted'),a);
+  }
   $('results').append(item);
  }
  if(!filtered.length)$('results').append(node('p','No matching registry record in this captured source snapshot. This does not establish that an agency does not use ALPR.'));
+}
+function renderReviewedPolicies(){
+ $('reviewedPolicyStatus').textContent=app.policyDocs.length+
+  ' original agency ALPR policy document(s) individually page-reviewed. No manufacturer or legal compliance inferred.';
+ $('reviewedPolicyResults').replaceChildren();
+ for(const d of app.policyDocs){
+  const article=node('article');article.id='original-policy-'+d.id;
+  article.append(node('h2',d.agency_name+' · Policy '+d.policy_manual_number),
+   node('p','Manual imprint: '+d.policy_manual_imprint+' · State registration: '+d.ago_registration_date+
+     ' · '+(d.verification_method==='original_pdf_sha256_visually_reviewed_raster_pages'?
+     'Scanned original visually reviewed, SHA-256/page-count checked':'Original text pages checked with source SHA-256 and page anchors'),'muted'));
+  const url=window.KatoptronWashingtonOriginalPolicies.safeSource(d);
+  if(url){
+   const original=node('a','Open original state-listed policy PDF');
+   original.href=url;original.target='_blank';original.rel='noopener noreferrer';article.append(original);
+  }
+  for(const finding of d.findings){
+   const section=node('section');section.append(node('p',finding.statement));
+   if(url){
+    const link=node('a','Original policy page '+finding.page);
+    link.href=url+'#page='+finding.page;link.target='_blank';link.rel='noopener noreferrer';section.append(link);
+   }
+   article.append(section);
+  }
+  $('reviewedPolicyResults').append(article);
+ }
+}
+async function loadReviewedPolicies(){
+ const res=await fetch('./data/verified-wa-agency-policies.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Individually checked policy originals unavailable');
+ app.policyDocs=window.KatoptronWashingtonOriginalPolicies.catalog(await res.json());
+ renderReviewedPolicies();
+ if(app.rows.length)render();
 }
 async function load(){
  const res=await fetch('./data/wa-original-agency-alpr-registrations.json',{cache:'no-store',referrerPolicy:'no-referrer'});
@@ -87,4 +132,5 @@ async function load(){
 }
 $('search').addEventListener('input',render);
 load().catch(e=>{$('status').textContent=e.message+'; no unverified registrations are displayed.';});
+loadReviewedPolicies().catch(e=>{$('reviewedPolicyStatus').textContent=e.message+'; no unverified policy findings displayed.';});
 </script></body></html>
