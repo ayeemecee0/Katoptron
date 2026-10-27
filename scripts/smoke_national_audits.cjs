@@ -13,6 +13,39 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#nationalCoverageStatus')?.textContent?.startsWith('51 jurisdictions enrolled.'),
+   null,{timeout:15000});
+  assert.match(await page.locator('#nationalCoverageStatus').textContent(),/51 have an original-government publication seed; 0 lack one/);
+  const nationwide=await page.locator('#nationalCoverageMetrics').textContent();
+  assert.match(nationwide,/51US states and DC enrolled/);
+  assert.match(nationwide,/57Official publication links curated/);
+  assert.match(nationwide,/31New government originals reachable at inspection/);
+  assert.match(nationwide,/12New original sources held for verification/);
+  assert.match(await page.locator('#nationalCoverageStatus').textContent(),/31 checked original sources retrieved; 12 held/);
+  await page.locator('#nationalCoverageDetails').evaluate(x=>x.open=true);
+  assert.equal(await page.locator('#nationalCoverageResults article').count(),51);
+  assert.match(await page.locator('#nationalCoverage').textContent(),/not an independently verified Flock installation/);
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/District of Columbia/);
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/Alaska/);
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/Wyoming/);
+  assert.ok((await page.locator('#nationalCoverageResults a').evaluateAll(as=>as.map(a=>a.href))).every(u=>
+   u.startsWith('https://')&&(u.includes('.gov/')||
+    ['https://www.state.wv.us/','https://www.moline.il.us/',
+     'https://www.naperville.il.us/','https://www.darien.il.us/'].some(prefix=>u.startsWith(prefix)))));
+  await page.locator('#nationalCoverageSearch').fill('New York');
+  assert.equal(await page.locator('#nationalCoverageResults article').count(),1);
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/model policy not agency adoption/);
+  await page.locator('#nationalCoverageSearch').fill('Wyoming');
+  assert.equal(await page.locator('#nationalCoverageResults article').count(),1);
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/unadopted state bill/);
+  await page.locator('#nationalCoverageSearch').fill('Nevada');
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/Source currently held/);
+  await page.locator('#nationalCoverageSearch').fill('West Virginia');
+  assert.equal(await page.locator('#nationalCoverageResults article').count(),1);
+  assert.match(await page.locator('#nationalCoverageResults').textContent(),/other vendor alpr procurement not flock/);
+  await page.locator('#nationalCoverageSearch').fill('');
+  assert.equal(await page.locator('#nationalCoverageResults article').count(),51);
+ 
   await page.waitForFunction(()=>document.querySelector('#cityStatusState')?.textContent?.startsWith('2 dated original city'),
    null,{timeout:15000});
   assert.equal(await page.locator('#cityStatusResults article').count(),2);

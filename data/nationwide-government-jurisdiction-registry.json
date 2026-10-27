@@ -1,0 +1,950 @@
+{
+  "schema_version": 1,
+  "created_on": "2026-10-27",
+  "universe": "50_us_states_plus_district_of_columbia",
+  "policy": "A state in this registry means a distinct research jurisdiction, NOT verified Flock cameras or complete agency coverage. Only exact original government publishers may be seeded. An original URL is monitored only after an independent successful response; a PDF retrieval alone does not verify document facts. States with no official original remain explicitly uncovered.",
+  "jurisdictions": [
+    {
+      "state": "AL",
+      "name": "Alabama",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Alabama\" \"Flock Safety\" \"license plate reader\"",
+        "\"Alabama\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "AK",
+      "name": "Alaska",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Alaska\" \"Flock Safety\" \"license plate reader\"",
+        "\"Alaska\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "AZ",
+      "name": "Arizona",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Arizona\" \"Flock Safety\" \"license plate reader\"",
+        "\"Arizona\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "AR",
+      "name": "Arkansas",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Arkansas\" \"Flock Safety\" \"license plate reader\"",
+        "\"Arkansas\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "CA",
+      "name": "California",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"California\" \"Flock Safety\" \"license plate reader\"",
+        "\"California\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "CO",
+      "name": "Colorado",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Colorado\" \"Flock Safety\" \"license plate reader\"",
+        "\"Colorado\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "CT",
+      "name": "Connecticut",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Connecticut\" \"Flock Safety\" \"license plate reader\"",
+        "\"Connecticut\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "DE",
+      "name": "Delaware",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Delaware\" \"Flock Safety\" \"license plate reader\"",
+        "\"Delaware\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "FL",
+      "name": "Florida",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Florida\" \"Flock Safety\" \"license plate reader\"",
+        "\"Florida\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "GA",
+      "name": "Georgia",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Georgia\" \"Flock Safety\" \"license plate reader\"",
+        "\"Georgia\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "HI",
+      "name": "Hawaii",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Hawaii\" \"Flock Safety\" \"license plate reader\"",
+        "\"Hawaii\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "ID",
+      "name": "Idaho",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Idaho\" \"Flock Safety\" \"license plate reader\"",
+        "\"Idaho\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "IL",
+      "name": "Illinois",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Illinois\" \"Flock Safety\" \"license plate reader\"",
+        "\"Illinois\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "IN",
+      "name": "Indiana",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Indiana\" \"Flock Safety\" \"license plate reader\"",
+        "\"Indiana\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "IA",
+      "name": "Iowa",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Iowa\" \"Flock Safety\" \"license plate reader\"",
+        "\"Iowa\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "KS",
+      "name": "Kansas",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Kansas\" \"Flock Safety\" \"license plate reader\"",
+        "\"Kansas\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "KY",
+      "name": "Kentucky",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Kentucky\" \"Flock Safety\" \"license plate reader\"",
+        "\"Kentucky\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "LA",
+      "name": "Louisiana",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Louisiana\" \"Flock Safety\" \"license plate reader\"",
+        "\"Louisiana\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "ME",
+      "name": "Maine",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Maine\" \"Flock Safety\" \"license plate reader\"",
+        "\"Maine\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MD",
+      "name": "Maryland",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Maryland\" \"Flock Safety\" \"license plate reader\"",
+        "\"Maryland\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MA",
+      "name": "Massachusetts",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Massachusetts\" \"Flock Safety\" \"license plate reader\"",
+        "\"Massachusetts\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MI",
+      "name": "Michigan",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Michigan\" \"Flock Safety\" \"license plate reader\"",
+        "\"Michigan\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MN",
+      "name": "Minnesota",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Minnesota\" \"Flock Safety\" \"license plate reader\"",
+        "\"Minnesota\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MS",
+      "name": "Mississippi",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Mississippi\" \"Flock Safety\" \"license plate reader\"",
+        "\"Mississippi\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MO",
+      "name": "Missouri",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Missouri\" \"Flock Safety\" \"license plate reader\"",
+        "\"Missouri\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "MT",
+      "name": "Montana",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Montana\" \"Flock Safety\" \"license plate reader\"",
+        "\"Montana\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NE",
+      "name": "Nebraska",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Nebraska\" \"Flock Safety\" \"license plate reader\"",
+        "\"Nebraska\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NV",
+      "name": "Nevada",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Nevada\" \"Flock Safety\" \"license plate reader\"",
+        "\"Nevada\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NH",
+      "name": "New Hampshire",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"New Hampshire\" \"Flock Safety\" \"license plate reader\"",
+        "\"New Hampshire\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NJ",
+      "name": "New Jersey",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"New Jersey\" \"Flock Safety\" \"license plate reader\"",
+        "\"New Jersey\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NM",
+      "name": "New Mexico",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"New Mexico\" \"Flock Safety\" \"license plate reader\"",
+        "\"New Mexico\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NY",
+      "name": "New York",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"New York\" \"Flock Safety\" \"license plate reader\"",
+        "\"New York\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "NC",
+      "name": "North Carolina",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"North Carolina\" \"Flock Safety\" \"license plate reader\"",
+        "\"North Carolina\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "ND",
+      "name": "North Dakota",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"North Dakota\" \"Flock Safety\" \"license plate reader\"",
+        "\"North Dakota\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "OH",
+      "name": "Ohio",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Ohio\" \"Flock Safety\" \"license plate reader\"",
+        "\"Ohio\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "OK",
+      "name": "Oklahoma",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Oklahoma\" \"Flock Safety\" \"license plate reader\"",
+        "\"Oklahoma\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "OR",
+      "name": "Oregon",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Oregon\" \"Flock Safety\" \"license plate reader\"",
+        "\"Oregon\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "PA",
+      "name": "Pennsylvania",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Pennsylvania\" \"Flock Safety\" \"license plate reader\"",
+        "\"Pennsylvania\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "RI",
+      "name": "Rhode Island",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Rhode Island\" \"Flock Safety\" \"license plate reader\"",
+        "\"Rhode Island\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "SC",
+      "name": "South Carolina",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"South Carolina\" \"Flock Safety\" \"license plate reader\"",
+        "\"South Carolina\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "SD",
+      "name": "South Dakota",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"South Dakota\" \"Flock Safety\" \"license plate reader\"",
+        "\"South Dakota\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "TN",
+      "name": "Tennessee",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Tennessee\" \"Flock Safety\" \"license plate reader\"",
+        "\"Tennessee\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "TX",
+      "name": "Texas",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Texas\" \"Flock Safety\" \"license plate reader\"",
+        "\"Texas\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "UT",
+      "name": "Utah",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Utah\" \"Flock Safety\" \"license plate reader\"",
+        "\"Utah\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "VT",
+      "name": "Vermont",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Vermont\" \"Flock Safety\" \"license plate reader\"",
+        "\"Vermont\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "VA",
+      "name": "Virginia",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Virginia\" \"Flock Safety\" \"license plate reader\"",
+        "\"Virginia\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "WA",
+      "name": "Washington",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Washington\" \"Flock Safety\" \"license plate reader\"",
+        "\"Washington\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "WV",
+      "name": "West Virginia",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"West Virginia\" \"Flock Safety\" \"license plate reader\"",
+        "\"West Virginia\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "WI",
+      "name": "Wisconsin",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Wisconsin\" \"Flock Safety\" \"license plate reader\"",
+        "\"Wisconsin\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "WY",
+      "name": "Wyoming",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"Wyoming\" \"Flock Safety\" \"license plate reader\"",
+        "\"Wyoming\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    },
+    {
+      "state": "DC",
+      "name": "District of Columbia",
+      "discovery_status": "enrolled_state_research_queue",
+      "search_terms": [
+        "\"District of Columbia\" \"Flock Safety\" \"license plate reader\"",
+        "\"District of Columbia\" \"ALPR\" Flock contract policy audit"
+      ],
+      "original_sources_expected": "not_complete_state_agency_census"
+    }
+  ],
+  "official_seed_sources": [
+    {
+      "id": "al-city-council-agenda",
+      "state": "AL",
+      "publisher": "Gulf Shores City Council",
+      "publisher_role": "city_council_agenda",
+      "kind": "pdf",
+      "source_url": "https://gulfshoresal.gov/AgendaCenter/ViewFile/Agenda/_09082025-1087?packet=true",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ar-police-technology-disclosure",
+      "state": "AR",
+      "publisher": "Siloam Springs Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.siloamsprings.gov/1739/FLOCK-Safety-Cameras",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "az-government-oversight-announcement",
+      "state": "AZ",
+      "publisher": "Arizona Attorney General",
+      "publisher_role": "government_oversight_announcement",
+      "kind": "html",
+      "source_url": "https://www.azag.gov/press-release/attorney-general-mayes-announces-review-automated-license-plate-readers-impact",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "co-police-technology-disclosure",
+      "state": "CO",
+      "publisher": "Lafayette Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.lafayetteco.gov/4282/Flock-Safety-ALPR-Program",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ct-government-policy-context",
+      "state": "CT",
+      "publisher": "Town of Easton First Selectman",
+      "publisher_role": "government_policy_context",
+      "kind": "html",
+      "source_url": "https://eastonct.gov/m/newsflash/home/detail/2497",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "fl-police-operational-status-statement",
+      "state": "FL",
+      "publisher": "Panama City Beach Police Department",
+      "publisher_role": "police_operational_status_statement",
+      "kind": "html",
+      "source_url": "https://www.pcbfl.gov/m/NewsFlash/Home/Detail/38",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ga-government-investigation-announcement",
+      "state": "GA",
+      "publisher": "Georgia Bureau of Investigation",
+      "publisher_role": "government_investigation_announcement",
+      "kind": "html",
+      "source_url": "https://gbi.georgia.gov/press-releases/2026-08-21/gbi-arrests-four-former-savannah-police-department-employees-misuse",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "id-police-technology-disclosure",
+      "state": "ID",
+      "publisher": "Idaho Falls Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.idahofallsidaho.gov/2113/Automatic-License-Plate-Readers",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ia-judicial-original-opinion",
+      "state": "IA",
+      "publisher": "Iowa Court of Appeals",
+      "publisher_role": "judicial_original_opinion",
+      "kind": "html",
+      "source_url": "https://www.iowacourts.gov/courtcases/24589/embed/CourtAppealsOpinion",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ks-police-other-vendor-disclosure",
+      "state": "KS",
+      "publisher": "Prairie Village Police Department",
+      "publisher_role": "police_other_vendor_disclosure",
+      "kind": "html",
+      "source_url": "https://www.prairievillageks.gov/m/newsflash/home/detail/38",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ky-police-technology-disclosure",
+      "state": "KY",
+      "publisher": "Lexington Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.lexingtonky.gov/government/departments-programs/public-safety/police/license-plate-readers",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ma-city-operational-status-statement",
+      "state": "MA",
+      "publisher": "Salem City Government",
+      "publisher_role": "city_operational_status_statement",
+      "kind": "html",
+      "source_url": "https://salemma.gov/m/newsflash?cat=6",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "mi-state-procurement-meeting-minutes",
+      "state": "MI",
+      "publisher": "Michigan State Administrative Board",
+      "publisher_role": "state_procurement_meeting_minutes",
+      "kind": "pdf",
+      "source_url": "https://www.michigan.gov/dtmb/-/media/Project/Websites/dtmb/Law-and-Policies/SAB/2025/20250603-SAB-Minutes.pdf?hash=103637C0ADA9223A357B47ACEAA6FA06&rev=e78061078d86430aaa72a6edfc62c506",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "mn-police-technology-disclosure",
+      "state": "MN",
+      "publisher": "Robbinsdale Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.robbinsdalemn.gov/389/4240/Automated-License-Plate-Readers-ALPR",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "mo-government-public-consultation",
+      "state": "MO",
+      "publisher": "Columbia City Government",
+      "publisher_role": "government_public_consultation",
+      "kind": "html",
+      "source_url": "https://beheard.como.gov/safety-cameras-review",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ms-city-council-meeting-minutes",
+      "state": "MS",
+      "publisher": "Bay St. Louis City Council",
+      "publisher_role": "city_council_meeting_minutes",
+      "kind": "pdf",
+      "source_url": "https://www.baystlouis-ms.gov/media/1921",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nc-police-technology-disclosure",
+      "state": "NC",
+      "publisher": "Raleigh Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://raleighnc.gov/services/how-does-raleigh-use-flock-cameras",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ne-state-alpr-agency-reports-index",
+      "state": "NE",
+      "publisher": "Nebraska Crime Commission",
+      "publisher_role": "state_alpr_agency_reports_index",
+      "kind": "html",
+      "source_url": "https://ncc.nebraska.gov/automatic-license-plate-reader-resources",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nm-police-technology-disclosure",
+      "state": "NM",
+      "publisher": "Rio Rancho Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.rrnm.gov/5071/Automated-License-Plate-Readers",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ok-police-technology-disclosure",
+      "state": "OK",
+      "publisher": "Oklahoma City Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.okc.gov/Services/Public-Safety/Police/Flock-Safety-license-plate-reader-LPR-usage-in-Oklahoma-City?lang_update=639284040850599068",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "sd-police-technology-disclosure",
+      "state": "SD",
+      "publisher": "Brookings Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://cityofbrookings-sd.gov/941/Automated-License-Plate-Readers-ALPRs",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "tn-police-technology-disclosure",
+      "state": "TN",
+      "publisher": "Gallatin Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.gallatintn.gov/m/newsflash/home/detail/173",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ut-government-contract-proposal",
+      "state": "UT",
+      "publisher": "North Salt Lake Police Department",
+      "publisher_role": "government_contract_proposal",
+      "kind": "pdf",
+      "source_url": "https://www.utah.gov/pmn/files/1366651.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "in-police-technology-disclosure",
+      "state": "IN",
+      "publisher": "Lafayette Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.lafayette.in.gov/3787/Flock-Safety-Cameras-Frequently-Asked-Qu",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "me-city-public-review-statement",
+      "state": "ME",
+      "publisher": "South Portland City Government",
+      "publisher_role": "city_public_review_statement",
+      "kind": "html",
+      "source_url": "https://www.southportland.gov/m/NewsFlash/Home/Detail/547",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "md-police-other-vendor-disclosure",
+      "state": "MD",
+      "publisher": "Frederick Police Department",
+      "publisher_role": "police_other_vendor_disclosure",
+      "kind": "html",
+      "source_url": "https://www.cityoffrederickmd.gov/1976/Automated-License-Plate-Readers",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "pa-government-records-appeal",
+      "state": "PA",
+      "publisher": "Pennsylvania Office of Open Records",
+      "publisher_role": "government_records_appeal",
+      "kind": "html",
+      "source_url": "https://www.openrecords.pa.gov/Appeals/DocketSheet.cfm?docket=20263039",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ri-police-technology-disclosure",
+      "state": "RI",
+      "publisher": "Providence Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://ppd.providenceri.gov/automated-license-plate-readers/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "sc-unadopted-surveillance-bill",
+      "state": "SC",
+      "publisher": "South Carolina Legislature",
+      "publisher_role": "unadopted_surveillance_bill",
+      "kind": "html",
+      "source_url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/4675.htm",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "mt-state-alpr-statute",
+      "state": "MT",
+      "publisher": "Montana Legislature",
+      "publisher_role": "state_alpr_statute",
+      "kind": "html",
+      "source_url": "https://mca.legmt.gov/bills/mca/title_0460/chapter_0050/part_0010/section_0170/0460-0050-0010-0170.html",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "hi-state-alpr-technology-disclosure",
+      "state": "HI",
+      "publisher": "Hawaii Department of Law Enforcement",
+      "publisher_role": "state_alpr_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://law.hawaii.gov/safety-via-technology/automated-license-plate-recognition-alpr/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nh-enacted-state-alpr-statutory-text",
+      "state": "NH",
+      "publisher": "New Hampshire Legislature",
+      "publisher_role": "enacted_state_alpr_statutory_text",
+      "kind": "html",
+      "source_url": "https://gc.nh.gov/rsa/html/XXI/261/261-75-b.htm",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nd-historic-city-council-contract-decision",
+      "state": "ND",
+      "publisher": "Fargo City Commission",
+      "publisher_role": "historic_city_council_contract_decision",
+      "kind": "html",
+      "source_url": "https://fargond.gov/city-government/departments/city-commission/agendas-minutes/2024-minutes-video-archive/september-30-2024-minutes",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "vt-state-alpr-statute-index",
+      "state": "VT",
+      "publisher": "Vermont Legislature",
+      "publisher_role": "state_alpr_statute_index",
+      "kind": "html",
+      "source_url": "https://legislature.vermont.gov/statutes/fullchapter/23/015",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "wy-unadopted-state-bill",
+      "state": "WY",
+      "publisher": "Wyoming Legislature",
+      "publisher_role": "unadopted_state_bill",
+      "kind": "html",
+      "source_url": "https://wyoleg.gov/Legislation/2026/HB0181/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "dc-independent-government-policy-recommendation",
+      "state": "DC",
+      "publisher": "District of Columbia Police Complaints Board",
+      "publisher_role": "independent_government_policy_recommendation",
+      "kind": "pdf",
+      "source_url": "https://policecomplaints.dc.gov/sites/default/files/dc/sites/office%20of%20police%20complaints/publication/attachments/ALPR.FINAL_.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "oh-state-procurement-flock-subscription",
+      "state": "OH",
+      "publisher": "Ohio State Controlling Board",
+      "publisher_role": "state_procurement_flock_subscription",
+      "kind": "html",
+      "source_url": "https://controllingboard.obm.ohio.gov/Print/PrintCBRequest?id=511a4ceb-9a1e-420f-b949-2257330dbf4a",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ak-unadopted-alpr-prohibition-amendment",
+      "state": "AK",
+      "publisher": "Alaska Legislature",
+      "publisher_role": "unadopted_alpr_prohibition_amendment",
+      "kind": "html",
+      "source_url": "https://www.akleg.gov/basis/Journal/Pages/32?Chamber=H&Page=2647&pageEnd=2676",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "la-enacted-crime-camera-protection-statute-not-alpr-operations",
+      "state": "LA",
+      "publisher": "Louisiana Legislature",
+      "publisher_role": "enacted_crime_camera_protection_statute_not_alpr_operations",
+      "kind": "html",
+      "source_url": "https://legis.la.gov/Legis/Law.aspx?d=1388419",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nv-county-alpr-grant-application-not-installation",
+      "state": "NV",
+      "publisher": "Nevada State Emergency Response Commission",
+      "publisher_role": "county_alpr_grant_application_not_installation",
+      "kind": "pdf",
+      "source_url": "https://serc.nv.gov/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nj-original-state-alpr-directive",
+      "state": "NJ",
+      "publisher": "New Jersey Office of the Attorney General",
+      "publisher_role": "original_state_alpr_directive",
+      "kind": "pdf",
+      "source_url": "https://www.nj.gov/oag/dcj/agguide/directives/Dir-2010-5-LicensePlateReadersl-120310.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ny-state-model-policy-not-agency-adoption",
+      "state": "NY",
+      "publisher": "New York Division of Criminal Justice Services",
+      "publisher_role": "state_model_policy_not_agency_adoption",
+      "kind": "pdf",
+      "source_url": "https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/MPTC%20LPR%20Model%20Policy%202021.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "wv-other-vendor-alpr-procurement-not-flock",
+      "state": "WV",
+      "publisher": "West Virginia Public Service Commission",
+      "publisher_role": "other_vendor_alpr_procurement_not_flock",
+      "kind": "pdf",
+      "source_url": "https://www.state.wv.us/admin/purchase/Awards/Documents/2026/Q2/A_0926_CPO_PSC2600000003.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    }
+  ]
+}
