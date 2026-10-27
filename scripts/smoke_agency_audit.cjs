@@ -50,6 +50,20 @@ const {chromium}=require('playwright');
   assert.ok((await page.locator('#sources a').evaluateAll(links=>
     links.some(a=>a.href.startsWith('https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf')))),
     'Original Minnesota archive evidence source must be directly inspectable');
+  for(const [id,name,sourceFragment] of [
+   ['stillwater%7CMN','Stillwater, MN','17 stationary Flock ALPR units'],
+   ['hennepin%20county%7CMN','Hennepin County, MN','four active stationary Flock ALPR units']
+  ]){
+   await page.goto(new URL('agency-audit.html?place='+id,base).href,
+     {waitUntil:'domcontentloaded',timeout:40000});
+   await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+     null,{timeout:55000});
+   assert.equal(await page.locator('#reportTitle').textContent(),name);
+   assert.match(await page.locator('#counts').textContent(),/1Independent original audit reports/);
+   assert.ok((await page.locator('#sources').textContent()).includes(sourceFragment),
+     'Publisher-attributed dated exact-identity observations should appear');
+   assert.match(await page.locator('#disclaimer').textContent(),/NOT a legality/);
+  }
   assert.deepEqual(problems,[],'Unexpected browser exceptions');
   console.log('AUTOMATED ACCOUNTABILITY BROWSER PASS: live agency evidence, citations, safe draft, deep link, 390px viewport');
  }catch(e){console.error('AUTOMATED ACCOUNTABILITY BROWSER FAILED:',e.stack||e,problems.slice(0,4));process.exitCode=1;}
