@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "reviewed_as_of": "2026-10-27",
+  "basis": "Eight individually page-reviewed, byte-pinned state-AGO-linked documents with Flock references. Federal Way is a dated training bulletin and includes a historical agency-reported inventory, not current camera counts. Seven other sources are agency policies and do not individually establish device status.",
+  "scope_limits": "Policy language and dated agency-reported inventories are not vendor or field-audited current installation facts; no new map points, camera coordinates, operational sharing relationships, individual license-plate reads, actual retention claims or regulatory compliance assessments. One further Flock-term candidate submitted under Sultan identifies itself as Snohomish County Sheriff training, not Sultan-authored policy; it remains held.",
+  "documents": [
+    {
+      "id": "arlington-wa-fleet-policy-2026",
+      "agency_name": "Arlington Police Department",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": "2026-03-30",
+      "ago_registration_date": "2026-10-01",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Arlington%20Police%20Department%20ALPR%20Policy%20-%202026.pdf?VersionId=FPHVAxLS7gDphF_zSrTt8I.N66K7uB6s",
+      "content_sha256": "bb2a0bfb0f4423ed19c23f6adf882b0d7263901fb937e638241c1bb4e1606d79",
+      "page_count": 9,
+      "pages_reviewed": [
+        1
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 1,
+          "category": "policy_scope_multiple_system_types",
+          "statement": "Arlington Police Department Policy 708 applies to agency-operated, controlled or accessed ALPR systems, explicitly naming Flock Safety and Axon FLEET 3 among system examples. This is scope language covering several possible technologies, not evidence that Arlington installed either product."
+        }
+      ]
+    },
+    {
+      "id": "des-moines-wa-flock-search-policy-2026",
+      "agency_name": "Des Moines Police Department",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": "2026-07-08",
+      "ago_registration_date": "2026-07-08",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Des%20Moines%20PD%20Policy.pdf?VersionId=fGSYjMNg.VziN25BQQ2st10ydAELnbmc",
+      "content_sha256": "222f7d012e07248f298b611611e8acec3ca07d368e2dcaefae59054c26e527cb",
+      "page_count": 6,
+      "pages_reviewed": [
+        3
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 3,
+          "category": "policy_flock_search_accountability",
+          "statement": "Des Moines Police Department Policy 432.6 directs Flock Safety software users to enter a specific investigated crime, felony or gross-misdemeanor category, and a case or CAD incident number in the search reason. This documents a software-specific written requirement, not searches actually performed."
+        }
+      ]
+    },
+    {
+      "id": "federal-way-wa-bulletin-2026",
+      "agency_name": "Federal Way Police Department",
+      "state": "WA",
+      "policy_kind": "agency_training_bulletin",
+      "document_imprint_date": "2026-05-15",
+      "ago_registration_date": "2026-09-18",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Federal%20Way%20PD%20Policy.pdf?VersionId=JcuQlvcVLto6Q5fk_OmaJyS6wRaFqqW.",
+      "content_sha256": "7dfed7573cb481965d3381d6886222c8b8701ad824dad64135a544cee5261df5",
+      "page_count": 4,
+      "pages_reviewed": [
+        2
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 2,
+          "category": "agency_reported_historical_installed_inventory",
+          "statement": "Federal Way Police Department training bulletin 26-002, dated May 15, 2026, reports one Flock Safety location containing four fixed cameras. This is the department's historical self-reported inventory, not verified geographic coordinates or current device operational status."
+        },
+        {
+          "page": 2,
+          "category": "agency_proposal_distinct_from_installation",
+          "statement": "The same May 15 Federal Way bulletin lists two additional Flock cameras at a proposed second location, separately from four licensed Avigilon ALPR cameras and vehicle-mounted ALPR systems it says are disabled. The proposed two are not counted as installed."
+        }
+      ]
+    },
+    {
+      "id": "mukilteo-wa-flock-retention-policy-2026",
+      "agency_name": "Mukilteo Police Department",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": null,
+      "ago_registration_date": "2026-07-06",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mukilteo%20PD%20Policy.pdf?VersionId=LdzkjIQLuFri_z1exMJ7yp5PyOrWydw8",
+      "content_sha256": "9889a6a207843c67cdabc62db674892e55de58cb5418dde27eb9de25c458a68b",
+      "page_count": 7,
+      "pages_reviewed": [
+        6
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 6,
+          "category": "policy_vendor_hosting_and_retention",
+          "statement": "Mukilteo Police Department Policy 339.8 describes Flock Safety as a data-hosting provider and states that Flock purges hosted records after 21 days. It allows specified investigation-related evidence to be saved separately by police. This is a written retention claim, not independent proof that deletion occurred."
+        }
+      ]
+    },
+    {
+      "id": "prosser-wa-flock-transparency-policy-2026",
+      "agency_name": "Prosser Police Department",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": "2026-05-13",
+      "ago_registration_date": "2026-07-24",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Prosser%20PD%20Policy.pdf?VersionId=cUQWobkFbN82JEWmrB9H2M.lk6U1B3ig",
+      "content_sha256": "c597c9edeeb78ffca4c737be2c475ca0f697a37dd72805414144e3bd5e88347e",
+      "page_count": 2,
+      "pages_reviewed": [
+        2
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 2,
+          "category": "policy_future_transparency_portal",
+          "statement": "Prosser Police Department Policy 470.6 says the department will publish an online ALPR transparency portal including Flock Safety use metrics such as camera counts, hot-list sources, plate reads and searches. The policy does not establish that the portal has actually been published or that devices are currently operating."
+        }
+      ]
+    },
+    {
+      "id": "sedro-woolley-wa-flock-policy-2026",
+      "agency_name": "Sedro-Woolley Police Department",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": "2026-06-18",
+      "ago_registration_date": "2026-07-14",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sedro-Wooley%20PD%20Policy.pdf?VersionId=_99QC9Us9FMQqUrIRzfc8WlWlkgJCZ9F",
+      "content_sha256": "4778f1f07f139658be0306edbb5049b1036e2a91ae22175bbcbd18c31c82c3b6",
+      "page_count": 10,
+      "pages_reviewed": [
+        4,
+        5
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 4,
+          "category": "policy_flock_query_requirements",
+          "statement": "Sedro-Woolley Police Department Policy 425.5 names Flock Safety software and requires searches to state an investigated crime, offense level and case or CAD incident number. This documents required search justification, not a verified audit of actual searches."
+        },
+        {
+          "page": 5,
+          "category": "policy_internal_retention_language_conflict",
+          "statement": "Sedro-Woolley Police Department Policy 425.7 establishes a general 21-day ALPR retention limit with exceptions but describes the Flock vendor purge interval using contradictory words and numerals, 'thirty (21) days'. The wording requires clarification; it does not prove a 30-day real-world retention period."
+        }
+      ]
+    },
+    {
+      "id": "walla-walla-wa-flock-policy-2026",
+      "agency_name": "Walla Walla Police Department",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": "2026-09-16",
+      "ago_registration_date": "2026-09-22",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Walla%20Walla%20PD%20Policy.pdf?VersionId=a2dPMQIgBg9TGAppHCzRerNp6X7Uy3mo",
+      "content_sha256": "6a64c055386a085c667e17d5003c0b51247911a27d2bbc9802a3649ff6b61ca5",
+      "page_count": 6,
+      "pages_reviewed": [
+        3
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 3,
+          "category": "policy_transparency_reporting_plan",
+          "statement": "Walla Walla Police Department Policy 468.6 says it will publish an online transparency portal with Flock Safety ALPR-use metrics, including system counts, hot-list sources, reads and searches over 21 days, alongside annual reporting. This is a written obligation or intention, not confirmation the portal exists or that cameras are installed."
+        }
+      ]
+    },
+    {
+      "id": "whitman-wa-flock-system-policy-2026",
+      "agency_name": "Whitman County Sheriff's Office",
+      "state": "WA",
+      "policy_kind": "agency_alpr_policy",
+      "document_imprint_date": null,
+      "ago_registration_date": "2026-07-09",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Whitman%20County%20Sheriffs%20Office%20Policy.pdf?VersionId=lWdm_wh6jsmnLFpeTqUTDvUPbTYjrW4I",
+      "content_sha256": "7c826c6f2dfaf2c0fe754e01f2329e9754a39d3583a1898e0c1aa093699e5465",
+      "page_count": 6,
+      "pages_reviewed": [
+        1,
+        4
+      ],
+      "source_tier": "individual_page_review_of_agency_submitted_original_policy_or_bulletin",
+      "evidence_limits": "Dated agency source text only; no proof of current operating status, live access, installed location, audited compliance or effectiveness.",
+      "findings": [
+        {
+          "page": 1,
+          "category": "policy_explicit_flock_system_title_and_fixed_only",
+          "statement": "Whitman County Sheriff's Office original policy is titled as an ALPR and Flock Safety System data-access and information-sharing policy. It says ALPR cameras used by the office will be deployed only at fixed sites rather than as mobile devices. These are written program rules, not independently verified device locations or active status."
+        },
+        {
+          "page": 4,
+          "category": "policy_retention_and_sharing_limits",
+          "statement": "Whitman County's source policy states a 21-day general ALPR data-retention maximum with specified court, parking, traffic-study, commercial-enforcement and evidentiary exceptions, and restricts external sharing to listed legal or approved research circumstances. This does not establish implementation or prove particular sharing occurred."
+        }
+      ]
+    }
+  ]
+}
