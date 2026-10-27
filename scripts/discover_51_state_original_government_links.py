@@ -23,7 +23,7 @@ def allowed_link(url):
   if (p.scheme!="https" or not p.hostname or not p.hostname.endswith(".gov") or
       p.netloc!=p.hostname or p.fragment or p.username or p.password or
       not p.path.startswith("/")):return None
-  if any(x in p.path.lower() for x in ("/search-logs","/raw-plate","/vehicle-reads")):return None
+  if re.search(r"(?:search[-_/]?logs|raw[-_/]?plate|vehicle[-_/]?reads)",p.path,re.I):return None
   return urllib.parse.urlunsplit((p.scheme,p.netloc,p.path,p.query,""))
  except (ValueError,TypeError):return None
 def state_search_url(name):
