@@ -1,0 +1,44 @@
+name: Automated accountability source and browser acceptance
+on:
+  push:
+    paths:
+      - 'agency-audit-engine.js'
+      - 'agency-audit.html'
+      - 'agency-intelligence.js'
+      - 'agency-timeline.js'
+      - 'scripts/test_agency_audit_engine.cjs'
+      - 'scripts/smoke_agency_audit.cjs'
+      - '.github/workflows/audit_accountability_acceptance.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '13 17 * * 1'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-public-accountability-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run deterministic public-evidence boundary regressions
+        run: |
+          node --check agency-audit-engine.js
+          node scripts/test_agency_audit_engine.cjs
+      - name: Start local preview
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/audit-preview.log 2>&1 &
+          for i in 1 2 3 4 5 6 7 8 9 10; do curl --silent --fail http://127.0.0.1:8765/agency-audit.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Install pinned Playwright JavaScript client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Verify actual source-linked audit and request draft in Chromium
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_agency_audit.cjs
