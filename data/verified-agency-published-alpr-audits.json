@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "verified_as_of": "2026-10-27",
+  "scope_note": "Official agency-authored public ALPR audit and transparency reports, NOT independent external audits. Claims are as attributed to government publisher at cited source date. No individual plate reads, named movements, new camera map coordinates, or legal adjudications.",
+  "reports": [
+    {
+      "id": "hennepin-county-mn-internal-alpr-audit-2017",
+      "state": "MN",
+      "jurisdiction_key": "hennepin county|MN",
+      "agency_name": "Hennepin County Sheriff's Office",
+      "publisher": "Hennepin County Sheriff's Office Internal Audit",
+      "publisher_type": "agency_internal_audit",
+      "report_title": "Hennepin County Sheriff's Office Internal Audit of ALPR Program",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191260.pdf",
+      "source_date": null,
+      "source_date_note": "Minnesota state legislative index lists the report on December 20, 2017; publication timestamp is not an auditor's system snapshot.",
+      "report_scope": "Original internal audit, archived by the Minnesota Legislative Reference Library; 2017 document.",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        2
+      ],
+      "content_sha256": "1b471f89be6bb06e7944d5242e03d7768eab300e0c0e7581472899aeab01252f",
+      "findings": [
+        {
+          "key": "no_fixed_alpr",
+          "page": 1,
+          "statement": "The Hennepin County Sheriff's Office internal audit described no fixed-location ALPR systems in its historical 2017 scope. This is an agency internal audit, not external verification of later Flock equipment."
+        },
+        {
+          "key": "purged_data_log_issue",
+          "page": 2,
+          "statement": "The internal auditor reported that although the system was configured to purge after 30 days, a generated log retained date, time and plate data for more than 60 days. This is a 2017 internal audit finding, not evidence of present retention or a finding concerning Flock."
+        }
+      ]
+    },
+    {
+      "id": "san-bruno-ca-flock-audit-december-2025",
+      "state": "CA",
+      "jurisdiction_key": "san bruno|CA",
+      "agency_name": "San Bruno Police Department",
+      "publisher": "City of San Bruno Police Department",
+      "publisher_type": "agency_authored_audit",
+      "report_title": "December 2025 Flock ALPR audit, original document with conflicting date header",
+      "source_url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9280/SBPD-Flock-ALPR-Annual-Audit---2025",
+      "source_date": null,
+      "source_date_note": "Original PDF is headed January 5, 2025 but describes December 2025 and data through January 3, 2026. The date discrepancy is unresolved, so no independent publication day or chronological count change is asserted.",
+      "report_scope": "Publisher describes December 2025 searches, with a later read interval extending to January 3, 2026.",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "content_sha256": "eeb452cb401f102d0ec602c5695a10b5f6e2776b5f5654d361b336ff8fea280b",
+      "findings": [
+        {
+          "key": "agency_reported_operational_camera_snapshot",
+          "page": 1,
+          "statement": "In a December 2025 Flock audit memo, San Bruno Police Department reported 66 total listed cameras, including 46 operational, seven undergoing service or repairs, and 13 in permitting. These are publisher-reported categories in a source with an internally contradictory date header, not a verified count of distinct operating devices today."
+        },
+        {
+          "key": "agency_reported_sharing_search_volume",
+          "page": 1,
+          "statement": "The department's December 2025 audit memo reports 1,238 internal searches and 461,711 searches by agencies with active sharing agreements during the stated period. The report does not identify all recipient agencies or establish any current sharing edge."
+        }
+      ]
+    },
+    {
+      "id": "san-bruno-ca-flock-audit-first-half-2026",
+      "state": "CA",
+      "jurisdiction_key": "san bruno|CA",
+      "agency_name": "San Bruno Police Department",
+      "publisher": "City of San Bruno Police Department",
+      "publisher_type": "agency_authored_audit",
+      "report_title": "Flock ALPR audit, first and second quarters of 2026",
+      "source_url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9279/SBPD-Flock-ALPR-Audit-Q1-and-Q2-2026",
+      "source_date": "2026-07-14",
+      "source_date_note": "Original agency memo date July 14, 2026.",
+      "report_scope": "Audit described January 1 to June 20, 2026; equipment table appears as an audit-time publisher snapshot.",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "content_sha256": "bc49ea5bb23f163083d940158b0c4c8169f22b83fe4102b27639e51d0810cc5f",
+      "findings": [
+        {
+          "key": "agency_reported_indirect_sharing_followup",
+          "page": 1,
+          "statement": "In its July 2026 memo, San Bruno Police Department reported 29 Flock searches requiring additional review for potential indirect out-of-state or federal sharing. The department states that 23 searches were conducted by the Northern California Regional Intelligence Center (NCRIC) and that it had removed NCRIC's access. The memo expresses belief about possible indirect sharing, not a final confirmed legal finding."
+        },
+        {
+          "key": "agency_reported_operational_camera_snapshot",
+          "page": 1,
+          "statement": "In the July 2026 audit memo, the department lists 59 total cameras, 51 operational, seven under repair and eight in permitting or planning. These source-reported categories do not add neatly to the listed total and should not be used to infer a camera installation or removal trend."
+        }
+      ]
+    },
+    {
+      "id": "green-bay-wi-alpr-annual-audit-2025",
+      "state": "WI",
+      "jurisdiction_key": "green bay|WI",
+      "agency_name": "Green Bay Police Department",
+      "publisher": "City of Green Bay Police Department",
+      "publisher_type": "agency_authored_audit",
+      "report_title": "2025 annual ALPR audit, internal memorandum dated May 8, 2026",
+      "source_url": "https://www.greenbaywi.gov/DocumentCenter/View/18762/Green-Bay-PD-2025-Automated-License-Plate-Reader-ALPR-Annual-Audit",
+      "source_date": "2026-05-08",
+      "source_date_note": "Original agency-issued memo dated May 8, 2026, reporting on 2025 annual ALPR activity.",
+      "report_scope": "Calendar-year 2025 audit with separately time-framed Flock and Axon status observations.",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        2,
+        3
+      ],
+      "content_sha256": "7261afdfa889e1392574a816b67d5b47b5d361ec7ea83ebc89a1abc891351825",
+      "findings": [
+        {
+          "key": "agency_reported_fixed_and_mobile_mix",
+          "page": 1,
+          "statement": "Green Bay's May 2026 internal ALPR audit memo states the city operated 42 fixed-location Flock cameras and that 50 patrol vehicles carried Axon Fleet 3 mobile ALPR capability. The two technologies are different inventory classes and are not 92 Flock cameras."
+        },
+        {
+          "key": "agency_reported_sharing_access",
+          "page": 2,
+          "statement": "The memo states that Green Bay shared camera access with 299 agencies as of the publisher's report and that its system participated in Flock's National Lookup feature. It does not provide 299 individually source-verified currently active directed sharing relationships."
+        },
+        {
+          "key": "agency_reported_missing_purge_data",
+          "page": 2,
+          "statement": "The agency's 2025 annual audit states that purge-data totals for 2025 were unavailable and that a future year-end collection process was planned. Unknown purge totals cannot be counted as zero or proof of failure to purge records."
+        }
+      ]
+    }
+  ]
+}
