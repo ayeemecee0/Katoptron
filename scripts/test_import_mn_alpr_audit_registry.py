@@ -56,8 +56,9 @@ class RegistryTests(unittest.TestCase):
  def test_index_conflicting_duplicate_id_held(self):
   data=page(24).decode()
   duplicate='<tr><td>Other Flock audit report</td><td>Agency</td><td>June 15, 2026</td><td></td><td>06/17/2026</td><td><a href="/docs/2026/mandated/261010.pdf">26-1010.pdf</a></td></tr>'
-  # Same URL collapses; a PDF ID must be unique regardless of where linked.
-  self.assertEqual(len(M.index_rows(data.replace('</tbody>',duplicate+'</tbody>').encode())),24)
+  # Repeated report IDs (including the same URL) cannot be silently merged.
+  with self.assertRaisesRegex(ValueError,"duplicate report IDs"):
+   M.index_rows(data.replace('</tbody>',duplicate+'</tbody>').encode())
  def test_without_database_key_cannot_publish(self):
   with self.assertRaisesRegex(ValueError,"credential unavailable"):
    M.publish(M.index_rows(page()),"https://example.supabase.co","")
