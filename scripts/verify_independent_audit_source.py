@@ -39,7 +39,7 @@ def manifest_rows(source):
  if not isinstance(source,dict) or source.get("schema_version")!=1:
   raise ValueError("Invalid source audit manifest")
  rows=source.get("reports")
- if not isinstance(rows,list) or len(rows)>25:raise ValueError("Unbounded original audit catalog")
+ if not isinstance(rows,list) or len(rows)>200:raise ValueError("Unbounded original audit catalog")
  ids=set()
  for row in rows:
   if not isinstance(row,dict) or not allowed(row.get("source_url")):
