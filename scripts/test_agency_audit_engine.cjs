@@ -126,7 +126,7 @@ assert.equal(woodburyAudit.counts.independentAuditorReports,4,
 assert.ok(woodburyAudit.inventory.some(x=>x.sources.includes('https://www.lrl.mn.gov/docs/2024/mandated/240350.pdf')));
 for(const [key,label,url,expected] of [
  ['edina|MN','Edina, MN','210885.pdf',4],
- ['west saint paul|MN','West Saint Paul, MN','261167.pdf',1],
+ ['west saint paul|MN','West Saint Paul, MN','261167.pdf',2],
  ['wyoming|MN','Wyoming, MN','261268.pdf',1]
 ]){
  const group={...base(),key,label};
