@@ -52,7 +52,10 @@ const {chromium}=require('playwright');
     'Original Minnesota archive evidence source must be directly inspectable');
   for(const [id,name,sourceFragment] of [
    ['stillwater%7CMN','Stillwater, MN','17 stationary Flock ALPR units'],
-   ['hennepin%20county%7CMN','Hennepin County, MN','four active stationary Flock ALPR units']
+   ['hennepin%20county%7CMN','Hennepin County, MN','four active stationary Flock ALPR units'],
+   ['richfield%7CMN','Richfield, MN','eight stationary Flock ALPR units'],
+   ['woodbury%7CMN','Woodbury, MN','17 active stationary Flock ALPR units'],
+   ['brooklyn%20center%7CMN','Brooklyn Center, MN','nine active stationary ALPR units']
   ]){
    await page.goto(new URL('agency-audit.html?place='+id,base).href,
      {waitUntil:'domcontentloaded',timeout:40000});
