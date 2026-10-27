@@ -115,6 +115,30 @@ def verify_pdf(report,payload,reader_class=None):
    content=normalized(page)
    if not all(p in content for p in phrases):
     raise ValueError("Hennepin original auditor PDF page changed; hold for review")
+ elif report["id"]=="richfield-mn-independent-flock-alpr-audit-2026":
+  anchors={
+   2:("richfield police department","8 stationary flock alpr units","default 30-day retention period"),
+   3:("the whole month of march","documented in the flock system by agency and justification"),
+  }
+  for page,phrases in anchors.items():
+   if not all(p in normalized(page) for p in phrases):
+    raise ValueError("Richfield original auditor PDF page changed; hold for review")
+ elif report["id"]=="woodbury-mn-independent-flock-alpr-audit-2026":
+  anchors={
+   2:("woodbury public safety","17 active stationary flock alpr units","no mobile flock units","default 30-"),
+   3:("documented by agency name","requesting party and case number"),
+  }
+  for page,phrases in anchors.items():
+   if not all(p in normalized(page) for p in phrases):
+    raise ValueError("Woodbury original auditor PDF page changed; hold for review")
+ elif report["id"]=="brooklyn-center-mn-independent-flock-alpr-audit-2025":
+  anchors={
+   2:("brooklyn center police department","9 active stationary alpr units","no flock mobile units","default 30-day retention period"),
+   3:("documented by agency name","requesting party and case number"),
+  }
+  for page,phrases in anchors.items():
+   if not all(p in normalized(page) for p in phrases):
+    raise ValueError("Brooklyn Center original auditor PDF page changed; hold for review")
  else:
   raise ValueError("New audit requires a scoped independent verifier")
  return len(pdf.pages)

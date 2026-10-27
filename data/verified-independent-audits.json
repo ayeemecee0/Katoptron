@@ -131,6 +131,126 @@
         }
       ],
       "content_sha256": "e131a79aaf5c59a1477e30a47edbdf2b15ed9226c274a4e446e427b0383dfc70"
+    },
+    {
+      "id": "richfield-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "richfield|MN",
+      "jurisdiction_label": "Richfield, MN",
+      "agency_name": "Richfield Police Department",
+      "report_title": "Richfield Police Department 2026 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260900.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-05-21",
+      "period_start": "2024-04-01",
+      "period_end": "2026-03-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_count",
+          "page": 2,
+          "statement": "In the May 2026 summary, the independent auditor reported eight stationary Flock ALPR units at Richfield Police Department during the period reviewed. This is a historical auditor-attributed system count, not a current inventory or a list of camera positions.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "audited_retention",
+          "page": 2,
+          "statement": "The auditor reported the Flock system's manufacturer-default 30-day retention setting and said that a Flock Vehicle Reads report confirmed the setting during the review. This does not prove the agency's settings today.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "sampled_interagency_requests",
+          "page": 3,
+          "statement": "The auditor reported that interagency requests were logged in the Flock system by agency and justification and that a March 2026 sample showed reasons for sharing. This is a sampled historical finding, not a complete or current sharing-partner network.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "d13ceb556b08015e2ca751734eff29349eb8f9fa9a44866cc560c02ffe24ee10"
+    },
+    {
+      "id": "woodbury-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "woodbury|MN",
+      "jurisdiction_label": "Woodbury, MN",
+      "agency_name": "Woodbury Public Safety",
+      "report_title": "Woodbury Public Safety 2026 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260248.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-02-05",
+      "period_start": "2024-01-01",
+      "period_end": "2025-12-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_count",
+          "page": 2,
+          "statement": "The February 2026 independent audit reported 17 active stationary Flock ALPR units and no mobile Flock units for Woodbury Public Safety at the time examined. These figures do not establish present deployment or camera coordinates.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "audited_retention",
+          "page": 2,
+          "statement": "The auditor reported the Flock system's 30-day manufacturer-default retention setting, confirmed through a Flock Vehicle Reads report at the time of the audit. No later retention configuration is verified here.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "audited_sharing_process",
+          "page": 3,
+          "statement": "The report describes interagency data requests recorded by agency name, requesting party and case number, and an audit sample with stated justifications. It does not identify standing shared-network permissions or current recipient agencies.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "523876118f3e7da5b2754bd6695e7386e3967874543710a2b645834955723852"
+    },
+    {
+      "id": "brooklyn-center-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "brooklyn center|MN",
+      "jurisdiction_label": "Brooklyn Center, MN",
+      "agency_name": "Brooklyn Center Police Department",
+      "report_title": "Brooklyn Center Police Department 2025 ALPR Audit (Flock) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251737.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-28",
+      "period_start": "2023-08-01",
+      "period_end": "2025-07-30",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_count",
+          "page": 2,
+          "statement": "The 2025 report concerning Brooklyn Center's Flock ALPR system stated that the department had nine active stationary ALPR units and no Flock mobile units at the time of review. The statement does not establish current inventory, geolocations or individual manufacturer labels.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "audited_retention",
+          "page": 2,
+          "statement": "The auditor reported the Flock system's default 30-day retention period and stated that it was checked against a Flock Vehicle Reads report. This historical report does not verify later retention settings.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "audited_sharing_process",
+          "page": 3,
+          "statement": "The auditor described interagency requests documented by agency, requesting party and case number through a records manager. The report does not provide a comprehensive or current list of data-sharing partners.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "6318fee178da621398a0a0c977b9852991638d707dbf39f7d0df5e9da6b1e28f"
     }
   ]
 }

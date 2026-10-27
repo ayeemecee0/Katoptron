@@ -35,7 +35,7 @@ class TestPublicAuditSource(unittest.TestCase):
    "https://www.lrl.mn.gov/admin"):
    self.assertFalse(M.allowed(x),x)
  def test_no_source_facts_without_exact_page_receipts(self):
-  self.assertEqual(len(M.manifest_rows(CATALOG)),3)
+  self.assertEqual(len(M.manifest_rows(CATALOG)),6)
   raw=b"%PDF-1.7"+b" synthetic test only "
   fixture={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
   self.assertEqual(M.verify_pdf(fixture,raw,Reader),5)
@@ -47,6 +47,33 @@ class TestPublicAuditSource(unittest.TestCase):
     self.pages[1]=Page("No retention statement")
   with self.assertRaisesRegex(ValueError,"page text differs"):
    M.verify_pdf(fixture,raw,Missing)
+ def test_three_additional_audits_require_exact_checked_page_anchors(self):
+  raw=b"%PDF-1.7 curated synthetic input"
+  examples={
+   "richfield-mn-independent-flock-alpr-audit-2026":(
+    "Richfield Police Department had 8 stationary Flock ALPR units. The default 30-day retention period.",
+    "A sample of the whole month of March 2026 was documented in the Flock system by agency and justification."),
+   "woodbury-mn-independent-flock-alpr-audit-2026":(
+    "Woodbury Public Safety had 17 active stationary Flock ALPR units and no mobile Flock units, default 30-day retention.",
+    "Interagency requests documented by agency name, requesting party and case number."),
+   "brooklyn-center-mn-independent-flock-alpr-audit-2025":(
+    "Brooklyn Center Police Department had 9 active stationary ALPR units and no Flock mobile units, default 30-day retention period.",
+    "Interagency requests documented by agency name, requesting party and case number."),
+  }
+  for audit_id,(second,third) in examples.items():
+   record=next(r for r in CATALOG["reports"] if r["id"]==audit_id)
+   class Match:
+    def __init__(self,*args,**kwargs):
+     self.is_encrypted=False
+     self.pages=[Page("title"),Page(second),Page(third),Page("summary"),Page("signature")]
+   fixture={**record,"content_sha256":hashlib.sha256(raw).hexdigest()}
+   self.assertEqual(M.verify_pdf(fixture,raw,Match),5)
+   class Changed(Match):
+    def __init__(self,*args,**kwargs):
+     super().__init__(*args,**kwargs)
+     self.pages[2]=Page("Unrelated audit material")
+   with self.assertRaisesRegex(ValueError,"page changed"):
+    M.verify_pdf(fixture,raw,Changed)
  def test_fetch_not_called_for_unapproved_host(self):
   seen=[]
   with self.assertRaises(ValueError):
