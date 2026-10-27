@@ -49,7 +49,8 @@
           "statement": "The auditor recorded no discrepancies noted in the examined statutory categories. This describes the auditor's findings for the audited period, not an independent Katoptron compliance certification.",
           "scope": "auditor_reported_finding"
         }
-      ]
+      ],
+      "content_sha256": "0a4e074adffc5be4723f02e3bdb097e191376afa8109151a4c527e671328e447"
     }
   ]
 }
