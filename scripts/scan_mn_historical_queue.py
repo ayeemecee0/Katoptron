@@ -26,7 +26,9 @@ MAX_PDF_PAGES=20
 OUTPUT=ROOT/".katoptron-ci"/"historical-alpr-review-queue.json"
 
 def build(rows,manifest,runner=None):
- payload=json.dumps({"rows":rows,"manifest":manifest},separators=(",",":"))
+ agency_path=ROOT/"data"/"verified-agency-published-alpr-audits.json"
+ agency_catalog=json.loads(agency_path.read_text(encoding="utf-8")) if agency_path.exists() else {"reports":[]}
+ payload=json.dumps({"rows":rows,"manifest":manifest,"agency_reports":agency_catalog["reports"]},separators=(",",":"))
  if len(payload)>800_000:raise ValueError("Unbounded public-state input")
  if runner is None:
   runner=lambda source:subprocess.run(
