@@ -61,5 +61,42 @@
   return {states,total:51,seeded,without:51-seeded,seedUrls:reg.official_seed_sources.length,
    legacyUrls:old.sources.length,reviewedInstallationsClaimed:0};
  }
- return {catalog,safe};
+ function sourceReceipts(data,registry){
+  if(!data||data.schema_version!==1||data.inspected_on!=='2026-10-27'||
+   data.scope!=='read_only_original_government_source_metadata_not_individual_flock_evidence'||
+   !Array.isArray(data.receipts)||data.receipts.length!==registry.official_seed_sources.length||
+   typeof data.limitations!=='string'||!data.limitations.includes('not policy adoption'))
+   throw Error('Nationwide source receipt metadata invalid');
+  const known=new Map(registry.official_seed_sources.map(x=>[x.id,x]));
+  const seen=new Set(),receipts=new Map(),counts={accessible:0,held:0};
+  const available=new Set(['original_government_pdf_accessible','original_government_html_accessible']);
+  const held=new Set(['held_redirect','held_http_error','held_oversized','held_wrong_format',
+   'held_unreadable_original','held_timeout_or_network']);
+  for(const r of data.receipts){
+   const orig=known.get(r?.source_id);
+   if(!orig||seen.has(r.source_id)||r.state!==orig.state||r.source_url!==orig.source_url||
+    r.kind!==orig.kind||r.authoritatively_verified_document_claims!==false||
+    r.flock_equipment_verified!==false||r.camera_coordinates_verified!==false||
+    !available.has(r.status)&&!held.has(r.status))
+    throw Error('Nationwide original source receipt attribution invalid');
+   seen.add(r.source_id);
+   if(available.has(r.status)){
+    if(!/^[a-f0-9]{64}$/.test(r.sha256_at_observation||'')||
+      (r.kind==='pdf'&&(!Number.isInteger(r.page_count_at_observation)||
+       r.page_count_at_observation<1||r.page_count_at_observation>120))||
+      (r.kind==='html'&&r.page_count_at_observation!==null))
+     throw Error('Source original hash or page receipt invalid');
+    counts.accessible++;
+   }else{
+    if(r.sha256_at_observation!==null||r.page_count_at_observation!==null)
+     throw Error('Held source cannot claim verified content');
+    counts.held++;
+   }
+   receipts.set(r.source_id,r);
+  }
+  if(seen.size!==registry.official_seed_sources.length)
+   throw Error('Nationwide official seed source receipts incomplete');
+  return {receipts,counts};
+ }
+ return {catalog,safe,sourceReceipts};
 });
