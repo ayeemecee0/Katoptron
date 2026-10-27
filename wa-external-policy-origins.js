@@ -6,7 +6,8 @@
  'held_redirect','held_http_error','held_unreachable','held_oversized','held_empty_or_unusable','held_invalid_pdf','held_unsupported_content']);
  const HOSTS=new Set(["blackdiamondwa.gov","www.cwu.edu","www.cpwa.us","www.douglascountysheriff.org","www.eastwenatcheewa.gov","inside.ewu.edu","www.ellensburgwa.gov","www.cityofenumclaw.net","www.everettwa.gov","www.grandview.wa.us","public.powerdms.com","www.co.kittitas.wa.us","www.libertylakewa.gov","www.cityofmontesano.com","www.pasco-wa.gov","selahwa.gov","www.soundtransit.org","uniongapwa.gov","www.washington.edu","transportation.wsu.edu","transportation.wwu.edu"]);
  function exact(url){
-  if(typeof url!=='string'||url.length>1200)return false;
+  if(typeof url!=='string'||url.length>1200||
+    url.includes('/../')||url.includes('/./')||/%2e|%2f|\\/i.test(url.split('?')[0]))return false;
   try{const p=new URL(url);
    return p.protocol==='https:'&&HOSTS.has(p.hostname)&&p.host===p.hostname&&
     !p.username&&!p.password&&!p.hash&&!p.pathname.includes('..')&&
