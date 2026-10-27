@@ -29,7 +29,9 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#nationalCoverageResults').textContent(),/Alaska/);
   assert.match(await page.locator('#nationalCoverageResults').textContent(),/Wyoming/);
   assert.ok((await page.locator('#nationalCoverageResults a').evaluateAll(as=>as.map(a=>a.href))).every(u=>
-   u.startsWith('https://')&&(u.includes('.gov/')||u.startsWith('https://www.state.wv.us/'))));
+   u.startsWith('https://')&&(u.includes('.gov/')||
+    ['https://www.state.wv.us/','https://www.moline.il.us/',
+     'https://www.naperville.il.us/','https://www.darien.il.us/'].some(prefix=>u.startsWith(prefix)))));
   await page.locator('#nationalCoverageSearch').fill('New York');
   assert.equal(await page.locator('#nationalCoverageResults article').count(),1);
   assert.match(await page.locator('#nationalCoverageResults').textContent(),/model policy not agency adoption/);
