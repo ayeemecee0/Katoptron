@@ -1,0 +1,1078 @@
+{
+  "schema_version": 1,
+  "source_url": "https://www.atg.wa.gov/ALPR",
+  "captured_on": "2026-10-27",
+  "source_sha256": "e0302903b8ad9256f9637b1b33eb1e49f0795cf6ae351cf664193f595d137a05",
+  "provenance": "Washington Attorney General public agency ALPR self-certification registration table",
+  "warning": "The Washington Attorney General states it has not independently verified each agency head certification. A registration is NOT proof of Flock vendor, operational camera count, camera placement, current compliance or approved data sharing.",
+  "registrations": [
+    {
+      "id": "2caaf0cb4e1005cecffc",
+      "agency_name": "Aberdeen Police Department",
+      "submitted_on": "2026-07-06",
+      "submitted_date_as_published": "July 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Aberdeen%20PD-ALPR%20Policy.pdf?VersionId=rDJjXgd.61ppVovXmumPvzfDQUHgm7w5"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "9dffc8024ca399067e8d",
+      "agency_name": "Arlington Police Department",
+      "submitted_on": "2026-10-01",
+      "submitted_date_as_published": "October 1, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Arlington%20Police%20Department%20ALPR%20Policy%20-%202026.pdf?VersionId=FPHVAxLS7gDphF_zSrTt8I.N66K7uB6s"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "ae5f025b535dabef16f7",
+      "agency_name": "Auburn Police Department",
+      "submitted_on": "2026-07-07",
+      "submitted_date_as_published": "July 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Auburn%20PD%20ALPR%20Policy.pdf?VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "6996cffa5fff633b8fc2",
+      "agency_name": "Benton County Sheriff's Office",
+      "submitted_on": "2026-07-09",
+      "submitted_date_as_published": "July 9, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Benton%20Country%20Sheriff%20ALPR%20Policy.pdf?VersionId=gviTNAyTzPC_L6x1rUlQZPeoxvN2eOuV"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "071d337b2f343047b871",
+      "agency_name": "Black Diamond Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://blackdiamondwa.gov/DocumentCenter/View/4324/BDPD-ALPR-Policy"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "8c03b808c012fbec634a",
+      "agency_name": "Bonney Lake Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Bonney%20Lake%20PD%20ALPR%20Policy.pdf?VersionId=8oNgjNe4Id.UeaCDUtGPCWhk4v2U1Szl"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "10dd701e97a0b1cb9164",
+      "agency_name": "Cascadia College",
+      "submitted_on": "2026-09-25",
+      "submitted_date_as_published": "September 25, 2026",
+      "policy_link_label": "Partners with University of Washington, Bothell",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/UW%20Bothell%20-%20Cascadia%20College%20-%20Automated%20License%20Plate%20Reader%20%28ALPR%29%20Appropriate%20Use%20Policy.pdf?VersionId=mvmhfxRjdTf8wrWgKVpKkwt3x_UcyJuB"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "bacf8e72fd2bd82932bb",
+      "agency_name": "Centralia Police Department",
+      "submitted_on": "2026-07-09",
+      "submitted_date_as_published": "July 9, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Centralia%20PD%20ALPR%20Policy.pdf?VersionId=A1T9NJKwgRSmJs0jrH2PCv57dTrPzUXA"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "e7b4c7f665da6132dd72",
+      "agency_name": "Central Washington University Police and Public Safety",
+      "submitted_on": "2026-10-06",
+      "submitted_date_as_published": "October 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.cwu.edu/about/offices/campus-safety/parking/lpr-privacy-policy.php"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "f5c5ddd7682bd647a2ba",
+      "agency_name": "Chehalis Police Department",
+      "submitted_on": "2026-08-31",
+      "submitted_date_as_published": "August 31,2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Chehalis%20PD%20Policy.pdf?VersionId=v4yjfCwWIsKtpbdfhSQS06src5.tOWxk"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "0ae6e7f630feda662e5b",
+      "agency_name": "Chelan County Sheriff's Office",
+      "submitted_on": "2026-09-30",
+      "submitted_date_as_published": "September 30, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Chelan%20County%20Sheriff%27s%20Office%20ALPR%20Policy.pdf?VersionId=E2KyWo8a_9qRTUGvTomHgJL5.CiTCRh1"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "f3a5fc87f5d7949942a7",
+      "agency_name": "Cheney Police Department",
+      "submitted_on": "2026-07-31",
+      "submitted_date_as_published": "July 31, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Cheney%20PD%20Policy.pdf?VersionId=Fog5mSlyPSmtCECtxgN1vldXerej3Yiv"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "adce7f6e1bda1a40af11",
+      "agency_name": "City of Bellingham Public Works",
+      "submitted_on": "2026-09-30",
+      "submitted_date_as_published": "September 30, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/City%20of%20Bellingham%20PW%20ALPR%20Parking%20Policy%20FINAL%209-30-2026.pdf?VersionId=R74LkVdTKeeW_v5zMMlpzHpO0xY_o7eZ"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "dcf19f4741d84f0e2965",
+      "agency_name": "City of Leavenworth Parking Department",
+      "submitted_on": "2026-09-28",
+      "submitted_date_as_published": "September 28, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/City%20of%20Leavenworth%20-%20ALPR%20Camera%20Policy%2009-28-2026.pdf?VersionId=lP82zfF_Z8NMMM0tDacZ9pPlE0dgJli0"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "fd6bc79301b7cc1b1f3f",
+      "agency_name": "College Place Police Department",
+      "submitted_on": "2026-07-17",
+      "submitted_date_as_published": "July 17, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.cpwa.us/departments/police/policy___success_stories.php"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "3e376c8022a8e370ec43",
+      "agency_name": "Coulee Dam Police Department",
+      "submitted_on": "2026-07-07",
+      "submitted_date_as_published": "July 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Coulee%20Dam%20PD%20Policy.pdf?VersionId=fV1IABwIBuEctTTpoJ9x9FiuExt5Yxxi"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "204cda0c291f10722459",
+      "agency_name": "Covington Police Department",
+      "submitted_on": "2026-06-30",
+      "submitted_date_as_published": "June 30, 2026",
+      "policy_link_label": "Contracts with King County Sheriff's Office",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Covington%20PD%20Policy.pdf?VersionId=49cqgXD0DlaymXcZAJac0hrEtqp_tfTf"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "cc70be0299b3540311e3",
+      "agency_name": "Des Moines Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Des%20Moines%20PD%20Policy.pdf?VersionId=fGSYjMNg.VziN25BQQ2st10ydAELnbmc"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "1ffec8f8854528d9dbe5",
+      "agency_name": "Douglas County Sheriff's Office",
+      "submitted_on": "2026-07-27",
+      "submitted_date_as_published": "July 27, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.douglascountysheriff.org/898/Policy-Manual"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "0dd3fa35a7b59a57b204",
+      "agency_name": "East Wenatchee Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.eastwenatcheewa.gov/DocumentCenter/View/2013/East-Wenatchee-Police-Department-Policy-Manual?bidId="
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "d328d62825ea59639a6a",
+      "agency_name": "Eastern Washington University",
+      "submitted_on": "2026-09-28",
+      "submitted_date_as_published": "September 28, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://inside.ewu.edu/policies/knowledge-base/ewu-603-04-security-parking-cameras/"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "15423bcf1c8694908cdf",
+      "agency_name": "Ellensburg Police Department",
+      "submitted_on": "2026-08-17",
+      "submitted_date_as_published": "August 17, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.ellensburgwa.gov/DocumentCenter/View/23300/Automated-License-Plate-Readers-Policy"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "d3f6bcebc80dad8e540c",
+      "agency_name": "Enumclaw Police Department",
+      "submitted_on": "2026-07-06",
+      "submitted_date_as_published": "July 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.cityofenumclaw.net/DocumentCenter/View/11660/Automated-License-Plate-Readers-PDF"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "fafbd8f6ff04ef86f8da",
+      "agency_name": "Everett Police Department",
+      "submitted_on": "2026-07-16",
+      "submitted_date_as_published": "July 16, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.everettwa.gov/DocumentCenter/View/29059/Policy-Manual-Master-Current?bidId="
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "a42b43622b15aee68233",
+      "agency_name": "Federal Way Police Department",
+      "submitted_on": "2026-09-18",
+      "submitted_date_as_published": "September 18, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Federal%20Way%20PD%20Policy.pdf?VersionId=JcuQlvcVLto6Q5fk_OmaJyS6wRaFqqW."
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "17fd9efbae9afda0a5f3",
+      "agency_name": "Grandview Police Department",
+      "submitted_on": "2026-07-02",
+      "submitted_date_as_published": "July 2, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.grandview.wa.us/wp-content/uploads/2026/06/Grandview-Police-Department-Policy-Manual.pdf"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "95f3299cc333db560e03",
+      "agency_name": "Granger Police Department",
+      "submitted_on": "2026-10-05",
+      "submitted_date_as_published": "October 5, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Granger%20PD%20ALPR%20Policy.pdf?VersionId=rIU0mveIOUACWD1omHSdLqQKaVbRRRKT"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "7670872df28885175423",
+      "agency_name": "Granite Falls Police Department",
+      "submitted_on": "2026-08-28",
+      "submitted_date_as_published": "August 28, 2026",
+      "policy_link_label": "Contracts with Snohomish County Sheriff's Office",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Granite%20Falls%20PD%20Policy.pdf?VersionId=kZEfITiaCCmqk04P0dqwBUPy0HfnWJ5E"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "90e97f856bf464a2cd5d",
+      "agency_name": "Grant County Sheriff's Office",
+      "submitted_on": "2026-10-05",
+      "submitted_date_as_published": "October 5, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Grant%20County%20Sheriff%27s%20Office%20Policy%202-10-26%20468%20ALPR.pdf?VersionId=H5POpzDg_47qbcI1of0MnDeQKQe38VQL"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "2618ee8170711585e2b9",
+      "agency_name": "Grays Harbor County Sheriff's Office",
+      "submitted_on": "2026-08-24",
+      "submitted_date_as_published": "August 24, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Grays%20Harbor%20County%20Sheriff%20Policy.pdf?VersionId=TL__dOOmSP7008..kEKkZlbcjylfyuW1"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "9a59d2e9737188702dcc",
+      "agency_name": "Kelso Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kelso%20PD%20Policy.pdf?VersionId=7zAYGI3q.ckPK1adC3YgkXVrRjS.0M43"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "7cec5351a70456a8971a",
+      "agency_name": "Kennewick Police Department",
+      "submitted_on": "2026-08-10",
+      "submitted_date_as_published": "August 10, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kennewick%20PD%20Policy.pdf?VersionId=KXDsD_UjCZ90DS1uhW6AkHd2eSE6iKT6"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "2904256f7d76aed802f3",
+      "agency_name": "Kent Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kent%20PD%20Policy.pdf?VersionId=.nogWD4BsM6DkQuXS8uEUDlE1qHdlhn9"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "c5e37be2c24d2c5234a2",
+      "agency_name": "King County Sheriff's Office",
+      "submitted_on": "2026-06-30",
+      "submitted_date_as_published": "June 30, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://public.powerdms.com/KCSO/tree/documents/1864243"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "b76de165ce83ef88b9b7",
+      "agency_name": "Kirkland Police Department",
+      "submitted_on": "2026-09-04",
+      "submitted_date_as_published": "September 4, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kirkland%20PD%20Policy.pdf?VersionId=bG3a7qF9XxNEyue.t1A6GDItRrevZ0an"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "4fc3a5b924f9063932a0",
+      "agency_name": "Kittitas County Sheriff's Office",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.co.kittitas.wa.us/sheriff/policy.aspx"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "8fb2eba8b1aa0e75016a",
+      "agency_name": "Kittitas Police Department",
+      "submitted_on": "2026-07-15",
+      "submitted_date_as_published": "July 15, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kittitas%20PD%20Policy.pdf?VersionId=kFMGZo4zqUbzsCu9cSrAdpkD1Ij.PutG"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "e2ab5f97a380b829fe2f",
+      "agency_name": "Lake Stevens Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://public.powerdms.com/LAKESTEVENS/tree"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "53091a07fbd8179bea0e",
+      "agency_name": "Lakewood Police Department",
+      "submitted_on": "2026-10-13",
+      "submitted_date_as_published": "October 13, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Lakewood%20Police%20Department%20-%20ALPR%20Policy.pdf?VersionId=LHi6GmdkJh.ipz9e9aWlCWoInkYeuk.j"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "211d3d0cd9815d7aeb2f",
+      "agency_name": "Liberty Lake Police Department",
+      "submitted_on": "2026-07-09",
+      "submitted_date_as_published": "July 9, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.libertylakewa.gov/DocumentCenter/View/10014/ALPR-POLICY---7-2026?bidId="
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "e48dd268eae232739640",
+      "agency_name": "Lincoln County Sheriff's Office",
+      "submitted_on": "2026-07-07",
+      "submitted_date_as_published": "July 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Lincoln%20County%20Sheriffs%20Office%20Policy.pdf?VersionId=q3Dp7klcPokSkvC5l45xqnb99g_VR.ev"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "71a49a134c7194a01f4d",
+      "agency_name": "Maple Valley Police Department",
+      "submitted_on": "2026-06-30",
+      "submitted_date_as_published": "June 30, 2026",
+      "policy_link_label": "Contracts with King County Sheriff's Office",
+      "policy_links_from_official_ago_page": [
+        "https://public.powerdms.com/KCSO/tree/documents/1864243"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "5a420b12a62f49c5c10a",
+      "agency_name": "Marysville Police Department",
+      "submitted_on": "2026-07-06",
+      "submitted_date_as_published": "July 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://public.powerdms.com/MarysvillePD/tree/documents/3026517"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "c5cde798fa793b06060d",
+      "agency_name": "Medina Police Department",
+      "submitted_on": "2026-07-10",
+      "submitted_date_as_published": "July 10, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Medina%20PD%20Policy.pdf?VersionId=rw8.NKwl3NMPG7FjWve4nL.ThGrz9KKB"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "c0d250c7c569b1419fc2",
+      "agency_name": "Mill Creek Police Department",
+      "submitted_on": "2026-09-18",
+      "submitted_date_as_published": "September 18, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mill%20Creek%20PD%20Policy.pdf?VersionId=DfanFJ11.4NbaDICWw3EIS2H.z6WrlGu"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "6c2215a04a7fe861b629",
+      "agency_name": "Monroe Police Department",
+      "submitted_on": "2026-07-10",
+      "submitted_date_as_published": "July 10, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://public.powerdms.com/Mon9997/tree/documents/1979272"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "fe24d58ba0ba0e614e85",
+      "agency_name": "Montesano Police Department",
+      "submitted_on": "2026-07-07",
+      "submitted_date_as_published": "July 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.cityofmontesano.com/departments/police.php"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "3872330121cfbe2e68d9",
+      "agency_name": "Moses Lake Police Department",
+      "submitted_on": "2026-08-06",
+      "submitted_date_as_published": "August 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Moses%20Lake%20PD%20Policy.pdf?VersionId=ucZZk80rAeNRG1rql0Y.wZssVURLBGRe"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "141d27d8833113f82c56",
+      "agency_name": "Mount Vernon Police Department",
+      "submitted_on": "2026-07-31",
+      "submitted_date_as_published": "July 31, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mount%20Vernon%20PD%20Policy.pdf?VersionId=0i6sCkKw18BZLaIleD342ApuuzB8XYOD"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "8d78f2867ceb64df0d8b",
+      "agency_name": "Moxee Police Department",
+      "submitted_on": "2026-08-25",
+      "submitted_date_as_published": "August 25, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Moxee%20PD%20Policy.pdf?VersionId=MMQXarFgkkLBUohlKD2P5kOr7Iw1G8IO"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "554ed7d0bc88913febe3",
+      "agency_name": "Mukilteo Police Department",
+      "submitted_on": "2026-07-06",
+      "submitted_date_as_published": "July 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mukilteo%20PD%20Policy.pdf?VersionId=LdzkjIQLuFri_z1exMJ7yp5PyOrWydw8"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "24ad927b43784dcb3ce7",
+      "agency_name": "Normandy Park Police Department",
+      "submitted_on": "2026-07-07",
+      "submitted_date_as_published": "July 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Normandy%20Park%20PD%20Policy.pdf?VersionId=18O0TMpqPRPGCuXKIAFSRKWNSwGnRuaY"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "b1977ecd9d2ab3ec2d5c",
+      "agency_name": "Northwest Seaport Alliance",
+      "submitted_on": "2026-09-27",
+      "submitted_date_as_published": "September 27, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/The%20Northwest%20Seaport%20Alliance%20Automated%20License%20Plate%20Reader%20Policy%20%28Transportation%20Agency%29.pdf?VersionId=PSIwWPA0t8b2LczbHnkgZLHxpZfFixhe"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "73e628b55690b94d0ef0",
+      "agency_name": "Ocean Shores Police Department",
+      "submitted_on": "2026-08-25",
+      "submitted_date_as_published": "August 25, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Ocean%20Shores%20PD%20Policy.pdf?VersionId=WJ4qazP5Vuv9xYvQqYVShhhZ1sKqZMnF"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "66392ae1cb0153b2a3cf",
+      "agency_name": "Omak Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Omak%20PD%20Policy.pdf?VersionId=eh5YDmuIBIffr7ZG1t0p1o9Kmwck_eBQ"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "05c5148d0b4b22aabe3d",
+      "agency_name": "Orting Police Department",
+      "submitted_on": "2026-07-29",
+      "submitted_date_as_published": "July 29, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Orting%20PD%20Policy.pdf?VersionId=L8qYrGHzR3R20nmTqLEtojMKXeVkkfkb"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "87c292bc58eeb49248cb",
+      "agency_name": "Othello Police Department",
+      "submitted_on": "2026-09-21",
+      "submitted_date_as_published": "September 21, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Othello%20PD%20Policy.pdf?VersionId=_0S08Rufur8Ry3xPe8Oc9RUl5_jcdIsj"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "c2ccfa7047c61ecd2dbe",
+      "agency_name": "Pasco Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.pasco-wa.gov/DocumentCenter/View/71306/Chapter-4139-ALPR"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "6bd5d279d99ab9dadb1c",
+      "agency_name": "Port Angeles Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Port%20Angeles%20PD%20Policy.pdf?VersionId=cuGwYyYm0D.oVazJN6p_2ae34dAYopZC"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "b8311683236732616d93",
+      "agency_name": "Port of Everett",
+      "submitted_on": "2026-09-25",
+      "submitted_date_as_published": "September 25, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Port%20of%20Everett%20ALPR%20Policy-Final.pdf?VersionId=bNnIlRDoa2JRW9WXAT5wfht.7RK4If2f"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "c90866c7f7db26ba3d04",
+      "agency_name": "Port of Seattle Police Department",
+      "submitted_on": "2026-09-17",
+      "submitted_date_as_published": "September 17, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Port%20of%20Seattle%20PD%20Policy.pdf?VersionId=.k9zcDl_4vmKXNEzhw.tNuMYP8ueifly"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "fe12079236e2332bcc82",
+      "agency_name": "Prosser Police Department",
+      "submitted_on": "2026-07-24",
+      "submitted_date_as_published": "July 24, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Prosser%20PD%20Policy.pdf?VersionId=cUQWobkFbN82JEWmrB9H2M.lk6U1B3ig"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "ecba4fbc66c42c44f4f5",
+      "agency_name": "Puyallup Police Department",
+      "submitted_on": "2026-08-19",
+      "submitted_date_as_published": "August 19, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Puyallup%20PD%20Policy.pdf?VersionId=lQN4t4GpK1exBtVj.AF8ymdfN3wM23ev"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "2e5d7249950f4dc33f63",
+      "agency_name": "Richland Police Department",
+      "submitted_on": "2026-08-24",
+      "submitted_date_as_published": "August 24, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Richland%20PD%20Policy.pdf?VersionId=f.5ccGj_LeThpkxCzQHgMHsFJv3quNtN"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "b30caafe04764fc0b750",
+      "agency_name": "Ruston Police Department",
+      "submitted_on": "2026-09-04",
+      "submitted_date_as_published": "September 4, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Ruston%20PD%20Policy.pdf?VersionId=Ff.xoPXZwteRxBpaAtMh.gMcsUbe066j"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "00eb77f679d8991297ac",
+      "agency_name": "SeaTac Police Department",
+      "submitted_on": "2026-08-06",
+      "submitted_date_as_published": "August 6, 2026",
+      "policy_link_label": "Contracts with King County Sheriff's Office",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Seatac%20PD%20Policy.pdf?VersionId=620kOEkKtwCxMu9kr6qdhaqkAVpKVAgm"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "34639a68a2ec17100085",
+      "agency_name": "Seattle Tacoma Airport",
+      "submitted_on": "2026-10-16",
+      "submitted_date_as_published": "October 16, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Seattle%20Tacoma%20Airport%20-%20ALPR%20Policy.pdf?VersionId=JMvPOLl3HrLq6wiIupx.PpZ_ffWt4dCT"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "bbea75578d9a7271c80c",
+      "agency_name": "Sedro-Woolley Police Department",
+      "submitted_on": "2026-07-14",
+      "submitted_date_as_published": "July 14, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sedro-Wooley%20PD%20Policy.pdf?VersionId=_99QC9Us9FMQqUrIRzfc8WlWlkgJCZ9F"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "24502e9e65dbbace172b",
+      "agency_name": "Selah Police Department",
+      "submitted_on": "2026-07-09",
+      "submitted_date_as_published": "July 9, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://selahwa.gov/DocumentCenter/View/1920/Policy-and-Procedure-Manual-792026"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "5af3c2d07a3a718ff119",
+      "agency_name": "Shelton Police Department",
+      "submitted_on": "2026-08-19",
+      "submitted_date_as_published": "August 19, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Shelton%20PD%20Policy.pdf?VersionId=VVqyZJOryYEvj5_epBRcTyZO_ub1FyXA"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "3396cb2769ddeab75d1f",
+      "agency_name": "Snohomish County Sheriff's Office",
+      "submitted_on": "2026-08-21",
+      "submitted_date_as_published": "August 21, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Snohomish%20County%20Sheriffs%20ALPR%20Policy.pdf?VersionId=3i2Wq3IyfoYLKt.K9Cma5TcS87DdQO9Z"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "20ed18ba9c2b6a6cf161",
+      "agency_name": "Sound Transit Police Department",
+      "submitted_on": "2026-09-29",
+      "submitted_date_as_published": "September 29, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.soundtransit.org/sites/default/files/documents/agency-policy-1503-alprs-202609.pdf"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "337c77343bc8fcac1786",
+      "agency_name": "Stanwood Police Department",
+      "submitted_on": "2026-08-31",
+      "submitted_date_as_published": "August 31, 2026",
+      "policy_link_label": "Contracts with Snohomish County Sheriff's Office",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Stanwood%20PD%20Policy.pdf?VersionId=J3ICqZzbBfe53yaTM_wNvQuofGn.oWaG"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "2270461569cc4dd2af62",
+      "agency_name": "Sultan Police Department",
+      "submitted_on": "2026-08-31",
+      "submitted_date_as_published": "August 31, 2026",
+      "policy_link_label": "Contracts with Snohomish County Sheriff's Office",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sultan%20PD%20Policy.pdf?VersionId=2acQSop50YimzRsHtywAJExi_5.hqWUH"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "247341488d3c2a3d5745",
+      "agency_name": "Sumner Police Department",
+      "submitted_on": "2026-08-27",
+      "submitted_date_as_published": "August 27, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sumner%20PD%20Policy%20433.%20Automated_License_Plate_Readers.pdf?VersionId=CM8abh3IZsf5_eujM.hZTdPuDcGq0QVY"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "d56823a0b6698b4524c4",
+      "agency_name": "Sunnyside Police Department",
+      "submitted_on": "2026-06-30",
+      "submitted_date_as_published": "June 30, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sunnyside%20PD%20Policy.pdf?VersionId=rfP6Wlao5riWz5OyjQZdN.sda39n__xl"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "a0be523b1af2d50c6cbd",
+      "agency_name": "Tieton Police Department",
+      "submitted_on": "2026-09-21",
+      "submitted_date_as_published": "September 21, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Tieton%20PD%20Policy.pdf?VersionId=hBocUGD986Pc2ohJuXIpsW75S3LHbpOl"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "43a7be3927080b55dcfb",
+      "agency_name": "Tacoma Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Tacoma%20PD%20Policy.pdf?VersionId=eecT.Rs9Jf82k6rmhNvRhuTDL5S7twpP"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "4a5963c2da86e8d7d43b",
+      "agency_name": "Toppenish Police Department",
+      "submitted_on": "2026-08-27",
+      "submitted_date_as_published": "August 27, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Toppenish%20PD%20Policy.pdf?VersionId=nQONIotqQYSW7Vcteus4AKLery8q6Vqh"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "ca9f61922b337f4c03c8",
+      "agency_name": "Tukwila Police Department",
+      "submitted_on": "2026-07-09",
+      "submitted_date_as_published": "July 9, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Tukwila%20PD%20Policy.pdf?VersionId=gJ1vGLpF92uvSrkb_DapGku1VTW04w_o"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "84c877e5f169cc9cd670",
+      "agency_name": "Union Gap Police Department",
+      "submitted_on": "2026-07-22",
+      "submitted_date_as_published": "July 22, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://uniongapwa.gov/police/policy-manual/"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "3d7bcb331f7a8ca7f87d",
+      "agency_name": "University of Washington Tacoma Transportation Services",
+      "submitted_on": "2026-09-25",
+      "submitted_date_as_published": "September 25, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://www.washington.edu/privacy/notices/licenseplates/"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "694516d5a1a1892046cb",
+      "agency_name": "University of Washington Transportation Services, Seattle Campus",
+      "submitted_on": "2026-09-25",
+      "submitted_date_as_published": "September 25, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/UW%20Seattle%20-%20ALPR%20Policy%20Document%2009252026.pdf?VersionId=crGRHXr4L1E1h0XNzTPo2mF06ZSY42vu"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "7745572c1e51e6d298c5",
+      "agency_name": "University of Washington, Bothell",
+      "submitted_on": "2026-09-25",
+      "submitted_date_as_published": "September 25, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/UW%20Bothell%20-%20Cascadia%20College%20-%20Automated%20License%20Plate%20Reader%20%28ALPR%29%20Appropriate%20Use%20Policy.pdf?VersionId=mvmhfxRjdTf8wrWgKVpKkwt3x_UcyJuB"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "1d2a52ffb538ac2583f5",
+      "agency_name": "Vancouver Police Department",
+      "submitted_on": "2026-09-29",
+      "submitted_date_as_published": "September 29, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Vancouver%20Police%20Dept%20ALPR%20policy.pdf?VersionId=gjWkH0XhdGZDxpBmTf14IYfyFiM7pjFa"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "d5fa52e8f91369043743",
+      "agency_name": "Walla Walla Police Department",
+      "submitted_on": "2026-09-22",
+      "submitted_date_as_published": "September 22, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Walla%20Walla%20PD%20Policy.pdf?VersionId=a2dPMQIgBg9TGAppHCzRerNp6X7Uy3mo"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "aeb968d92f46ae5a45bf",
+      "agency_name": "Wapato Police Department",
+      "submitted_on": "2026-10-11",
+      "submitted_date_as_published": "October 11, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Wapato%20PD%20-%20ALPR%20Policy.pdf?VersionId=fyG4_F8sQTFcc0CxpOfzzJ3wXJgHZvEE"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "8102a3be429ad352e6f3",
+      "agency_name": "Warden Police Department",
+      "submitted_on": "2026-09-14",
+      "submitted_date_as_published": "September 14, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Warden%20PD%20Policy.pdf?VersionId=lAatxImKJpxd6T73nclzz1yqnHcrQd6Z"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "77dcb20523f9ce55d97d",
+      "agency_name": "Washington State University Transportation Services (Pullman)",
+      "submitted_on": "2026-09-29",
+      "submitted_date_as_published": "September 29, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://transportation.wsu.edu/alpr-privacy-policy/"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "17c671ff49087a8a8b39",
+      "agency_name": "Wenatchee Police Department",
+      "submitted_on": "2026-07-29",
+      "submitted_date_as_published": "July 29, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Wenatchee%20PD%20Policy.pdf?VersionId=iWNsq4wPhHpD3JATooobFzrOG1mBXU9Y"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "5586d4f116b999a9a411",
+      "agency_name": "Western Washington University Transportation Services",
+      "submitted_on": "2026-10-07",
+      "submitted_date_as_published": "October 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://transportation.wwu.edu/lpr-and-dol-data-privacy-notice"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "a115fb9774543b7b9b32",
+      "agency_name": "Whitman County Sheriff's Office",
+      "submitted_on": "2026-07-09",
+      "submitted_date_as_published": "July 9, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Whitman%20County%20Sheriffs%20Office%20Policy.pdf?VersionId=lWdm_wh6jsmnLFpeTqUTDvUPbTYjrW4I"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "60d2bdfa8c0b444677b5",
+      "agency_name": "Woodland Police Department",
+      "submitted_on": "2026-07-07",
+      "submitted_date_as_published": "July 7, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Woodland%20PD%20Policy.pdf?VersionId=te.34k2QTCQid7I7jUu0ALYyl6RDprIK"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "687b9857775f23820996",
+      "agency_name": "Yakima County Sheriff's Office",
+      "submitted_on": "2026-08-06",
+      "submitted_date_as_published": "August 6, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "ccf6177a2c2d4fa29395",
+      "agency_name": "Yakima Police Department",
+      "submitted_on": "2026-08-14",
+      "submitted_date_as_published": "August 14, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Yakima%20PD%20Policy%20Manual.pdf?VersionId=viXymHyBShV35y9W3.zwz_RYNUceGoXJ"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "1b11b8e1fec425681fe3",
+      "agency_name": "Yelm Police Department",
+      "submitted_on": "2026-07-08",
+      "submitted_date_as_published": "July 8, 2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Yelm%20PD%20Policy.pdf?VersionId=a.km6GXkKef5lN2MMf.vtiqlfXonMbj9"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    },
+    {
+      "id": "c80e886a194fdc73c31f",
+      "agency_name": "Zillah Police Department",
+      "submitted_on": null,
+      "submitted_date_as_published": "July, 16.2026",
+      "policy_link_label": "click to view",
+      "policy_links_from_official_ago_page": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Zillah%20PD%20Policy.pdf?VersionId=i6LBmtxhLUi3nRpQob7xTc14n5qe2VyN"
+      ],
+      "registry_status": "agency_self_certification_listed_by_state_AG_not_independently_verified"
+    }
+  ],
+  "camera_points_published": 0,
+  "flock_vendor_assertions_published": 0,
+  "sharing_network_edges_published": 0
+}
