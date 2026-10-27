@@ -58,11 +58,12 @@
   if(typeof r.report_title!=='string'||r.report_title.length<18||r.report_title.length>400)return false;
   return r.publication_date==null||validDate(r.publication_date);
  }
- function plan(rows,manifest){
+ function plan(rows,manifest,agencyReports=[]){
   if(!Array.isArray(rows)||rows.length<1||rows.length>500||
      !manifest||manifest.schema_version!==1||!Array.isArray(manifest.reports)||manifest.reports.length>200)
     throw Error('Incomplete or unbounded original-source inputs');
   if(!rows.every(official))throw Error('Non-official state index metadata');
+  if(!Array.isArray(agencyReports)||agencyReports.length>80)throw Error('Unbounded separate government agency original catalog');
   const identities=new Map(),reviewed=new Set(),seen=new Set();
   for(const r of manifest.reports){
    if(!verified(r))throw Error('Curated independent source lacks provenance');
@@ -73,6 +74,20 @@
     throw Error('Inconsistent exact agency crosswalk');
    identities.set(r.jurisdiction_key,{jurisdiction_key:r.jurisdiction_key,
      agency_name:r.agency_name,patterns:aliases(r.agency_name)});
+  }
+  let agencyAuthoredReviewed=0;
+  // A government agency's internal audit may be page-reviewed while *not*
+  // being an independent third-party audit. Remove such known sources from
+  // the pending review queue without promoting their evidence tier.
+  for(const r of agencyReports){
+   if(r.state!=='MN')continue;
+   if(!['agency_authored_audit','agency_internal_audit'].includes(r.publisher_type)||
+      !originalUrl(r.source_url)||!r.jurisdiction_key?.endsWith('|MN')||
+      !/^[a-f0-9]{64}$/.test(r.content_sha256||'')||
+      !Array.isArray(r.findings)||!r.findings.length||!Array.isArray(r.pages_reviewed)||!r.pages_reviewed.length)
+    throw Error('Untrusted internal source cannot clear a pending government report');
+   if(reviewed.has(r.source_url))throw Error('Source duplicated across original review tiers');
+   reviewed.add(r.source_url);agencyAuthoredReviewed++;
   }
   const candidates=[];
   for(const r of rows){
@@ -105,7 +120,8 @@
     a.source_url.localeCompare(b.source_url));
   return {
    schema_version:1,scope:'state_original_registry_metadata_only',
-   scanned_reports:rows.length,curated_reports:reviewed.size,
+   scanned_reports:rows.length,curated_reports:manifest.reports.length,
+   agency_authored_reviewed:agencyAuthoredReviewed,
    matched_reviewed_agencies:identities.size,
    flock_titles_total:rows.filter(r=>r.title_scope==='flock_named_in_title').length,
    flock_titles_unreviewed:candidates.filter(c=>c.title_scope==='flock_named_in_title').length,
