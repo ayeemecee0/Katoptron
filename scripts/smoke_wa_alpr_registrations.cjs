@@ -18,6 +18,18 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#sourceTriageStatus')?.textContent?.includes('71 AGO-versioned'),
    null,{timeout:15000});
   assert.equal(await page.locator('#sourceTriageQueue article').count(),10);
+  await page.waitForFunction(()=>document.querySelector('#heldOriginalStatus')?.textContent?.startsWith('7 original source'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#heldOriginalResults article').count(),7);
+  const holdContent=await page.locator('#heldOriginalResults').textContent();
+  assert.match(holdContent,/Kelso Police Department/);
+  assert.match(holdContent,/Kittitas Police Department/);
+  assert.match(holdContent,/Kirkland Police Department/);
+  assert.match(holdContent,/Original PDF pages have no extractable content/);
+  assert.match(holdContent,/Four-page image-based original requires visual review/);
+  assert.match(holdContent,/Full policy manual exceeds bounded page guard/);
+  assert.match(await page.locator('#heldOriginalEvidence').textContent(),/None is verified policy content or a confirmed Flock installation/);
+  assert.equal(await page.locator('#heldOriginalResults a').count(),0);
   await page.waitForFunction(()=>document.querySelector('#flockOriginalStatus')?.textContent?.startsWith('8 individually original-page-reviewed'),
    null,{timeout:15000});
   assert.equal(await page.locator('#flockOriginalResults article').count(),9);
@@ -89,7 +101,7 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
   await page.locator('#search').fill('Kelso Police');
   assert.equal(await page.locator('#results article').count(),1);
-  assert.match(await page.locator('#results').textContent(),/Source retrieval held/);
+  assert.match(await page.locator('#results').textContent(),/Original PDF pages have no extractable content/);
   await page.locator('#search').fill('Federal Way');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/individually verified original Flock-reference summary/);
