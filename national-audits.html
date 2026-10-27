@@ -89,7 +89,7 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
 </main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
@@ -244,10 +244,14 @@ function renderNationalCoverage(){
  const d=APP.nationalCoverage;if(!d)return;
  $('nationalCoverageStatus').textContent=d.total+
   ' jurisdictions enrolled. '+d.seeded+' have an original-government publication seed; '+d.without+
-  ' lack one. Published source links are not camera or agency-inventory verification.';
+  ' lack one. '+(APP.nationalSourceReceipts?APP.nationalSourceReceipts.counts.accessible+
+  ' checked original sources retrieved; '+APP.nationalSourceReceipts.counts.held+' held. ':'')+
+  'Published source links are not camera or agency-inventory verification.';
  const metrics=$('nationalCoverageMetrics');metrics.replaceChildren();
  for(const [n,label] of [[d.total,'US states and DC enrolled'],[d.seeded,'With curated original-government seeds'],
-  [d.without,'No authenticated original source yet'],[d.seedUrls+d.legacyUrls,'Official publication links monitored']]){
+  [d.without,'No official original seed yet'],[d.seedUrls+d.legacyUrls,'Official publication links curated'],
+  [APP.nationalSourceReceipts?.counts.accessible??0,'New government originals reachable at inspection'],
+  [APP.nationalSourceReceipts?.counts.held??0,'New original sources held for verification']]){
   const a=el('div');a.append(el('strong',n),el('span',label));metrics.append(a);
  }
  const q=$('nationalCoverageSearch').value.trim().toLowerCase();
@@ -261,6 +265,10 @@ function renderNationalCoverage(){
   for(const seed of x.seeds){
    const section=el('section',null,'finding');
    section.append(el('p',seed.publisher+' · '+seed.publisher_role.replaceAll('_',' ')+' · Original '+seed.kind.toUpperCase(),'muted'));
+   const receipt=APP.nationalSourceReceipts?.receipts.get(seed.id);
+   if(receipt)section.append(el('p',receipt.status.startsWith('original_')?
+    'Original publisher source retrieved and fingerprinted, NOT page-reviewed as a Flock fact.':
+    'Source currently held: '+receipt.status.replaceAll('_',' ')+'. No original document facts published.','muted'));
    const url=window.KatoptronNationwideJurisdictions.safe(seed.source_url);
    if(url){const a=el('a','Original government publication');a.href=url;a.target='_blank';a.rel='noopener noreferrer';section.append(a);}
    article.append(section);
@@ -277,11 +285,14 @@ function renderNationalCoverage(){
  if(!rows.length)results.append(el('p','No state or government source matches this search; this does not prove no Flock installations exist.'));
 }
 async function loadNationalCoverage(){
- const [r0,r1]=await Promise.all([
+ const [r0,r1,r2]=await Promise.all([
   fetch('./data/nationwide-government-jurisdiction-registry.json',{cache:'no-store',referrerPolicy:'no-referrer'}),
-  fetch('./data/national-government-audit-source-portals.json',{cache:'no-store',referrerPolicy:'no-referrer'})]);
- if(!r0.ok||!r1.ok)throw Error('Original nationwide state source registries unavailable');
- APP.nationalCoverage=window.KatoptronNationwideJurisdictions.catalog(await r0.json(),await r1.json());
+  fetch('./data/national-government-audit-source-portals.json',{cache:'no-store',referrerPolicy:'no-referrer'}),
+  fetch('./data/nationwide-original-government-source-receipts.json',{cache:'no-store',referrerPolicy:'no-referrer'})]);
+ if(!r0.ok||!r1.ok||!r2.ok)throw Error('Original nationwide state source registries unavailable');
+ const registry=await r0.json();
+ APP.nationalCoverage=window.KatoptronNationwideJurisdictions.catalog(registry,await r1.json());
+ APP.nationalSourceReceipts=window.KatoptronNationwideJurisdictions.sourceReceipts(await r2.json(),registry);
  renderNationalCoverage();
 }
 function renderPublishers(){
