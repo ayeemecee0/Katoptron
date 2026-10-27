@@ -14,7 +14,7 @@ const austin=rows.find(x=>x.state==='TX');
 assert.equal(austin.source_date,null,'A month-only report never gains an invented publication day');
 assert.match(austin.source_date_note,/Month and year/);
 const grand=rows.find(x=>x.id==='san-mateo-ca-2026-grand-jury');
-assert.match(grand.findings.map(x=>x.statement).join(' '),/not individual.*Flock/i);
+assert.match(grand.findings.map(x=>x.statement).join(' '),/NOT 582 individually verified Flock/i);
 const impact=rows.find(x=>x.state==='OR');
 assert.match(impact.findings[0].statement,/November 11, 2025/);
 assert.equal(G.overview({...impact,publisher_type:'independent_government_oversight'}),false);
