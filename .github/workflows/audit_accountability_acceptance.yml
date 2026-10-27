@@ -11,6 +11,7 @@ on:
       - 'national-audits.html'
       - 'nationwide-jurisdictions.js'
       - 'data/nationwide-government-jurisdiction-registry.json'
+      - 'data/nationwide-original-government-source-receipts.json'
       - 'scripts/test_nationwide_jurisdictions.cjs'
       - 'city-alpr-operational-statements.js'
       - 'data/verified-city-alpr-operational-statements.json'
