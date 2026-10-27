@@ -1013,6 +1013,438 @@
         }
       ],
       "content_sha256": "19f39c1f82e656aed2a7c2a8ee7e69a425fef30e43043b4d86473caee8152f6f"
+    },
+    {
+      "id": "mn-original-alpr-review-231274",
+      "jurisdiction_key": "hennepin county|MN",
+      "agency_name": "Hennepin County Sheriff's Office",
+      "report_title": "Hennepin County Sheriff's Office, Minneapolis, Minnesota: Agreed-upon Procedures [automated license plate reader program]",
+      "source_url": "https://www.lrl.mn.gov/docs/2023/mandated/231274.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2023-07-19",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "In the state-archived 2023 agreed-upon procedures report, the reviewer describes Hennepin County Sheriff's Office as operating ALPR systems on three patrol vehicles and reports no stationary ALPR units at the audit date. The console is called Neology BOSS 4.0; this historical software identity is not proof that the hardware was made by Flock."
+        }
+      ],
+      "content_sha256": "88b74b9e3a85f1f90521f56039d9ae19219b9d42d6a58231f180d4ac3bfb6119"
+    },
+    {
+      "id": "mn-original-alpr-review-260804",
+      "jurisdiction_key": "richfield|MN",
+      "agency_name": "Richfield Police Department",
+      "report_title": "Richfield Police Department 2021 ALPR Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260804.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2021-04-08",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "A state-listed 2021 Richfield independent audit describes ALPR systems on three squad cars and no stationary readers at the audit date, administered through BOSS/PAGIS software. This historical finding does not identify Flock hardware or establish when Richfield adopted stationary Flock systems."
+        }
+      ],
+      "content_sha256": "ec344ddcfc12858399f8d89d57d7d552bfc8f7402d74cd4d5f49673721610ac4"
+    },
+    {
+      "id": "mn-original-alpr-review-200577",
+      "jurisdiction_key": "shakopee|MN",
+      "agency_name": "Shakopee Police Department",
+      "report_title": "Independent Audit of the Shakopee Police Department's Automated License Plate Reader (ALPR) System",
+      "source_url": "https://www.lrl.mn.gov/docs/2020/mandated/200577.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2020-04-14",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The April 2020 Shakopee independent auditor describes Elsag Plate Hunter readers in three patrol vehicles and no stationary or fixed-location ALPRs for the audit then reviewed. This independently supports the earlier mobile Elsag technology history, not a current Flock camera inventory."
+        }
+      ],
+      "content_sha256": "8226958123e8e56be8273e610c1c0bdf0ee596d77331f02e25e1030f3a084eb8"
+    },
+    {
+      "id": "mn-original-alpr-review-200436",
+      "jurisdiction_key": "robbinsdale|MN",
+      "agency_name": "Robbinsdale Police Department",
+      "report_title": "Robbinsdale Police Department ALPR Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2020/mandated/200436.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2020-03-16",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Robbinsdale's 2020 independent ALPR audit says two squad cars used ALPR and there were no stationary readers at that audit, with BOSS/PAGIS software in use. It does not document older Flock hardware or the agency's later fixed-camera installation date."
+        }
+      ],
+      "content_sha256": "a0913bed9d9a9656aab0623f8436bf54ff7f42f8b230748e50471b851a7f248a"
+    },
+    {
+      "id": "mn-original-alpr-review-191277",
+      "jurisdiction_key": "edina|MN",
+      "agency_name": "Edina Police Department",
+      "report_title": "Edina Police Department Automated License Plate Reader (ALPR) Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191277.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2019-12-13",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Edina's December 2019 independent audit reports ALPR systems on seven squad cars and no stationary units, administered through BOSS/PAGIS. BOSS identifies the ALPR back-office software, not a confirmed reader manufacturer."
+        }
+      ],
+      "content_sha256": "c0b353319402287a6799925dc5e59ebce355c4382f643d5ba372f54af2070405"
+    },
+    {
+      "id": "mn-original-alpr-review-190963",
+      "jurisdiction_key": "brooklyn center|MN",
+      "agency_name": "Brooklyn Center Police Department",
+      "report_title": "Brooklyn Center Police Department 2019 ALPR Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/190963.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2019-09-09",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Brooklyn Center's 2019 independent audit describes ALPR units on three squad cars and no stationary units at the audit date, using BOSS/PAGIS administration. It does not establish whether the equipment was made by Flock, or any present-day camera status."
+        }
+      ],
+      "content_sha256": "e8d2759b536c125aa08c5ccfcff73d7e3a009b353eae723101317a72e6c5f970"
+    },
+    {
+      "id": "mn-original-alpr-review-190962",
+      "jurisdiction_key": "richfield|MN",
+      "agency_name": "Richfield Police Department",
+      "report_title": "Richfield Police Department 2019 ALPR Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/190962.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2019-09-03",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Richfield's September 2019 independent ALPR audit reports three squad-car readers and no stationary units, with BOSS/PAGIS software referenced. This is a source-dated historic mobile program, not a verified Flock device count."
+        }
+      ],
+      "content_sha256": "56afc72f48a8c4630f07d7f98cd1750eca5541318405f2f5d7f1716c58525c22"
+    },
+    {
+      "id": "mn-original-alpr-review-191276",
+      "jurisdiction_key": "woodbury|MN",
+      "agency_name": "Woodbury Public Safety",
+      "report_title": "Biennial Audit of the Woodbury Public Safety Department Automated License Plate Reader System: Audit Summary Report",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191276.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2017-11-13",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The November 2017 external Woodbury ALPR audit identifies 3M BOSS system software and three mobile police squads equipped with ALPR cameras. It does not establish that the historical vehicle-mounted readers were Flock devices."
+        }
+      ],
+      "content_sha256": "97e017b9e6eacc3b76cab61033605a72e86f6b6b187cf3f730a85253cbd2d146"
+    },
+    {
+      "id": "mn-original-alpr-review-191258",
+      "jurisdiction_key": "edina|MN",
+      "agency_name": "Edina Police Department",
+      "report_title": "Edina Police Department Automated License Plate Reader (ALPR) Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191258.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2017-11-07",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The November 2017 independent Edina audit states that six squad cars used ALPR systems and that the agency had no stationary readers at that date. The report describes BOSS back-office software and does not identify an earlier Flock installation."
+        }
+      ],
+      "content_sha256": "37e7d961db5db74b4bc0d1786d5fff1ba0598b8f72c2a45e84a1523055788cbe"
+    },
+    {
+      "id": "mn-original-alpr-review-191256",
+      "jurisdiction_key": "brooklyn center|MN",
+      "agency_name": "Brooklyn Center Police Department",
+      "report_title": "Brooklyn Center Police Department Automated License Plate Reader (ALPR) Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191256.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2017-10-27",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The October 2017 independent Brooklyn Center report says ALPR technology was deployed on three squad cars and no stationary readers were present. The historical BOSS back-office software reference is not evidence of Flock cameras."
+        }
+      ],
+      "content_sha256": "5bcc76f6c9c765489f8bc0212ccba21564f4be50481c3bc60509edb7e4aabe0f"
+    },
+    {
+      "id": "mn-original-alpr-review-191266",
+      "jurisdiction_key": "robbinsdale|MN",
+      "agency_name": "Robbinsdale Police Department",
+      "report_title": "Robbinsdale PD 2017 ALPR Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191266.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2017-10-27",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Robbinsdale's original 2017 external ALPR audit reports readers mounted on two squad cars and no stationary readers at its review date. BOSS software is mentioned separately; this is not historical proof of Flock equipment."
+        }
+      ],
+      "content_sha256": "cd9afaca542f85491253eb2d1279c0fb6eb3b38c9af624652a21f1aadb20c649"
+    },
+    {
+      "id": "mn-original-alpr-review-191265",
+      "jurisdiction_key": "richfield|MN",
+      "agency_name": "Richfield Police Department",
+      "report_title": "Richfield PD ALPR Audit: Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2019/mandated/191265.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2017-10-09",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 1,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Richfield's 2017 independent audit reports ALPR units on two squad cars and no stationary readers at the audit. This precedes the verified Flock-only stationary observations and does not establish earlier Flock hardware."
+        }
+      ],
+      "content_sha256": "772d675dd1dbe17cf6b87b51e0b292f0abe84305dc6e93e3b0fdcd909aa9f96f"
+    },
+    {
+      "id": "mn-original-alpr-review-200649",
+      "jurisdiction_key": "shakopee|MN",
+      "agency_name": "Shakopee Police Department",
+      "report_title": "Independent Audit of the Shakopee Police Department's Automated License Plate Reader (ALPR) System",
+      "source_url": "https://www.lrl.mn.gov/docs/2020/mandated/200649.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2017-08-01",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The original 2017 LEADS Consulting report describes Shakopee's Elsag Plate Hunter ALPR system and three mobile patrol squads. It documents the older Elsag modality only; it cannot be numerically merged with later permanent Flock location counts."
+        }
+      ],
+      "content_sha256": "23277ff77682bd859d8791c33c570fb2e7d148a701dcaddc4cd1fe6288515cc9"
+    },
+    {
+      "id": "mn-original-alpr-review-261168",
+      "jurisdiction_key": "west saint paul|MN",
+      "agency_name": "West Saint Paul Police Department",
+      "report_title": "West Saint Paul Police Department 2026 ALPR Audit (AXON System): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/261168.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2026-08-04",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The August 2026 external audit of West Saint Paul's Axon ALPR system reports 14 mobile Axon units at the audit date. This is a separate patrol-vehicle technology from the department's separately audited 10 stationary Flock units; the counts must not be combined as one Flock inventory."
+        }
+      ],
+      "content_sha256": "8021e5a3667e410726a3b7e28be4f1300e4ec871a63412211ed00c16a98d813e"
+    },
+    {
+      "id": "mn-original-alpr-review-260189",
+      "jurisdiction_key": "robbinsdale|MN",
+      "agency_name": "Robbinsdale Police Department",
+      "report_title": "Robbinsdale Police Department 2026 ALPR Audit (AXON System): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260189.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2026-01-29",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "A January 2026 Robbinsdale independent audit reports 11 active mobile Axon ALPR units during its review of the Axon system. Those mobile Axon units are distinct from Robbinsdale's separate source-reviewed stationary Flock devices."
+        }
+      ],
+      "content_sha256": "6e08a704cf379560212c57a9155e4c88c2d0160221e0811bb9e6fbe3ca99751c"
+    },
+    {
+      "id": "mn-original-alpr-review-251684",
+      "jurisdiction_key": "hennepin county|MN",
+      "agency_name": "Hennepin County Sheriff's Office",
+      "report_title": "Hennepin County Sheriff's Office 2025 ALPR Audit (AXON System) (automated license plate reader program)",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251684.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2025-10-28",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Hennepin County Sheriff's Office's October 2025 Axon-system audit describes approximately 32 active Axon ALPR systems mounted on patrol vehicles and no stationary Axon readers. These are not 32 stationary Flock cameras."
+        }
+      ],
+      "content_sha256": "24161480a4b64d5618101fa4c32fe3178138429bf3f6325b027babcd30552822"
+    },
+    {
+      "id": "mn-original-alpr-review-251686",
+      "jurisdiction_key": "champlin|MN",
+      "agency_name": "Champlin Police Department",
+      "report_title": "Champlin Police Department 2025 ALPR Audit (AXON): Executive Summary (Automated License Plate Readers)",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251686.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2025-10-28",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "Champlin's independent October 2025 Axon ALPR audit reports approximately 14 active mobile Axon units. They are a separate vendor and mobility class from the six stationary/flex Flock devices reported in the agency's independently reviewed Flock audit."
+        }
+      ],
+      "content_sha256": "2032a1a35e05b189f1afc739fa157f05dbcb1c0c09f479ab2fa47a4a69937769"
+    },
+    {
+      "id": "mn-original-alpr-review-251640",
+      "jurisdiction_key": "university of minnesota|MN",
+      "agency_name": "University of Minnesota Police Department",
+      "report_title": "UMN Police Department 2025 ALPR Audit (AXON): Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251640.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Original independently published report (see cited PDF)",
+      "report_date": "2025-10-15",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2
+      ],
+      "findings": [
+        {
+          "key": "historical_original_equipment_modality",
+          "page": 2,
+          "scope": "auditor_reported_historical_inventory",
+          "statement": "The University of Minnesota Police Department's October 2025 external Axon ALPR audit reports approximately 29 active mobile units in the Axon system. That observation cannot be added to the separate Flock stationary camera count as Flock readers."
+        }
+      ],
+      "content_sha256": "ee62cc69d51ba755e67dfeb235e5375ca08f6915d1dec72c9de53df003cc3a66"
     }
   ]
 }
