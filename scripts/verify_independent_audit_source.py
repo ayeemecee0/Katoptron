@@ -48,6 +48,8 @@ def manifest_rows(source):
   if not isinstance(key,str) or not re.fullmatch(r"[a-z0-9-]{5,120}",key) or key in ids:
    raise ValueError("Duplicate or invalid audit ID")
   ids.add(key)
+  if not isinstance(row.get("content_sha256"),str) or not re.fullmatch(r"[0-9a-f]{64}",row["content_sha256"]):
+   raise ValueError("Verified source requires a pinned PDF digest")
   if not isinstance(row.get("findings"),list) or not row["findings"] or len(row["findings"])>25:
    raise ValueError("Invalid bounded original claims")
   if not all(isinstance(f,dict) and isinstance(f.get("page"),int) and
@@ -72,6 +74,8 @@ def get_pdf(url,fetcher=None):
 def verify_pdf(report,payload,reader_class=None):
  if not isinstance(payload,bytes) or len(payload)>MAX_BYTES or not payload.startswith(b"%PDF-"):
   raise ValueError("Invalid original audit PDF bytes")
+ if hashlib.sha256(payload).hexdigest()!=report.get("content_sha256"):
+  raise ValueError("Original auditor PDF version changed; needs manual independent re-review")
  if reader_class is None:
   from pypdf import PdfReader
   reader_class=PdfReader
