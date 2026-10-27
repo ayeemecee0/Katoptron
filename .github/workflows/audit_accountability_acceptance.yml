@@ -4,6 +4,8 @@ on:
     paths:
       - 'agency-audit-engine.js'
       - 'agency-audit.html'
+      - 'mn-alpr-audits.html'
+      - 'scripts/smoke_mn_alpr_audit_registry.cjs'
       - 'agency-intelligence.js'
       - 'agency-timeline.js'
       - 'scripts/test_agency_audit_engine.cjs'
@@ -41,4 +43,6 @@ jobs:
       - name: Verify actual source-linked audit and request draft in Chromium
         env:
           KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
-        run: node scripts/smoke_agency_audit.cjs
+        run: |
+          node scripts/smoke_agency_audit.cjs
+          node scripts/smoke_mn_alpr_audit_registry.cjs
