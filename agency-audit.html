@@ -79,6 +79,8 @@ textarea{width:100%;min-height:350px;background:#091921;font-size:.87rem}
 <a id="watch" href="./government-watch.html">Government Watch</a>
 </div>
 </div>
+<section aria-labelledby="historicalHeading"><h2 id="historicalHeading">Cross-period original audit history</h2>
+<p class="muted">Only independently reviewed, byte-pinned original audit PDFs for the same agency may establish a historical comparison. Differences in equipment types are never added or subtracted, and absent records remain unknown.</p><div id="historicalFindings" class="panel" aria-live="polite"></div></section>
 <section aria-labelledby="inventoryHeading"><h2 id="inventoryHeading">Evidence inventory</h2><div class="stats" id="counts"></div></section>
 <section aria-labelledby="findingsHeading"><h2 id="findingsHeading">Prioritized investigation queue</h2>
 <p class="muted">P1 means investigate first; P2 means additional documentation would improve coverage. These are research priorities, not risk or legality findings.</p><div id="findings" class="panel"></div></section>
@@ -99,9 +101,10 @@ textarea{width:100%;min-height:350px;background:#091921;font-size:.87rem}
 <script src="./agency-intelligence.js"></script>
 <script src="./agency-timeline.js"></script>
 <script src="./agency-audit-engine.js"></script>
+<script src="./audit-history.js"></script>
 <script>
 'use strict';
-const A=window.KatoptronIntelligence,T=window.KatoptronTimeline,E=window.KatoptronAudit;
+const A=window.KatoptronIntelligence,T=window.KatoptronTimeline,E=window.KatoptronAudit,H=window.KatoptronAuditHistory;
 const el=id=>document.getElementById(id);
 let groups=[],audit=null,selection=0,originalAuditReports=[],originalAuditStatus='unavailable';
 function node(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
@@ -154,6 +157,24 @@ function render(){
   c.append(m,node('h3',f.title),node('p',f.detail),node('p','Investigate: '+f.question));
   const refs=node('div',null,'links');for(const u of f.sources)link(refs,u,'Compare cited source');
   c.append(refs);el('findings').append(c);
+ }
+ el('historicalFindings').replaceChildren();
+ const historyEvents=H.compare(originalAuditReports,audit.key);
+ if(originalAuditStatus!=='ok'){
+  el('historicalFindings').append(node('p','Reviewed historical audit sources unavailable. No absence or change is inferred.'));
+ }else if(!historyEvents.length){
+  el('historicalFindings').append(node('p','No comparable pairs of independently reviewed original audits are indexed for this exact agency. This does not prove its equipment or policies stayed the same.'));
+ }else{
+  for(const event of historyEvents){
+   const card=node('article',null,'item');
+   card.append(node('h3',event.title),node('p',event.detail),
+    node('p','Original audit dates: '+event.earlier_date+' → '+event.later_date+
+     '. Earlier reviewed period: '+event.earlier_period.join(' to ')+
+     '. Later reviewed period: '+event.later_period.join(' to ')+'.','muted'));
+   const citations=node('div',null,'links');
+   for(const source of event.citations)link(citations,source,'Read original audited page');
+   card.append(citations);el('historicalFindings').append(card);
+  }
  }
  el('sources').replaceChildren();
  if(!audit.inventory.length)el('sources').append(node('p','No source-backed claims in this dossier. The research queue remains unresolved.'));
