@@ -3,6 +3,22 @@ const assert=require('node:assert/strict');
 const API=require('../nationwide-jurisdictions.js');
 const sources=require('../data/nationwide-government-jurisdiction-registry.json');
 const old=require('../data/national-government-audit-source-portals.json');
+const receiptData=require('../data/nationwide-original-government-source-receipts.json');
+const check=API.sourceReceipts(receiptData,sources);
+assert.equal(check.counts.accessible,31);
+assert.equal(check.counts.held,12);
+assert.equal(check.receipts.size,43);
+assert.equal(check.receipts.get('dc-independent-government-policy-recommendation').page_count_at_observation,6);
+assert.equal(check.receipts.get('ny-state-model-policy-not-agency-adoption').status,'held_redirect');
+function rejectReceipt(mut){
+ const r=JSON.parse(JSON.stringify(receiptData));mut(r);
+ assert.throws(()=>API.sourceReceipts(r,sources),/invalid|incomplete|Held|Source|Nationwide/i);
+}
+rejectReceipt(r=>{r.receipts[0].flock_equipment_verified=true;});
+rejectReceipt(r=>{r.receipts[0].source_url='https://evil.example';});
+rejectReceipt(r=>{r.receipts[0].state='NY';});
+rejectReceipt(r=>{r.receipts.pop();});
+rejectReceipt(r=>{const held=r.receipts.find(x=>x.status.startsWith('held'));held.sha256_at_observation='0'.repeat(64);});
 const result=API.catalog(sources,old);
 assert.equal(result.total,51);
 assert.equal(result.seeded,51);
