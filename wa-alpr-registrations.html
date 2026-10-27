@@ -86,12 +86,13 @@ function render(){
    node('p','Agency-certified registration; manufacturer, locations and current operating status unverified','muted'));
   const actions=node('div',null,'actions');
   for(const href of r.policy_links_from_official_ago_page){
+   if(app.heldFlockReview?.registry_agency===r.agency_name)continue;
    const link=S.safe(href);
    if(!link)continue;
    const a=node('a',r.policy_link_label&&r.policy_link_label!=='click to view'?'Policy link: '+r.policy_link_label:'View policy linked by Attorney General');
    a.href=link;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
   }
-  if(!actions.childNodes.length)actions.append(node('span','No source policy URL published in this snapshot','muted'));
+  if(!actions.childNodes.length)actions.append(node('span',app.heldFlockReview?.registry_agency===r.agency_name?'Source linked by the Attorney General but held from direct promotion pending agency-attribution review':'No source policy URL published in this snapshot','muted'));
   item.append(actions);
   const receipt=app.sourceReceipts.get(r.agency_name);
   if(receipt){
