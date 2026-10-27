@@ -1,14 +1,28 @@
 #!/usr/bin/env python3
 """Verify source-pinned original government ALPR primary documents.
 
-Eight exact public government PDFs, mutually exclusive role and status types.
+Nine exact public government PDFs, mutually exclusive role and status types.
 A PDF with an unreviewed redirect is HELD rather than grandfathered into facts.
 No full PDF, person-level plate read, private search log or movement data stored.
 """
-import hashlib,io,json,re
+import hashlib,io,json,re,urllib.request
 from pathlib import Path
 from pypdf import PdfReader
 from inspect_national_link_candidates import SOURCES,fetch
+MOLINE_ID="moline-il-signed-flock-order-2024"
+MOLINE_URL="https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023"
+VISUAL_PAGES={2,3,5}
+class DenyRedirect(urllib.request.HTTPRedirectHandler):
+ def redirect_request(self,*args,**kwargs):raise ValueError("Original government publisher redirect")
+def fetch_scanned_moline_original():
+ op=urllib.request.build_opener(DenyRedirect())
+ req=urllib.request.Request(MOLINE_URL,headers={"Accept":"application/pdf","User-Agent":"Katoptron-original-government-Moline/1.0"})
+ with op.open(req,timeout=25) as res:
+  if res.status!=200 or res.geturl()!=MOLINE_URL:raise ValueError("Unexpected original URL")
+  payload=res.read(8_000_001)
+ if not 100<len(payload)<=8_000_000 or not payload.startswith(b"%PDF-"):
+  raise ValueError("Source no longer a bounded PDF")
+ return payload
 ROOT=Path(__file__).resolve().parents[1]
 PATH=ROOT/"data"/"verified-national-government-documents.json"
 ANCHORS={
@@ -29,10 +43,11 @@ ROLE={
  "green-bay-wi-policy-may-2026":("published_department_policy","police_department"),
  "green-bay-wi-policy-draft-sept-2026":("draft_policy_unadopted","police_department"),
  "green-bay-wi-flock-order-2025":("government_published_vendor_order_form","police_department"),
- "austin-tx-commission-recommendation":("advisory_recommendation_not_binding_action","government_advisory_commission")
+ "austin-tx-commission-recommendation":("advisory_recommendation_not_binding_action","government_advisory_commission"),
+ "moline-il-signed-flock-order-2024":("signed_city_published_vendor_order_form_scanned","police_department")
 }
 def valid(records):
- if not isinstance(records,dict) or records.get("schema_version")!=1 or not isinstance(records.get("documents"),list) or len(records["documents"])!=8:
+ if not isinstance(records,dict) or records.get("schema_version")!=1 or not isinstance(records.get("documents"),list) or len(records["documents"])!=9:
   raise ValueError("Original government document ledger count/schema invalid")
  seen=set()
  for row in records["documents"]:
