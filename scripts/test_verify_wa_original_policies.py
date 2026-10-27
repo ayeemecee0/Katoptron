@@ -12,8 +12,8 @@ class Pg:
 class TestOriginalWashingtonPolicies(unittest.TestCase):
  def test_exact_ag_link_and_typed_source(self):
   rows=M.validate(DATA,AGO)
-  self.assertEqual(len(rows),2)
-  self.assertEqual(set(r["agency_name"] for r in rows),{"Auburn Police Department","Black Diamond Police Department"})
+  self.assertEqual(len(rows),3)
+  self.assertEqual(set(r["agency_name"] for r in rows),{"Auburn Police Department","Black Diamond Police Department","Normandy Park Police Department"})
   self.assertTrue(all(r["state"]=="WA" for r in rows))
   self.assertTrue(all("flock_vendor" not in r for r in rows))
  def test_reject_fake_vendor_and_source_swap(self):
@@ -58,6 +58,14 @@ class TestOriginalWashingtonPolicies(unittest.TestCase):
     super().__init__(*args,**kwargs)
     self.pages[3]=Pg()
   with self.assertRaisesRegex(ValueError,"image missing"):M.verify(m,raw,Missing)
+ def test_normandy_flock_reference_original_page_anchored_only(self):
+  rows=M.validate(DATA,AGO)
+  normandy=next(x for x in rows if x["id"].startswith("normandy-park"))
+  self.assertEqual(normandy["page_count"],5)
+  self.assertEqual(normandy["pages_reviewed"],[1,3,4,5])
+  self.assertEqual(M.EXPECTED[normandy["id"]]["anchors"][1][0],"flock safety camera administrators")
+  self.assertTrue(any(f["category"]=="policy_flock_equipment_reference" for f in normandy["findings"]))
+  self.assertFalse(any("operational_status" in r or "flock_vendor" in r for r in rows))
  def test_reject_registry_link_substitution(self):
   rows=M.validate(DATA,AGO)
   changed=json.loads(json.dumps(AGO))
