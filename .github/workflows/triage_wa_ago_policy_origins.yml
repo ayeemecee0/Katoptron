@@ -5,6 +5,7 @@ on:
       - 'scripts/triage_wa_ago_policy_origins.py'
       - 'scripts/test_triage_wa_ago_policy_origins.py'
       - 'data/wa-original-agency-alpr-registrations.json'
+      - 'data/wa-ago-original-policy-source-inspection.json'
       - '.github/workflows/triage_wa_ago_policy_origins.yml'
   workflow_dispatch:
   schedule:
@@ -28,6 +29,7 @@ jobs:
       - name: Bounded parallel checks of only AGO version-pinned PDF originals
         run: python scripts/triage_wa_ago_policy_origins.py --workers 5
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: washington-ago-original-policy-metadata-triage
           path: .katoptron-ci/wa-ag-linked-policy-original-receipts.json
