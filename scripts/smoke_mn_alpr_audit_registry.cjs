@@ -77,17 +77,18 @@ const assert=require('node:assert/strict');
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#queueStatus')?.textContent?.includes('queued original state audit'),
    null,{timeout:15000});
-  assert.match(await page.locator('#queueStatus').textContent(),/^3 queued original state audit/);
+  assert.match(await page.locator('#queueStatus').textContent(),/^1 queued original state audit/);
   const queue=page.locator('#queueCards article');
-  assert.equal(await queue.count(),3);
-  assert.match(await queue.first().textContent(),/Wyoming Police Department/);
-  assert.match(await queue.first().textContent(),/P0/);
-  assert.match(await queue.nth(1).textContent(),/Shakopee/);
-  assert.match(await queue.nth(1).textContent(),/Manufacturer not identified in title/);
-  assert.match(await queue.nth(2).textContent(),/Champlin/);
-  assert.match(await queue.nth(2).textContent(),/Different\/multiple vendors/);
+  assert.equal(await queue.count(),1);
+  assert.match(await queue.first().textContent(),/Champlin/);
+  assert.match(await queue.first().textContent(),/P2/);
+  assert.match(await queue.first().textContent(),/Different\/multiple vendors/);
   assert.ok(!(await page.locator('#queueCards').textContent()).includes('verified current'));
-  assert.ok(await queue.nth(1).locator('a[href*="agency-audit.html?place=shakopee"]').count());
+  for(const alreadyReviewed of ['Wyoming Police','West Saint Paul','Shakopee']){
+   assert.ok(!(await page.locator('#queueCards').textContent()).includes(alreadyReviewed),
+    'Reviewed originals must not remain falsely in the review queue');
+  }
+  assert.ok(await queue.first().locator('a[href*="agency-audit.html?place=champlin"]').count());
   assert.equal(await page.locator('#reports article').count(),2);
   assert.deepEqual(errors,[]);
   console.log('OFFICIAL MINNESOTA AUDIT LIBRARY BROWSER PASS: metadata tiers, strict source links, filtering, deep link, mobile');
