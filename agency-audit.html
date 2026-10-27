@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Automated Accountability Audit</title>
+<meta name="description" content="Generate source-cited Flock Safety agency accountability audits: evidence gaps, source differences, dated changes and public-records request drafts.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0a121a;color:#e7f0f6}
+*{box-sizing:border-box}body{margin:0;line-height:1.55}
+a{color:#9cdeed}header{padding:1.15rem max(1rem,4vw);background:#11212f;border-bottom:1px solid #365063;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-weight:800;letter-spacing:.13em;text-decoration:none;color:inherit}
+nav{display:flex;gap:1rem;flex-wrap:wrap;font-size:.83rem}
+main{max-width:1120px;margin:0 auto;padding:2.4rem 1.25rem 5rem}
+h1{font-size:clamp(2rem,4vw,3rem);line-height:1.12;margin:.45rem 0}h2{margin-top:2rem;font-size:1.42rem}
+p{color:#c0d0da}.kicker{color:#98dce7;text-transform:uppercase;font-size:.74rem;letter-spacing:.16em;font-weight:700}
+.intro{max-width:840px}.note{background:#102b37;padding:1rem;border-left:3px solid #74bcce;border-radius:4px}
+.search{display:flex;align-items:end;flex-wrap:wrap;gap:.7rem;margin:1.4rem 0}
+.search label{flex:1 1 240px}.search label span{display:block;margin:0 0 .35rem}
+input,button,textarea{font:inherit;border-radius:8px;padding:.73rem;background:#142a39;color:#f1fbff;border:1px solid #668397}
+input{width:100%}button{cursor:pointer}button:hover{background:#204357}
+button:disabled{opacity:.6;cursor:not-allowed}
+#matches{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.55rem;margin:0 0 1.2rem}
+#matches button{text-align:left}.muted{color:#a7bfcd;font-size:.86rem}.status{min-height:1.5rem}
+.panel{border:1px solid #385468;background:#122434;border-radius:12px;padding:1.15rem;margin:1rem 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.7rem}
+.stat{background:#192f40;border-radius:8px;padding:.9rem}.stat strong{display:block;font-size:1.65rem;font-variant-numeric:tabular-nums}
+.stat span{display:block;color:#bfd0db;font-size:.8rem}
+.meta{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.9rem 0}
+.chip{padding:.18rem .5rem;border:1px solid #648296;border-radius:5px;font-size:.72rem;letter-spacing:.02em}
+.item{border-top:1px solid #365267;padding:1rem 0}
+.item h3{margin:.3rem 0}.item p{margin:.35rem 0}
+.links{display:flex;gap:1rem;flex-wrap:wrap}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap}
+textarea{width:100%;min-height:350px;background:#091921;font-size:.87rem}
+[hidden]{display:none!important}:focus-visible{outline:3px solid #99e6f6;outline-offset:3px}
+@media print{
+ :root{color-scheme:light;background:white;color:#172c3d}
+ body,main{background:white;color:#172c3d}
+ header,.search,#matches,.actions,.no-print{display:none!important}
+ main{max-width:100%;padding:0}.panel,.stat{color:#172c3d;background:white;border-color:#abb9c0}
+ p,.muted,.stat span{color:#344957}
+ a{color:#064a68;overflow-wrap:anywhere}
+ a:after{content:" (" attr(href) ")";font-size:8pt}
+ .item{break-inside:avoid-page}
+ @page{margin:15mm}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to accountability audit</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Primary">
+<a href="./index.html">CAMERA MAP</a><a href="./agency-xray.html">AGENCY X-RAY</a>
+<a href="./agency-timeline.html">ACCOUNTABILITY TIMELINE</a>
+<a href="./government-watch.html">GOVERNMENT WATCH</a>
+<a href="./methodology.html">METHODOLOGY</a>
+</nav></header>
+<main id="main">
+<p class="kicker">Automated Accountability Engine · Phase 1</p>
+<h1>Audit what can be verified.<br>Investigate what cannot.</h1>
+<p class="intro">Generate a reproducible, evidence-linked review for any locality currently covered by Katoptron. Detect reported source changes, flag comparable inconsistencies and produce prioritized public-records questions. No private reports, plate reads or account data are requested.</p>
+<p class="note"><strong>What this is not:</strong> A legal compliance determination, agency integrity score, certification of physical equipment, or proof of surveillance activity. A locality may contain several different agencies. Missing indexed records are <strong>unknown</strong>, not missing government compliance.</p>
+<div class="search">
+<label for="q"><span>Find a locality with published evidence</span><input id="q" type="search" maxlength="120" autocomplete="off" placeholder="Folsom, Palo Alto, Elk Grove…"></label>
+<button id="clear" type="button">Clear</button>
+</div>
+<p id="status" class="status muted" role="status" aria-live="polite">Loading published evidence…</p>
+<div id="matches" aria-label="Matching public agency localities"></div>
+<section id="report" hidden aria-labelledby="reportTitle">
+<div class="panel">
+<p class="kicker">Source-dated public evidence assessment</p><h2 id="reportTitle"></h2>
+<p id="stamp" class="muted"></p><p id="disclaimer"></p>
+<div class="actions">
+<button id="print" type="button">Print / Save as PDF</button>
+<button id="draft" type="button">Prepare records request draft</button>
+<a id="xray" href="./agency-xray.html">Agency X-Ray</a>
+<a id="timeline" href="./agency-timeline.html">Agency timeline</a>
+<a id="watch" href="./government-watch.html">Government Watch</a>
+</div>
+</div>
+<section aria-labelledby="inventoryHeading"><h2 id="inventoryHeading">Evidence inventory</h2><div class="stats" id="counts"></div></section>
+<section aria-labelledby="findingsHeading"><h2 id="findingsHeading">Prioritized investigation queue</h2>
+<p class="muted">P1 means investigate first; P2 means additional documentation would improve coverage. These are research priorities, not risk or legality findings.</p><div id="findings" class="panel"></div></section>
+<section aria-labelledby="sourcesHeading"><h2 id="sourcesHeading">Linked public evidence receipts</h2>
+<p class="muted">Direct government records, source-backed GIS documents and dated Flock-hosted statements are separate evidence tiers. Secondary observations cannot by themselves confirm operating permissions.</p>
+<div id="sources" class="panel"></div></section>
+<section id="draftArea" hidden aria-labelledby="draftHeading">
+<h2 id="draftHeading">Public records request — editable draft</h2>
+<p>This is not sent anywhere. Identify the correct records custodian, review local legal requirements and remove irrelevant requests before sending. Do not request private individual ALPR queries.</p>
+<textarea id="requestText" aria-label="Public records request text" readonly></textarea>
+<div class="actions no-print"><button id="copy" type="button">Copy draft text</button><span id="copyStatus" role="status"></span></div>
+</section>
+<p class="muted">The report reflects currently published evidence at load time, not a complete census of records or an independently conducted official audit. Only original cited records can resolve an unverified claim.</p>
+</section>
+</main>
+<script src="./config.js"></script>
+<script src="./agency-intelligence.js"></script>
+<script src="./agency-timeline.js"></script>
+<script src="./agency-audit-engine.js"></script>
+<script>
+'use strict';
+const A=window.KatoptronIntelligence,T=window.KatoptronTimeline,E=window.KatoptronAudit;
+const el=id=>document.getElementById(id);
+let groups=[],audit=null,selection=0;
+function node(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
+function link(where,href,label){
+ const url=E.safe(href);if(!url)return;
+ const a=node('a',label||'Original cited source');a.href=url;a.rel='noopener noreferrer';a.target='_blank';where.append(a);
+}
+function renderMatches(){
+ const term=el('q').value.trim().toLowerCase();
+ const matches=groups.filter(g=>g.label.toLowerCase().includes(term)).slice(0,40);
+ el('matches').replaceChildren();
+ for(const g of matches){
+  const b=node('button',g.label);b.type='button';
+  b.append(node('span',' · '+g.events.length+' government event(s) · '+g.portals.length+' Flock portal snapshot(s)','muted'));
+  b.addEventListener('click',()=>select(g));el('matches').append(b);
+ }
+ el('status').textContent=groups.length+' indexed localities, '+matches.length+' shown. Select one to generate an audit.';
+}
+function render(){
+ if(!audit)return;
+ el('report').hidden=false;el('draftArea').hidden=true;
+ el('reportTitle').textContent=audit.label;
+ el('stamp').textContent='Generated '+audit.asOf+' · Deterministic review rules v'+audit.version+
+  ' · Signed contract lookup: '+(audit.contractStatus==='ok'?'checked':'unavailable');
+ el('disclaimer').textContent=audit.disclaimer;
+ for(const [id,href] of [['xray','agency-xray.html'],['timeline','agency-timeline.html'],['watch','government-watch.html']]){
+  el(id).href='./'+href+'?place='+encodeURIComponent(audit.key);
+ }
+ const values=[
+  ['Government actions',audit.counts.governmentRecords],
+  ['Government program disclosures',audit.counts.governmentPrograms],
+  ['Source-mapped exact positions',audit.counts.exactGovernmentPositions],
+  ['Original Flock portal snapshots',audit.counts.vendorSnapshots],
+  ['Original sharing source lists',audit.counts.originalSharingSources],
+  ['Reviewed signed contracts',audit.counts.reviewedSignedContracts],
+  ['Unique cited URLs',audit.counts.uniqueCitedSources],
+  ['Investigation findings',audit.findings.length]
+ ];
+ el('counts').replaceChildren();
+ for(const [label,count] of values){
+  const d=node('div',null,'stat');
+  d.append(node('strong',count.toLocaleString('en-US')),node('span',label));el('counts').append(d);
+ }
+ el('findings').replaceChildren();
+ if(!audit.findings.length)el('findings').append(node('p','No findings from available rules; this is not proof the agency complies with every requirement.'));
+ for(const f of audit.findings){
+  const c=node('article',null,'item');
+  const m=node('div',null,'meta');m.append(node('span',f.priority,'chip'),node('span',f.type.replaceAll('_',' '),'muted'));
+  c.append(m,node('h3',f.title),node('p',f.detail),node('p','Investigate: '+f.question));
+  const refs=node('div',null,'links');for(const u of f.sources)link(refs,u,'Compare cited source');
+  c.append(refs);el('findings').append(c);
+ }
+ el('sources').replaceChildren();
+ if(!audit.inventory.length)el('sources').append(node('p','No source-backed claims in this dossier. The research queue remains unresolved.'));
+ for(const r of audit.inventory){
+  const c=node('article',null,'item');
+  c.append(node('h3',r.title),node('p',r.detail),
+   node('p',r.tier.replaceAll('_',' ')+(r.date?' · '+r.date:''),'muted'));
+  const refs=node('div',null,'links');for(const u of r.sources)link(refs,u,'View cited publisher');
+  c.append(refs);el('sources').append(c);
+ }
+}
+async function select(group){
+ const token=++selection;
+ el('matches').replaceChildren();
+ el('status').textContent='Checking reviewed signed agreements and compiling '+group.label+'…';
+ el('report').hidden=true;el('draftArea').hidden=true;audit=null;
+ let contracts=[],contractStatus='ok';
+ try{contracts=await T.contractsFor(group.label);}
+ catch(err){contractStatus='unavailable';}
+ if(token!==selection)return;
+ try{
+  audit=E.assess(group,contracts,{contractStatus});
+  const url=new URL(location.href);url.searchParams.set('place',group.key);history.replaceState(null,'',url);
+  render();
+  el('status').textContent='Audit generated from published records for '+group.label+
+   '. '+audit.findings.length+' documented investigation item(s).'+
+   (contractStatus==='unavailable'?' Signed agreement lookup failed; no absence claim made.':'');
+  el('report').scrollIntoView({block:'start',behavior:'smooth'});
+ }catch(err){el('status').textContent='Audit could not be generated: '+err.message;}
+}
+el('q').addEventListener('input',()=>{selection++;renderMatches();});
+el('clear').addEventListener('click',()=>{
+ selection++;el('q').value='';el('report').hidden=true;renderMatches();
+});
+el('print').addEventListener('click',()=>{if(audit)window.print();});
+el('draft').addEventListener('click',()=>{
+ if(!audit)return;
+ el('requestText').value=E.requestDraft(audit);
+ el('draftArea').hidden=false;el('copyStatus').textContent='';
+ el('draftArea').scrollIntoView({block:'start',behavior:'smooth'});
+});
+el('copy').addEventListener('click',async()=>{
+ if(!audit)return;
+ try{await navigator.clipboard.writeText(el('requestText').value);el('copyStatus').textContent='Copied to clipboard.';}
+ catch{el('requestText').focus();el('requestText').select();el('copyStatus').textContent='Select the highlighted text and copy it manually.';}
+});
+A.load().then(data=>{
+ groups=data;renderMatches();
+ const key=new URL(location.href).searchParams.get('place');
+ const g=groups.find(g=>g.key===key);if(g)select(g);
+}).catch(error=>{
+ el('status').textContent='Published public evidence cannot be loaded: '+error.message+
+  '. No unverified audit is generated.';
+});
+</script></body></html>
