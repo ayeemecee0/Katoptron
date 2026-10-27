@@ -13,6 +13,22 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#cityStatusState')?.textContent?.startsWith('2 dated original city'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#cityStatusResults article').count(),2);
+  const statuses=await page.locator('#cityStatusResults').textContent();
+  assert.match(statuses,/Moline Police Department/);
+  assert.match(statuses,/City of Mill Valley/);
+  assert.match(statuses,/Planned shutdown; completion not independently established/);
+  assert.match(statuses,/City-reported cameras disabled at publication/);
+  assert.match(statuses,/September 9, 2026/);
+  assert.match(statuses,/not a third-party forensic audit/);
+  assert.match(statuses,/Current live status remains unverified/);
+  const cityUrls=await page.locator('#cityStatusResults a').evaluateAll(as=>as.map(a=>a.href));
+  assert.deepEqual(cityUrls.sort(),[
+    'https://www.cityofmillvalley.gov/m/newsflash/home/detail/1639',
+    'https://www.moline.il.us/1955/License-Plate-Readers'
+  ].sort());
   await page.waitForFunction(()=>document.querySelector('#oversightStatus')?.textContent?.startsWith('3 original government oversight'),
     null,{timeout:15000});
   await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('14 official government'),
@@ -72,14 +88,20 @@ const {chromium}=require('playwright');
      href.startsWith('https://www.greenbaywi.gov/'),'Only government originals may be linked');
   await page.locator('#state').selectOption('TX');
   assert.equal(await page.locator('#primaryResults article').count(),3);
+  assert.equal(await page.locator('#cityStatusResults article').count(),0);
   assert.equal(await page.locator('#oversightResults article').count(),1);
   assert.equal(await page.locator('#publisherResults article').count(),2);
+  await page.locator('#state').selectOption('IL');
+  assert.equal(await page.locator('#cityStatusResults article').count(),1);
+  assert.match(await page.locator('#cityStatusResults').textContent(),/Moline Police Department/);
   await page.locator('#state').selectOption('WI');
   assert.equal(await page.locator('#results article').count(),1);
   assert.equal(await page.locator('#oversightResults article').count(),0);
   assert.match(await page.locator('#results').textContent(),/Green Bay/);
   await page.locator('#state').selectOption('CA');
   assert.equal(await page.locator('#results article').count(),2);
+  assert.equal(await page.locator('#cityStatusResults article').count(),1);
+  assert.match(await page.locator('#cityStatusResults').textContent(),/Mill Valley/);
   await page.locator('#q').fill('29 Flock');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/July 2026/);

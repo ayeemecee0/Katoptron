@@ -9,6 +9,9 @@ on:
       - 'agency-audit.html'
       - 'mn-alpr-audits.html'
       - 'national-audits.html'
+      - 'city-alpr-operational-statements.js'
+      - 'data/verified-city-alpr-operational-statements.json'
+      - 'scripts/test_city_alpr_operational_statements.cjs'
       - 'agency-published-audits.js'
       - 'national-government-sources.js'
       - 'national-primary-documents.js'
@@ -66,6 +69,8 @@ jobs:
           node scripts/test_agency_published_audits.cjs
           node --check national-government-sources.js
           node scripts/test_national_government_sources.cjs
+          node --check city-alpr-operational-statements.js
+          node scripts/test_city_alpr_operational_statements.cjs
           node --check national-primary-documents.js
           node scripts/test_national_primary_documents.cjs
           node --check wa-alpr-registrations.js

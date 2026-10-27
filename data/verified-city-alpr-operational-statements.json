@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "Dated original city statements, not independent technical tests or continuous live-camera status monitoring. Separate agency-reported past disablement from a proposed future shutdown.",
+  "documents": [
+    {
+      "id": "moline-il-planned-flock-pause-2026",
+      "agency": "Moline Police Department",
+      "city": "Moline",
+      "state": "IL",
+      "publisher": "City of Moline",
+      "source_url": "https://www.moline.il.us/1955/License-Plate-Readers",
+      "statement_published_on": "2026-09-15",
+      "original_html_sha256_at_review": "7dadb1a974f8021faa4e196ffb8b0a19d6641202bf47089cff41f7dc60fc3048",
+      "classification": "agency_announced_future_deactivation_not_confirmed_completed",
+      "effective_as_of": null,
+      "evidence_as_of": "2026-09-15",
+      "summary": "Moline announced an agreement to pause its nine-camera Flock fixed ALPR program and estimated full deactivation about 14 days after September 15, 2026, with physical removal taking longer. Neither the announcement nor the signed pause agreement independently confirms that equipment was later disabled or removed.",
+      "evidence_limit": "Planned event and signed terms only; do not treat passage of a proposed deadline as evidence of completion. Current live status remains unverified.",
+      "source_text_anchors": [
+        "september 15, 2026",
+        "fully deactivated within approximately 14 days"
+      ]
+    },
+    {
+      "id": "mill-valley-ca-city-reported-disabled-2026",
+      "agency": "City of Mill Valley",
+      "city": "Mill Valley",
+      "state": "CA",
+      "publisher": "City of Mill Valley",
+      "source_url": "https://www.cityofmillvalley.gov/m/newsflash/home/detail/1639",
+      "statement_published_on": "2026-10-19",
+      "original_html_sha256_at_review": "6cb358755f107c9e424ff2f352932bf22513ed0b98145d5012e7a5dff8f4c20b",
+      "classification": "city_reports_flock_cameras_already_disabled_as_of_dated_statement",
+      "effective_as_of": "2026-09-09",
+      "evidence_as_of": "2026-10-19",
+      "summary": "On October 19, 2026 Mill Valley stated that its Flock ALPR and live-feed cameras had been disabled since September 9, 2026. The city attributed its suspension decision to concerns about enforceable privacy and data-sharing safeguards in Flock's revised terms and described previously limiting ALPR retention to seven days.",
+      "evidence_limit": "Official city-reported disablement as of the published statement, not a third-party forensic audit of device configurations or proof the suspension will continue indefinitely.",
+      "source_text_anchors": [
+        "october 19, 2026",
+        "both the alpr and live-feed cameras have been disabled since september 9, 2026"
+      ]
+    }
+  ]
+}

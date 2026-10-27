@@ -1,0 +1,33 @@
+name: Verify dated city Flock operational statements
+on:
+  push:
+    paths:
+      - 'data/verified-city-alpr-operational-statements.json'
+      - 'city-alpr-operational-statements.js'
+      - 'scripts/verify_city_alpr_operational_statements.py'
+      - 'scripts/test_verify_city_alpr_operational_statements.py'
+      - 'scripts/test_city_alpr_operational_statements.cjs'
+      - '.github/workflows/verify_city_alpr_operational_statements.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '12 18 * * 2'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Original statement identity and adverse-status regression
+        run: |
+          node --check city-alpr-operational-statements.js
+          node scripts/test_city_alpr_operational_statements.cjs
+          python -m unittest discover -s scripts -p 'test_verify_city_alpr_operational_statements.py' -v
+      - name: Recheck exact official pages and dated source text
+        run: python scripts/verify_city_alpr_operational_statements.py

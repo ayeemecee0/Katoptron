@@ -1,0 +1,45 @@
+name: Inspect official Moline and Mill Valley Flock operating statements
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect_city_flock_operational_statements.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Fingerprint bounded exact official city pages without redirects
+        run: |
+          python - <<'PY'
+          import hashlib,re,urllib.request,html.parser
+          urls={
+           'moline':'https://www.moline.il.us/1955/License-Plate-Readers',
+           'mill-valley':'https://www.cityofmillvalley.gov/m/newsflash/home/detail/1639',
+          }
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+           def redirect_request(self,*args,**kwargs):raise ValueError('Unexpected government URL redirect')
+          class Text(html.parser.HTMLParser):
+           def __init__(self):super().__init__();self.v=[]
+           def handle_data(self,s):self.v.append(s)
+          opener=urllib.request.build_opener(NoRedirect())
+          for city,url in urls.items():
+           req=urllib.request.Request(url,headers={'Accept':'text/html','User-Agent':'Katoptron-public-agency-status-source-review/1.0'})
+           with opener.open(req,timeout=30) as res:
+            assert res.status==200 and res.geturl()==url
+            body=res.read(1_500_001)
+           assert 100<len(body)<=1_500_000
+           parser=Text();parser.feed(body.decode('utf8',errors='replace'))
+           text=' '.join(' '.join(parser.v).casefold().split())
+           anchors=('september 15, 2026','fully deactivated within approximately 14 days') if city=='moline' else ('october 19, 2026','both the alpr and live-feed cameras have been disabled since september 9, 2026')
+           assert all(a in text for a in anchors),(city,[a for a in anchors if a not in text])
+           print('VERIFIED_GOVERNMENT_PAGE',city,'BYTES',len(body),'SHA256',hashlib.sha256(body).hexdigest(),'URL',url,'ANCHORS',len(anchors))
+          PY
