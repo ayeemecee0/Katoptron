@@ -745,6 +745,76 @@
       "source_url": "https://www.utah.gov/pmn/files/1366651.pdf",
       "origin_role": "government_authored_publication_not_independently_page_reviewed",
       "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "in-police-technology-disclosure",
+      "state": "IN",
+      "publisher": "Lafayette Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://www.lafayette.in.gov/3787/Flock-Safety-Cameras-Frequently-Asked-Qu",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "me-city-reported-operational-outcome",
+      "state": "ME",
+      "publisher": "South Portland City Government",
+      "publisher_role": "city_reported_operational_outcome",
+      "kind": "html",
+      "source_url": "https://southportland.org/m/newsflash/Home/Detail/550",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "md-police-other-vendor-disclosure",
+      "state": "MD",
+      "publisher": "Frederick Police Department",
+      "publisher_role": "police_other_vendor_disclosure",
+      "kind": "html",
+      "source_url": "https://www.cityoffrederickmd.gov/1976/Automated-License-Plate-Readers",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "pa-government-records-appeal",
+      "state": "PA",
+      "publisher": "Pennsylvania Office of Open Records",
+      "publisher_role": "government_records_appeal",
+      "kind": "html",
+      "source_url": "https://www.openrecords.pa.gov/Appeals/DocketSheet.cfm?docket=20263039",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ri-police-technology-disclosure",
+      "state": "RI",
+      "publisher": "Providence Police Department",
+      "publisher_role": "police_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://ppd.providenceri.gov/automated-license-plate-readers/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "sc-unadopted-surveillance-bill",
+      "state": "SC",
+      "publisher": "South Carolina Legislature",
+      "publisher_role": "unadopted_surveillance_bill",
+      "kind": "html",
+      "source_url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/4675.htm",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "mt-state-alpr-statute",
+      "state": "MT",
+      "publisher": "Montana Legislature",
+      "publisher_role": "state_alpr_statute",
+      "kind": "html",
+      "source_url": "https://mca.legmt.gov/bills/mca/title_0460/chapter_0050/part_0010/section_0170/0460-0050-0010-0170.html",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
     }
   ]
 }
