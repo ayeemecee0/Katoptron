@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Minnesota Independent ALPR Audit Library</title>
+<meta name="description" content="Search official Minnesota legislative ALPR audit registry metadata. Distinguish Flock-named titles from non-Flock and manufacturer-unspecified audit reports.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#09141d;color:#eaf4f8;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.6}
+header{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem max(1rem,3vw);background:#102332;border-bottom:1px solid #365468}
+.brand{font-weight:800;letter-spacing:.12em;color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:.9rem}a{color:#9eddeb}
+main{max-width:1120px;margin:auto;padding:2.3rem 1.1rem 5rem}
+h1{line-height:1.2;margin:.25rem 0;font-size:clamp(1.8rem,4vw,2.7rem)}p{color:#c6d6df}
+.kicker{color:#9ee1ee;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem;font-weight:700}
+.notice{border-left:3px solid #83c7d5;background:#112e3c;padding:1rem}
+.controls{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.6rem 0}
+.controls label{flex:1 1 250px;font-weight:600}
+.controls span{display:block;font-size:.84rem;margin-bottom:.2rem}
+input,select{width:100%;padding:.74rem;color:inherit;background:#183041;border:1px solid #7391a1;border-radius:8px;font:inherit}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin:1.3rem 0}
+.metrics div{background:#142b3a;padding:.9rem;border-radius:9px;border:1px solid #2e4b5d}
+.metrics strong{display:block;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.metrics span{color:#bbceda;font-size:.78rem}
+.list{display:grid;gap:.8rem}
+article{background:#122837;padding:1rem;border-radius:10px;border:1px solid #395569;overflow-wrap:anywhere}
+article h2{font-size:1.13rem;margin:.25rem 0}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.tag{border:1px solid #658797;padding:.13rem .45rem;border-radius:5px;font-size:.75rem}
+small,.secondary{color:#afc6d1}.links{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:.4rem}
+[hidden]{display:none!important}:focus-visible{outline:3px solid #99e7f4;outline-offset:3px}
+</style></head>
+<body>
+<a href="#main" class="skip-link">Skip to official audit index</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a>
+<nav aria-label="Primary"><a href="./index.html">CAMERA MAP</a><a href="./agency-audit.html">ACCOUNTABILITY AUDIT</a>
+<a href="./agency-xray.html">AGENCY X-RAY</a><a href="./methodology.html">METHODOLOGY</a></nav></header>
+<main id="main">
+<p class="kicker">Original government archive · Minnesota</p>
+<h1>Independent ALPR Audit Library</h1>
+<p>Explore reports listed by the <a href="https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735" target="_blank" rel="noopener noreferrer">Minnesota Legislative Reference Library</a> under the biennial automated license plate reader audit mandate. Search original report titles, listing publishers and covered periods.</p>
+<div class="notice"><strong>Evidence boundaries.</strong> All records shown are <strong>state archive listing metadata only</strong>. A title that explicitly names Flock is not a verified current manufacturer, installation, contract, breach, compliance assessment, or independently reviewed PDF. Titles naming AXON/Motorola/Elsag are not silently categorized as Flock. Published dates and reported periods are those of the original archive, not live system status. An absent report in Katoptron does not prove an agency missed an audit.</div>
+<div class="controls">
+<label for="query"><span>Search agency or report title</span><input id="query" type="search" maxlength="120" autocomplete="off" placeholder="Shakopee, Hennepin, 2025..."></label>
+<label for="scope"><span>Report title category</span><select id="scope"><option value="all">All state-listed ALPR reports</option>
+<option value="flock_named_in_title">Title explicitly names Flock</option>
+<option value="other_vendor_named_in_title">Title names a different vendor</option>
+<option value="mixed_or_ambiguous_title">Title names multiple vendors</option>
+<option value="unspecified_alpr_title">Manufacturer unspecified in title</option></select></label>
+</div>
+<p id="status" role="status" aria-live="polite">Loading dated official archive listings…</p>
+<div id="metrics" class="metrics" aria-label="Official archive report counts"></div>
+<div id="reports" class="list"></div>
+<p class="secondary">This directory is refreshed from the original public index by a scheduled source collector. Changes and unavailability are not evidence that an earlier audit was withdrawn. The separate <a href="./agency-audit.html?place=shakopee%7CMN">Shakopee accountability dossier</a> includes independently reviewed, page-cited findings from one specific original report.</p>
+</main><script src="./config.js"></script><script>
+'use strict';
+const $=id=>document.getElementById(id),APP={rows:[]};
+const title={flock_named_in_title:'Flock mentioned in title',
+ other_vendor_named_in_title:'Different vendor mentioned in title',
+ mixed_or_ambiguous_title:'Multiple vendors in title',
+ unspecified_alpr_title:'Vendor not specified in title'};
+function node(t,s,cls){const v=document.createElement(t);if(s!=null)v.textContent=String(s);if(cls)v.className=cls;return v;}
+function safe(url){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='www.lrl.mn.gov'&&
+  /^\/docs\/20\d{2}\/mandated\/\d{6}\.pdf$/.test(u.pathname)&&!u.search&&!u.hash&&
+ !u.username&&!u.password?u.href:null;}catch{return null;}}
+function render(){
+ const q=$('query').value.trim().toLowerCase(),s=$('scope').value;
+ const rows=APP.rows.filter(r=>(s==='all'||r.title_scope===s)&&
+    (r.report_title+' '+r.listed_publishers+' '+r.coverage_period+' '+r.report_id).toLowerCase().includes(q));
+ $('status').textContent=rows.length+' official archive report listing(s) match the selected filters. These are metadata, not reviewed PDF contents.';
+ $('metrics').replaceChildren();
+ for(const [num,label] of [[APP.rows.length,'State-listed report links'],[
+    APP.rows.filter(r=>r.title_scope==='flock_named_in_title').length,'Titles explicitly naming Flock'],
+    [APP.rows.filter(r=>r.title_scope==='other_vendor_named_in_title').length,'Other-vendor titles'],
+    [APP.rows.filter(r=>r.title_scope==='unspecified_alpr_title').length,'Unspecified-vendor titles']]){
+   const d=node('div');d.append(node('strong',num),node('span',label));$('metrics').append(d);
+ }
+ $('reports').replaceChildren();
+ for(const r of rows.slice(0,250)){
+  const card=node('article'),h=node('h2',r.report_title);
+  const meta=node('div',null,'meta');
+  meta.append(node('span',title[r.title_scope]||'Classification unavailable','tag'),
+   node('small','Published: '+(r.publication_date||'date not published')));
+  card.append(h,meta);
+  const pub=node('p','Publisher(s) listed: '+(r.listed_publishers||'not specified'));
+  card.append(pub);
+  if(r.coverage_period)card.append(node('p','Reported audit coverage: '+r.coverage_period));
+  card.append(node('p','State registry receipt date: '+(r.received_date||'not listed'),'secondary'));
+  const links=node('div',null,'links');
+  const url=safe(r.source_url);
+  if(url){const a=node('a','Open original archived PDF');a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a);}
+  const d=node('a','Inspect original state mandate index');
+  d.href='https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735';
+  d.target='_blank';d.rel='noopener noreferrer';links.append(d);
+  card.append(links);$('reports').append(card);
+ }
+ if(rows.length>250)$('reports').append(node('p','Showing first 250 results; narrow your search to inspect additional documents.'));
+ if(rows.length===0)$('reports').append(node('p','No indexed report matches. This does not establish absence of an ALPR program or audit.'));
+}
+async function load(){
+ const config=window.KATOPTRON_CONFIG;
+ if(!config?.supabaseUrl||!config?.supabasePublishableKey)throw Error('Public evidence configuration unavailable');
+ const url=config.supabaseUrl+'/rest/v1/flock_public_mn_alpr_audit_registry?select=source_url,registry_url,report_id,report_title,listed_publishers,publication_date,coverage_period,received_date,title_scope,evidence_tier&order=publication_date.desc.nullslast&limit=501';
+ const response=await fetch(url,{headers:{apikey:config.supabasePublishableKey},cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Official archive index not accessible (HTTP '+response.status+')');
+ const data=await response.json();
+ if(!Array.isArray(data)||data.length>500||!data.every(r=>r.evidence_tier==='state_legislative_registry_index_metadata_only'&&
+  safe(r.source_url)&&title[r.title_scope]))throw Error('Incomplete or untrusted official archive index');
+ APP.rows=data;render();
+}
+$('query').addEventListener('input',render);$('scope').addEventListener('change',render);
+const q=new URL(location.href).searchParams.get('q');
+if(q)$('query').value=q.slice(0,120);
+load().catch(err=>{$('status').textContent='Public official audit archive data unavailable: '+err.message+'. No fabricated records shown.';});
+</script></body></html>

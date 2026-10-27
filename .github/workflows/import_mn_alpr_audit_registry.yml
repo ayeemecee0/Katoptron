@@ -1,0 +1,47 @@
+name: Import Minnesota official ALPR audit registry metadata
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '31 16 * * 3'
+  push:
+    paths:
+      - 'scripts/import_mn_alpr_audit_registry.py'
+      - 'scripts/test_import_mn_alpr_audit_registry.py'
+      - '.github/workflows/import_mn_alpr_audit_registry.yml'
+      - 'supabase/migrations/144_m10_minnesota_public_alpr_audit_registry.sql'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-mn-state-alpr-audit-registry
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test official archive link/date parsing, hold malformed metadata
+        run: python -m unittest discover -s scripts -p 'test_import_mn_alpr_audit_registry.py' -v
+      - name: Read-only official-index preflight
+        run: |
+          python - <<'PY'
+          from scripts.import_mn_alpr_audit_registry import fetch_index,index_rows
+          result=index_rows(fetch_index())
+          print("Official indexed audit reports qualified:",len(result))
+          print("Flock explicitly named in the index title:",sum(r['title_scope']=='flock_named_in_title' for r in result))
+          print("No PDF or camera fact independently verified by this preflight.")
+          PY
+      - name: Verify service-only credential exists
+        if: github.ref == 'refs/heads/main'
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Upsert only publisher-listed public metadata into RLS protected registry
+        if: github.ref == 'refs/heads/main'
+        run: python scripts/import_mn_alpr_audit_registry.py
