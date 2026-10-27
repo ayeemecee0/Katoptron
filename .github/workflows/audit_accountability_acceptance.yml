@@ -24,6 +24,9 @@ on:
       - 'data/verified-wa-flock-policy-originals.json'
       - 'scripts/test_wa_reviewed_flock_sources.cjs'
       - 'wa-policy-source-triage.js'
+      - 'wa-held-original-diagnostics.js'
+      - 'data/wa-held-original-policy-diagnostics.json'
+      - 'scripts/test_wa_held_original_diagnostics.cjs'
       - 'data/wa-ago-original-policy-source-inspection.json'
       - 'scripts/test_wa_policy_source_triage.cjs'
       - 'data/verified-wa-agency-policies.json'
@@ -87,6 +90,8 @@ jobs:
           node scripts/test_wa_reviewed_flock_sources.cjs
           node --check wa-policy-source-triage.js
           node scripts/test_wa_policy_source_triage.cjs
+          node --check wa-held-original-diagnostics.js
+          node scripts/test_wa_held_original_diagnostics.cjs
       - name: Start local preview
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/audit-preview.log 2>&1 &
