@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - 'agency-audit-engine.js'
+      - 'audit-history.js'
+      - 'data/verified-independent-audits.json'
+      - 'scripts/test_audit_history.cjs'
       - 'agency-audit.html'
       - 'mn-alpr-audits.html'
       - 'scripts/smoke_mn_alpr_audit_registry.cjs'
@@ -32,7 +35,9 @@ jobs:
       - name: Run deterministic public-evidence boundary regressions
         run: |
           node --check agency-audit-engine.js
+          node --check audit-history.js
           node scripts/test_agency_audit_engine.cjs
+          node scripts/test_audit_history.cjs
       - name: Start local preview
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/audit-preview.log 2>&1 &
