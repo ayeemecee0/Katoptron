@@ -16,7 +16,8 @@
     ],
     "categories": [
       "policy_scope_multiple_system_types"
-    ]
+    ],
+    "findingPages": [1]
   },
   "des-moines-wa-flock-search-policy-2026": {
     "agency": "Des Moines Police Department",
@@ -29,7 +30,8 @@
     ],
     "categories": [
       "policy_flock_search_accountability"
-    ]
+    ],
+    "findingPages": [3]
   },
   "federal-way-wa-bulletin-2026": {
     "agency": "Federal Way Police Department",
@@ -43,7 +45,8 @@
     "categories": [
       "agency_reported_historical_installed_inventory",
       "agency_proposal_distinct_from_installation"
-    ]
+    ],
+    "findingPages": [2,2]
   },
   "mukilteo-wa-flock-retention-policy-2026": {
     "agency": "Mukilteo Police Department",
@@ -56,7 +59,8 @@
     ],
     "categories": [
       "policy_vendor_hosting_and_retention"
-    ]
+    ],
+    "findingPages": [6]
   },
   "prosser-wa-flock-transparency-policy-2026": {
     "agency": "Prosser Police Department",
@@ -69,7 +73,8 @@
     ],
     "categories": [
       "policy_future_transparency_portal"
-    ]
+    ],
+    "findingPages": [2]
   },
   "sedro-woolley-wa-flock-policy-2026": {
     "agency": "Sedro-Woolley Police Department",
@@ -84,7 +89,8 @@
     "categories": [
       "policy_flock_query_requirements",
       "policy_internal_retention_language_conflict"
-    ]
+    ],
+    "findingPages": [4,5]
   },
   "walla-walla-wa-flock-policy-2026": {
     "agency": "Walla Walla Police Department",
@@ -97,7 +103,8 @@
     ],
     "categories": [
       "policy_transparency_reporting_plan"
-    ]
+    ],
+    "findingPages": [3]
   },
   "whitman-wa-flock-system-policy-2026": {
     "agency": "Whitman County Sheriff's Office",
@@ -112,7 +119,8 @@
     "categories": [
       "policy_explicit_flock_system_title_and_fixed_only",
       "policy_retention_and_sharing_limits"
-    ]
+    ],
+    "findingPages": [1,4]
   }
 };
  const HELD_AGENCY="Sultan Police Department";
@@ -147,7 +155,7 @@
       !Array.isArray(r.pages_reviewed)||r.pages_reviewed.length!==x.reviewed.length||
       !r.pages_reviewed.every((p,i)=>p===x.reviewed[i])||
       !Array.isArray(r.findings)||r.findings.length!==x.categories.length||
-      !r.findings.every((f,i)=>f.page===r.findings[i].page&&
+      !r.findings.every((f,i)=>f.page===x.findingPages[i]&&
         x.reviewed.includes(f.page)&&f.category===x.categories[i]&&
         typeof f.statement==='string'&&f.statement.length>=95&&f.statement.length<=650)||
       ['operational_status','camera_coordinates','verified_deployed_camera_count','sharing_edges'].some(k=>Object.hasOwn(r,k)))
