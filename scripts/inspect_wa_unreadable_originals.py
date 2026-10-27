@@ -10,6 +10,27 @@ from pypdf import PdfReader
 ROOT=Path(__file__).resolve().parents[1]
 AGO=json.loads((ROOT/"data"/"wa-original-agency-alpr-registrations.json").read_text(encoding="utf8"))
 SRC=json.loads((ROOT/"data"/"wa-ago-original-policy-source-inspection.json").read_text(encoding="utf8"))
+BASE=json.loads((ROOT/"data"/"wa-held-original-policy-diagnostics.json").read_text(encoding="utf8"))
+EXPECTED={r["agency_name"]:r for r in BASE["entries"]}
+def check_published_qualification(info):
+ original=EXPECTED.get(info.get("agency"))
+ if not original:return False
+ if info.get("diagnosis")!={
+  "empty_page_content_streams":"EMPTY_PDF_PAGES_NO_CONTENT_STREAMS",
+  "original_pdf_exceeds_16_mb_diagnostic_cap":"OVERSIZE_PDF_BYTE_CAP",
+  "strict_parser_fails_image_pdf_lenient_only":"LENIENTLY_READABLE_IMAGE_ORIGINAL_STRICT_PDF_PARSE_FAILS",
+  "pdf_reader_dependency_unresolved":"PDF_DEPENDENCY_UNRESOLVED",
+  "manual_exceeds_160_page_triage_cap":"OVERSIZE_MANUAL_PAGE_COUNT"
+ }[original["diagnosis"]]:return False
+ if original["sha256_complete_original"] is not None:
+  return (info.get("sha256")==original["sha256_complete_original"] and
+   info.get("bytes")==original["bytes_complete_original"] and
+   (info.get("strict_true",{}).get("page_count") or info.get("strict_false",{}).get("page_count"))==
+    original["page_count_structurally_readable"] if original["page_count_structurally_readable"] is not None else
+    info.get("sha256")==original["sha256_complete_original"] and info.get("bytes")==original["bytes_complete_original"])
+ return (info.get("sha256") is None and
+  info.get("bytes",0)>=original["minimum_observed_bytes"])
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise ValueError("SOURCE_REDIRECT_HELD")
 def main():
@@ -78,8 +99,14 @@ def main():
     elif name=="Yakima Police Department":
      info["diagnosis"]="OVERSIZE_MANUAL_PAGE_COUNT"
     else:info["diagnosis"]="PDF_DEPENDENCY_UNRESOLVED"
+     info["baseline_qualification_matches"]=check_published_qualification(info)
    print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps(info,sort_keys=True))
+   if not info["baseline_qualification_matches"]:
+    raise ValueError("Previously published source qualification requires re-review")
+
   except Exception as exc:
    print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps({"agency":name,"source_status":r["inspection_status"],
     "diagnosis":"UNAVAILABLE","error_type":type(exc).__name__},sort_keys=True))
+   if isinstance(exc,ValueError) and str(exc)=="Previously published source qualification requires re-review":
+    raise
 if __name__=="__main__":main()
