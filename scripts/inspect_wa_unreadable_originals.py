@@ -38,6 +38,15 @@ def main():
       count=len(pdf.pages)
       info["strict_"+str(strict).lower()]={"page_count":count,"encrypted":pdf.is_encrypted,
          "text_extraction_eligible":False if pdf.is_encrypted else 1<=count<=160}
+      if strict and name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}:
+       root=pdf.trailer.get("/Root")
+       root=root.get_object() if root else {}
+       info["document_structure"]={
+        "root_keys":sorted(str(k) for k in root.keys())[:20],
+        "has_embedded_file_names":bool(root.get("/Names")),
+        "has_acroform":bool(root.get("/AcroForm")),
+        "has_collection":bool(root.get("/Collection"))
+       }
       if (strict and name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}) or (not strict and name=="Kittitas Police Department"):
        from triage_wa_ago_policy_origins import has_embedded_image_resource
        for n,page in enumerate(pdf.pages):
@@ -50,6 +59,12 @@ def main():
                       ("content_length",lambda:len(page.get_contents().get_data()) if page.get_contents() else 0)):
          try:report[k]=fn()
          except Exception as e:report[k+"_error"]=type(e).__name__
+        if strict and name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}:
+         for k,fn in (("annotations_count",lambda:len(page.get("/Annots",[]))),
+           ("page_keys",lambda:sorted(str(k) for k in page.keys())[:20]),
+           ("resources_keys",lambda:sorted(str(k) for k in (page.get("/Resources") or {}).keys())[:15])):
+          try:report[k]=fn()
+          except Exception as e:report[k+"_error"]=type(e).__name__
         info.setdefault("page_structure_probes",[]).append(report)
      except Exception as exc:
       info["strict_"+str(strict).lower()]={"error_type":type(exc).__name__}
