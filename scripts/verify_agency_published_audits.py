@@ -18,7 +18,7 @@ ANCHORS={
   1:['hennepin county','did not use fixed alprs'],
   2:['configured to purge data after 30 days','system-generated log','more than 60 days']},
  'san-bruno-ca-flock-audit-december-2025':{
-  1:['january 5th, 2025','december 2025','1,238','461,711','total cameras','operational']},
+  1:['january 5th, 2025','december 2025','1238','461,711','total cameras','operational']},
  'san-bruno-ca-flock-audit-first-half-2026':{
   1:['july 14th, 2026','twenty-nine (29) searches','ncric','removed ncric','operational']},
  'green-bay-wi-alpr-annual-audit-2025':{
@@ -70,7 +70,7 @@ def verify(report,payload,reader=PdfReader):
  for page,phrases in ANCHORS[report['id']].items():
   text=' '.join((doc.pages[page-1].extract_text() or '').lower().split())
   if not all(p in text for p in phrases):
-   raise ValueError('Page-verified original agency finding changed; independent re-review needed')
+   raise ValueError('Page-verified original agency finding changed '+report['id']+' page '+str(page)+' missing '+','.join(p for p in phrases if p not in text)[:115])
  return len(doc.pages)
 def run():
  for report in records(json.loads(MANIFEST.read_text(encoding='utf-8'))):
