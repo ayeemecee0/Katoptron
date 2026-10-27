@@ -36,6 +36,16 @@ class TestPipeline(unittest.TestCase):
   self.assertEqual(result["independently_published_new_facts"],0)
   self.assertEqual(result["machine_receipts"][0]["error_type"],"OSError")
   self.assertNotIn("Original archive temporarily offline",str(result))
+ def test_weekly_rotation_reaches_every_lower_ranked_report(self):
+  import datetime as dt
+  queue={"candidates":[{"report_id":f"P0-{i}","priority":"P0"} for i in range(2)]+
+         [{"report_id":f"P1-{i}","priority":"P1"} for i in range(27)]}
+  weeks=[M.choose(queue,dt.date.fromisocalendar(2026,w,1)) for w in (1,2,3)]
+  self.assertTrue(all(len(w)==12 for w in weeks))
+  self.assertTrue(all([c["report_id"] for c in w[:2]]==["P0-0","P0-1"] for w in weeks))
+  covered={c["report_id"] for group in weeks for c in group if c["priority"]=="P1"}
+  self.assertEqual(len(covered),27,"No candidate must be starved by a permanent failed source")
+  self.assertEqual(M.choose({"candidates":[]},dt.date(2026,10,27)),[])
  def test_no_arbitrary_host_and_unbounded_queue(self):
   with self.assertRaises(ValueError):M.inspect({**ROW,"source_url":"https://evil.example/file.pdf"},lambda _:PDF,FakeReader)
   with self.assertRaises(ValueError):M.inspect(ROW,lambda _:PDF*10000,FakeReader)
