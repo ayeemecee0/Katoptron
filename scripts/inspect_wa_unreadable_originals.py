@@ -26,10 +26,10 @@ def main():
    with urllib.request.build_opener(NoRedirect()).open(req,timeout=25) as res:
     assert res.status==200 and res.geturl()==url
     typ=res.headers.get("Content-Type","unknown").split(";")[0].strip().lower()
-    raw=res.read(8_000_001)
+    raw=res.read(16_000_001 if name=="Kirkland Police Department" else 8_000_001)
    info={"agency":name,"source_status":r["inspection_status"],"content_type":typ,
          "bytes":len(raw),"pdf_header":raw.startswith(b"%PDF-")}
-   if not 100<len(raw)<=8_000_000 or not raw.startswith(b"%PDF-"):
+   if not 100<len(raw)<=(16_000_000 if name=="Kirkland Police Department" else 8_000_000) or not raw.startswith(b"%PDF-"):
     info["diagnosis"]="NOT_PDF_OR_OUT_OF_BOUNDS"
    else:
     for strict in (True,False):
@@ -38,7 +38,7 @@ def main():
       count=len(pdf.pages)
       info["strict_"+str(strict).lower()]={"page_count":count,"encrypted":pdf.is_encrypted,
          "text_extraction_eligible":False if pdf.is_encrypted else 1<=count<=160}
-      if strict and name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}:
+      if (strict and name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}) or (not strict and name=="Kittitas Police Department"):
        from triage_wa_ago_policy_origins import has_embedded_image_resource
        for n,page in enumerate(pdf.pages):
         report={"page":n+1}
