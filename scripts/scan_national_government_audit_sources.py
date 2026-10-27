@@ -234,6 +234,12 @@ def main():
   "DIRECT_ORIGINAL_PDF_RECEIPTS",len(result["original_pdf_receipts"]))
  print("NEW FACTS",result["substantive_facts_auto_published"],"CAMERA PINS",
   result["camera_locations_auto_published"],"SHARING EDGES",result["sharing_edges_auto_published"])
+ for candidate in result["linked_candidates"]:
+  if candidate["review_status"]=="new_original_link_needs_individual_content_review":
+   # Exact official link metadata only. Safe to include in public CI logs.
+   print("REVIEW_ORIGINAL_CANDIDATE",candidate["state"],candidate["source_id"],
+         candidate["candidate_type"],candidate["source_url"],
+         "TITLE",candidate["linked_title"][:100])
  print("SOURCE_WATCH_ARTIFACT",p.relative_to(ROOT))
 if __name__=="__main__":
  try:main()
