@@ -1,4 +1,5 @@
 import importlib.util
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -36,13 +37,16 @@ class TestPublicAuditSource(unittest.TestCase):
  def test_no_source_facts_without_exact_page_receipts(self):
   self.assertEqual(len(M.manifest_rows(CATALOG)),1)
   raw=b"%PDF-1.7"+b" synthetic test only "
-  self.assertEqual(M.verify_pdf(RECORD,raw,Reader),5)
+  fixture={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
+  self.assertEqual(M.verify_pdf(fixture,raw,Reader),5)
+  with self.assertRaisesRegex(ValueError,"version changed"):
+   M.verify_pdf(RECORD,raw,Reader)
   class Missing(Reader):
    def __init__(self,*args,**kwargs):
     super().__init__(*args,**kwargs)
     self.pages[1]=Page("No retention statement")
   with self.assertRaisesRegex(ValueError,"page text differs"):
-   M.verify_pdf(RECORD,raw,Missing)
+   M.verify_pdf(fixture,raw,Missing)
  def test_fetch_not_called_for_unapproved_host(self):
   seen=[]
   with self.assertRaises(ValueError):
