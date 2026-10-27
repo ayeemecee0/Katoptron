@@ -39,7 +39,7 @@ small,.secondary{color:#afc6d1}.links{display:flex;flex-wrap:wrap;gap:1.2rem;mar
 <body>
 <a href="#main" class="skip-link">Skip to official audit index</a>
 <header><a class="brand" href="./index.html">KATOPTRON</a>
-<nav aria-label="Primary"><a href="./index.html">CAMERA MAP</a><a href="./agency-audit.html">ACCOUNTABILITY AUDIT</a>
+<nav aria-label="Primary"><a href="./index.html">CAMERA MAP</a><a href="./agency-audit.html">ACCOUNTABILITY AUDIT</a><a href="./national-audits.html">NATIONAL AUDITS</a>
 <a href="./agency-xray.html">AGENCY X-RAY</a><a href="./methodology.html">METHODOLOGY</a></nav></header>
 <main id="main">
 <p class="kicker">Original government archive · Minnesota</p>
@@ -65,9 +65,9 @@ small,.secondary{color:#afc6d1}.links{display:flex;flex-wrap:wrap;gap:1.2rem;mar
 </section>
 <div id="reports" class="list"></div>
 <p class="secondary">This directory is refreshed from the original public index by a scheduled source collector. Changes and unavailability are not evidence that an earlier audit was withdrawn. The separate <a href="./agency-audit.html?place=shakopee%7CMN">Shakopee</a>, <a href="./agency-audit.html?place=richfield%7CMN">Richfield</a>, <a href="./agency-audit.html?place=woodbury%7CMN">Woodbury</a> and other exact-agency accountability dossiers provide independently page-reviewed historical statements where available. Remaining state-index records are title metadata only.</p>
-</main><script src="./config.js"></script><script src="./mn-audit-candidates.js"></script><script>
+</main><script src="./config.js"></script><script src="./mn-audit-candidates.js"></script><script src="./agency-published-audits.js"></script><script>
 'use strict';
-const $=id=>document.getElementById(id),APP={rows:[],reviewed:new Map(),manifest:null};
+const $=id=>document.getElementById(id),APP={rows:[],reviewed:new Map(),manifest:null,agencyReports:[]};
 const title={flock_named_in_title:'Flock mentioned in title',
  other_vendor_named_in_title:'Different vendor mentioned in title',
  mixed_or_ambiguous_title:'Multiple vendors in title',
@@ -83,13 +83,14 @@ function renderReviewQueue(){
   return;
  }
  let result;
- try{result=window.KatoptronHistoricalCandidates.plan(APP.rows,APP.manifest);}
+ try{result=window.KatoptronHistoricalCandidates.plan(APP.rows,APP.manifest,APP.agencyReports);}
  catch(_err){$('queueStatus').textContent='Cannot verify historical review queue against the current original archive. No candidates shown.';return;}
  $('queueStatus').textContent=result.candidates.length+' queued original state audit PDF(s), generated from the current source index and reviewed original-document catalog. Every candidate remains metadata-only until independent PDF review.';
  for(const [count,label] of [
   [result.flock_titles_unreviewed,'Flock-named report titles awaiting page review'],
   [result.exact_agency_historical_candidates,'Additional same-agency original titles to examine'],
-  [result.curated_reports,'Already independently reviewed original reports']
+  [result.curated_reports,'Already independently reviewed original reports'],
+  [result.agency_authored_reviewed,'Separately reviewed internal agency originals']
  ]){
   const card=node('div');
   card.append(node('strong',count),node('span',label));$('queueCounts').append(card);
@@ -153,7 +154,8 @@ function render(){
   if(independent){
    const sourceSection=node('div',null,'notice');
    sourceSection.append(node('strong',
-    'Katoptron page-reviewed original document · as of '+independent.reviewed_on));
+    (independent.publisher_type==='agency_internal_audit'?'Agency-internal (not independent) page-reviewed original':'Independent original page-reviewed document')+
+    ' · as of '+independent.reviewed_on));
    sourceSection.append(node('p',
     'Historical auditor statements only. The review covers specified pages of this PDF and does not certify present equipment, permissions or compliance.'));
    for(const f of independent.findings.slice(0,3)){
@@ -203,7 +205,17 @@ async function reviewedOriginals(){
   }
  }catch(_err){APP.reviewed.clear();APP.manifest=null;}
 }
-Promise.all([load(),reviewedOriginals()]).then(()=>{render();renderReviewQueue();}).catch(err=>{
+async function agencyOriginals(){
+ try{
+  const r=await fetch('./data/verified-agency-published-alpr-audits.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!r.ok)throw Error('Source-authored original catalog inaccessible');
+  APP.agencyReports=window.KatoptronAgencyPublishedAudits.catalog(await r.json());
+  for(const report of APP.agencyReports){
+   if(report.state==='MN'&&safe(report.source_url))APP.reviewed.set(report.source_url,report);
+  }
+ }catch(_){APP.agencyReports=[];}
+}
+Promise.all([load(),reviewedOriginals(),agencyOriginals()]).then(()=>{render();renderReviewQueue();}).catch(err=>{
  $('status').textContent='Official archive or verified-source information unavailable: '+
   err.message+'. No fabricated records shown.';
 });

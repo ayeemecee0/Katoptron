@@ -193,6 +193,135 @@ ADDITIONAL_REVIEWED_PAGE_ANCHORS = {
   }
 }
 
+HISTORICAL_CURATED_PAGE_ANCHORS = {
+  "mn-original-alpr-review-231274": {
+    "2": [
+      "hennepin county sheriff",
+      "3 patrol vehicles",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-260804": {
+    "2": [
+      "richfield police department",
+      "3 squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-200577": {
+    "1": [
+      "shakopee police department",
+      "elsag plate hunter",
+      "three patrol vehicles",
+      "no stationary or fixed"
+    ]
+  },
+  "mn-original-alpr-review-200436": {
+    "2": [
+      "robbinsdale police department",
+      "2 squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-191277": {
+    "2": [
+      "edina police department",
+      "7 squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-190963": {
+    "1": [
+      "brooklyn center police department",
+      "3 squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-190962": {
+    "1": [
+      "richfield police department",
+      "3 squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-191276": {
+    "2": [
+      "woodbury public safety",
+      "3m boss",
+      "three mobile squads"
+    ]
+  },
+  "mn-original-alpr-review-191258": {
+    "1": [
+      "edina police department",
+      "six squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-191256": {
+    "1": [
+      "brooklyn center police department",
+      "three squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-191266": {
+    "1": [
+      "robbinsdale pd",
+      "two squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-191265": {
+    "1": [
+      "richfield pd",
+      "2 squad cars",
+      "no stationary alpr units"
+    ]
+  },
+  "mn-original-alpr-review-200649": {
+    "2": [
+      "shakopee alpr system",
+      "elsag",
+      "three mobile squads"
+    ]
+  },
+  "mn-original-alpr-review-261168": {
+    "2": [
+      "west saint paul police department",
+      "14 mobile axon units"
+    ]
+  },
+  "mn-original-alpr-review-260189": {
+    "2": [
+      "robbinsdale police department",
+      "11 active mobile axon alpr units"
+    ]
+  },
+  "mn-original-alpr-review-251684": {
+    "2": [
+      "hennepin county",
+      "approximately 32 active axon alpr systems",
+      "patrol vehicles"
+    ]
+  },
+  "mn-original-alpr-review-251686": {
+    "2": [
+      "champlin police department",
+      "approximately 14 active axon mobile alpr units"
+    ]
+  },
+  "mn-original-alpr-review-251640": {
+    "2": ["umn police department", "approximately 29 active mobile alpr units"]
+  },
+  "mn-original-alpr-review-191307": {
+    "3": ["woodbury", "2 squad cars", "no stationary alpr units"]
+  },
+  "mn-original-alpr-review-200290": {
+    "7": ["hennepin county", "four mobile alprs", "september 24, 2019", "fixed stationary alpr"]
+  }
+}
+
 def verify_pdf(report,payload,reader_class=None):
  if not isinstance(payload,bytes) or len(payload)>MAX_BYTES or not payload.startswith(b"%PDF-"):
   raise ValueError("Invalid original audit PDF bytes")
@@ -202,8 +331,15 @@ def verify_pdf(report,payload,reader_class=None):
   from pypdf import PdfReader
   reader_class=PdfReader
  pdf=reader_class(io.BytesIO(payload),strict=True)
- if pdf.is_encrypted or len(pdf.pages)<max(report["pages_reviewed"]) or len(pdf.pages)>MAX_PAGES:
-  raise ValueError("Audited page range unavailable or encrypted")
+ if pdf.is_encrypted:
+  # The exact official Hennepin state-auditor 2020 report is a publicly
+  # accessible PDF encrypted with an empty *user* password. Do not accept
+  # nonempty credentials, redirects, different report hashes or other PDFs.
+  if report["id"]!="mn-original-alpr-review-200290" or not pdf.decrypt(""):
+   raise ValueError("Encrypted original is not approved for public anonymous reading")
+ if len(pdf.pages)<max(report["pages_reviewed"]) or len(pdf.pages)>MAX_PAGES:
+  raise ValueError("Audited page range unavailable")
+
  def normalized(page):
   return " ".join(str(pdf.pages[page-1].extract_text() or "").lower().split())
  if report["id"]=="shakopee-mn-alpr-independent-audit-2026":
@@ -265,6 +401,10 @@ def verify_pdf(report,payload,reader_class=None):
   for page,phrases in ADDITIONAL_REVIEWED_PAGE_ANCHORS[report["id"]].items():
    if not all(p in normalized(int(page)) for p in phrases):
     raise ValueError("Additional original auditor PDF page text changed; hold for review")
+ elif report["id"] in HISTORICAL_CURATED_PAGE_ANCHORS:
+  for page,phrases in HISTORICAL_CURATED_PAGE_ANCHORS[report["id"]].items():
+   if not all(p in normalized(int(page)) for p in phrases):
+    raise ValueError("Historically reviewed original government auditor page changed; hold for re-review")
  elif report["id"]=="woodbury-mn-independent-flock-alpr-audit-2024":
   anchors={
    2:("woodbury public safety department","flock alpr system","15 active stationary","retention period was set for 30 days"),

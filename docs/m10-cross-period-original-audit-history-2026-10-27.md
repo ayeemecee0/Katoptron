@@ -1,5 +1,7 @@
 # M10: Original-source cross-period ALPR accountability
 
+**October 27 completion update:** The original **21** exact-agency historical review candidates are now all independently examined: **20** are included in the 42-entry page-checked external audit manifest and the remaining Hennepin County 2017 internal report is separately source-verified as an **agency-internal**, not external-independent, publication. The California and Wisconsin expansion is now included in the [current national original-audit methodology](./m10-national-original-audit-acquisition-2026-10-27.md). Earlier numbers below document previous dated engineering checkpoints, not the current review backlog.
+
 **Reviewed October 27, 2026**. Published public agency histories are source-specific and historical. These findings do not establish live devices, a camera map, private vehicle records, or statutory wrongdoing.
 
 ## Original-source findings
