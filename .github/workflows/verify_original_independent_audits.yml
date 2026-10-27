@@ -4,7 +4,6 @@ on:
     - cron: '37 17 * * 2'
   workflow_dispatch:
   push:
-    branches: [main]
     paths:
       - 'data/verified-independent-audits.json'
       - 'scripts/verify_independent_audit_source.py'
