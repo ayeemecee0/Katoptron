@@ -54,6 +54,12 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <details id="nationalCoverageDetails"><summary>Browse all 51 jurisdictions and official publication sources</summary>
 <div id="nationalCoverageResults" class="list"></div></details>
 </section>
+<section id="nebraskaAggregateReview" aria-labelledby="nebraskaAggregateHeading">
+<h2 id="nebraskaAggregateHeading">Original Nebraska agency-reported ALPR annual statistics</h2>
+<p>State-posted, individually original-page-reviewed aggregate data. These are <strong>agency-reported statistics</strong>, not an independent audit, verified camera census or manufacturer telemetry. A different Nebraska PDF with a 2025 filename rendered as an empty form and remains held.</p>
+<p id="nebraskaAggregateStatus" role="status" aria-live="polite">Loading verified original annual aggregate report…</p>
+<div id="nebraskaAggregateResults" class="list"></div>
+</section>
 <section aria-labelledby="cityStatusHeading" id="cityStatusSection">
 <h2 id="cityStatusHeading">Agency-reported operational changes, with dates and evidence limits</h2>
 <p>Government statements are useful but not interchangeable. An announced intention to shut down equipment is <strong>not proof of completion</strong>. A city's retrospective statement that cameras were disabled is an <strong>agency-reported outcome</strong>, not continuous telemetry or an independent technical audit. Both statements below are dated original city publications, not claims about current camera locations.</p>
@@ -87,9 +93,9 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p class="muted"><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/scan_national_government_audit_sources.yml" rel="noopener noreferrer" target="_blank">View national government source acquisition runs and source-review artifacts</a></p>
 </section>
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
-</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script>
+</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script src="./nebraska-original-aggregate.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null,nebraskaAggregate:null};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
@@ -240,6 +246,33 @@ async function loadOversight(){
  }
  renderOversight();
 }
+function renderNebraskaAggregate(){
+ const d=APP.nebraskaAggregate;if(!d)return;
+ $('nebraskaAggregateStatus').textContent='1 source-pinned, visually reviewed Nebraska 2025 original government agency aggregate. 1 unfilled original held.';
+ const target=$('nebraskaAggregateResults');target.replaceChildren();
+ const x=d.document,card=el('article');
+ card.append(el('h3',x.agency_name+' · 2025 Annual ALPR Aggregate'),
+  el('p','Reporting period: January 1–December 31, 2025 · Original PDF page 1 · Agency authored, not independently audited','muted'));
+ const metrics=[
+  [x.metrics.ncic_confirmed_matches,'NCIC list confirmed matches'],
+  [x.metrics.ncic_noncorrelated_matches,'NCIC list non-correlated matches'],
+  [x.metrics.manual_plate_numbers_entered,'Manually entered plate-number queries, aggregate'],
+  [x.metrics.manual_entry_confirmed_matches,'Manual-entry confirmed matches'],
+  [x.metrics.manual_entry_noncorrelated_matches,'Manual-entry non-correlated matches']
+ ];
+ for(const [v,label] of metrics)card.append(el('p',v+' · '+label));
+ const a=el('a','View visually reviewed original Nebraska report, page 1');
+ a.href=x.source_url+'#page=1';a.target='_blank';a.rel='noopener noreferrer';card.append(a);
+ card.append(el('p','Original state-filed report names its agency and aggregate figures. The Flock-related source filename does not prove the equipment manufacturer, installed cameras, current status or actual data sharing.','muted'));
+ target.append(card);
+ target.append(el('p',"Buffalo County Sheriff's Office 2025 report link: original rendered page had no populated reporting figures; its numerical findings remain held.",'muted'));
+}
+async function loadNebraskaAggregate(){
+ const response=await fetch('./data/verified-nebraska-original-aggregate-reports.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Original Nebraska ALPR aggregate report unavailable');
+ APP.nebraskaAggregate=window.KatoptronNebraskaOriginalAggregate.catalog(await response.json());
+ renderNebraskaAggregate();
+}
 function renderNationalCoverage(){
  const d=APP.nationalCoverage;if(!d)return;
  $('nationalCoverageStatus').textContent=d.total+
@@ -343,4 +376,5 @@ loadOversight().catch(e=>{$('oversightStatus').textContent=e.message+'; no infer
 loadPublishers().catch(e=>{$('publisherStatus').textContent=e.message+'; no inferred publisher list shown.';});
 $('nationalCoverageSearch').addEventListener('input',()=>{renderNationalCoverage();$('nationalCoverageDetails').open=true;});
 loadNationalCoverage().catch(e=>{$('nationalCoverageStatus').textContent=e.message+'; source coverage has not been inferred.';});
+loadNebraskaAggregate().catch(e=>{$('nebraskaAggregateStatus').textContent=e.message+'; no unsupported aggregate findings shown.';});
 </script></body></html>
