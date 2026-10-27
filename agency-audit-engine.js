@@ -41,6 +41,7 @@
   // Never match an audit to a city by fuzzy name or an agency centroid.
   const independentAudits=archiveRows.filter(r=>{
    if(r.jurisdiction_key!==group.key||r.source_tier!=='original_government_archive_independent_audit_report'||
+      !/^[0-9a-f]{64}$/.test(r.content_sha256||'')||
       !safe(r.source_url)||!day(r.report_date)||!day(r.reviewed_on)||
       !Array.isArray(r.findings)||!r.findings.length||
       !Array.isArray(r.pages_reviewed)||!r.pages_reviewed.length)return false;
