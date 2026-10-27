@@ -13,7 +13,8 @@
  'green-bay-wi-policy-may-2026':['published_department_policy','may_2026_published_policy_no_current_supersession_claim'],
  'green-bay-wi-policy-draft-sept-2026':['draft_policy_unadopted','prominently_marked_draft_not_effective_or_approved'],
  'green-bay-wi-flock-order-2025':['government_published_vendor_order_form','original_published_form_execution_date_not_independently_verified'],
- 'austin-tx-commission-recommendation':['advisory_recommendation_not_binding_action','approved_commission_recommendation_not_city_council_order']
+ 'austin-tx-commission-recommendation':['advisory_recommendation_not_binding_action','approved_commission_recommendation_not_city_council_order'],
+ 'moline-il-signed-flock-order-2024':['signed_city_published_vendor_order_form_scanned','visually_reviewed_original_signatures_2024_not_live_deployment_or_payment_proof']
  };
  const URLs={
  'san-mateo-ca-press-advisory':'https://sanmateo.courts.ca.gov/system/files/grand-jury/alpr-press-release.pdf',
@@ -23,7 +24,8 @@
  'green-bay-wi-policy-may-2026':'https://www.greenbaywi.gov/DocumentCenter/View/18791/Policy-424-Automated-License-Plate-Readers-ALPR-May-2026',
  'green-bay-wi-policy-draft-sept-2026':'https://www.greenbaywi.gov/DocumentCenter/View/19136/DRAFTED-REVISION---Policy-424-Automated-License-Plate-Readers-ALPR-September-2026',
  'green-bay-wi-flock-order-2025':'https://www.greenbaywi.gov/DocumentCenter/View/19138/Flock-Safety-WI---Green-Bay-PD---DFR-and-ALPR-Law-Enforcement-Agreement-2025',
- 'austin-tx-commission-recommendation':'https://services.austintexas.gov/edims/document.cfm?id=452847'
+ 'austin-tx-commission-recommendation':'https://services.austintexas.gov/edims/document.cfm?id=452847',
+ 'moline-il-signed-flock-order-2024':'https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023'
  };
  const ROLES={
  'san-mateo-ca-press-advisory':'government_independent_oversight',
@@ -33,7 +35,8 @@
  'green-bay-wi-policy-may-2026':'police_department',
  'green-bay-wi-policy-draft-sept-2026':'police_department',
  'green-bay-wi-flock-order-2025':'police_department',
- 'austin-tx-commission-recommendation':'government_advisory_commission'
+ 'austin-tx-commission-recommendation':'government_advisory_commission',
+ 'moline-il-signed-flock-order-2024':'police_department'
  };
  const allowed=new Set(Object.values(URLs));
  const LABELS={
@@ -44,7 +47,8 @@
  'published_department_policy':'Published department policy version',
  'draft_policy_unadopted':'UNADOPTED DRAFT policy proposal',
  'government_published_vendor_order_form':'Published vendor order form, execution unconfirmed',
- 'advisory_recommendation_not_binding_action':'Advisory commission vote, not a city order'
+ 'advisory_recommendation_not_binding_action':'Advisory commission vote, not a city order',
+ 'signed_city_published_vendor_order_form_scanned':'Signed original Flock order, visually reviewed scanned pages'
  };
  function sourceLink(doc){
   if(!doc||!Object.prototype.hasOwnProperty.call(URLs,doc.id)||doc.source_url!==URLs[doc.id])return null;
@@ -53,7 +57,7 @@
  function valid(doc){
   if(!doc||typeof doc!=='object'||!sourceLink(doc)||
    !TYPES[doc.id]||doc.kind!==TYPES[doc.id][0]||doc.status!==TYPES[doc.id][1]||doc.publisher_role!==ROLES[doc.id])return false;
-  if(!['CA','TX','WI'].includes(doc.state)||typeof doc.agency!=='string'||doc.agency.length<10||
+  if(!['CA','TX','WI','IL'].includes(doc.state)||typeof doc.agency!=='string'||doc.agency.length<10||
    typeof doc.title!=='string'||doc.title.length<15||
    !/^[a-f0-9]{64}$/.test(doc.content_sha256||'')||
    !Number.isInteger(doc.page_count)||doc.page_count<1||doc.page_count>120||
@@ -64,12 +68,16 @@
        !Number.isNaN(Date.parse(doc.source_date))&&new Date(doc.source_date+'T00:00:00Z').toISOString().slice(0,10)===doc.source_date))
    return false;
   if(doc.source_date===null&&(!doc.source_date_note||doc.source_date_note.length<20))return false;
+  if(doc.id==='moline-il-signed-flock-order-2024'&&
+     (doc.source_date!=='2024-12-04'||doc.page_count!==6||
+      doc.verification_method!=='visual_page_review_sha256_pinned_scanned_pdf'||
+      ![2,3,5].every(p=>doc.pages_reviewed.includes(p))))return false;
   return Array.isArray(doc.findings)&&doc.findings.length>0&&doc.findings.length<=8&&
    doc.findings.every(f=>doc.pages_reviewed.includes(f.page)&&typeof f.statement==='string'&&f.statement.length>50&&f.statement.length<950);
  }
  function catalog(raw){
-  if(!raw||raw.schema_version!==1||!Array.isArray(raw.documents)||raw.documents.length!==8||
-   !raw.documents.every(valid)||new Set(raw.documents.map(x=>x.id)).size!==8 ||
+  if(!raw||raw.schema_version!==1||!Array.isArray(raw.documents)||raw.documents.length!==9||
+   !raw.documents.every(valid)||new Set(raw.documents.map(x=>x.id)).size!==9 ||
    !Array.isArray(raw.source_review_held)||raw.source_review_held.length!==1||
    raw.source_review_held[0].id!=='san-bruno-ca-alpr-policy')
    throw Error('Unverified original government document ledger');
