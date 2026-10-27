@@ -1,0 +1,22 @@
+name: Inspect nine government ALPR original review candidates
+on:
+  push:
+    paths:
+      - 'scripts/inspect_national_link_candidates.py'
+      - '.github/workflows/inspect_national_link_candidates.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - run: python scripts/inspect_national_link_candidates.py
