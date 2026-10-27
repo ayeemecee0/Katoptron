@@ -63,16 +63,22 @@ The Washington Attorney General states that it has <strong>not independently ver
 <div id="sourceTriageQueue" class="list"></div>
 <p class="muted">Source inspection snapshot: October 27, 2026. Links not hosted as version-pinned AGO PDFs require a separate evidence path. Held or inaccessible sources are not counted as verified.</p>
 </section>
+<section id="heldOriginalEvidence" aria-labelledby="heldOriginalHeading">
+<h2 id="heldOriginalHeading">Held originals: diagnosed source problems</h2>
+<p>Seven state-listed source links could not pass the strict original-document acquisition checks. These records explain the cause rather than categorizing a valid but oversized PDF as non-PDF, or mistaking blank pages for images. <strong>None is verified policy content or a confirmed Flock installation.</strong></p>
+<p id="heldOriginalStatus" role="status" aria-live="polite">Loading held-source qualifications…</p>
+<div id="heldOriginalResults" class="list"></div>
+</section>
 <div id="stats" class="metrics"></div>
 <label for="search">Search registered agencies</label>
 <p><input id="search" type="search" placeholder="Agency, county, university or department" maxlength="120" autocomplete="off"></p>
 <p id="status" role="status" aria-live="polite">Loading original government source snapshot…</p>
 <div id="results" class="list"></div>
 <p class="muted">Each displayed policy link was present on the Attorney General's original published page at the snapshot date, not independently reverified with the agency. Links may change. The absence of an entry cannot establish noncompliance, and registration is not a camera or equipment census.</p>
-</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script>
+</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script src="./wa-held-original-diagnostics.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script>
 'use strict';
 const S=window.KatoptronWashingtonALPR;const $=x=>document.getElementById(x);
-const app={rows:[],captured:'',policyDocs:[],flockPolicyDocs:[],heldFlockReview:null,sourceReceipts:new Map()};
+const app={rows:[],captured:'',policyDocs:[],flockPolicyDocs:[],heldFlockReview:null,sourceReceipts:new Map(),heldSourceDiagnostics:[]};
 function node(t,text,cls){const el=document.createElement(t);if(text!=null)el.textContent=String(text);if(cls)el.className=cls;return el;}
 function render(){
  const q=$('search').value.trim().toLowerCase();
@@ -96,7 +102,10 @@ function render(){
   item.append(actions);
   const receipt=app.sourceReceipts.get(r.agency_name);
   if(receipt){
-   item.append(node('p',window.KatoptronWAOriginalSourceTriage.receiptLabel(receipt),'muted'));
+   const heldInfo=app.heldSourceDiagnostics.find(x=>x.agency_name===r.agency_name);
+   item.append(node('p',heldInfo?
+    window.KatoptronWAHeldSourceDiagnostics.label(heldInfo.diagnosis)+'; no policy claims verified':
+    window.KatoptronWAOriginalSourceTriage.receiptLabel(receipt),'muted'));
   }else if(r.policy_links_from_official_ago_page.length){
    item.append(node('p','Original linked policy requires separate inspection; no verified Flock vendor or deployment inferred','muted'));
   }
@@ -223,6 +232,33 @@ function renderTriage(data){
  }
  render();
 }
+function renderHeldDiagnostics(){
+ const results=$('heldOriginalResults');results.replaceChildren();
+ $('heldOriginalStatus').textContent=app.heldSourceDiagnostics.length+
+  ' original source(s) held with independently inspected failure causes. No camera locations or vendor claims inferred.';
+ for(const d of app.heldSourceDiagnostics){
+  const a=node('article');
+  a.append(node('h3',d.agency_name),
+   node('p',window.KatoptronWAHeldSourceDiagnostics.label(d.diagnosis),'muted'),
+   node('p',d.detail));
+  if(d.page_count_structurally_readable)
+   a.append(node('p','Structurally readable pages: '+d.page_count_structurally_readable+
+    '. Page content is not independently verified.','muted'));
+  if(d.minimum_observed_bytes)
+   a.append(node('p','Observed download exceeds '+(d.minimum_observed_bytes-1)+
+    ' bytes; no complete source hash was generated.','muted'));
+  results.append(a);
+ }
+ render();
+}
+async function loadHeldDiagnostics(){
+ const response=await fetch('./data/wa-held-original-policy-diagnostics.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Held source qualification data unavailable');
+ const data=await response.json();
+ app.heldSourceDiagnostics=window.KatoptronWAHeldSourceDiagnostics.catalog(
+  data,app.rows,Array.from(app.sourceReceipts.values()));
+ renderHeldDiagnostics();
+}
 async function loadTriage(){
  const response=await fetch('./data/wa-ago-original-policy-source-inspection.json',{cache:'no-store',referrerPolicy:'no-referrer'});
  if(!response.ok)throw Error('Versioned original policy source receipts unavailable');
@@ -238,6 +274,7 @@ async function load(){
  render();
  await loadTriage().catch(e=>{$('sourceTriageStatus').textContent=e.message+'; no unverified source claims shown.';});
  await loadFlockOriginals().catch(e=>{$('flockOriginalStatus').textContent=e.message+'; unverified policy claims not shown.';});
+ await loadHeldDiagnostics().catch(e=>{$('heldOriginalStatus').textContent=e.message+'; no unverified source diagnoses shown.';});
 }
 $('search').addEventListener('input',render);
 load().catch(e=>{$('status').textContent=e.message+'; no unverified registrations are displayed.';});

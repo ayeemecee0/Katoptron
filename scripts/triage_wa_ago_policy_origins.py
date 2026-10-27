@@ -48,6 +48,23 @@ def fetch(url):
    return r.read(MAX_BYTES+1)
  except ValueError:
   raise
+def has_embedded_image_resource(page):
+ """Detect original page image XObjects without decoding user-supplied streams.
+ This is source-format metadata, NOT a successful visual or content review.
+ """
+ resources=page.get("/Resources")
+ if not resources:return False
+ resources=resources.get_object()
+ if not hasattr(resources,"get"):return False
+ xobj=resources.get("/XObject")
+ if not xobj:return False
+ xobj=xobj.get_object()
+ if not hasattr(xobj,"values"):return False
+ for value in xobj.values():
+  obj=value.get_object()
+  if hasattr(obj,"get") and str(obj.get("/Subtype"))=="/Image":
+   return True
+ return False
 def evaluate(candidate,fetcher=fetch):
  row={**candidate,"inspection_status":None,"page_count":None,"sha256":None,"bytes":None,
    "searchable_text_pages":0,"scanned_image_pages":0,"potential_flock_term_pages":[],
@@ -65,7 +82,7 @@ def evaluate(candidate,fetcher=fetch):
   for i,page in enumerate(pdf.pages,1):
    t=" ".join((page.extract_text() or "").casefold().split())
    if len(t)>=35:textpages+=1
-   if page.images:images+=1
+   if has_embedded_image_resource(page):images+=1
    if re.search(r"\bflock\s+safety\b",t):flock.append(i)
   if not textpages and not images:raise ValueError("unsearchable_with_no_images")
   row.update(inspection_status="exact_pdf_text_detected" if textpages else "exact_pdf_scan_only",
