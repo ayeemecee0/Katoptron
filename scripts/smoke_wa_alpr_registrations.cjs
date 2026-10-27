@@ -12,6 +12,19 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.startsWith('97 original Attorney General'),
     null,{timeout:12000});
   assert.equal(await page.locator('#results article').count(),97);
+  await page.waitForFunction(()=>document.querySelector('#reviewedPolicyStatus')?.textContent?.startsWith('2 original agency'),
+    null,{timeout:12000});
+  assert.equal(await page.locator('#reviewedPolicyResults article').count(),2);
+  assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Auburn Police Department/);
+  assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Black Diamond Police Department/);
+  assert.match(await page.locator('#reviewedPolicyResults').textContent(),/21 days/);
+  assert.match(await page.locator('#reviewedPolicyResults').textContent(),/Scanned original visually reviewed/);
+  assert.match(await page.locator('#reviewedPolicyEvidence').textContent(),/not independent findings of compliance/);
+  const originals=await page.locator('#reviewedPolicyResults a').evaluateAll(as=>as.map(a=>a.href));
+  assert.ok(originals.some(x=>x.includes('VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH#page=5')));
+  assert.ok(originals.some(x=>x.includes('/DocumentCenter/View/4324/BDPD-ALPR-Policy#page=4')));
+  assert.ok(originals.every(x=>x.startsWith('https://blackdiamondwa.gov/')||
+    x.startsWith('https://agportal-s3bucket.s3.us-west-2.amazonaws.com/')));
   assert.match(await page.locator('main').textContent(),/has not independently verified/);
   const law=await page.locator('#washingtonLegalContext').textContent();
   assert.match(law,/March 30, 2026/);
@@ -37,6 +50,13 @@ const {chromium}=require('playwright');
   await page.locator('#search').fill('Aberdeen Police');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/Aberdeen Police Department/);
+  await page.locator('#search').fill('Auburn Police');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
+  await page.locator('#search').fill('Black Diamond');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
+  await page.locator('#search').fill('Aberdeen Police');
   await page.locator('#search').fill('Cascadia');
   assert.equal(await page.locator('#results article').count(),1);
   await page.locator('#search').fill('ThereIsNoSuchAgencyXY');
