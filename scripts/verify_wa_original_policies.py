@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify two page-reviewed Washington AGO-linked public agency ALPR policies.
+"""Verify three page-reviewed Washington AGO-linked public agency ALPR policies.
 
 Agency policy PDFs are not independent audits, Flock proof, camera locations,
 sharing relationships, or implementation/compliance certificates.
@@ -21,6 +21,15 @@ EXPECTED={
              6:("external sharing","immigration enforcement agencies","research"),
              7:("annual internal audit","locations of alpr cameras")}
  },
+ "normandy-park-wa-policy-june-2026":{
+  "agency":"Normandy Park Police Department","pages":5,"date":"2026-06-30",
+  "method":"original_pdf_sha256_page_text_anchors",
+  "sha":"b4b26800bc0d3966b83df83abd8ccd9eeb7485e61b4057f724adad2352e4e935",
+  "anchors":{1:("flock safety camera administrators","flock safety camera users"),
+             3:("investigating or enforcing federal immigration matters","flock safety camera data","all stored alpr data shall not be retained for more than 21 days"),
+             4:("audit trail data shall be retained for two years","an internal audit will occur at least annually"),
+             5:("releasing alpr data","written request","administrative sergeant")}
+ },
  "black-diamond-wa-policy-june-2026":{
   "agency":"Black Diamond Police Department","pages":7,"date":"2026-06-23",
   "method":"original_pdf_sha256_visually_reviewed_raster_pages",
@@ -31,6 +40,7 @@ EXPECTED={
 URLS={
  "auburn-wa-policy-july-2026":"https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Auburn%20PD%20ALPR%20Policy.pdf?VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH",
  "black-diamond-wa-policy-june-2026":"https://blackdiamondwa.gov/DocumentCenter/View/4324/BDPD-ALPR-Policy",
+ "normandy-park-wa-policy-june-2026":"https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Normandy%20Park%20PD%20Policy.pdf?VersionId=18O0TMpqPRPGCuXKIAFSRKWNSwGnRuaY",
 }
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise ValueError("Original policy redirect is unreviewed")
@@ -46,8 +56,8 @@ def fetch(url):
  return data
 def validate(data,registry):
  if (not isinstance(data,dict) or data.get("schema_version")!=1 or
-     not isinstance(data.get("documents"),list) or len(data["documents"])!=2):
-  raise ValueError("Two-policy evidence catalog invalid")
+     not isinstance(data.get("documents"),list) or len(data["documents"])!=3):
+  raise ValueError("Three-policy evidence catalog invalid")
  if (not isinstance(registry,dict) or registry.get("source_url")!="https://www.atg.wa.gov/ALPR" or
      not isinstance(registry.get("registrations"),list)):raise ValueError("Official AGO registry invalid")
  indexed={r["agency_name"]:r for r in registry["registrations"]}
@@ -104,7 +114,7 @@ def main():
   print("PAGE_REVIEWED_WA_POLICY_VERIFIED",row["agency_name"],"PAGES",
         row["page_count"],"SHA256",row["content_sha256"],
         "SOURCE_TIER",row["verification_method"])
- print("TWO ORIGINAL AGO-LINKED POLICIES VERIFIED; NO FLOCK VENDOR, CAMERA, ACCESS OR COMPLIANCE ASSERTIONS")
+ print("THREE ORIGINAL AGO-LINKED POLICIES VERIFIED; SOURCE-ATTRIBUTED FLOCK POLICY REFERENCE DOES NOT PROVE CURRENT DEPLOYMENT, CAMERA COUNT, ACCESS OR COMPLIANCE")
 if __name__=="__main__":
  try:main()
  except Exception as exc:
