@@ -55,6 +55,18 @@ class TestNationalPublisherWatch(unittest.TestCase):
   self.assertEqual(results[0]['source_url'],'https://services.austintexas.gov/edims/document.cfm?id=452710')
   self.assertEqual(results[0]['status'],'official_publisher_link_metadata_only_not_source_content_reviewed')
   self.assertNotIn('plate numbers',str(results))
+ def test_unrelated_navigation_links_must_not_inherit_alpr_footer_text(self):
+  source=next(x for x in SOURCES if x['id']=='wa-ag-public-alpr-agency-registrations')
+  html='''<html><body>
+  <a href="/serve-people">Serve The People</a>
+  Automated License Plate Reader (ALPR) program public registration
+  <a href="/ALPR">ALPR Public Registration</a>
+  </body></html>'''
+  result=M.candidates(source,html)
+  self.assertFalse(any(x['source_url'].endswith('/serve-people') for x in result),
+   'An unrelated navigation link cannot become an ALPR document merely because of nearby footer text')
+  self.assertFalse(any(x['source_url'].endswith('/ALPR') for x in result),
+   'The already-seeded original agency registration portal is not itself a newly discovered report')
  def test_mixed_sources_do_not_promote_original_pdf_facts(self):
   original=next(x for x in SOURCES if x['kind']=='pdf_original')
   html_source=next(x for x in SOURCES if x['id']=='ca-san-bruno-alpr-audits')
