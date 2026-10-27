@@ -51,6 +51,86 @@
         }
       ],
       "content_sha256": "0a4e074adffc5be4723f02e3bdb097e191376afa8109151a4c527e671328e447"
+    },
+    {
+      "id": "stillwater-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "stillwater|MN",
+      "jurisdiction_label": "Stillwater, MN",
+      "agency_name": "Stillwater Police Department",
+      "report_title": "Stillwater Police Department 2026 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/261351.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-09-06",
+      "period_start": "2024-08-01",
+      "period_end": "2026-07-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_count",
+          "page": 2,
+          "statement": "The independent auditor reported 17 stationary Flock ALPR units at the time of its September 2026 audit. This is an auditor-attributed historical count, not a current installation inventory or individual camera map.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "audited_retention",
+          "page": 2,
+          "statement": "The auditor reported a manufacturer-default 30-day Flock data retention period and said the Flock Vehicle Reads report confirmed it during the audit. This does not establish subsequent agency settings.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "audited_sharing_visibility",
+          "page": 3,
+          "statement": "The auditor reported that Stillwater's Flock console showed no out-of-state sharing in its Shared Network section at the time of the audit. That is a time-limited observation of one interface, not proof no external agency ever accessed data.",
+          "scope": "auditor_reported_sharing_snapshot"
+        }
+      ],
+      "content_sha256": "6315eeb3b9061ff97098c850a712a7509a20d898724cbff08a96da8576bed1f9"
+    },
+    {
+      "id": "hennepin-county-mn-independent-flock-alpr-audit-2025",
+      "jurisdiction_key": "hennepin county|MN",
+      "jurisdiction_label": "Hennepin County, MN",
+      "agency_name": "Hennepin County Sheriff's Office",
+      "report_title": "Hennepin County Sheriff's Office 2025 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251683.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2025-10-21",
+      "period_start": "2023-06-01",
+      "period_end": "2025-07-31",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_count",
+          "page": 2,
+          "statement": "The independent auditor reported four active stationary Flock ALPR units within Hennepin County in its October 2025 report. The count is historical, not a present-day equipment inventory.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "audited_retention",
+          "page": 2,
+          "statement": "The auditor reported a default Flock 30-day data retention period, confirmed by a Flock Vehicle Reads report reviewed during the audit period. This does not establish current agency settings.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "sharing_procedure",
+          "page": 3,
+          "statement": "The auditor described interagency ALPR data requests as reviewed through agency command. The report does not identify all current recipients or establish an ongoing shared-network permission list.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "e131a79aaf5c59a1477e30a47edbdf2b15ed9226c274a4e446e427b0383dfc70"
     }
   ]
 }

@@ -109,4 +109,33 @@ assert.equal(fake.counts.independentAuditorReports,0,'Untrusted hosts cannot be 
 const missing=Audit.assess(shakopee,[],{contractStatus:'ok',auditArchiveStatus:'unavailable'});
 assert.ok(missing.findings.some(x=>x.code==='independent_audit_archive_unavailable'));
 
+const stillwater=base();
+stillwater.key='stillwater|MN';stillwater.label='Stillwater, MN';
+const stillwaterAudit=Audit.assess(stillwater,[],{
+ contractStatus:'ok',auditArchiveStatus:'ok',
+ independentAudits:auditManifest.reports
+});
+assert.equal(stillwaterAudit.counts.independentAuditorReports,1);
+assert.ok(stillwaterAudit.inventory.some(x=>x.kind==='auditor_reported_observation'&&
+ x.detail.includes('17 stationary Flock ALPR units')&&
+ x.sources.includes('https://www.lrl.mn.gov/docs/2026/mandated/261351.pdf#page=2')));
+assert.ok(!stillwaterAudit.inventory.some(x=>x.detail.includes('four active stationary')),
+ 'No unrelated agency observations must leak into Stillwater evidence');
+const hennepin=base();
+hennepin.key='hennepin county|MN';hennepin.label='Hennepin County, MN';
+const hennepinAudit=Audit.assess(hennepin,[],{
+ contractStatus:'ok',auditArchiveStatus:'ok',
+ independentAudits:auditManifest.reports
+});
+assert.equal(hennepinAudit.counts.independentAuditorReports,1);
+assert.ok(hennepinAudit.inventory.some(x=>x.kind==='auditor_reported_observation'&&
+ x.detail.includes('four active stationary Flock ALPR units')&&
+ x.sources.some(u=>u.includes('251683.pdf#page=2'))));
+const unrelated=base();
+unrelated.key='hennepin city|MN';unrelated.label='Hennepin City, MN';
+assert.equal(Audit.assess(unrelated,[],{
+ contractStatus:'ok',auditArchiveStatus:'ok',
+ independentAudits:auditManifest.reports
+}).counts.independentAuditorReports,0,'Agency identity must match exact source key');
+
 console.log('AUTOMATED ACCOUNTABILITY ENGINE PASS: evidence boundaries, precise source-dated differences, private-safe public requests, fail-closed contracts');
