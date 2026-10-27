@@ -125,5 +125,5 @@ def main():
  print("WA_AG_VERSIONED_POLICY_TRIAGE",json.dumps({"source_count":len(data["receipts"]),"statuses":counts,
   "potential_flock_text_citations_not_verified_vendor":sum(bool(r["potential_flock_term_pages"]) for r in data["receipts"])},sort_keys=True))
  for r in data["receipts"]:
-  print("WA_ORIGINAL_POLICY_RECEIPT",json.dumps({k:r[k] for k in ["agency_name","inspection_status","page_count","sha256","searchable_text_pages","scanned_image_pages","potential_flock_term_pages"]},ensure_ascii=False,sort_keys=True))
+  print("WA_ORIGINAL_POLICY_RECEIPT",json.dumps({k:r[k] for k in ["agency_name","inspection_status","page_count","sha256","bytes","searchable_text_pages","scanned_image_pages","potential_flock_term_pages"]},ensure_ascii=False,sort_keys=True))
 if __name__=="__main__":main()
