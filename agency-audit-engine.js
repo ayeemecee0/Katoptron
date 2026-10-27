@@ -34,6 +34,22 @@
   if(typeof group.label!=='string'||typeof group.key!=='string')
    throw Error('Invalid locality identity');
   const contractStatus=options.contractStatus==='ok'?'ok':'unavailable';
+  const auditArchiveStatus=options.auditArchiveStatus==='ok'?'ok':'unavailable';
+  const archiveRows=Array.isArray(options.independentAudits)?options.independentAudits:[];
+  // Independent auditor reports are curated original-source observations,
+  // NOT assertions by Katoptron that an agency is legally compliant.
+  // Never match an audit to a city by fuzzy name or an agency centroid.
+  const independentAudits=archiveRows.filter(r=>{
+   if(r.jurisdiction_key!==group.key||r.source_tier!=='original_government_archive_independent_audit_report'||
+      !safe(r.source_url)||!day(r.report_date)||!day(r.reviewed_on)||
+      !Array.isArray(r.findings)||!r.findings.length||
+      !Array.isArray(r.pages_reviewed)||!r.pages_reviewed.length)return false;
+   let host;
+   try{host=new URL(r.source_url).hostname.toLowerCase();}catch{return false;}
+   return host.endsWith('.gov')&&r.pages_reviewed.every(p=>Number.isInteger(p)&&p>=1&&p<=300)&&
+    r.findings.every(f=>Number.isInteger(f.page)&&r.pages_reviewed.includes(f.page)&&
+     typeof f.statement==='string'&&f.statement.length>=40&&f.statement.length<=700);
+  });
   const asOf=day(options.asOf)||new Date().toISOString().slice(0,10);
   const findings=[],inventory=[],seen=new Set();
   function item(kind,title,detail,urls=[],meta={}){
@@ -87,6 +103,24 @@
   for(const c of citedContracts)item('signed_contract','Reviewed signed Flock agreement',
     'Signed-document date and recorded amount/end date, if present. Scheduled end is not a confirmed renewal or termination.',
     [c.source_url],{date:c.signed_on,tier:'original_government_signed_agreement'});
+  for(const report of independentAudits){
+   item('independent_auditor_report',report.report_title,
+    'Third-party auditor report dated '+report.report_date+
+    ', covering '+report.period_start+' through '+report.period_end+
+    '. Original page claims and auditor conclusions are attributed; not a Katoptron certification.',
+    [report.source_url],{date:report.report_date,tier:report.source_tier});
+   for(const observation of report.findings){
+    item('auditor_reported_observation',report.report_title+' · p.'+observation.page,
+     observation.statement,[report.source_url+'#page='+observation.page],
+     {date:report.report_date,tier:'independent_auditor_statement'});
+   }
+  }
+  if(auditArchiveStatus==='unavailable'){
+   finding('independent_audit_archive_unavailable','evidence_unavailable','P2',
+    'Independent-audit source catalog unavailable',
+    'The dated third-party audit catalog could not be retrieved. Do not infer that no audits exist.',
+    'Please supply the most recent independent ALPR audit and its public official publication location.');
+  }
   if(!gov.length&&!programs.length){
    finding('government_record_gap','evidence_gap','P1','Government decision/program evidence not indexed',
     'No qualifying original government decision or program record is currently published for this locality. This is not proof that no such records exist.',
@@ -210,8 +244,8 @@
    counts:{governmentRecords:gov.length,governmentPrograms:programs.length,
     exactGovernmentPositions:cameras.length,vendorSnapshots:portals.length,
     originalSharingSources:sharingSources.size,originalSharingNames:sharing.length,
-    reviewedSignedContracts:citedContracts.length,uniqueCitedSources:allSources.length},
-   inventory,findings,sourceUrls:allSources,contractStatus,
+    reviewedSignedContracts:citedContracts.length,independentAuditorReports:independentAudits.length,uniqueCitedSources:allSources.length},
+   inventory,findings,sourceUrls:allSources,contractStatus,auditArchiveStatus,
    disclaimer:'Locality grouping does not verify common agency ownership. These findings are source-coverage gaps, date-limited changes and leads for review, NOT a legality, compliance, security or wrongdoing score. Missing records are unknown, not evidence of absence.'
   });
  }
