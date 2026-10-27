@@ -100,7 +100,7 @@ def main():
     elif name=="Yakima Police Department":
      info["diagnosis"]="OVERSIZE_MANUAL_PAGE_COUNT"
     else:info["diagnosis"]="PDF_DEPENDENCY_UNRESOLVED"
-     info["baseline_qualification_matches"]=check_published_qualification(info)
+   info["baseline_qualification_matches"]=check_published_qualification(info)
    print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps(info,sort_keys=True))
    if not info["baseline_qualification_matches"]:
     raise ValueError("Previously published source qualification requires re-review")
