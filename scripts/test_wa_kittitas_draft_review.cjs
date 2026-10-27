@@ -8,7 +8,7 @@ const ok=API.review(d,registry.registrations,held.entries);
 assert.equal(ok.original_page_count,4);
 assert.equal(ok.document_lifecycle,'draft_not_proven_adopted');
 assert.match(ok.findings[0].statement,/Flock online training/);
-assert.match(ok.findings[0].statement,/not verify/i);
+assert.match(ok.findings[0].statement,/Neither the draft nor its training reference verifies/);
 assert.match(ok.findings[1].statement,/21-day/);
 assert.match(ok.findings[2].statement,/annual/);
 assert.ok(ok.page_png_sha256.every(x=>/^[a-f0-9]{64}$/.test(x)));
