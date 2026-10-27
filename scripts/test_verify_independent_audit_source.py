@@ -35,7 +35,7 @@ class TestPublicAuditSource(unittest.TestCase):
    "https://www.lrl.mn.gov/admin"):
    self.assertFalse(M.allowed(x),x)
  def test_no_source_facts_without_exact_page_receipts(self):
-  self.assertEqual(len(M.manifest_rows(CATALOG)),40)
+  self.assertEqual(len(M.manifest_rows(CATALOG)),42)
   raw=b"%PDF-1.7"+b" synthetic test only "
   fixture={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
   self.assertEqual(M.verify_pdf(fixture,raw,Reader),5)
@@ -95,9 +95,9 @@ class TestPublicAuditSource(unittest.TestCase):
    with self.assertRaisesRegex(ValueError,"page text changed"):
     M.verify_pdf(fixture,raw,Changed)
 
- def test_all_eighteen_original_historical_page_revisions_fail_closed(self):
+ def test_all_twenty_original_historical_page_revisions_fail_closed(self):
   raw=b"%PDF-1.7 synthetic historical original"
-  self.assertEqual(len(M.HISTORICAL_CURATED_PAGE_ANCHORS),18)
+  self.assertEqual(len(M.HISTORICAL_CURATED_PAGE_ANCHORS),20)
   for audit_id,anchors in M.HISTORICAL_CURATED_PAGE_ANCHORS.items():
    row=next(r for r in CATALOG["reports"] if r["id"]==audit_id)
    class Match:
@@ -113,6 +113,22 @@ class TestPublicAuditSource(unittest.TestCase):
      self.pages[int(next(iter(anchors)))-1]=Page("Unrelated historical report")
    with self.assertRaisesRegex(ValueError,"page changed"):
     M.verify_pdf(fixture,raw,Drift)
+ def test_only_pinned_public_hennepin_original_can_use_empty_pdf_password(self):
+  raw=b"%PDF-1.7 publicly readable synthetic input"
+  row=next(r for r in CATALOG["reports"] if r["id"]=="mn-original-alpr-review-200290")
+  correct={**row,"content_sha256":hashlib.sha256(raw).hexdigest()}
+  class PublicOnly:
+   def __init__(self,*args,**kwargs):
+    self.is_encrypted=True
+    self.pages=[Page("unrelated") for _ in range(9)]
+    self.pages[6]=Page(" ".join(sum(M.HISTORICAL_CURATED_PAGE_ANCHORS[row["id"]].values(),[])))
+   def decrypt(self,password):
+    if password!="":raise AssertionError("Should not request a secret password")
+    return 1
+  self.assertEqual(M.verify_pdf(correct,raw,PublicOnly),9)
+  wrong={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
+  with self.assertRaisesRegex(ValueError,"not approved"):
+   M.verify_pdf(wrong,raw,PublicOnly)
  def test_two_historical_original_source_periods_are_page_pinned(self):
   raw=b"%PDF-1.7 bounded synthetic original"
   examples={
