@@ -65,6 +65,12 @@ The [Accountability Audit](./agency-audit.html) compares original, SHA-256-pinne
 
 See [cross-period validation and sources](./docs/m10-cross-period-original-audit-history-2026-10-27.md); raw plates, user routes, and personal data are not fetched or displayed.
 
+## Automatic historical agency original-source review queue (October 27, 2026)
+
+The [Minnesota original ALPR audit library](./mn-alpr-audits.html) now automatically surfaces a **prioritized original-document review queue**, derived from the existing state legislative index and the separately reviewed original audit catalog. The first successful state scan found **137** archive reports, **2** Flock-named titles awaiting independent PDF review and **23** additional same-agency historical or different-vendor audit titles. **An older report title is not proof of earlier Flock equipment**; all candidates stay metadata-only until source pages are independently verified.
+
+The [weekly historical original-source workflow](./.github/workflows/scan_mn_historical_queue.yml) inspects at most **12** priority original PDFs and creates SHA-256 / page-count receipts in a 14-day Actions artifact. In the first run **10 of 12** were machine fingerprinted; two were marked unavailable/unreadable for later recheck. It does not extract personal plate data or auto-publish PDF findings, make map pins, or claim live settings. Read the [original source queue architecture and verification limits](./docs/m10-automated-historical-alpr-original-review-queue-2026-10-27.md).
+
 ## Milestones 7–9 — Analytics, accessibility and launch controls (October 23, 2026)
 
 **M9 unattended production preparation ~90% (October 26):**

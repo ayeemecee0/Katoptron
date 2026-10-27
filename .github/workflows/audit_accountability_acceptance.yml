@@ -8,6 +8,8 @@ on:
       - 'scripts/test_audit_history.cjs'
       - 'agency-audit.html'
       - 'mn-alpr-audits.html'
+      - 'mn-audit-candidates.js'
+      - 'scripts/test_mn_audit_candidates.cjs'
       - 'scripts/smoke_mn_alpr_audit_registry.cjs'
       - 'agency-intelligence.js'
       - 'agency-timeline.js'
@@ -38,6 +40,8 @@ jobs:
           node --check audit-history.js
           node scripts/test_agency_audit_engine.cjs
           node scripts/test_audit_history.cjs
+          node --check mn-audit-candidates.js
+          node scripts/test_mn_audit_candidates.cjs
       - name: Start local preview
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/audit-preview.log 2>&1 &

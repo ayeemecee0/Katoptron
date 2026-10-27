@@ -1,0 +1,49 @@
+name: Build Minnesota historical ALPR source-review queue
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 18 * * 4'
+  push:
+    paths:
+      - 'mn-audit-candidates.js'
+      - 'data/verified-independent-audits.json'
+      - 'scripts/build_mn_historical_queue.cjs'
+      - 'scripts/test_mn_audit_candidates.cjs'
+      - 'scripts/scan_mn_historical_queue.py'
+      - 'scripts/test_scan_mn_historical_queue.py'
+      - '.github/workflows/scan_mn_historical_queue.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-mn-historical-source-review
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install bounded public PDF parser
+        run: python -m pip install 'pypdf>=5,<7'
+      - name: Test exact agency matching, negative cases, original PDF receipt bounds
+        run: |
+          node --check mn-audit-candidates.js
+          node scripts/test_mn_audit_candidates.cjs
+          python -m unittest discover -s scripts -p 'test_scan_mn_historical_queue.py' -v
+      - name: Inspect live state registry and fingerprint prioritized original PDFs
+        run: python scripts/scan_mn_historical_queue.py
+      - name: Save source-only review queue with short retention, no source PDF contents
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-alpr-original-source-review-queue
+          path: .katoptron-ci/historical-alpr-review-queue.json
+          retention-days: 14
+          if-no-files-found: error

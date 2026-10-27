@@ -30,21 +30,65 @@ const assert=require('node:assert/strict');
   await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('official archive report'),
    null,{timeout:12000});
   assert.match(await page.locator('#status').textContent(),/^1 official archive/);
-  assert.equal(await page.locator('article').count(),1);
+  assert.equal(await page.locator('#reports article').count(),1);
   assert.match(await page.locator('#reports').textContent(),/Shakopee/);
   assert.match(await page.locator('#reports').textContent(),/Flock mentioned in title/);
   const source=await page.locator('#reports article a').first().getAttribute('href');
   assert.equal(source,'https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf');
   await page.locator('#query').fill('');
   await page.locator('#scope').selectOption('other_vendor_named_in_title');
-  assert.equal(await page.locator('article').count(),1);
+  assert.equal(await page.locator('#reports article').count(),1);
   assert.match(await page.locator('#reports').textContent(),/Oakdale/);
   assert.doesNotMatch(await page.locator('#reports').textContent(),/Flock mentioned in title/);
   await page.locator('#scope').selectOption('all');
-  assert.equal(await page.locator('article').count(),3);
+  assert.equal(await page.locator('#reports article').count(),3);
   assert.match(await page.locator('main').textContent(),/not a verified current manufacturer/);
   const fits=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2);
   assert.ok(fits,'390px mobile viewport must not overflow');
+  // A second pass adds official, not-yet-reviewed titles. The queue must
+  // reconcile exact agency identity without publishing camera or Flock facts.
+  rows.push({
+   source_url:'https://www.lrl.mn.gov/docs/2022/mandated/220708.pdf',
+   registry_url:'https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735',
+   report_id:'22-0708.pdf',
+   report_title:'Independent Audit of Shakopee Police Department ALPR System',
+   listed_publishers:'Minnesota state archive',
+   publication_date:'2022-05-08',coverage_period:'2020–2022',received_date:'2022-05-09',
+   title_scope:'unspecified_alpr_title',evidence_tier:'state_legislative_registry_index_metadata_only'
+  });
+  rows.push({
+   source_url:'https://www.lrl.mn.gov/docs/2026/mandated/261268.pdf',
+   registry_url:'https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735',
+   report_id:'26-1268.pdf',
+   report_title:'Wyoming Police Department 2026 ALPR Audit (Flock System)',
+   listed_publishers:'Minnesota state archive',
+   publication_date:'2026-08-30',coverage_period:'2025–2026',received_date:'2026-09-02',
+   title_scope:'flock_named_in_title',evidence_tier:'state_legislative_registry_index_metadata_only'
+  });
+  rows.push({
+   source_url:'https://www.lrl.mn.gov/docs/2025/mandated/251686.pdf',
+   registry_url:'https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735',
+   report_id:'25-1686.pdf',
+   report_title:'Champlin Police Department 2025 ALPR Audit (AXON) Executive Summary',
+   listed_publishers:'Minnesota state archive',
+   publication_date:'2025-10-28',coverage_period:'2023–2025',received_date:'2025-10-30',
+   title_scope:'other_vendor_named_in_title',evidence_tier:'state_legislative_registry_index_metadata_only'
+  });
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>document.querySelector('#queueStatus')?.textContent?.includes('queued original state audit'),
+   null,{timeout:15000});
+  assert.match(await page.locator('#queueStatus').textContent(),/^3 queued original state audit/);
+  const queue=page.locator('#queueCards article');
+  assert.equal(await queue.count(),3);
+  assert.match(await queue.first().textContent(),/Wyoming Police Department/);
+  assert.match(await queue.first().textContent(),/P0/);
+  assert.match(await queue.nth(1).textContent(),/Shakopee/);
+  assert.match(await queue.nth(1).textContent(),/Manufacturer not identified in title/);
+  assert.match(await queue.nth(2).textContent(),/Champlin/);
+  assert.match(await queue.nth(2).textContent(),/Different\/multiple vendors/);
+  assert.ok(!(await page.locator('#queueCards').textContent()).includes('verified current'));
+  assert.ok(await queue.nth(1).locator('a[href*="agency-audit.html?place=shakopee"]').count());
+  assert.equal(await page.locator('#reports article').count(),2);
   assert.deepEqual(errors,[]);
   console.log('OFFICIAL MINNESOTA AUDIT LIBRARY BROWSER PASS: metadata tiers, strict source links, filtering, deep link, mobile');
  }catch(e){console.error('MINNESOTA AUDIT BROWSER FAILED:',e.stack||e,errors);process.exitCode=1;}
