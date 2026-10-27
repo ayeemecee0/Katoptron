@@ -14,11 +14,11 @@ from fingerprint_mn_flock_audits import fetch_bounded
 from scan_mn_historical_queue import build
 
 ROOT=Path(__file__).resolve().parents[1]
-TERM=re.compile(r"\\b(?:flock|elsag|axon|vigilant|motorola|genetec|boss|mobile|stationary|squad|patrol|fixed|retention|system|vehicle|reader|sharing)\\b",re.I)
+TERM=re.compile(r"\b(?:flock|elsag|axon|vigilant|motorola|genetec|boss|mobile|stationary|squad|patrol|fixed|retention|system|vehicle|reader|sharing)\b",re.I)
 def summarize(text):
  text=" ".join(text.split())
  # Only isolated public report passages; bounded and non-authoritative research aids.
- units=re.split(r"(?<=[.!?])\\s+(?=[A-Z])",text)
+ units=re.split(r"(?<=[.!?])\s+(?=[A-Z])",text)
  matches=[u[:440] for u in units if TERM.search(u) and 25<=len(u)<1500]
  return matches[:9]
 
