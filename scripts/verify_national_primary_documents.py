@@ -54,10 +54,19 @@ def valid(records):
   ident=row.get("id")
   if ident not in ROLE or ident in seen:raise ValueError("Original document identity unknown/duplicate")
   seen.add(ident)
-  if row.get("source_url")!=SOURCES[ident][0] or (row.get("kind"),row.get("publisher_role"))!=ROLE[ident]:
+  source_url=MOLINE_URL if ident==MOLINE_ID else SOURCES[ident][0]
+  if row.get("source_url")!=source_url or (row.get("kind"),row.get("publisher_role"))!=ROLE[ident]:
    raise ValueError("Original source or document status changed")
   if not re.fullmatch("[a-f0-9]{64}",row.get("content_sha256","")):raise ValueError("Missing full original SHA")
-  if row.get("page_count") not in range(1,121) or set(ANCHORS[ident])!=set(row.get("pages_reviewed",[])) and not set(ANCHORS[ident]).issubset(set(row.get("pages_reviewed",[]))):
+  if row.get("page_count") not in range(1,121):
+   raise ValueError("Original PDF page bounds invalid")
+  if ident==MOLINE_ID:
+   if (row["page_count"]!=6 or set(row.get("pages_reviewed",[]))!=VISUAL_PAGES or
+       row.get("verification_method")!="visual_page_review_sha256_pinned_scanned_pdf" or
+       row.get("source_date")!="2024-12-04" or
+       "visually_reviewed_original_signatures" not in row.get("status","")):
+    raise ValueError("Visual review scope or original signed date changed")
+  elif not set(ANCHORS[ident]).issubset(set(row.get("pages_reviewed",[]))):
    raise ValueError("Page review trace incomplete")
   findings=row.get("findings",[])
   if not isinstance(findings,list) or not 1<=len(findings)<=8 or any(not isinstance(f,dict) or f.get("page") not in row["pages_reviewed"] or len(f.get("statement",""))<45 for f in findings):
