@@ -32,6 +32,8 @@
    typeof r.agency_name==='string'&&r.agency_name.trim().length>=8&&
    typeof r.jurisdiction_key==='string'&&
    date(r.report_date)&&date(r.period_start)&&date(r.period_end)&&
+   (!r.period_precision||(['month_only','audit_snapshot_only'].includes(r.period_precision)&&
+    typeof r.period_label==='string'&&r.period_label.length>=12&&r.period_label.length<=120))&&
    r.period_start<=r.period_end&&
    Array.isArray(r.pages_reviewed)&&r.pages_reviewed.length>=1&&
    r.pages_reviewed.every(p=>Number.isInteger(p)&&p>=1&&p<=30)&&
@@ -53,12 +55,15 @@
   if(!Array.isArray(a)||a.length===0||a.length>8)return [];
   const seen=new Set(),out=[];
   for(const x of a){
-   if(!x||!['Flock Safety','Elsag','Axon'].includes(x.vendor)||
+   if(!x||!['Flock Safety','Elsag','Axon','Manufacturer unconfirmed'].includes(x.vendor)||
       !['stationary','patrol_vehicle'].includes(x.deployment)||
+      (x.vendor==='Manufacturer unconfirmed'&&x.platform!=='BOSS')||
+      (x.vendor!=='Manufacturer unconfirmed'&&x.platform!=null)||
       !checkedPage(report,x.page))return [];
-   const k=x.vendor+':'+x.deployment;
+   const k=x.vendor+':'+x.deployment+(x.platform?':'+x.platform:'');
    if(seen.has(k))return [];
-   seen.add(k);out.push({vendor:x.vendor,deployment:x.deployment,key:k});
+   seen.add(k);out.push({vendor:x.vendor,deployment:x.deployment,key:k,
+    label:x.vendor==='Manufacturer unconfirmed'?'Manufacturer unconfirmed (BOSS software)':x.vendor});
   }
   return out;
  }
@@ -99,6 +104,7 @@
       earlier_date:old.report_date,later_date:newer.report_date,
       earlier_period:[old.period_start,old.period_end],
       later_period:[newer.period_start,newer.period_end],
+      earlier_period_label:old.period_label||null,later_period_label:newer.period_label||null,
       citations:[old.source_url+'#page='+a.page,newer.source_url+'#page='+b.page]
      });
     }
@@ -112,13 +118,14 @@
       events.push({
        type:'historical_platform_difference',agency_id:agencyId,agency_name:old.agency_name,
        title:'Different ALPR technologies documented across audits',
-       detail:'Earlier: '+prevSystems.map(x=>x.vendor+' ('+x.deployment.replace('_',' ')+')').join(', ')+
-         '. Later: '+nextSystems.map(x=>x.vendor+' ('+x.deployment.replace('_',' ')+')').join(', ')+
+       detail:'Earlier: '+prevSystems.map(x=>x.label+' ('+x.deployment.replace('_',' ')+')').join(', ')+
+         '. Later: '+nextSystems.map(x=>x.label+' ('+x.deployment.replace('_',' ')+')').join(', ')+
          '. '+transition_note+
          ' These are historical descriptions of different hardware categories. Do not subtract patrol units from fixed locations or infer the current deployment.',
        earlier_date:old.report_date,later_date:newer.report_date,
        earlier_period:[old.period_start,old.period_end],
        later_period:[newer.period_start,newer.period_end],
+       earlier_period_label:old.period_label||null,later_period_label:newer.period_label||null,
        citations:[old.source_url+'#page='+prevSystems.map(x=>old.cross_period.systems.find(y=>y.vendor===x.vendor&&y.deployment===x.deployment).page)[0],
         newer.source_url+'#page='+(newer.cross_period.transition_page&&checkedPage(newer,newer.cross_period.transition_page)?newer.cross_period.transition_page:newer.cross_period.systems[0].page)]
       });

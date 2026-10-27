@@ -35,7 +35,7 @@ class TestPublicAuditSource(unittest.TestCase):
    "https://www.lrl.mn.gov/admin"):
    self.assertFalse(M.allowed(x),x)
  def test_no_source_facts_without_exact_page_receipts(self):
-  self.assertEqual(len(M.manifest_rows(CATALOG)),17)
+  self.assertEqual(len(M.manifest_rows(CATALOG)),22)
   raw=b"%PDF-1.7"+b" synthetic test only "
   fixture={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
   self.assertEqual(M.verify_pdf(fixture,raw,Reader),5)
@@ -76,7 +76,7 @@ class TestPublicAuditSource(unittest.TestCase):
     M.verify_pdf(fixture,raw,Changed)
  def test_nine_more_original_audits_fail_closed_on_page_drift(self):
   raw=b"%PDF-1.7 synthetic reviewed-page provenance"
-  self.assertEqual(len(M.ADDITIONAL_REVIEWED_PAGE_ANCHORS),9)
+  self.assertEqual(len(M.ADDITIONAL_REVIEWED_PAGE_ANCHORS),14)
   for audit_id,anchors in M.ADDITIONAL_REVIEWED_PAGE_ANCHORS.items():
    record=next(r for r in CATALOG["reports"] if r["id"]==audit_id)
    original=next(i for i in (2,3,4) if i in (int(p) for p in anchors))

@@ -169,8 +169,8 @@ function render(){
    const card=node('article',null,'item');
    card.append(node('h3',event.title),node('p',event.detail),
     node('p','Original audit dates: '+event.earlier_date+' → '+event.later_date+
-     '. Earlier reviewed period: '+event.earlier_period.join(' to ')+
-     '. Later reviewed period: '+event.later_period.join(' to ')+'.','muted'));
+     '. Earlier audit scope: '+(event.earlier_period_label||event.earlier_period.join(' to '))+
+     '. Later audit scope: '+(event.later_period_label||event.later_period.join(' to '))+'.','muted'));
    const citations=node('div',null,'links');
    for(const source of event.citations)link(citations,source,'Read original audited page');
    card.append(citations);el('historicalFindings').append(card);

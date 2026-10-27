@@ -1,5 +1,7 @@
 # Minnesota Flock-named audit conversion — original PDF receipts and reviewed pages
 
+**October 27, 2026 current coverage:** This document preserves earlier October 26 review snapshots for provenance. The current pinned manifest now includes **22** original auditor reports, including page-level checks for **all 16 of 16 state titles explicitly mentioning Flock**. The two previously machine-only West Saint Paul and Wyoming originals have been reviewed. See the [current source-linked historical comparison and five new original audit receipts](./m10-cross-period-original-audit-history-2026-10-27.md). The original machine scanner and current public registry remain separate from independently reviewed content.
+
 **Development snapshot:** October 26, 2026 (America/Los_Angeles). This release **does not** independently certify a police department's legal compliance or current camera inventory.
 
 ## What is newly useful
@@ -59,7 +61,7 @@ Nine additional original public auditor executive summaries were examined on the
 | [South Lake Minnetonka Police Department](https://www.lrl.mn.gov/docs/2026/mandated/260679.pdf) | 2026-04-10 | four stationary Flock ALPR units and no mobile Flock units (p.2) | Historical interagency sharing-request documentation (p.3) |
 | [University of Minnesota Police Department](https://www.lrl.mn.gov/docs/2025/mandated/251639.pdf) | 2025-10-15 | ten active stationary ALPR units in its Flock-system audit, with no mobile Flock units reported (p.2) | Historical interagency sharing-request documentation (p.3) |
 
-**Current independently page-reviewed Flock-named audit titles: 14 of 16 (87.5%).** The catalog separately also includes Shakopee, whose title does not mention Flock, so **15 total reports have curated original-source review entries**. The two remaining Flock-titled reports (West Saint Paul and Wyoming) remain *machine-fingerprinted-only*, because their original PDF pages were not independently accessible for review in this pass. They are not approved for source-specific public findings. Do not count 15/16 or misclassify Shakopee's title. All 16 continue to have private ingestion-level PDF hash receipts.
+**October 26, 2026 checkpoint (superseded on October 27): independently page-reviewed Flock-named audit titles were 14 of 16 (87.5%).** The catalog separately also includes Shakopee, whose title does not mention Flock, so **15 total reports have curated original-source review entries**. The two remaining Flock-titled reports (West Saint Paul and Wyoming) remain *machine-fingerprinted-only*, because their original PDF pages were not independently accessible for review in this pass. They are not approved for source-specific public findings. Do not count 15/16 or misclassify Shakopee's title. All 16 continue to have private ingestion-level PDF hash receipts.
 
 The automated source verifier must fetch and validate all 15 reviewed PDFs and match exact relevant page strings before publication. Any missing or revised original source fails closed. It does not independently confirm statutory compliance or current manufacturer identity.
 

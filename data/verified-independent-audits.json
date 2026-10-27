@@ -408,7 +408,28 @@
           "scope": "auditor_reported_sharing_process"
         }
       ],
-      "content_sha256": "02bf85cbafa87f9b3bdc8786ee82e933de87525053d69a02fdec4a2e8be6e93e"
+      "content_sha256": "02bf85cbafa87f9b3bdc8786ee82e933de87525053d69a02fdec4a2e8be6e93e",
+      "cross_period": {
+        "agency_id": "edina-police-mn",
+        "systems": [
+          {
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "page": 2
+          }
+        ],
+        "metrics": [
+          {
+            "key": "stationary_flock_alpr_units",
+            "value": 18,
+            "unit": "units",
+            "vendor": "Flock Safety",
+            "deployment": "stationary",
+            "measurement": "auditor_snapshot",
+            "page": 2
+          }
+        ]
+      }
     },
     {
       "id": "hopkins-mn-independent-flock-alpr-audit-2026",
@@ -755,6 +776,243 @@
         ],
         "metrics": []
       }
+    },
+    {
+      "id": "woodbury-mn-independent-alpr-audit-2021",
+      "jurisdiction_key": "woodbury|MN",
+      "jurisdiction_label": "Woodbury, MN",
+      "agency_name": "Woodbury Public Safety",
+      "report_title": "Woodbury Public Safety Department 2021 ALPR Audit Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2021/mandated/211119.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2021-11-10",
+      "period_start": "2019-12-01",
+      "period_end": "2021-06-30",
+      "period_precision": "month_only",
+      "period_label": "December 2019–June 2021 (months only)",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_mobile_only",
+          "page": 2,
+          "statement": "The independent auditor described up to two squad cars using ALPR systems between December 2019 and June 2021 and no stationary ALPR units during that period. The report describes BOSS administration but does not establish the hardware manufacturer; it is not evidence of historical Flock equipment.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "historical_boss_retention",
+          "page": 2,
+          "statement": "The 2021 auditor reports that an earlier inspection of the BOSS backend found a configured 60-day retention period; its control panel was no longer accessible at audit time. This is historical configured retention, not evidence of current settings or Flock retention.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "documented_mobile_program_end",
+          "page": 3,
+          "statement": "The 2021 auditor reports termination of Woodbury's mobile ALPR program in June 2021 and notification to the Minnesota Bureau of Criminal Apprehension. This does not establish the precise later start date of Woodbury's Flock stationary installation.",
+          "scope": "auditor_reported_historical_program_change"
+        }
+      ],
+      "content_sha256": "ae0b99580511d52cd46165c10dc3fd5f5582eb4291d47c924fbd4db1f510f986",
+      "cross_period": {
+        "agency_id": "woodbury-public-safety-mn",
+        "systems": [
+          {
+            "vendor": "Manufacturer unconfirmed",
+            "platform": "BOSS",
+            "deployment": "patrol_vehicle",
+            "page": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "edina-mn-independent-alpr-audit-2021",
+      "jurisdiction_key": "edina|MN",
+      "jurisdiction_label": "Edina, MN",
+      "agency_name": "Edina Police Department",
+      "report_title": "Edina PD 2021 ALPR Audit Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2021/mandated/210885.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2021-10-07",
+      "period_start": "2021-10-07",
+      "period_end": "2021-10-07",
+      "period_precision": "audit_snapshot_only",
+      "period_label": "October 7, 2021 audit snapshot (period bounds not stated)",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_mobile_only",
+          "page": 2,
+          "statement": "The October 2021 independent auditor reports Edina Police Department operating ALPR systems on nine squad cars and no stationary ALPR units at the time of the audit. The report names BOSS/PAGIS software but does not identify Flock hardware.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "historical_boss_retention",
+          "page": 2,
+          "statement": "The October 2021 auditor reports checking the BOSS ALPR administrator panel to confirm devices were configured for no more than 60 days of data retention. This is not directly comparable to a later Flock default-retention report.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "historical_sharing_request_process",
+          "page": 3,
+          "statement": "The auditor describes ALPR sharing requests being documented with agency name, requester and case number in the BOSS search audit trail. This establishes historical audit procedure, not current or standing Flock sharing partners.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "9eb8d2acd5b3e3e249b1273278d98620671edcb76e6d7b2407b6ed67389e7795",
+      "cross_period": {
+        "agency_id": "edina-police-mn",
+        "systems": [
+          {
+            "vendor": "Manufacturer unconfirmed",
+            "platform": "BOSS",
+            "deployment": "patrol_vehicle",
+            "page": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "shakopee-mn-independent-alpr-audit-2022",
+      "jurisdiction_key": "shakopee|MN",
+      "jurisdiction_label": "Shakopee, MN",
+      "agency_name": "Shakopee Police Department",
+      "report_title": "Independent Audit of Shakopee Police Department ALPR System (2022)",
+      "source_url": "https://www.lrl.mn.gov/docs/2022/mandated/220708.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Lynn Lembcke Consulting",
+      "report_date": "2022-05-08",
+      "period_start": "2020-02-01",
+      "period_end": "2022-03-15",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_elsag_mobile_only",
+          "page": 1,
+          "statement": "The 2022 independent audit describes Elsag Plate Hunter ALPRs in three Shakopee patrol vehicles and no stationary or fixed-location readers between February 2020 and March 2022. It does not establish a contemporary device inventory.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "historical_elsag_retention",
+          "page": 2,
+          "statement": "The 2022 auditor describes Elsag EOC automatically deleting data 60 days after collection, with no older data found in sampled queries. This is a historical Elsag configuration, not Flock data retention.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "historical_no_sharing_requests",
+          "page": 3,
+          "statement": "The auditor reports no interagency ALPR data-sharing requests during the February 2020–March 2022 audit period. This is a finding about that historical period, not evidence of current sharing behavior.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "764dd886027d8eb572ab67f828fca3bd2965b3d2e8523c54620d75c9b19dac64",
+      "cross_period": {
+        "agency_id": "shakopee-police-mn",
+        "systems": [
+          {
+            "vendor": "Elsag",
+            "deployment": "patrol_vehicle",
+            "page": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "west-saint-paul-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "west saint paul|MN",
+      "jurisdiction_label": "West Saint Paul, MN",
+      "agency_name": "West Saint Paul Police Department",
+      "report_title": "West Saint Paul Police Department 2026 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/261167.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-07-30",
+      "period_start": "2025-09-01",
+      "period_end": "2026-06-30",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_flock_count",
+          "page": 2,
+          "statement": "The independent auditor reported ten stationary Flock ALPR units and no mobile Flock units for West Saint Paul during the July 2026 audit. It does not establish the number of cameras still deployed after that report.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "historical_default_retention",
+          "page": 2,
+          "statement": "The July 2026 auditor describes a manufacturer-default 30-day Flock retention period, corroborated by an audit-time Flock Vehicle Reads report. No claim is made about current account settings or later operation.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "historical_sharing_sample",
+          "page": 3,
+          "statement": "The independent auditor reports that a May 2026 sample of interagency Flock sharing requests was documented by agency and justification and found justified in the sample. No named recipient list or current sharing policy is established.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "5f1b4804cc505436d4cb297f76a8767052f73eb6643210c3c36a4d116d09ba9e"
+    },
+    {
+      "id": "wyoming-mn-independent-flock-alpr-audit-2026",
+      "jurisdiction_key": "wyoming|MN",
+      "jurisdiction_label": "Wyoming, MN",
+      "agency_name": "Wyoming Police Department",
+      "report_title": "Wyoming Police Department 2026 ALPR Audit (Flock System) Executive Summary",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/261268.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Minnesota Security Consortium (MNSec)",
+      "report_date": "2026-08-30",
+      "period_start": "2025-08-01",
+      "period_end": "2026-07-31",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        2,
+        3
+      ],
+      "findings": [
+        {
+          "key": "historical_stationary_flock_count",
+          "page": 2,
+          "statement": "The independent auditor reported four stationary Flock ALPR units and no mobile Flock units in Wyoming during the August 2026 audit. This does not establish current operating conditions or individual equipment coordinates.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "historical_default_retention",
+          "page": 2,
+          "statement": "The August 2026 auditor reported a manufacturer-default 30-day Flock retention setting, corroborated by its audit-time Flock Vehicle Reads report. This finding is not proof of current settings.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "historical_sharing_agreements",
+          "page": 3,
+          "statement": "The auditor reports three other agencies authorized to access Wyoming ALPR data under written sharing agreements at the audit date, with searches limited to 30 days and requiring an auditable justification. Their identities and current permissions are not established in this reviewed passage.",
+          "scope": "auditor_reported_sharing_process"
+        }
+      ],
+      "content_sha256": "19f39c1f82e656aed2a7c2a8ee7e69a425fef30e43043b4d86473caee8152f6f"
     }
   ]
 }

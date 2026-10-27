@@ -10,7 +10,7 @@ function row(id,title,scope='unspecified_alpr_title',date='2024-06-01'){
   title_scope:scope,evidence_tier:'state_legislative_registry_index_metadata_only'};
 }
 const rows=[
- row('22-0708.pdf','Independent Audit of the Shakopee Police Department Automated License Plate Reader System'),
+ row('20-0577.pdf','Independent Audit of the Shakopee Police Department Automated License Plate Reader System'),
  row('26-0804.pdf','Richfield Police Department 2021 ALPR Audit Executive Summary'),
  row('19-1276.pdf','Biennial Audit of Woodbury Public Safety Department Automated License Plate Reader System'),
  row('25-1686.pdf','Champlin Police Department 2025 ALPR Audit (AXON) Executive Summary','other_vendor_named_in_title'),
@@ -23,14 +23,12 @@ const rows=[
 ];
 const plan=H.plan(rows,original);
 assert.equal(plan.scanned_reports,10);
-assert.equal(plan.curated_reports,17);
-assert.equal(plan.flock_titles_unreviewed,2);
-assert.equal(plan.candidates.length,6);
+assert.equal(plan.curated_reports,22);
+assert.equal(plan.flock_titles_unreviewed,0);
+assert.equal(plan.candidates.length,4);
 assert.equal(plan.exact_agency_historical_candidates,4);
-assert.equal(plan.candidates[0].priority,'P0');
-assert.equal(plan.candidates[0].matched_agency,null); // no curated West Saint Paul
-assert.equal(plan.candidates[0].jurisdiction_key,null);
-const sh=plan.candidates.find(x=>x.report_id==='22-0708.pdf');
+assert.equal(plan.candidates[0].priority,'P1');
+const sh=plan.candidates.find(x=>x.report_id==='20-0577.pdf');
 assert.equal(sh.jurisdiction_key,'shakopee|MN');
 assert.equal(sh.identity_basis,'original_title_exact_curated_agency_phrase');
 assert.equal(sh.title_scope,'unspecified_alpr_title');
@@ -38,8 +36,13 @@ assert.equal(sh.priority,'P1');
 assert.ok(plan.candidates.some(x=>x.report_id==='26-0804.pdf'&&x.jurisdiction_key==='richfield|MN'));
 assert.ok(plan.candidates.some(x=>x.report_id==='19-1276.pdf'&&x.jurisdiction_key==='woodbury|MN'));
 assert.ok(plan.candidates.some(x=>x.report_id==='25-1686.pdf'&&x.priority==='P2'));
-assert.ok(!plan.candidates.some(x=>['18-0202.pdf','25-1700.pdf','25-1639.pdf','26-1013.pdf'].includes(x.report_id)));
+assert.ok(!plan.candidates.some(x=>['18-0202.pdf','25-1700.pdf','25-1639.pdf','26-1013.pdf','26-1167.pdf','26-1268.pdf'].includes(x.report_id)));
 assert.ok(!plan.candidates.some(x=>x.reason.includes('confirmed')));
+const notYetReviewed={...original,reports:original.reports.filter(x=>!x.id.includes('west-saint-paul-mn-independent-flock')&&!x.id.includes('wyoming-mn-independent-flock'))};
+const preReview=H.plan(rows,notYetReviewed);
+assert.equal(preReview.flock_titles_unreviewed,2,'Source titles remain candidates until PDFs independently reviewed');
+assert.equal(preReview.candidates.length,6);
+
 const single=[rows[0]];
 assert.throws(()=>H.plan([...single,single[0]],original),/Duplicate/);
 assert.throws(()=>H.plan([{...rows[0],source_url:'https://evil.example/docs/2022/mandated/220708.pdf'}],original),/Non-official/);
