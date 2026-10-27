@@ -35,7 +35,7 @@ class TestPublicAuditSource(unittest.TestCase):
    "https://www.lrl.mn.gov/admin"):
    self.assertFalse(M.allowed(x),x)
  def test_no_source_facts_without_exact_page_receipts(self):
-  self.assertEqual(len(M.manifest_rows(CATALOG)),15)
+  self.assertEqual(len(M.manifest_rows(CATALOG)),17)
   raw=b"%PDF-1.7"+b" synthetic test only "
   fixture={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
   self.assertEqual(M.verify_pdf(fixture,raw,Reader),5)
@@ -94,6 +94,36 @@ class TestPublicAuditSource(unittest.TestCase):
      self.pages[original-1]=Page("Unrelated changed archive content")
    with self.assertRaisesRegex(ValueError,"page text changed"):
     M.verify_pdf(fixture,raw,Changed)
+
+ def test_two_historical_original_source_periods_are_page_pinned(self):
+  raw=b"%PDF-1.7 bounded synthetic original"
+  examples={
+   "woodbury-mn-independent-flock-alpr-audit-2024":(
+    ["woodbury public safety department", "flock alpr system","15 active stationary","retention period was set for 30 days"],
+    ["sharing among law enforcement agencies","documented by agency name, requesting party and case number"]),
+   "shakopee-mn-alpr-independent-audit-2024":(
+    ["shakopee police department","elsag plate hunter","three patrol vehicles","no stationary or fixed location readers"],
+    ["elsag eoc","destroy alpr data 60 days","no data older than 60"]),
+  }
+  for audit_id,(first,second) in examples.items():
+   report=next(r for r in CATALOG["reports"] if r["id"]==audit_id)
+   class Match:
+    def __init__(self,*args,**kwargs):
+     self.is_encrypted=False
+     self.pages=[Page(" ".join(first)),Page(" ".join(second))]+[Page("text") for _ in range(3)]
+   if audit_id.startswith("woodbury"):
+    class Match:
+     def __init__(self,*args,**kwargs):
+      self.is_encrypted=False
+      self.pages=[Page("cover"),Page(" ".join(first)),Page(" ".join(second)),Page("part"),Page("end")]
+   fixture={**report,"content_sha256":hashlib.sha256(raw).hexdigest()}
+   self.assertEqual(M.verify_pdf(fixture,raw,Match),5)
+   class Drift(Match):
+    def __init__(self,*args,**kwargs):
+     super().__init__(*args,**kwargs)
+     self.pages[1 if audit_id.startswith("woodbury") else 0]=Page("Changed and unrelated source")
+   with self.assertRaisesRegex(ValueError,"page changed"):
+    M.verify_pdf(fixture,raw,Drift)
 
  def test_fetch_not_called_for_unapproved_host(self):
   seen=[]
