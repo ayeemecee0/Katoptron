@@ -86,4 +86,27 @@ assert.equal(Audit.day('2026-02-30'),null);
 assert.equal(Audit.safe('javascript:alert(1)'),null);
 assert.equal(Audit.safe('https://user:pass@agency.gov/file'),null);
 assert.equal(Audit.safe('https://agency.gov/file'),'https://agency.gov/file');
+
+const auditManifest=require('../data/verified-independent-audits.json');
+const shakopee=base();
+shakopee.key='shakopee|MN';
+shakopee.label='Shakopee, MN';
+const independent=Audit.assess(shakopee,[],{
+ contractStatus:'ok',auditArchiveStatus:'ok',asOf:'2026-10-26',
+ independentAudits:auditManifest.reports
+});
+assert.equal(independent.counts.independentAuditorReports,1);
+assert.ok(independent.inventory.some(x=>x.kind==='independent_auditor_report'&&
+ x.sources.includes('https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf')));
+assert.ok(independent.inventory.some(x=>x.kind==='auditor_reported_observation'&&
+ x.sources.some(url=>url.includes('#page=2'))));
+assert.equal(run(base(),[], 'ok').counts.independentAuditorReports,0);
+const fake=Audit.assess(shakopee,[],{
+ contractStatus:'ok',auditArchiveStatus:'ok',
+ independentAudits:[{...auditManifest.reports[0],source_url:'https://evil.example/alpr.pdf'}]
+});
+assert.equal(fake.counts.independentAuditorReports,0,'Untrusted hosts cannot be original government auditor sources');
+const missing=Audit.assess(shakopee,[],{contractStatus:'ok',auditArchiveStatus:'unavailable'});
+assert.ok(missing.findings.some(x=>x.code==='independent_audit_archive_unavailable'));
+
 console.log('AUTOMATED ACCOUNTABILITY ENGINE PASS: evidence boundaries, precise source-dated differences, private-safe public requests, fail-closed contracts');
