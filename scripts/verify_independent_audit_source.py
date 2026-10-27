@@ -49,9 +49,10 @@ def manifest_rows(source):
   ids.add(key)
   if not isinstance(row.get("findings"),list) or not row["findings"] or len(row["findings"])>25:
    raise ValueError("Invalid bounded original claims")
-  if not all(isinstance(f.get("page"),int) and f["page"] in row.get("pages_reviewed",[])
-             and isinstance(f.get("statement"),str) and len(f["statement"])<850
-             for f in row["findings"] if isinstance(f,dict)):
+  if not all(isinstance(f,dict) and isinstance(f.get("page"),int) and
+             f["page"] in row.get("pages_reviewed",[]) and
+             isinstance(f.get("statement"),str) and 40<=len(f["statement"])<850
+             for f in row["findings"]):
    raise ValueError("Unverified page references")
  return rows
 
