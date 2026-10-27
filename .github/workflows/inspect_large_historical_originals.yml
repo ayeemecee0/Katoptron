@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: python -m pip install 'pypdf>=5,<7'
+      - run: python -m pip install 'pypdf>=5,<7' 'cryptography>=3.1,<50'
       - name: Read exact 2 government sources with at most 8MB and 110 pages, no redirects
         run: |
           python - <<'PY'
