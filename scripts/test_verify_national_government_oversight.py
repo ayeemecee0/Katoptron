@@ -40,7 +40,7 @@ class TestNationalOversight(unittest.TestCase):
  def test_no_fake_independent_review_or_non_government_url(self):
   original=DATA['reports'][2]
   forged={**original,'publisher_type':'independent_government_oversight'}
-  with self.assertRaisesRegex(ValueError,'independence tier'):M.records({...DATA,'reports':[DATA['reports'][0],DATA['reports'][1],forged]})
+  with self.assertRaisesRegex(ValueError,'independence tier'):M.records({**DATA,'reports':[DATA['reports'][0],DATA['reports'][1],forged]})
   attacker={**original,'source_url':'https://www.woodburn-or.gov.evil.example/secret.pdf'}
-  with self.assertRaisesRegex(ValueError,'authority URL'):M.records({...DATA,'reports':[DATA['reports'][0],DATA['reports'][1],attacker]})
+  with self.assertRaisesRegex(ValueError,'authority URL'):M.records({**DATA,'reports':[DATA['reports'][0],DATA['reports'][1],attacker]})
 if __name__=='__main__':unittest.main()
