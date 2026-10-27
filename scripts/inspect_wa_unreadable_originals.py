@@ -38,6 +38,15 @@ def main():
       count=len(pdf.pages)
       info["strict_"+str(strict).lower()]={"page_count":count,"encrypted":pdf.is_encrypted,
          "text_extraction_eligible":False if pdf.is_encrypted else 1<=count<=160}
+      if strict and name in {"Kelso Police Department","Puyallup Police Department","Wapato Police Department"}:
+       from triage_wa_ago_policy_origins import has_embedded_image_resource
+       for n,page in enumerate(pdf.pages):
+        report={"page":n+1}
+        for k,fn in (("text",lambda:len((page.extract_text() or "").strip())),
+                      ("image_resource",lambda:has_embedded_image_resource(page))):
+         try:report[k]=fn()
+         except Exception as e:report[k+"_error"]=type(e).__name__
+        info.setdefault("page_structure_probes",[]).append(report)
      except Exception as exc:
       info["strict_"+str(strict).lower()]={"error_type":type(exc).__name__}
     info["diagnosis"]="REQUIRES_SEPARATE_MANUAL_REVIEW"
