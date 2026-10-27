@@ -43,7 +43,7 @@ LIKELY_RESOURCE=re.compile(r"\.(?:pdf|csv|xlsx?|docx?)(?:$|\?)",re.I)
 # Top-level city-site navigation often contains "Privacy Policy", "City Auditor",
 # "Auditorium", or "Contract Administration" links. Those aren't Flock
 # documents merely because the parent page describes ALPR.
-DIRECT_FLOCK_LABEL=re.compile(r"\bflock\b|\balpr\b|(?:automated|automatic)\s+licen[cs]e\s+plate\s+read|\blpr\b",re.I)
+DIRECT_FLOCK_LABEL=re.compile(r"\bflock\b|\balpr\b|\blicen[cs]e\s+plate\s+read(?:er|ers|ing)?\b|\blpr\b",re.I)
 def relevant_document_link(label,url,kind):
  if kind in ("contract","policy","audit","sharing_export"):
   title_and_path=label+" "+urllib.parse.urlsplit(url).path.replace("-"," ")
