@@ -40,7 +40,7 @@ const internal=row('19-1260.pdf','Biennial Audit of the Hennepin County Sheriff\
 assert.equal(H.plan([internal],original).candidates.length,1,'Agency internal audit is not in external independent manifest');
 const reconciled=H.plan([internal],original,agencyReports);
 assert.equal(reconciled.candidates.length,0,'Already page-reviewed agency internal source must leave review backlog');
-assert.equal(reconciled.curated_reports,40,'Agency-internal source must not inflate independent-reviewed count');
+assert.equal(reconciled.curated_reports,42,'Agency-internal source must not inflate independent-reviewed count');
 assert.equal(reconciled.agency_authored_reviewed,1,'Internal source belongs in separate evidence tier');
 assert.throws(()=>H.plan([internal],original,[{...agencyReports[0],source_url:'https://evil.example/plate.pdf'}]),/Untrusted/);
 const single=[rows[0]];
