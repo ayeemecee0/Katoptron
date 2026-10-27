@@ -1318,6 +1318,7 @@ jobs:
           node scripts/test_agency_intelligence.cjs
           node --check agency-audit-engine.js
           node scripts/test_agency_audit_engine.cjs
+          python -m unittest discover -s scripts -p 'test_import_mn_alpr_audit_registry.py' -v
           node --check agency-network.js
           node --check agency-original-sharing.js
           node scripts/test_original_sharing_evidence.cjs
