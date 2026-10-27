@@ -114,10 +114,37 @@ def build(registry,workers=5,fetcher=fetch,date=None):
   "warning":"An AGO URL, PDF hash, page count, or term occurrence does not verify Flock manufacturer, installed devices, actual data handling, sharing, audit compliance or camera coordinates. Source discrepancies are held.",
   "receipts":receipt}
  return validate_snapshot(obj,registry)
+def compare_to_published(fresh,baseline):
+ """Only a second successful fetch can establish original byte/hash drift.
+ A temporarily unavailable document is held, not reclassified as a changed PDF.
+ """
+ by_name={r["agency_name"]:r for r in baseline["receipts"]}
+ changed=[];now_held=[];newly_readable=[];keyword_drift=[]
+ for r in fresh["receipts"]:
+  old=by_name[r["agency_name"]]
+  old_ok=old["inspection_status"].startswith("exact_pdf")
+  new_ok=r["inspection_status"].startswith("exact_pdf")
+  if old_ok and new_ok:
+   if (r["sha256"]!=old["sha256"] or r["page_count"]!=old["page_count"]):
+    changed.append(r["agency_name"])
+   elif r["potential_flock_term_pages"]!=old["potential_flock_term_pages"]:
+    keyword_drift.append(r["agency_name"])
+  elif old_ok and not new_ok:now_held.append(r["agency_name"])
+  elif not old_ok and new_ok:newly_readable.append(r["agency_name"])
+ return {"original_content_changed_requires_new_review":changed,
+  "previously_retrievable_now_held":now_held,
+  "newly_retrievable_needs_approval":newly_readable,
+  "candidate_keyword_page_drift_requires_review":keyword_drift}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--out",type=Path,default=OUT);p.add_argument("--workers",type=int,default=5);opts=p.parse_args()
  if not 1<=opts.workers<=8:raise ValueError("Bounded fetch concurrency required")
- data=build(json.loads(REGISTRY.read_text(encoding="utf8")),workers=opts.workers)
+ registry=json.loads(REGISTRY.read_text(encoding="utf8"))
+ baseline=validate_snapshot(json.loads((ROOT/"data"/"wa-ago-original-policy-source-inspection.json").read_text(encoding="utf8")),registry)
+ data=build(registry,workers=opts.workers)
+ diffs=compare_to_published(data,baseline)
+ print("WA_AG_ORIGINAL_POLICY_RECHECK",json.dumps(diffs,sort_keys=True))
+ if diffs["original_content_changed_requires_new_review"] or diffs["candidate_keyword_page_drift_requires_review"]:
+  raise ValueError("Original policy source content drift requires reviewed manifest update")
  path=opts.out.resolve()
  if not path.is_relative_to(ROOT):raise ValueError("Output outside repo prohibited")
  path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data,indent=2)+"\n",encoding="utf8")
