@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "verified_as_of": "2026-10-26",
+  "scope_note": "Source-dated independent auditor statements reproduced from original publicly hosted documents; Katoptron did not independently audit agency systems or confirm current settings.",
+  "reports": [
+    {
+      "id": "shakopee-mn-alpr-independent-audit-2026",
+      "jurisdiction_key": "shakopee|MN",
+      "agency_name": "Shakopee Police Department",
+      "report_title": "Independent audit of Shakopee Police Department ALPR system",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf",
+      "source_tier": "original_government_archive_independent_audit_report",
+      "government_archive": "Minnesota Legislative Reference Library",
+      "author": "Lynn Lembcke Consulting",
+      "report_date": "2026-06-15",
+      "audit_conducted_on": "2026-04-23",
+      "period_start": "2024-03-01",
+      "period_end": "2026-04-15",
+      "reviewed_on": "2026-10-26",
+      "pages_reviewed": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "findings": [
+        {
+          "key": "implementation_period",
+          "page": 1,
+          "statement": "The report says Shakopee implemented Flock ALPRs in June 2025 and describes six permanent Flock ALPR locations during its audit. It does not establish how many cameras operate today.",
+          "scope": "auditor_reported_historical_inventory"
+        },
+        {
+          "key": "retention_config",
+          "page": 2,
+          "statement": "The auditor reported a 30-day retention setting for Flock ALPR data and a 60-day setting for Axon squad ALPR data during the audited period. This does not establish current settings.",
+          "scope": "auditor_reported_retention"
+        },
+        {
+          "key": "access_audit",
+          "page": 4,
+          "statement": "The report describes role-restricted access and audit trails, and says officers were required to record reasons and case numbers when accessing ALPR data during the audit.",
+          "scope": "auditor_reported_access_controls"
+        },
+        {
+          "key": "audit_conclusion",
+          "page": 5,
+          "statement": "The auditor recorded no discrepancies noted in the examined statutory categories. This describes the auditor's findings for the audited period, not an independent Katoptron compliance certification.",
+          "scope": "auditor_reported_finding"
+        }
+      ]
+    }
+  ]
+}
