@@ -169,6 +169,28 @@ ADDITIONAL_REVIEWED_PAGE_ANCHORS = {
       "requesting party and case number"
     ]
   }
+
+  ,"woodbury-mn-independent-alpr-audit-2021": {
+    "2": ["woodbury public safety department","up to 2 squad cars","no stationary alpr units","60 day retention period"],
+    "3": ["termination of their mobile alpr program in june 2021","requests are documented by agency name"]
+  },
+  "edina-mn-independent-alpr-audit-2021": {
+    "2": ["edina police department","9 squad cars and no stationary alpr units","alpr boss administrative control panel","no more than 60 days"],
+    "3": ["sharing among law enforcement agencies","documented by agency name, requesting party and case number"]
+  },
+  "shakopee-mn-independent-alpr-audit-2022": {
+    "1": ["shakopee police department","elsag plate hunter","three patrol vehicles","no stationary or fixed location readers"],
+    "2": ["elsag eoc is hard coded","60 days"],
+    "3": ["received no requests to share alpr data"]
+  },
+  "west-saint-paul-mn-independent-flock-alpr-audit-2026": {
+    "2": ["west saint paul police department","10 stationary flock alpr units","no mobile flock units","default 30-day retention period"],
+    "3": ["sharing among law enforcement agencies","a sample of the whole month of may 2026","documented in the flock system by agency and justification"]
+  },
+  "wyoming-mn-independent-flock-alpr-audit-2026": {
+    "2": ["wyoming police department","4 stationary flock alpr units","no mobile flock units","default 30-day retention period"],
+    "3": ["three agencies in which they allow access","written data sharing agreements","a sample of the whole month of july 2026"]
+  }
 }
 
 def verify_pdf(report,payload,reader_class=None):
