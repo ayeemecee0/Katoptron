@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""Read-only original-source failure classification for seven held AGO policy PDFs.
+
+Output metadata only. Never print document contents or follow unapproved URL
+redirects. Do not automatically promote a reparsed PDF into verified findings.
+"""
+import io,json,urllib.request
+from pathlib import Path
+from pypdf import PdfReader
+ROOT=Path(__file__).resolve().parents[1]
+AGO=json.loads((ROOT/"data"/"wa-original-agency-alpr-registrations.json").read_text(encoding="utf8"))
+SRC=json.loads((ROOT/"data"/"wa-ago-original-policy-source-inspection.json").read_text(encoding="utf8"))
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+ def redirect_request(self,*args,**kwargs):raise ValueError("SOURCE_REDIRECT_HELD")
+def main():
+ indexed={r["agency_name"]:r for r in AGO["registrations"]}
+ held=[r for r in SRC["receipts"] if r["inspection_status"] in {"held_unreadable_pdf","held_non_pdf"}]
+ assert len(held)==7
+ for r in held:
+  name=r["agency_name"]
+  url=r["policy_source_url"]
+  assert indexed[name]["policy_links_from_official_ago_page"]==[url]
+  assert url.startswith("https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/") and "VersionId=" in url
+  try:
+   req=urllib.request.Request(url,headers={"Accept":"application/pdf","User-Agent":"Katoptron-original-AGO-policy-failure-review/1.0"})
+   with urllib.request.build_opener(NoRedirect()).open(req,timeout=25) as res:
+    assert res.status==200 and res.geturl()==url
+    typ=res.headers.get("Content-Type","unknown").split(";")[0].strip().lower()
+    raw=res.read(8_000_001)
+   info={"agency":name,"source_status":r["inspection_status"],"content_type":typ,
+         "bytes":len(raw),"pdf_header":raw.startswith(b"%PDF-")}
+   if not 100<len(raw)<=8_000_000 or not raw.startswith(b"%PDF-"):
+    info["diagnosis"]="NOT_PDF_OR_OUT_OF_BOUNDS"
+   else:
+    for strict in (True,False):
+     try:
+      pdf=PdfReader(io.BytesIO(raw),strict=strict)
+      count=len(pdf.pages)
+      info["strict_"+str(strict).lower()]={"page_count":count,"encrypted":pdf.is_encrypted,
+         "text_extraction_eligible":False if pdf.is_encrypted else 1<=count<=160}
+     except Exception as exc:
+      info["strict_"+str(strict).lower()]={"error_type":type(exc).__name__}
+    info["diagnosis"]="REQUIRES_SEPARATE_MANUAL_REVIEW"
+   print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps(info,sort_keys=True))
+  except Exception as exc:
+   print("HELD_WA_ORIGINAL_DIAGNOSIS",json.dumps({"agency":name,"source_status":r["inspection_status"],
+    "diagnosis":"UNAVAILABLE","error_type":type(exc).__name__},sort_keys=True))
+if __name__=="__main__":main()

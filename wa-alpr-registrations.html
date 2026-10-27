@@ -44,16 +44,22 @@ The Washington Attorney General states that it has <strong>not independently ver
 </section>
 <section id="reviewedPolicyEvidence" aria-labelledby="verifiedPolicyHeading">
 <h2 id="verifiedPolicyHeading">Individually verified policy texts</h2>
-<p>These are independently source-checked <strong>agency-authored policy documents</strong>, not independent findings of compliance. Original PDF pages were reviewed for what the policies <em>say</em>, not whether officers or vendors followed them. The policies neither establish that the systems are manufactured by Flock nor reveal current camera inventories or active sharing relationships.</p>
+<p>These are independently source-checked <strong>agency-authored policy documents</strong>, not independent findings of compliance. Original PDF pages were reviewed for what the policies <em>say</em>, not whether officers or vendors followed them. Policy-specific references to Flock establish what the agency wrote, not the current vendor operating status, camera coordinates or actual cross-agency sharing.</p>
 <p id="reviewedPolicyStatus" role="status" aria-live="polite">Loading individually reviewed Washington policy originals…</p>
 <div id="reviewedPolicyResults" class="list"></div>
+</section>
+<section id="flockOriginalReviews" aria-labelledby="flockOriginalHeading">
+<h2 id="flockOriginalHeading">Flock-specific original page reviews and historic claims</h2>
+<p>These findings distinguish technology named in policies, a dated training bulletin reporting equipment, proposals not yet installed, and contradictions requiring clarification. They are original source statements, not continuous Flock camera telemetry, a map of verified camera positions, or independent legal-compliance audits.</p>
+<p id="flockOriginalStatus" role="status" aria-live="polite">Loading reviewed Flock policy originals…</p>
+<div id="flockOriginalResults" class="list"></div>
 </section>
 <section id="sourceTriageSection" aria-labelledby="sourceTriageHeading">
 <h2 id="sourceTriageHeading">Original-policy acquisition and review queue</h2>
 <p>The source-inspection layer checks byte hashes, page counts and extractable text for the exact version-pinned PDFs linked from the state's registration snapshot. <strong>Machine-readable does not mean policy-verified.</strong> A page mentioning “Flock Safety” is a review lead only, not proof of installed cameras, manufacturer relationship, equipment counts or live access.</p>
 <p id="sourceTriageStatus" role="status" aria-live="polite">Loading original PDF source receipts…</p>
 <div id="sourceTriageMetrics" class="metrics"></div>
-<h3>Documents mentioning Flock Safety, awaiting individual page review</h3>
+<h3>Documents mentioning Flock Safety: reviewed, or held for attribution</h3>
 <div id="sourceTriageQueue" class="list"></div>
 <p class="muted">Source inspection snapshot: October 27, 2026. Links not hosted as version-pinned AGO PDFs require a separate evidence path. Held or inaccessible sources are not counted as verified.</p>
 </section>
@@ -63,10 +69,10 @@ The Washington Attorney General states that it has <strong>not independently ver
 <p id="status" role="status" aria-live="polite">Loading original government source snapshot…</p>
 <div id="results" class="list"></div>
 <p class="muted">Each displayed policy link was present on the Attorney General's original published page at the snapshot date, not independently reverified with the agency. Links may change. The absence of an entry cannot establish noncompliance, and registration is not a camera or equipment census.</p>
-</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script>
+</main><script src="./wa-alpr-registrations.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-policy-source-triage.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script>
 'use strict';
 const S=window.KatoptronWashingtonALPR;const $=x=>document.getElementById(x);
-const app={rows:[],captured:'',policyDocs:[],sourceReceipts:new Map()};
+const app={rows:[],captured:'',policyDocs:[],flockPolicyDocs:[],heldFlockReview:null,sourceReceipts:new Map()};
 function node(t,text,cls){const el=document.createElement(t);if(text!=null)el.textContent=String(text);if(cls)el.className=cls;return el;}
 function render(){
  const q=$('search').value.trim().toLowerCase();
@@ -80,12 +86,13 @@ function render(){
    node('p','Agency-certified registration; manufacturer, locations and current operating status unverified','muted'));
   const actions=node('div',null,'actions');
   for(const href of r.policy_links_from_official_ago_page){
+   if(app.heldFlockReview?.registry_agency===r.agency_name)continue;
    const link=S.safe(href);
    if(!link)continue;
    const a=node('a',r.policy_link_label&&r.policy_link_label!=='click to view'?'Policy link: '+r.policy_link_label:'View policy linked by Attorney General');
    a.href=link;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
   }
-  if(!actions.childNodes.length)actions.append(node('span','No source policy URL published in this snapshot','muted'));
+  if(!actions.childNodes.length)actions.append(node('span',app.heldFlockReview?.registry_agency===r.agency_name?'Source linked by the Attorney General but held from direct promotion pending agency-attribution review':'No source policy URL published in this snapshot','muted'));
   item.append(actions);
   const receipt=app.sourceReceipts.get(r.agency_name);
   if(receipt){
@@ -94,6 +101,14 @@ function render(){
    item.append(node('p','Original linked policy requires separate inspection; no verified Flock vendor or deployment inferred','muted'));
   }
   const reviewed=app.policyDocs.find(d=>d.agency_name===r.agency_name);
+  const flockReview=app.flockPolicyDocs.find(d=>d.agency_name===r.agency_name);
+  if(flockReview){
+   const a=node('a','Read individually verified original Flock-reference summary');
+   a.href='#flock-original-'+flockReview.id;
+   item.append(node('p','Source-dated statements only; no current operating status or verified exact camera coordinates.','muted'),a);
+  }
+  if(app.heldFlockReview&&app.heldFlockReview.registry_agency===r.agency_name)
+   item.append(node('p','Attribution hold: state-listed document identifies another agency. No Sultan policy finding is published.','muted'));
   if(reviewed){
    const a=node('a','Read individually page-reviewed original policy summary');
    a.href='#original-policy-'+reviewed.id;
@@ -137,10 +152,46 @@ async function loadReviewedPolicies(){
  if(app.rows.length)render();
  if(app.sourceReceipts.size)await loadTriage();
 }
+function renderFlockOriginals(){
+ $('flockOriginalStatus').textContent=app.flockPolicyDocs.length+
+  ' individually original-page-reviewed, Flock-referencing Washington source document(s). One source attribution hold. No present-day device status inferred.';
+ $('flockOriginalResults').replaceChildren();
+ for(const d of app.flockPolicyDocs){
+  const item=node('article');item.id='flock-original-'+d.id;
+  item.append(node('h3',d.agency_name),
+   node('p',(d.policy_kind==='agency_training_bulletin'?'Historical agency training bulletin':'Agency-authored policy document')+
+    ' · '+(d.document_imprint_date?'Document date: '+d.document_imprint_date:'Document imprint not established')+
+    ' · State registry submission: '+d.ago_registration_date,'muted'));
+  const original=node('a','Open the exact original policy or bulletin');
+  original.href=d.source_url;original.target='_blank';original.rel='noopener noreferrer';item.append(original);
+  for(const f of d.findings){
+   const section=node('section');section.append(node('p',f.statement));
+   const link=node('a','Original PDF page '+f.page);
+   link.href=d.source_url+'#page='+f.page;link.target='_blank';link.rel='noopener noreferrer';section.append(link);
+   item.append(section);
+  }
+  item.append(node('p',d.evidence_limits,'muted'));
+  $('flockOriginalResults').append(item);
+ }
+ if(app.heldFlockReview){
+  const h=app.heldFlockReview,article=node('article');
+  article.append(node('h3',h.registry_agency+' · Source attribution held'),
+    node('p','The state-listed original identifies a different agency as its author. We have not treated it as a Sultan-authored policy or proof of active Sultan Flock equipment.','muted'));
+  $('flockOriginalResults').append(article);
+ }
+}
+async function loadFlockOriginals(){
+ const response=await fetch('./data/verified-wa-flock-policy-originals.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Original Flock-document review unavailable');
+ const checked=window.KatoptronWAReviewedFlockSources.catalog(await response.json(),app.rows,Array.from(app.sourceReceipts.values()));
+ app.flockPolicyDocs=checked.documents;app.heldFlockReview=checked.held;
+ renderFlockOriginals();render();
+ await loadTriage();
+}
 function renderTriage(data){
  const triage=window.KatoptronWAOriginalSourceTriage.catalog(data,app.rows);
  app.sourceReceipts=triage.byAgency;
- const reviewedIds=new Set(app.policyDocs.map(x=>x.agency_name));
+ const reviewedIds=new Set([...app.policyDocs,...app.flockPolicyDocs].map(x=>x.agency_name));
  $('sourceTriageStatus').textContent=triage.total+
    ' AGO-versioned original PDF links examined. '+triage.counts.parsed+
    ' machine-readable/parseable PDF(s); '+triage.counts.held+
@@ -156,14 +207,18 @@ function renderTriage(data){
  }
  const queue=$('sourceTriageQueue');queue.replaceChildren();
  for(const r of triage.receipts.filter(x=>x.potential_flock_term_pages.length)){
+  const held=app.heldFlockReview?.registry_agency===r.agency_name;
   const reviewed=reviewedIds.has(r.agency_name);
   const a=node('article');
   a.append(node('h3',r.agency_name),
-   node('p','Text occurrence on original PDF page(s): '+r.potential_flock_term_pages.join(', ')+
-    '. '+(reviewed?'Separately page-reviewed findings available above.':'Unreviewed candidate; cannot establish deployed Flock equipment.'),'muted'));
-  const link=node('a','Inspect original PDF page '+r.potential_flock_term_pages[0]);
-  link.href=r.policy_source_url+'#page='+r.potential_flock_term_pages[0];
-  link.target='_blank';link.rel='noopener noreferrer';a.append(link);
+   node('p',held?'Publisher identity mismatch: source linked in this registry row identifies a different government agency. Original training content held from citation.':
+     'Text occurrence on original PDF page(s): '+r.potential_flock_term_pages.join(', ')+
+      '. '+(reviewed?'Separately page-reviewed findings available above.':'Unreviewed candidate; cannot establish deployed Flock equipment.'),'muted'));
+  if(!held){
+   const link=node('a','Inspect original PDF page '+r.potential_flock_term_pages[0]);
+   link.href=r.policy_source_url+'#page='+r.potential_flock_term_pages[0];
+   link.target='_blank';link.rel='noopener noreferrer';a.append(link);
+  }
   queue.append(a);
  }
  render();
@@ -182,6 +237,7 @@ async function load(){
  }
  render();
  await loadTriage().catch(e=>{$('sourceTriageStatus').textContent=e.message+'; no unverified source claims shown.';});
+ await loadFlockOriginals().catch(e=>{$('flockOriginalStatus').textContent=e.message+'; unverified policy claims not shown.';});
 }
 $('search').addEventListener('input',render);
 load().catch(e=>{$('status').textContent=e.message+'; no unverified registrations are displayed.';});
