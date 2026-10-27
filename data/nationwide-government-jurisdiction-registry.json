@@ -815,6 +815,86 @@
       "source_url": "https://mca.legmt.gov/bills/mca/title_0460/chapter_0050/part_0010/section_0170/0460-0050-0010-0170.html",
       "origin_role": "government_authored_publication_not_independently_page_reviewed",
       "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "hi-state-alpr-technology-disclosure",
+      "state": "HI",
+      "publisher": "Hawaii Department of Law Enforcement",
+      "publisher_role": "state_alpr_technology_disclosure",
+      "kind": "html",
+      "source_url": "https://law.hawaii.gov/safety-via-technology/automated-license-plate-recognition-alpr/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nh-enacted-state-alpr-statutory-text",
+      "state": "NH",
+      "publisher": "New Hampshire Legislature",
+      "publisher_role": "enacted_state_alpr_statutory_text",
+      "kind": "html",
+      "source_url": "https://gc.nh.gov/rsa/html/XXI/261/261-75-b.htm",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nd-historic-city-council-contract-decision",
+      "state": "ND",
+      "publisher": "Fargo City Commission",
+      "publisher_role": "historic_city_council_contract_decision",
+      "kind": "html",
+      "source_url": "https://fargond.gov/city-government/departments/city-commission/agendas-minutes/2024-minutes-video-archive/september-30-2024-minutes",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "vt-state-alpr-statute-index",
+      "state": "VT",
+      "publisher": "Vermont Legislature",
+      "publisher_role": "state_alpr_statute_index",
+      "kind": "html",
+      "source_url": "https://legislature.vermont.gov/statutes/fullchapter/23/015",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "wy-unadopted-state-bill",
+      "state": "WY",
+      "publisher": "Wyoming Legislature",
+      "publisher_role": "unadopted_state_bill",
+      "kind": "html",
+      "source_url": "https://wyoleg.gov/Legislation/2026/HB0181/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "dc-independent-government-policy-recommendation",
+      "state": "DC",
+      "publisher": "District of Columbia Police Complaints Board",
+      "publisher_role": "independent_government_policy_recommendation",
+      "kind": "pdf",
+      "source_url": "https://policecomplaints.dc.gov/sites/default/files/dc/sites/office%20of%20police%20complaints/publication/attachments/ALPR.FINAL_.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "oh-state-procurement-flock-subscription",
+      "state": "OH",
+      "publisher": "Ohio State Controlling Board",
+      "publisher_role": "state_procurement_flock_subscription",
+      "kind": "html",
+      "source_url": "https://controllingboard.obm.ohio.gov/Print/PrintCBRequest?id=511a4ceb-9a1e-420f-b949-2257330dbf4a",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ak-unadopted-alpr-prohibition-amendment",
+      "state": "AK",
+      "publisher": "Alaska Legislature",
+      "publisher_role": "unadopted_alpr_prohibition_amendment",
+      "kind": "html",
+      "source_url": "https://www.akleg.gov/basis/Journal/Pages/32?Chamber=H&Page=2647&pageEnd=2676",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
     }
   ]
 }
