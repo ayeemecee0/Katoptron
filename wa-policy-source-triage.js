@@ -10,7 +10,7 @@
  function exact(url){
   if(typeof url!=='string'||url.length>950||!url.startsWith(PREFIX)||/[\\#]/.test(url))return false;
   const m=/^https:\/\/agportal-s3bucket\.s3\.us-west-2\.amazonaws\.com\/ALPR\/[^?#]+\.pdf\?VersionId=[A-Za-z0-9._-]{12,120}$/.exec(url);
-  return !!m&&!/(?:%2e|\.\.)/i.test(m[0]);
+  return !!m&&!/(?:%2e|\.\.)/i.test(url.slice(PREFIX.length,url.indexOf('?')));
  }
  function catalog(data,registrations){
   if(!data||data.schema_version!==1||data.source_registry_url!=='https://www.atg.wa.gov/ALPR'||
