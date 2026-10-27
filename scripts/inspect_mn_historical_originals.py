@@ -41,7 +41,7 @@ def run():
     passages=summarize(page.extract_text() or "")
     print("PAGE",r["report_id"],i+1,json.dumps(passages[:7],ensure_ascii=False))
   except Exception as exc:
-   print("HELD",r["report_id"],type(exc).__name__)
+   print("HELD",r["report_id"],type(exc).__name__,str(exc)[:95])
  print("PUBLIC_FINDINGS_AUTOPUBLISHED 0")
 
 if __name__=="__main__":run()
