@@ -69,6 +69,17 @@ class TestNationalPublisherWatch(unittest.TestCase):
   self.assertEqual(record['substantive_facts_auto_published'],0)
   self.assertEqual(record['camera_locations_auto_published'],0)
   self.assertEqual(record['sharing_edges_auto_published'],0)
+ def test_unreviewed_links_rank_before_existing_curated_originals(self):
+  source=next(x for x in SOURCES if x['id']=='ca-san-bruno-alpr-audits')
+  reviewed_url='https://www.sanbruno.ca.gov/DocumentCenter/View/9280/SBPD-Flock-ALPR-Annual-Audit---2025'
+  new_url='https://www.sanbruno.ca.gov/DocumentCenter/View/99999/Novel-Flock-ALPR-Audit-2026'
+  html=f'<html><body><a href="{reviewed_url}">SBPD Flock Audit 2025</a><a href="{new_url}">SBPD Flock 2026 audit</a></body></html>'.encode()
+  outcome=M.run([source],fetcher=lambda _:html,reviewed={reviewed_url})
+  self.assertEqual(outcome['unreviewed_original_link_candidates'],1)
+  self.assertEqual(outcome['already_reviewed_original_links'],1)
+  self.assertEqual(outcome['linked_candidates'][0]['source_url'],new_url)
+  self.assertEqual(outcome['linked_candidates'][0]['review_status'],'new_original_link_needs_individual_content_review')
+  self.assertEqual(outcome['linked_candidates'][1]['review_status'],'already_individually_page_reviewed_with_pinned_original')
  def test_unavailable_source_not_silently_recast_as_withdrawal(self):
   source=SOURCES[0]
   def err(_):raise TimeoutError('government site busy')
