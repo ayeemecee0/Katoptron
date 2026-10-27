@@ -1,0 +1,17 @@
+# OWNER-INITIATED alert-channel verification only. This workflow intentionally fails.
+# It is excluded from M9 release heartbeat and does not contact production.
+name: M9 manual notification delivery drill (intentional failure)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  alert-drill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Produce a known harmless failure for email-notification verification
+        run: |
+          echo "::notice::M9 ALERT TEST ONLY: intentionally failed workflow; no production changes."
+          echo "::error::M9 ALERT TEST: confirm your GitHub Actions failure email arrived. This is intentional."
+          exit 1
