@@ -94,6 +94,10 @@ def main():
  print("ADDITIONAL EXACT-AGENCY HISTORICAL TITLES",result["queue"]["exact_agency_historical_candidates"])
  print("ORIGINAL PDF MACHINE RECEIPTS",good,"of",len(result["machine_receipts"]))
  print("MACHINE RECEIPT FAILURES",len(result["machine_receipts"])-good,"(unknown availability, not removal)")
+ for report in result["machine_receipts"]:
+  if report["examination_status"]=="unavailable_needs_recheck":
+   print("MACHINE RECEIPT NEEDS RECHECK",report["report_id"],report["error_type"])
+
  print("QUEUE ARTIFACT",target.relative_to(ROOT))
  print("NEW ORIGINAL-DOCUMENT FACTS AUTOMATICALLY PUBLISHED: 0")
 
