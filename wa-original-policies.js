@@ -53,7 +53,7 @@
  function catalog(obj){
   if(!obj||obj.schema_version!==1||!Array.isArray(obj.documents)||
    obj.documents.length!==3||!obj.documents.every(valid)||
-   new Set(obj.documents.map(x=>x.id)).size!==2||
+   new Set(obj.documents.map(x=>x.id)).size!==3||
    typeof obj.scope_limits!=='string'||!obj.scope_limits.includes('not establish active deployment'))
    throw Error('Unverified original Washington ALPR policy evidence');
   return obj.documents.slice().sort((a,b)=>a.agency_name.localeCompare(b.agency_name));
