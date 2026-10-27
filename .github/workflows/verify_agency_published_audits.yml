@@ -1,0 +1,30 @@
+name: Verify California Wisconsin and internal-agency original ALPR reports
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 19 * * 2'
+  push:
+    paths:
+      - 'data/verified-agency-published-alpr-audits.json'
+      - 'scripts/verify_agency_published_audits.py'
+      - 'scripts/test_verify_agency_published_audits.py'
+      - 'scripts/inspect_multistate_flock_audits.py'
+      - '.github/workflows/verify_agency_published_audits.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Test strict publisher roles, original URL provenance and negative page drift
+        run: python -m unittest discover -s scripts -p 'test_verify_agency_published_audits.py' -v
+      - name: Recheck exact original government document bytes and page-specific findings
+        run: python scripts/verify_agency_published_audits.py
