@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "basis": "Individually checked original policy PDFs linked directly by the Washington Attorney General public ALPR registration snapshot; agency-authored policy language only, not independent legal compliance audit.",
+  "scope_limits": "Do not infer Flock vendor, camera count, camera coordinates, actually implemented configurations, operational sharing, or statutory compliance. State registry is agency self-certification. Manual dates on PDFs do not independently prove policy enactment date.",
+  "documents": [
+    {
+      "id": "auburn-wa-policy-july-2026",
+      "agency_name": "Auburn Police Department",
+      "state": "WA",
+      "ago_registration_date": "2026-07-07",
+      "policy_manual_imprint": "2026-07-02",
+      "policy_manual_number": "425",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Auburn%20PD%20ALPR%20Policy.pdf?VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH",
+      "content_sha256": "484830933e46300a5471d3fccc4354f33ae1b683bc8401fa938b8a4d3f53863f",
+      "page_count": 8,
+      "pages_reviewed": [
+        2,
+        5,
+        6,
+        7
+      ],
+      "source_tier": "agency_published_policy_via_state_ag_registry",
+      "verification_method": "original_pdf_sha256_page_text_anchors",
+      "findings": [
+        {
+          "page": 2,
+          "category": "retention_policy_text",
+          "statement": "Auburn Police Department Policy 425 states that stored ALPR data generally may not be retained longer than 21 days, with expressly listed circumstances permitting longer retention. This is policy text, not proof that data in the deployed system were actually deleted on schedule."
+        },
+        {
+          "page": 5,
+          "category": "policy_retention_exceptions",
+          "statement": "The Auburn policy separately describes 21-day default retention, with exceptions covering certain judicial matters, parking-case final disposition, traffic studies, commercial-vehicle enforcement, and evidentiary needs. These are policy categories, not a determination that any given saved record qualifies."
+        },
+        {
+          "page": 6,
+          "category": "policy_external_sharing",
+          "statement": "Auburn Policy 425 section 425.7.2 lists judicial proceedings, warrants, subpoenas, discovery, and approved de-identified research as circumstances for external ALPR sharing; section 425.7.3 prohibits sharing with immigration enforcement agencies. This does not establish actual live platform access or whether requests occurred."
+        },
+        {
+          "page": 7,
+          "category": "policy_audit_and_reporting",
+          "statement": "Auburn Policy 425 calls for at least annual internal ALPR auditing and a December 1 public report covering activity, sharing agencies, policy changes, audit results and camera locations. Publication of these policy requirements does not prove an annual report exists or that the agency met its obligations."
+        }
+      ]
+    },
+    {
+      "id": "black-diamond-wa-policy-june-2026",
+      "agency_name": "Black Diamond Police Department",
+      "state": "WA",
+      "ago_registration_date": "2026-07-08",
+      "policy_manual_imprint": "2026-06-23",
+      "policy_manual_number": "434",
+      "source_url": "https://blackdiamondwa.gov/DocumentCenter/View/4324/BDPD-ALPR-Policy",
+      "content_sha256": "8ccf182125bf61bc624be72cb389f5ce218d36cf60f9db62d5ba8d58418f2446",
+      "page_count": 7,
+      "pages_reviewed": [
+        1,
+        4
+      ],
+      "source_tier": "agency_published_policy_via_state_ag_registry",
+      "verification_method": "original_pdf_sha256_visually_reviewed_raster_pages",
+      "verification_note": "Seven-page image-based city PDF, with no machine-extractable text; original pages 1 and 4 reviewed visually, and weekly verifier checks exact SHA256 and scanned-page images without inventing OCR anchors.",
+      "findings": [
+        {
+          "page": 1,
+          "category": "policy_scope_and_imprint",
+          "statement": "Black Diamond Police Department's city-hosted Policy 434 concerns automated license plate readers and bears a June 23, 2026 manual imprint. The manual date and AGO listing do not prove when each operational procedure took effect, which vendor supplied equipment, or whether any devices were active."
+        },
+        {
+          "page": 4,
+          "category": "retention_policy_text",
+          "statement": "Black Diamond Policy 434 section 434.6 directs deletion of ALPR data within 21 days except specified circumstances, including judicial process, parking enforcement, traffic studies, commercial-vehicle enforcement, and certain evidence. It also assigns registration and certification responsibilities to the department commander. This is policy language, not independently verified deletion or statutory compliance."
+        }
+      ]
+    }
+  ]
+}
