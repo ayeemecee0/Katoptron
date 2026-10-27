@@ -14,7 +14,8 @@
  'green-bay-wi-policy-draft-sept-2026':['draft_policy_unadopted','prominently_marked_draft_not_effective_or_approved'],
  'green-bay-wi-flock-order-2025':['government_published_vendor_order_form','original_published_form_execution_date_not_independently_verified'],
  'austin-tx-commission-recommendation':['advisory_recommendation_not_binding_action','approved_commission_recommendation_not_city_council_order'],
- 'moline-il-signed-flock-order-2024':['signed_city_published_vendor_order_form_scanned','visually_reviewed_original_signatures_2024_not_live_deployment_or_payment_proof']
+ 'moline-il-signed-flock-order-2024':['signed_city_published_vendor_order_form_scanned','visually_reviewed_original_signatures_2024_not_live_deployment_or_payment_proof'],
+ 'moline-il-signed-pause-2026':['signed_city_published_vendor_pause_agreement_scanned','signed_pause_terms_not_proof_of_completed_deactivation']
  };
  const URLs={
  'san-mateo-ca-press-advisory':'https://sanmateo.courts.ca.gov/system/files/grand-jury/alpr-press-release.pdf',
@@ -25,7 +26,8 @@
  'green-bay-wi-policy-draft-sept-2026':'https://www.greenbaywi.gov/DocumentCenter/View/19136/DRAFTED-REVISION---Policy-424-Automated-License-Plate-Readers-ALPR-September-2026',
  'green-bay-wi-flock-order-2025':'https://www.greenbaywi.gov/DocumentCenter/View/19138/Flock-Safety-WI---Green-Bay-PD---DFR-and-ALPR-Law-Enforcement-Agreement-2025',
  'austin-tx-commission-recommendation':'https://services.austintexas.gov/edims/document.cfm?id=452847',
- 'moline-il-signed-flock-order-2024':'https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023'
+ 'moline-il-signed-flock-order-2024':'https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023',
+ 'moline-il-signed-pause-2026':'https://moline.il.us/DocumentCenter/View/16700/Flock-Safety-Contract-Pause-September-2026'
  };
  const ROLES={
  'san-mateo-ca-press-advisory':'government_independent_oversight',
@@ -36,7 +38,8 @@
  'green-bay-wi-policy-draft-sept-2026':'police_department',
  'green-bay-wi-flock-order-2025':'police_department',
  'austin-tx-commission-recommendation':'government_advisory_commission',
- 'moline-il-signed-flock-order-2024':'police_department'
+ 'moline-il-signed-flock-order-2024':'police_department',
+ 'moline-il-signed-pause-2026':'police_department'
  };
  const allowed=new Set(Object.values(URLs));
  const LABELS={
@@ -48,7 +51,8 @@
  'draft_policy_unadopted':'UNADOPTED DRAFT policy proposal',
  'government_published_vendor_order_form':'Published vendor order form, execution unconfirmed',
  'advisory_recommendation_not_binding_action':'Advisory commission vote, not a city order',
- 'signed_city_published_vendor_order_form_scanned':'Signed original Flock order, visually reviewed scanned pages'
+ 'signed_city_published_vendor_order_form_scanned':'Signed original Flock order, visually reviewed scanned pages',
+ 'signed_city_published_vendor_pause_agreement_scanned':'Signed contract pause, not completed deactivation'
  };
  function sourceLink(doc){
   if(!doc||!Object.prototype.hasOwnProperty.call(URLs,doc.id)||doc.source_url!==URLs[doc.id])return null;
@@ -72,12 +76,17 @@
      (doc.source_date!=='2024-12-04'||doc.page_count!==6||
       doc.verification_method!=='visual_page_review_sha256_pinned_scanned_pdf'||
       ![2,3,5].every(p=>doc.pages_reviewed.includes(p))))return false;
+  if(doc.id==='moline-il-signed-pause-2026'&&
+     (doc.source_date!=='2026-09-15'||doc.page_count!==1||
+      doc.pages_reviewed.length!==1||doc.pages_reviewed[0]!==1||
+      doc.verification_method!=='visual_page_review_sha256_pinned_scanned_pdf'||
+      doc.related_official_announcement_url!=='https://www.moline.il.us/1955/License-Plate-Readers'))return false;
   return Array.isArray(doc.findings)&&doc.findings.length>0&&doc.findings.length<=8&&
    doc.findings.every(f=>doc.pages_reviewed.includes(f.page)&&typeof f.statement==='string'&&f.statement.length>50&&f.statement.length<950);
  }
  function catalog(raw){
-  if(!raw||raw.schema_version!==1||!Array.isArray(raw.documents)||raw.documents.length!==9||
-   !raw.documents.every(valid)||new Set(raw.documents.map(x=>x.id)).size!==9 ||
+  if(!raw||raw.schema_version!==1||!Array.isArray(raw.documents)||raw.documents.length!==10||
+   !raw.documents.every(valid)||new Set(raw.documents.map(x=>x.id)).size!==10 ||
    !Array.isArray(raw.source_review_held)||raw.source_review_held.length!==1||
    raw.source_review_held[0].id!=='san-bruno-ca-alpr-policy')
    throw Error('Unverified original government document ledger');
