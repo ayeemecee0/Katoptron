@@ -8,9 +8,9 @@ spec=importlib.util.spec_from_file_location("historical_mn_review",S)
 M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 ROOT=S.parents[1]
 MANIFEST=json.loads((ROOT/"data"/"verified-independent-audits.json").read_text())
-ROW={"source_url":"https://www.lrl.mn.gov/docs/2020/mandated/200577.pdf",
- "report_id":"20-0577.pdf","report_title":"Independent Audit of Shakopee Police Department ALPR System",
- "publication_date":"2020-04-14","title_scope":"unspecified_alpr_title",
+ROW={"source_url":"https://www.lrl.mn.gov/docs/2019/mandated/191307.pdf",
+ "report_id":"19-1307.pdf","report_title":"Woodbury Public Safety Department Automated License Plate Reader Audit Executive Summary",
+ "publication_date":"2019-12-26","title_scope":"unspecified_alpr_title",
  "evidence_tier":"state_legislative_registry_index_metadata_only"}
 PDF=b"%PDF-1.7\n"+b"x"*300
 class FakeReader:
@@ -20,7 +20,7 @@ class TestPipeline(unittest.TestCase):
  def test_shared_js_candidate_algorithm(self):
   result=M.build([ROW],MANIFEST)
   self.assertEqual(result["candidates"][0]["priority"],"P1")
-  self.assertEqual(result["candidates"][0]["jurisdiction_key"],"shakopee|MN")
+  self.assertEqual(result["candidates"][0]["jurisdiction_key"],"woodbury|MN")
   self.assertEqual(result["flock_titles_unreviewed"],0)
  def test_bounded_source_byte_receipt_has_no_claims(self):
   result=M.inspect(ROW,fetcher=lambda _:PDF,reader=FakeReader)
