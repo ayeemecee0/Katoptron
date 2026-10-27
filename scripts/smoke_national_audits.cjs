@@ -15,10 +15,10 @@ const {chromium}=require('playwright');
   assert.equal(await page.locator('#results article').count(),4);
   await page.waitForFunction(()=>document.querySelector('#oversightStatus')?.textContent?.startsWith('3 original government oversight'),
     null,{timeout:15000});
-  await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('10 official government'),
+  await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('14 official government'),
     null,{timeout:15000});
   assert.equal(await page.locator('#oversightResults article').count(),3);
-  assert.equal(await page.locator('#publisherResults article').count(),10);
+  assert.equal(await page.locator('#publisherResults article').count(),14);
   const reviewed=await page.locator('#oversightResults').textContent();
   assert.match(reviewed,/San Mateo County Civil Grand Jury/);
   assert.match(reviewed,/Austin Police Department/);
