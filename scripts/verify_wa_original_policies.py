@@ -19,7 +19,7 @@ EXPECTED={
   "anchors":{2:("21 days","investigating or enforcing federal immigration matters"),
              5:("default retention","traffic studies","commercial vehicle enforcement"),
              6:("external sharing","immigration enforcement agencies","research"),
-             7:("annual internal audit","camera locations")}
+             7:("annual internal audit","locations of alpr cameras")}
  },
  "black-diamond-wa-policy-june-2026":{
   "agency":"Black Diamond Police Department","pages":7,"date":"2026-06-23",
