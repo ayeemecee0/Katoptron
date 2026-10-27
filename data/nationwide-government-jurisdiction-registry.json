@@ -757,12 +757,12 @@
       "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
     },
     {
-      "id": "me-city-reported-operational-outcome",
+      "id": "me-city-public-review-statement",
       "state": "ME",
       "publisher": "South Portland City Government",
-      "publisher_role": "city_reported_operational_outcome",
+      "publisher_role": "city_public_review_statement",
       "kind": "html",
-      "source_url": "https://southportland.org/m/newsflash/Home/Detail/550",
+      "source_url": "https://www.southportland.gov/m/NewsFlash/Home/Detail/547",
       "origin_role": "government_authored_publication_not_independently_page_reviewed",
       "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
     },
