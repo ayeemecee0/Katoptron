@@ -23,7 +23,7 @@ const rows=[
 ];
 const plan=H.plan(rows,original);
 assert.equal(plan.scanned_reports,10);
-assert.equal(plan.curated_reports,40);
+assert.equal(plan.curated_reports,42);
 assert.equal(plan.flock_titles_unreviewed,0);
 assert.equal(plan.candidates.length,0);
 assert.equal(plan.exact_agency_historical_candidates,0);
