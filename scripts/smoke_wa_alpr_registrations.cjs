@@ -96,6 +96,8 @@ const {chromium}=require('playwright');
   await page.locator('#search').fill('Sultan Police');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/Attribution hold/);
+  assert.equal(await page.locator('#results article a').count(),0);
+  assert.match(await page.locator('#results').textContent(),/held from direct promotion/);
   await page.locator('#search').fill('Normandy Park');
   assert.equal(await page.locator('#results article').count(),1);
   assert.match(await page.locator('#results').textContent(),/Read individually page-reviewed original policy summary/);
