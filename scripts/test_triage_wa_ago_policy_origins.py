@@ -14,6 +14,27 @@ R={"source_url":"https://www.atg.wa.gov/ALPR","registrations":[
  {"agency_name":"Brook Police Department","submitted_on":"2026-07-02","policy_links_from_official_ago_page":[V]},
  {"agency_name":"Other Police","submitted_on":"2026-07-03","policy_links_from_official_ago_page":["https://public.powerdms.com/tree"]}]}
 class Tests(unittest.TestCase):
+ def test_published_71_source_receipts_match_exact_original_registry(self):
+  published=json.loads((M.ROOT/"data"/"wa-ago-original-policy-source-inspection.json").read_text(encoding="utf8"))
+  real_reg=json.loads(M.REGISTRY.read_text(encoding="utf8"))
+  valid=M.validate_snapshot(published,real_reg)
+  self.assertEqual(len(valid["receipts"]),71)
+  self.assertEqual(sum(x["inspection_status"].startswith("exact_pdf") for x in valid["receipts"]),64)
+  self.assertEqual(sum(bool(x["potential_flock_term_pages"]) for x in valid["receipts"]),10)
+ def test_source_changes_fail_closed_but_transient_unavailable_remains_held(self):
+  obj=json.loads((M.ROOT/"data"/"wa-ago-original-policy-source-inspection.json").read_text(encoding="utf8"))
+  changed=json.loads(json.dumps(obj))
+  target=next(r for r in changed["receipts"] if r["inspection_status"].startswith("exact_pdf"))
+  target["sha256"]="0"*64
+  r=M.compare_to_published(changed,obj)
+  self.assertIn(target["agency_name"],r["original_content_changed_requires_new_review"])
+  transient=json.loads(json.dumps(obj))
+  t=next(r for r in transient["receipts"] if r["agency_name"]==target["agency_name"])
+  t.update(inspection_status="held_unreachable",sha256=None,page_count=None,bytes=None,
+   searchable_text_pages=0,scanned_image_pages=0,potential_flock_term_pages=[])
+  r=M.compare_to_published(transient,obj)
+  self.assertIn(t["agency_name"],r["previously_retrievable_now_held"])
+  self.assertFalse(r["original_content_changed_requires_new_review"])
  def test_approved_exact_ago_original_only(self):
   self.assertTrue(M.is_exact_ag_hosted(U))
   for bad in ["https://evil.example/ALPR/A.pdf?VersionId=version0123456789",
