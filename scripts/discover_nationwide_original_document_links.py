@@ -18,7 +18,7 @@ MAX_LINKS=1100
 MAX_PER_SOURCE=24
 MAX_TOTAL=450
 TOPIC=re.compile(r"(?i)(?:\bflock\b|\balpr\b|license[-\s_]*plate[-\s_]*(?:readers?|recognition)|\blpr\b)")
-EXCLUDE=re.compile(r"(?i)(?:raw[-\s_]*(?:alpr[-\s_]*)?(?:plate[-\s_]*)?(?:reads?|search[-\s_]*logs?)|individual[-\s_]*plate|vehicle[-\s_]*(?:movements?|reads?)|live[-\s_]*search[-\s_]*logs?)")
+EXCLUDE=re.compile(r"(?i)(?:search[-\s_]*logs?|raw[-\s_]*(?:alpr[-\s_]*)?(?:plate[-\s_]*)?(?:reads?|search[-\s_]*logs?)|individual[-\s_]*plate|vehicle[-\s_]*(?:movements?|reads?)|live[-\s_]*search[-\s_]*logs?)")
 RELEVANT=re.compile(r"(?i)(?:policy|procedures?|contract|agenda|council|minutes?|report|assessment|audit|original|flock|alpr|license[-\s_]*plate|transparency|ordinance|proposal|resolution)")
 class Links(html.parser.HTMLParser):
  def __init__(self):
