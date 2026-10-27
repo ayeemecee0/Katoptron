@@ -9,18 +9,19 @@ class Page:
  def __init__(self,t):self.t=t
  def extract_text(self):return self.t
 class TestPageBoundGovernmentDocuments(unittest.TestCase):
- def test_eight_source_distinct_roles_and_one_held(self):
+ def test_nine_source_distinct_roles_and_one_held(self):
   rows=M.valid(DATA)
-  self.assertEqual(len(rows),8)
+  self.assertEqual(len(rows),9)
   self.assertEqual(len(DATA["source_review_held"]),1)
   self.assertEqual(sum(x["kind"]=="draft_policy_unadopted" for x in rows),1)
   self.assertEqual(sum(x["kind"]=="advisory_recommendation_not_binding_action" for x in rows),1)
   self.assertEqual(sum(x["kind"]=="government_published_vendor_order_form" for x in rows),1)
   self.assertEqual(sum(x["kind"]=="agency_monthly_aggregate_report" for x in rows),1)
-  self.assertEqual(len(set(x["source_url"] for x in rows)),8)
+  self.assertEqual(len(set(x["source_url"] for x in rows)),9)
  def test_original_byte_and_page_anchors_change_fail_closed(self):
   raw=b"%PDF-1.7 synthetic original reviewed public report"+b"a"*250
   for row in M.valid(DATA):
+   if row["id"]==M.MOLINE_ID:continue
    anchors=M.ANCHORS[row["id"]]
    class Reader:
     def __init__(self,*_args,**_kwargs):
@@ -35,6 +36,31 @@ class TestPageBoundGovernmentDocuments(unittest.TestCase):
      super().__init__(*args,**kwargs)
      self.pages[next(iter(anchors))-1]=Page("Completely unrelated contents")
    with self.assertRaisesRegex(ValueError,"anchor drift"):M.verify(fixture,raw,Drift)
+ def test_scanned_moline_original_uses_visual_receipts_not_fake_text(self):
+  row=next(x for x in M.valid(DATA) if x["id"]==M.MOLINE_ID)
+  self.assertEqual(row["source_date"],"2024-12-04")
+  self.assertEqual(set(row["pages_reviewed"]),{2,3,5})
+  self.assertEqual(row["verification_method"],"visual_page_review_sha256_pinned_scanned_pdf")
+  raw=b"%PDF-1.7 synthetic scanned city original"+b"z"*350
+  class RasterPage:
+   images=[object()]
+  class RasterDocument:
+   def __init__(self,*args,**kwargs):
+    self.is_encrypted=False
+    self.pages=[RasterPage() for _ in range(6)]
+  testrow={**row,"content_sha256":hashlib.sha256(raw).hexdigest()}
+  self.assertEqual(M.verify(testrow,raw,RasterDocument),6)
+  with self.assertRaisesRegex(ValueError,"hash drift"):M.verify(row,raw,RasterDocument)
+  class MissingImage(RasterDocument):
+   def __init__(self,*args,**kwargs):
+    super().__init__(*args,**kwargs)
+    class Blank:images=[]
+    self.pages[1]=Blank()
+  with self.assertRaisesRegex(ValueError,"scanned page images unavailable"):
+   M.verify(testrow,raw,MissingImage)
+  changed={**row,"verification_method":"text_anchors_verified_by_ocr"}
+  with self.assertRaisesRegex(ValueError,"Visual review scope"):
+   M.valid({**DATA,"documents":[changed if x["id"]==row["id"] else x for x in DATA["documents"]]})
  def test_2026_draft_and_2025_advisory_can_never_claim_adoption(self):
   originals=DATA["documents"]
   draft=next(r for r in originals if r["kind"]=="draft_policy_unadopted")
