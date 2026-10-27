@@ -35,6 +35,14 @@ const preReview=H.plan(rows,notYetReviewed);
 assert.equal(preReview.flock_titles_unreviewed,2,'Source titles remain candidates until PDFs independently reviewed');
 assert.equal(preReview.candidates.length,2);
 
+const agencyReports=require('../data/verified-agency-published-alpr-audits.json').reports;
+const internal=row('19-1260.pdf','Biennial Audit of the Hennepin County Sheriff\'s Office Automated License Plate Reader Program');
+assert.equal(H.plan([internal],original).candidates.length,1,'Agency's internal audit is not in external independent manifest');
+const reconciled=H.plan([internal],original,agencyReports);
+assert.equal(reconciled.candidates.length,0,'Already page-reviewed agency internal source must leave review backlog');
+assert.equal(reconciled.curated_reports,40,'Agency-internal source must not inflate independent-reviewed count');
+assert.equal(reconciled.agency_authored_reviewed,1,'Internal source belongs in separate evidence tier');
+assert.throws(()=>H.plan([internal],original,[{...agencyReports[0],source_url:'https://evil.example/plate.pdf'}]),/Untrusted/);
 const single=[rows[0]];
 assert.throws(()=>H.plan([...single,single[0]],original),/Duplicate/);
 assert.throws(()=>H.plan([{...rows[0],source_url:'https://evil.example/docs/2022/mandated/220708.pdf'}],original),/Non-official/);
