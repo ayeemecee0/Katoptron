@@ -24,7 +24,7 @@ def is_exact_ag_hosted(url):
  if not isinstance(url,str) or len(url)>950:return False
  try:
   p=urllib.parse.urlsplit(url)
-  return p.scheme=="https" and p.hostname==HOST and p.netloc==HOST and not p.username and not p.password and not p.fragment and not re.search(r"%2e|\\|\\.\\.",p.path,re.I) and p.path.startswith("/ALPR/") and p.path.lower().endswith(".pdf") and bool(re.fullmatch(r"VersionId=[A-Za-z0-9._-]{12,120}",p.query))
+  return p.scheme=="https" and p.hostname==HOST and p.netloc==HOST and not p.username and not p.password and not p.fragment and not re.search(r"%2e|\\|\.\.",p.path,re.I) and p.path.startswith("/ALPR/") and p.path.lower().endswith(".pdf") and bool(re.fullmatch(r"VersionId=[A-Za-z0-9._-]{12,120}",p.query))
  except (ValueError,TypeError):return False
 def candidates(registry):
  if not isinstance(registry,dict) or registry.get("source_url")!=AGO or not isinstance(registry.get("registrations"),list):
@@ -66,7 +66,7 @@ def evaluate(candidate,fetcher=fetch):
    t=" ".join((page.extract_text() or "").casefold().split())
    if len(t)>=35:textpages+=1
    if page.images:images+=1
-   if re.search(r"\\bflock\\s+safety\\b",t):flock.append(i)
+   if re.search(r"\bflock\s+safety\b",t):flock.append(i)
   row.update(inspection_status="exact_pdf_text_detected" if textpages else "exact_pdf_scan_only",
    page_count=len(pdf.pages),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw),
    searchable_text_pages=textpages,scanned_image_pages=images,potential_flock_term_pages=flock[:160])
