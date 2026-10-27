@@ -8,6 +8,28 @@ spec=importlib.util.spec_from_file_location("ag_external_triage",P)
 M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 REG=json.loads(M.REGISTRY.read_text(encoding="utf8"))
 class CheckExternalOriginals(unittest.TestCase):
+ def test_saved_external_source_receipts_against_ago_snapshot(self):
+  source=json.loads((M.ROOT/"data"/"wa-ag-external-policy-source-inspection.json").read_text(encoding="utf8"))
+  checked=M.validate(source,REG)
+  self.assertEqual(len(checked["receipts"]),25)
+  self.assertEqual(sum(r["inspection_status"].startswith("original_") for r in checked["receipts"]),14)
+  self.assertEqual(len({r["policy_source_url"] for r in checked["receipts"]}),24)
+ def test_recheck_source_drift_does_not_promote_html_or_held(self):
+  original=json.loads((M.ROOT/"data"/"wa-ag-external-policy-source-inspection.json").read_text(encoding="utf8"))
+  changed=json.loads(json.dumps(original))
+  pdf=next(r for r in changed["receipts"] if r["inspection_status"]=="original_pdf_text_detected")
+  pdf["content_sha256"]="0"*64
+  changes=M.compare_to_published(changed,original)
+  self.assertIn(pdf["agency_name"],changes["pdf_original_bytes_or_pages_changed_requires_review"])
+  htmlrow=next(r for r in changed["receipts"] if r["inspection_status"]=="original_html_text_detected")
+  htmlrow["content_sha256"]="a"*64
+  changes=M.compare_to_published(changed,original)
+  self.assertIn(htmlrow["agency_name"],changes["html_wrapper_bytes_changed_recheck_leads"])
+  hold=next(r for r in changed["receipts"] if r["inspection_status"].startswith("held"))
+  hold.update(inspection_status="original_html_text_detected",content_sha256="b"*64,bytes=500,
+   page_count=None,text_pages=0,image_pages=0,page_mentions_flock=[])
+  changes=M.compare_to_published(changed,original)
+  self.assertIn(hold["agency_name"],changes["previously_held_now_retrieved_requires_review"])
  def test_exact_ago_source_list_and_alias(self):
   rows=M.candidates(REG)
   self.assertEqual(len(rows),25)
