@@ -31,6 +31,17 @@ class Tests(unittest.TestCase):
   dup=fixture(20).replace(b'Public Agency 1</td>',b'Public Agency 0</td>')
   with self.assertRaisesRegex(ValueError,'Duplicate'):M.convert(dup,'2026-10-27')
   with self.assertRaisesRegex(ValueError,'table missing'):M.convert(fixture(3),'2026-10-27')
+ def test_weekly_diff_keeps_missing_registry_rows_unknown_not_shutdown(self):
+  old=M.convert(fixture(20),'2026-10-21')
+  fresh=M.convert(fixture(21),'2026-10-27')
+  out=M.compare_published(fresh,old)
+  self.assertEqual(out['registered_name_entries_added_to_original_index'],1)
+  self.assertEqual(out['registered_name_entries_no_longer_listed_unknown_reason'],0)
+  self.assertEqual(out['verified_flock_camera_additions'],0)
+  self.assertEqual(out['confirmed_shutdowns'],0)
+  reverse=M.compare_published(old,fresh)
+  self.assertEqual(reverse['registered_name_entries_no_longer_listed_unknown_reason'],1)
+  self.assertEqual(reverse['confirmed_shutdowns'],0)
  def test_raw_date_preserved_when_original_format_unknown(self):
   weird=fixture(20).replace(b'July 6, 2026',b'Undated/unclear')
   r=M.convert(weird,'2026-10-27')
