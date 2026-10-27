@@ -46,6 +46,10 @@ def main():
                       ("image_resource",lambda:has_embedded_image_resource(page))):
          try:report[k]=fn()
          except Exception as e:report[k+"_error"]=type(e).__name__
+        for k,fn in (("pypdf_images",lambda:len(page.images)),
+                      ("content_length",lambda:len(page.get_contents().get_data()) if page.get_contents() else 0)):
+         try:report[k]=fn()
+         except Exception as e:report[k+"_error"]=type(e).__name__
         info.setdefault("page_structure_probes",[]).append(report)
      except Exception as exc:
       info["strict_"+str(strict).lower()]={"error_type":type(exc).__name__}
