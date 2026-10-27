@@ -95,7 +95,7 @@ const independent=Audit.assess(shakopee,[],{
  contractStatus:'ok',auditArchiveStatus:'ok',asOf:'2026-10-26',
  independentAudits:auditManifest.reports
 });
-assert.equal(independent.counts.independentAuditorReports,2);
+assert.equal(independent.counts.independentAuditorReports,3);
 assert.ok(independent.inventory.some(x=>x.kind==='independent_auditor_report'&&
  x.sources.includes('https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf')));
 assert.ok(independent.inventory.some(x=>x.kind==='auditor_reported_observation'&&
@@ -121,9 +121,19 @@ const woodburyAudit=Audit.assess(woodbury,[],{
  contractStatus:'ok',auditArchiveStatus:'ok',
  independentAudits:auditManifest.reports
 });
-assert.equal(woodburyAudit.counts.independentAuditorReports,2,
+assert.equal(woodburyAudit.counts.independentAuditorReports,3,
  'Do not collapse distinct source-dated independent audits');
 assert.ok(woodburyAudit.inventory.some(x=>x.sources.includes('https://www.lrl.mn.gov/docs/2024/mandated/240350.pdf')));
+for(const [key,label,url,expected] of [
+ ['edina|MN','Edina, MN','210885.pdf',2],
+ ['west saint paul|MN','West Saint Paul, MN','261167.pdf',1],
+ ['wyoming|MN','Wyoming, MN','261268.pdf',1]
+]){
+ const group={...base(),key,label};
+ const assessed=Audit.assess(group,[],{contractStatus:'ok',auditArchiveStatus:'ok',independentAudits:auditManifest.reports});
+ assert.equal(assessed.counts.independentAuditorReports,expected,'Source-bound original independent audit count '+key);
+ assert.ok(assessed.inventory.some(i=>i.kind==='independent_auditor_report'&&i.sources.some(u=>u.endsWith(url))));
+}
 assert.equal(stillwaterAudit.counts.independentAuditorReports,1);
 assert.ok(stillwaterAudit.inventory.some(x=>x.kind==='auditor_reported_observation'&&
  x.detail.includes('17 stationary Flock ALPR units')&&
