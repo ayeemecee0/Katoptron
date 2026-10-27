@@ -66,13 +66,13 @@ const assert=require('node:assert/strict');
    title_scope:'flock_named_in_title',evidence_tier:'state_legislative_registry_index_metadata_only'
   });
   rows.push({
-   source_url:'https://www.lrl.mn.gov/docs/2025/mandated/251686.pdf',
+   source_url:'https://www.lrl.mn.gov/docs/2019/mandated/191307.pdf',
    registry_url:'https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735',
-   report_id:'25-1686.pdf',
-   report_title:'Champlin Police Department 2025 ALPR Audit (AXON) Executive Summary',
+   report_id:'19-1307.pdf',
+   report_title:'Woodbury Public Safety Department Automated License Plate Reader Audit: Executive Summary',
    listed_publishers:'Minnesota state archive',
-   publication_date:'2025-10-28',coverage_period:'2023–2025',received_date:'2025-10-30',
-   title_scope:'other_vendor_named_in_title',evidence_tier:'state_legislative_registry_index_metadata_only'
+   publication_date:'2019-12-26',coverage_period:'2019',received_date:'2025-10-30',
+   title_scope:'unspecified_alpr_title',evidence_tier:'state_legislative_registry_index_metadata_only'
   });
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#queueStatus')?.textContent?.includes('queued original state audit'),
@@ -80,15 +80,15 @@ const assert=require('node:assert/strict');
   assert.match(await page.locator('#queueStatus').textContent(),/^1 queued original state audit/);
   const queue=page.locator('#queueCards article');
   assert.equal(await queue.count(),1);
-  assert.match(await queue.first().textContent(),/Champlin/);
-  assert.match(await queue.first().textContent(),/P2/);
+  assert.match(await queue.first().textContent(),/Woodbury/);
+  assert.match(await queue.first().textContent(),/P1/);
   assert.match(await queue.first().textContent(),/Different\/multiple vendors/);
   assert.ok(!(await page.locator('#queueCards').textContent()).includes('verified current'));
   for(const alreadyReviewed of ['Wyoming Police','West Saint Paul','Shakopee']){
    assert.ok(!(await page.locator('#queueCards').textContent()).includes(alreadyReviewed),
     'Reviewed originals must not remain falsely in the review queue');
   }
-  assert.ok(await queue.first().locator('a[href*="agency-audit.html?place=champlin"]').count());
+  assert.ok(await queue.first().locator('a[href*="agency-audit.html?place=woodbury"]').count());
   assert.equal(await page.locator('#reports article').count(),2);
   assert.deepEqual(errors,[]);
   console.log('OFFICIAL MINNESOTA AUDIT LIBRARY BROWSER PASS: metadata tiers, strict source links, filtering, deep link, mobile');
