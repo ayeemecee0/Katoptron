@@ -20,7 +20,8 @@
  };
  const officialHosts=new Set(['www.sanbruno.ca.gov','sanmateo.courts.ca.gov','www.paloalto.gov','www.greenbaywi.gov',
   'rva.gov','www.rva.gov','www.austintexas.gov','services.austintexas.gov',
-  'attorneygeneral.delaware.gov','www.woodburn-or.gov']);
+  'attorneygeneral.delaware.gov','www.woodburn-or.gov',
+  'www.moline.il.us','www.naperville.il.us','www.darien.il.us','www.atg.wa.gov']);
  function safe(url){
   try{
    if(typeof url!=='string'||url.length>900)return null;
@@ -57,7 +58,7 @@
  }
  function publisher(p){
   if(!p||typeof p!=='object'||!/^([a-z]{2}-){1}[a-z0-9-]{8,85}$/.test(p.id||'')||
-   !['CA','TX','WI','VA','DE','OR'].includes(p.state)||
+   !['CA','TX','WI','VA','DE','OR','IL','WA'].includes(p.state)||
    !['police_department','government_independent_oversight','government_legal_authority'].includes(p.publisher_role)||
    !['html_index','pdf_original'].includes(p.kind)||typeof p.agency!=='string'||p.agency.length<8||
    !Array.isArray(p.allowed_document_hosts)||!p.allowed_document_hosts.length||
