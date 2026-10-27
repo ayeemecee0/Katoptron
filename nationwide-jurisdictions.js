@@ -12,7 +12,7 @@
   if(typeof url!=='string'||url.length>950||/%2e|\\|\/\.\.?\//i.test(url.split('?')[0]))return null;
   try{
    const u=new URL(url);
-   if(u.protocol!=='https:'||!u.hostname.endsWith('.gov')||u.host!==u.hostname||
+   if(u.protocol!=='https:'||!(u.hostname.endsWith('.gov')||u.hostname==='www.state.wv.us')||u.host!==u.hostname||
       !!u.username||!!u.password||!!u.hash||u.pathname.length<2||u.search.length>192)return null;
    return url;
   }catch{return null;}
