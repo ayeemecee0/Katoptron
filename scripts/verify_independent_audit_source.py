@@ -312,10 +312,13 @@ HISTORICAL_CURATED_PAGE_ANCHORS = {
     ]
   },
   "mn-original-alpr-review-251640": {
-    "2": [
-      "umn police department",
-      "approximately 29 active mobile alpr units"
-    ]
+    "2": ["umn police department", "approximately 29 active mobile alpr units"]
+  },
+  "mn-original-alpr-review-191307": {
+    "3": ["woodbury", "2 squad cars", "no stationary alpr units"]
+  },
+  "mn-original-alpr-review-200290": {
+    "7": ["hennepin county", "four mobile alprs", "september 24, 2019", "fixed stationary alpr"]
   }
 }
 
@@ -328,8 +331,15 @@ def verify_pdf(report,payload,reader_class=None):
   from pypdf import PdfReader
   reader_class=PdfReader
  pdf=reader_class(io.BytesIO(payload),strict=True)
- if pdf.is_encrypted or len(pdf.pages)<max(report["pages_reviewed"]) or len(pdf.pages)>MAX_PAGES:
-  raise ValueError("Audited page range unavailable or encrypted")
+ if pdf.is_encrypted:
+  # The exact official Hennepin state-auditor 2020 report is a publicly
+  # accessible PDF encrypted with an empty *user* password. Do not accept
+  # nonempty credentials, redirects, different report hashes or other PDFs.
+  if report["id"]!="mn-original-alpr-review-200290" or not pdf.decrypt(""):
+   raise ValueError("Encrypted original is not approved for public anonymous reading")
+ if len(pdf.pages)<max(report["pages_reviewed"]) or len(pdf.pages)>MAX_PAGES:
+  raise ValueError("Audited page range unavailable")
+
  def normalized(page):
   return " ".join(str(pdf.pages[page-1].extract_text() or "").lower().split())
  if report["id"]=="shakopee-mn-alpr-independent-audit-2026":
