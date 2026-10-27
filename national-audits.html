@@ -44,6 +44,16 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <div id="metrics" class="metrics" aria-label="Reviewed original publication counts"></div>
 <div class="controls"><label for="q"><span>Search agency, report or finding</span><input id="q" type="search" maxlength="120" placeholder="San Bruno, Green Bay, sharing..."></label>
 <label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option><option value="TX">Texas</option><option value="OR">Oregon</option><option value="VA">Virginia</option><option value="DE">Delaware</option><option value="IL">Illinois</option><option value="WA">Washington</option></select></label></div>
+<section id="nationalCoverage" aria-labelledby="nationalCoverageHeading">
+<h2 id="nationalCoverageHeading">Nationwide government-source coverage: 50 states + Washington, D.C.</h2>
+<p>Every jurisdiction is enrolled in the original-government research queue. A source-listed state means at least one curated original government publication or document, <strong>not</strong> an independently verified Flock installation, exhaustive agency inventory, active camera map, adopted policy or live sharing relationship. Older records and unadopted proposals remain historical or tentative, respectively.</p>
+<p id="nationalCoverageStatus" role="status" aria-live="polite">Loading nationwide public-government-source registry…</p>
+<div id="nationalCoverageMetrics" class="metrics"></div>
+<label for="nationalCoverageSearch"><span>Find state or original publisher</span>
+<input id="nationalCoverageSearch" type="search" autocomplete="off" maxlength="100" placeholder="State, abbreviation or government publisher"></label>
+<details id="nationalCoverageDetails"><summary>Browse all 51 jurisdictions and official publication sources</summary>
+<div id="nationalCoverageResults" class="list"></div></details>
+</section>
 <section aria-labelledby="cityStatusHeading" id="cityStatusSection">
 <h2 id="cityStatusHeading">Agency-reported operational changes, with dates and evidence limits</h2>
 <p>Government statements are useful but not interchangeable. An announced intention to shut down equipment is <strong>not proof of completion</strong>. A city's retrospective statement that cameras were disabled is an <strong>agency-reported outcome</strong>, not continuous telemetry or an independent technical audit. Both statements below are dated original city publications, not claims about current camera locations.</p>
@@ -77,9 +87,9 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p class="muted"><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/scan_national_government_audit_sources.yml" rel="noopener noreferrer" target="_blank">View national government source acquisition runs and source-review artifacts</a></p>
 </section>
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
-</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script>
+</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[]};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
@@ -230,6 +240,50 @@ async function loadOversight(){
  }
  renderOversight();
 }
+function renderNationalCoverage(){
+ const d=APP.nationalCoverage;if(!d)return;
+ $('nationalCoverageStatus').textContent=d.total+
+  ' jurisdictions enrolled. '+d.seeded+' have an original-government publication seed; '+d.without+
+  ' lack one. Published source links are not camera or agency-inventory verification.';
+ const metrics=$('nationalCoverageMetrics');metrics.replaceChildren();
+ for(const [n,label] of [[d.total,'US states and DC enrolled'],[d.seeded,'With curated original-government seeds'],
+  [d.without,'No authenticated original source yet'],[d.seedUrls+d.legacyUrls,'Official publication links monitored']]){
+  const a=el('div');a.append(el('strong',n),el('span',label));metrics.append(a);
+ }
+ const q=$('nationalCoverageSearch').value.trim().toLowerCase();
+ const rows=d.states.filter(x=>[x.name,x.state,...x.seeds.map(y=>y.publisher),...x.existing.map(y=>y.agency)]
+   .join(' ').toLowerCase().includes(q));
+ const results=$('nationalCoverageResults');results.replaceChildren();
+ for(const x of rows){
+  const article=el('article'),tags=el('div',null,'meta');
+  tags.append(el('span',x.state,'tag'),el('span','Source starting points: '+(x.seeds.length+x.existing.length),'tag'));
+  article.append(tags,el('h3',x.name),el('p','State research enrolled; no statewide agency or Flock equipment census established.','muted'));
+  for(const seed of x.seeds){
+   const section=el('section',null,'finding');
+   section.append(el('p',seed.publisher+' · '+seed.publisher_role.replaceAll('_',' ')+' · Original '+seed.kind.toUpperCase(),'muted'));
+   const url=window.KatoptronNationwideJurisdictions.safe(seed.source_url);
+   if(url){const a=el('a','Original government publication');a.href=url;a.target='_blank';a.rel='noopener noreferrer';section.append(a);}
+   article.append(section);
+  }
+  for(const src of x.existing){
+   const section=el('section',null,'finding');
+   section.append(el('p',src.agency+' · Previously monitored '+src.publisher_role.replaceAll('_',' '),'muted'));
+   const url=window.KatoptronNationwideJurisdictions.safe(src.url);
+   if(url){const a=el('a','Previously curated original government source');a.href=url;a.target='_blank';a.rel='noopener noreferrer';section.append(a);}
+   article.append(section);
+  }
+  results.append(article);
+ }
+ if(!rows.length)results.append(el('p','No state or government source matches this search; this does not prove no Flock installations exist.'));
+}
+async function loadNationalCoverage(){
+ const [r0,r1]=await Promise.all([
+  fetch('./data/nationwide-government-jurisdiction-registry.json',{cache:'no-store',referrerPolicy:'no-referrer'}),
+  fetch('./data/national-government-audit-source-portals.json',{cache:'no-store',referrerPolicy:'no-referrer'})]);
+ if(!r0.ok||!r1.ok)throw Error('Original nationwide state source registries unavailable');
+ APP.nationalCoverage=window.KatoptronNationwideJurisdictions.catalog(await r0.json(),await r1.json());
+ renderNationalCoverage();
+}
 function renderPublishers(){
  const st=$('state').value,q=$('q').value.trim().toLowerCase();
  const rows=APP.publishers.filter(r=>(st==='all'||r.state===st)&&
@@ -276,4 +330,6 @@ loadPrimary().catch(e=>{$('primaryStatus').textContent=e.message+'; unverified f
 load().catch(e=>{$('status').textContent=e.message+'; no inferred reports shown.';});
 loadOversight().catch(e=>{$('oversightStatus').textContent=e.message+'; no inferred reports shown.';});
 loadPublishers().catch(e=>{$('publisherStatus').textContent=e.message+'; no inferred publisher list shown.';});
+$('nationalCoverageSearch').addEventListener('input',()=>{renderNationalCoverage();$('nationalCoverageDetails').open=true;});
+loadNationalCoverage().catch(e=>{$('nationalCoverageStatus').textContent=e.message+'; source coverage has not been inferred.';});
 </script></body></html>
