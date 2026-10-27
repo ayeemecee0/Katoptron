@@ -25,11 +25,22 @@ Two original published reports were inspected on their relevant original pages a
 - **Page 3:** Auditor describes interagency ALPR requests being made/reviewed through agency command. This statement does **not** identify current recipients or prove ongoing network permissions.
 - Source period: June 1, 2023–July 31, 2025. No current compliance rating is implied.
 
-The already-reviewed Shakopee June 2026 audit remains its separate source-level record. Together the curated manifest contains **three** original page-reviewed independent audit reports, compared with one before this release. They are linked from the [state archive library](../mn-alpr-audits.html) and assigned exact original-source identity dossier links in the [Accountability Engine](../agency-audit.html). Source-only dossiers include their exact reviewed original record and show remaining civic/contract gaps as **unknown**, not inferred violations or equipment absence.
+The already-reviewed Shakopee June 2026 audit remains its separate source-level record. Together the previous curated manifest contained **three** original page-reviewed independent audit reports, compared with one before this release. They are linked from the [state archive library](../mn-alpr-audits.html) and assigned exact original-source identity dossier links in the [Accountability Engine](../agency-audit.html). Source-only dossiers include their exact reviewed original record and show remaining civic/contract gaps as **unknown**, not inferred violations or equipment absence.
 
 ## Why report trends are not automatically contradictions
 
 Stillwater's 17 units and Hennepin's four units describe **different agencies in different years**. They are not a year-over-year difference and should never become a manufacturer migration or a policy contradiction. To establish a historical change for one operator, Katoptron needs two independently page-reviewed, source-dated, same-agency reports about the same measurement and unit, plus attention to collection dates. Existing audit PDFs may contain historical statements; they cannot substitute for live console access or audit logs.
+
+
+### Three additional original audit reviews — October 26, 2026
+
+The following original state-hosted five-page audit summaries were checked on PDF pages 2–3 and pinned to SHA-256 hashes. They have separate exact-agency dossier keys and do not establish current equipment, unauthorized sharing, or legal wrongdoing.
+
+- **Richfield Police Department (May 21, 2026)** — [Original audit](https://www.lrl.mn.gov/docs/2026/mandated/260900.pdf), SHA-256 `d13ceb556b08015e2ca751734eff29349eb8f9fa9a44866cc560c02ffe24ee10`. P.2: auditor-reported **8 stationary Flock ALPR units** at audit time and **30-day manufacturer-default data retention**. P.3: auditor sampled March 2026 requests documented with agency and justification. Historic sampling, not a current recipient list.
+- **Woodbury Public Safety (Feb 5, 2026)** — [Original audit](https://www.lrl.mn.gov/docs/2026/mandated/260248.pdf), SHA-256 `523876118f3e7da5b2754bd6695e7386e3967874543710a2b645834955723852`. P.2: auditor-reported **17 active stationary Flock ALPR units and no mobile Flock units**, plus **default 30-day retention**. P.3: describes documented interagency requests and case-number justification, not a permission graph.
+- **Brooklyn Center Police Department (Oct 28, 2025)** — [Original audit](https://www.lrl.mn.gov/docs/2025/mandated/251737.pdf), SHA-256 `6318fee178da621398a0a0c977b9852991638d707dbf39f7d0df5e9da6b1e28f`. P.2: auditor reported **9 active stationary ALPR units and no Flock mobile units** in its review of a Flock ALPR system, with **default 30-day retention**. P.3: documented interagency requests; no current sharing partner identities established.
+
+**Reviewed coverage now: 6/16 Flock-named audit reports.** All 16 still have machine-only private PDF receipt metadata; only six have independently reviewed page citations and pinned original-source document hashes. Other vendor-unspecified and non-Flock titles remain metadata only. The count must not be treated as 6 new agency live-camera inventories or 6 completed surveillance audits by Katoptron.
 
 ## Testing and release
 
