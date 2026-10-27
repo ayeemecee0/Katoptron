@@ -1,0 +1,34 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+(async()=>{
+ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:390,height:844}});
+ const problems=[];page.on('pageerror',e=>problems.push(e.message));
+ try{
+  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
+  const response=await page.goto(new URL('wa-alpr-registrations.html',base).href,{waitUntil:'domcontentloaded',timeout:20000});
+  assert.equal(response.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.startsWith('97 original Attorney General'),
+    null,{timeout:12000});
+  assert.equal(await page.locator('#results article').count(),97);
+  assert.match(await page.locator('main').textContent(),/has not independently verified/);
+  assert.match(await page.locator('main').textContent(),/not a camera or equipment census/);
+  assert.match(await page.locator('#stats').textContent(),/96/);
+  const hrefs=await page.locator('#results article a').evaluateAll(as=>as.map(a=>a.href));
+  assert.ok(hrefs.some(h=>h.includes('agportal-s3bucket.s3.us-west-2.amazonaws.com')));
+  assert.ok(!hrefs.some(h=>h.includes('evil.example')));
+  await page.locator('#search').fill('Aberdeen Police');
+  assert.equal(await page.locator('#results article').count(),1);
+  assert.match(await page.locator('#results').textContent(),/Aberdeen Police Department/);
+  await page.locator('#search').fill('Cascadia');
+  assert.equal(await page.locator('#results article').count(),1);
+  await page.locator('#search').fill('ThereIsNoSuchAgencyXY');
+  assert.equal(await page.locator('#results article').count(),0);
+  assert.match(await page.locator('#results').textContent(),/does not establish/);
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'Mobile 390px no horizontal overflow');
+  assert.deepEqual(problems,[]);
+  console.log('WASHINGTON OFFICIAL AGO REGISTER BROWSER PASS: 97 self-attested agencies, public policy links, no Flock assertion, source date, search & 390px');
+ }catch(e){console.error('WA GOVERNMENT REGISTRY BROWSER FAILED',e.stack||e,problems);process.exitCode=1;}
+ finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

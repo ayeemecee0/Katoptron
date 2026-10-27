@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Washington State ALPR Agency Registrations</title>
+<meta name="description" content="Search the original Washington Attorney General public register of ALPR agency self-certifications and linked policies; vendor status is not independently verified.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#09141d;color:#eaf4f8;font-family:system-ui,sans-serif}*{box-sizing:border-box}
+body{margin:0;line-height:1.55}a{color:#9eddeb}header{padding:1rem max(1rem,4vw);background:#102332;border-bottom:1px solid #365468;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between}
+.brand{font-weight:800;letter-spacing:.12em;text-decoration:none;color:inherit}nav{display:flex;gap:1rem;flex-wrap:wrap;font-size:.85rem}
+main{max-width:1150px;margin:auto;padding:2.2rem 1.15rem 5rem}h1{font-size:clamp(1.9rem,4vw,2.7rem);margin:.3rem 0}h2{font-size:1.15rem;margin:.2rem 0}p{color:#ccdae1}
+.kicker{color:#9ee1ee;letter-spacing:.1em;text-transform:uppercase;font-weight:700;font-size:.75rem}
+.notice{background:#14303d;border-left:3px solid #83c7d5;padding:1rem;margin:1.25rem 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:.7rem;margin:1.25rem 0}
+.metrics div{background:#142b3a;border:1px solid #345569;padding:1rem;border-radius:9px}
+.metrics strong{display:block;font-size:1.7rem}.metrics span{display:block;color:#bcd0dc;font-size:.82rem}
+input{font:inherit;background:#142b3a;border:1px solid #7897a8;color:inherit;border-radius:7px;padding:.75rem;width:100%;max-width:640px}
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:.75rem;margin-top:1.2rem}
+article{padding:1rem;background:#122837;border:1px solid #355468;border-radius:9px;overflow-wrap:anywhere}article p{margin:.5rem 0}
+.muted{font-size:.84rem;color:#bacbd4}.actions{display:flex;gap:1rem;flex-wrap:wrap}
+a:focus-visible,input:focus-visible{outline:3px solid #a2e8f8;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to Washington agency registrations</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Navigation"><a href="./national-audits.html">NATIONAL SOURCES</a><a href="./mn-alpr-audits.html">MINNESOTA AUDITS</a><a href="./agency-audit.html">ACCOUNTABILITY</a></nav></header>
+<main id="main"><p class="kicker">Official Washington State Attorney General publication</p>
+<h1>Washington ALPR agency registrations</h1>
+<p>A searchable, date-stamped copy of the Washington Attorney General's public list of agencies that submitted ALPR registrations. Each agency entry links to the original policy location that appears in the state register.</p>
+<div class="notice"><strong>Self-certification is not independent verification.</strong>
+The Washington Attorney General states that it has <strong>not independently verified</strong> the certifications agencies submitted. An entry does not confirm use of <strong>Flock Safety</strong>, the number or positions of any cameras, current system operation, effective policy compliance, or sharing permissions. Some listings concern parking or university systems rather than police surveillance. Submitted policies are not independently page-verified by Katoptron merely because the state site links them. The entries below are a snapshot, not a continuously live feed.
+<p><a href="https://www.atg.wa.gov/ALPR" target="_blank" rel="noopener noreferrer">Read the original Attorney General registry and certification disclaimer</a>.</p></div>
+<div id="stats" class="metrics"></div>
+<label for="search">Search registered agencies</label>
+<p><input id="search" type="search" placeholder="Agency, county, university or department" maxlength="120" autocomplete="off"></p>
+<p id="status" role="status" aria-live="polite">Loading original government source snapshot…</p>
+<div id="results" class="list"></div>
+<p class="muted">Each displayed policy link was present on the Attorney General's original published page at the snapshot date, not independently reverified with the agency. Links may change. The absence of an entry cannot establish noncompliance, and registration is not a camera or equipment census.</p>
+</main><script src="./wa-alpr-registrations.js"></script><script>
+'use strict';
+const S=window.KatoptronWashingtonALPR;const $=x=>document.getElementById(x);
+const app={rows:[],captured:''};
+function node(t,text,cls){const el=document.createElement(t);if(text!=null)el.textContent=String(text);if(cls)el.className=cls;return el;}
+function render(){
+ const q=$('search').value.trim().toLowerCase();
+ const filtered=app.rows.filter(r=>[r.agency_name,r.submitted_date_as_published,r.policy_link_label].join(' ').toLowerCase().includes(q));
+ $('status').textContent=filtered.length+' original Attorney General registration(s) match your search. Registry snapshot captured '+app.captured+'. Certifications are not independently verified.';
+ $('results').replaceChildren();
+ for(const r of filtered){
+  const item=node('article');
+  item.append(node('h2',r.agency_name),
+   node('p','Submitted: '+(r.submitted_on||r.submitted_date_as_published||'Date not established'),'muted'),
+   node('p','Agency-certified registration; manufacturer, locations and current operating status unverified','muted'));
+  const actions=node('div',null,'actions');
+  for(const href of r.policy_links_from_official_ago_page){
+   const link=S.safe(href);
+   if(!link)continue;
+   const a=node('a',r.policy_link_label&&r.policy_link_label!=='click to view'?'Policy link: '+r.policy_link_label:'View policy linked by Attorney General');
+   a.href=link;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
+  }
+  if(!actions.childNodes.length)actions.append(node('span','No source policy URL published in this snapshot','muted'));
+  item.append(actions);
+  $('results').append(item);
+ }
+ if(!filtered.length)$('results').append(node('p','No matching registry record in this captured source snapshot. This does not establish that an agency does not use ALPR.'));
+}
+async function load(){
+ const res=await fetch('./data/wa-original-agency-alpr-registrations.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Washington Attorney General original registration snapshot unavailable');
+ const d=await res.json();app.rows=S.catalog(d);app.captured=d.captured_on;
+ for(const [n,label] of [[app.rows.length,'Agency registration entries'],[app.rows.filter(x=>x.policy_links_from_official_ago_page.length).length,'Entries with state-linked policies'],[app.rows.filter(x=>!x.submitted_on).length,'Unknown date format held']]){
+  const card=node('div');card.append(node('strong',n),node('span',label));$('stats').append(card);
+ }
+ render();
+}
+$('search').addEventListener('input',render);
+load().catch(e=>{$('status').textContent=e.message+'; no unverified registrations are displayed.';});
+</script></body></html>

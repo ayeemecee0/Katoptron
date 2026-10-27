@@ -25,7 +25,8 @@ OFFICIAL_HOSTS={
  "www.sanbruno.ca.gov","sanmateo.courts.ca.gov","www.paloalto.gov",
  "www.greenbaywi.gov","rva.gov","www.rva.gov",
  "www.austintexas.gov","services.austintexas.gov",
- "attorneygeneral.delaware.gov","www.woodburn-or.gov"
+ "attorneygeneral.delaware.gov","www.woodburn-or.gov",
+ "www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.atg.wa.gov"
 }
 KEYWORDS=re.compile(r"\b(?:flock|alpr|automated license plate|license plate reader|plate recognition)\b",re.I)
 DOCWORDS=re.compile(r"\b(?:audit|report|review|assessment|oversight|jury|commission|policy|contract|agreement|flock|alpr|license plate|reader|privacy)\b",re.I)
@@ -60,7 +61,7 @@ def catalog(obj):
   if not isinstance(row,dict) or row.get("id") in ids or not re.fullmatch(r"[a-z0-9-]{10,90}",row.get("id","")):
    raise ValueError("Duplicate original publisher source")
   ids.add(row["id"])
-  if row.get("state") not in {"CA","WI","VA","TX","DE","OR"} or row.get("kind") not in {"html_index","pdf_original"}:
+  if row.get("state") not in {"CA","WI","VA","TX","DE","OR","IL","WA"} or row.get("kind") not in {"html_index","pdf_original"}:
    raise ValueError("Unexpected source state or document type")
   hosts=row.get("allowed_document_hosts")
   if not isinstance(hosts,list) or not 1<=len(hosts)<=3 or len(hosts)!=len(set(hosts)) or not set(hosts)<=OFFICIAL_HOSTS:
@@ -159,11 +160,13 @@ def curated_original_urls():
  Existing reviews remain subject to their own byte/page CI verifiers.
  """
  seen=set()
- for name in ("verified-national-government-oversight.json","verified-agency-published-alpr-audits.json"):
+ for name,field in (("verified-national-government-oversight.json","reports"),
+                   ("verified-agency-published-alpr-audits.json","reports"),
+                   ("verified-national-government-documents.json","documents")):
   obj=json.loads((ROOT/"data"/name).read_text(encoding="utf-8"))
-  if obj.get("schema_version")!=1 or not isinstance(obj.get("reports"),list):
+  if obj.get("schema_version")!=1 or not isinstance(obj.get(field),list) or len(obj[field])<1:
    raise ValueError("Incomplete individually reviewed original source catalog")
-  for r in obj["reports"]:
+  for r in obj[field]:
    url=r.get("source_url")
    if not isinstance(url,str) or not re.fullmatch(r"[0-9a-f]{64}",r.get("content_sha256","")):
     raise ValueError("Unverified original content cannot be marked reviewed")
@@ -234,6 +237,12 @@ def main():
   "DIRECT_ORIGINAL_PDF_RECEIPTS",len(result["original_pdf_receipts"]))
  print("NEW FACTS",result["substantive_facts_auto_published"],"CAMERA PINS",
   result["camera_locations_auto_published"],"SHARING EDGES",result["sharing_edges_auto_published"])
+ for candidate in result["linked_candidates"]:
+  if candidate["review_status"]=="new_original_link_needs_individual_content_review":
+   # Exact official link metadata only. Safe to include in public CI logs.
+   print("REVIEW_ORIGINAL_CANDIDATE",candidate["state"],candidate["source_id"],
+         candidate["candidate_type"],candidate["source_url"],
+         "TITLE",candidate["linked_title"][:100])
  print("SOURCE_WATCH_ARTIFACT",p.relative_to(ROOT))
 if __name__=="__main__":
  try:main()

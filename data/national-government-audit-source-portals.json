@@ -114,6 +114,50 @@
       "allowed_document_hosts": [
         "sanmateo.courts.ca.gov"
       ]
+    },
+    {
+      "id": "il-moline-original-flock-program",
+      "state": "IL",
+      "agency": "Moline Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://www.moline.il.us/1955/License-Plate-Readers",
+      "allowed_document_hosts": [
+        "www.moline.il.us"
+      ]
+    },
+    {
+      "id": "il-naperville-alpr-transparency",
+      "state": "IL",
+      "agency": "Naperville Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://www.naperville.il.us/services/naperville-police-department/about-the-police-department/police-transparency/automated-license-plate-readers/",
+      "allowed_document_hosts": [
+        "www.naperville.il.us"
+      ]
+    },
+    {
+      "id": "il-darien-original-policies",
+      "state": "IL",
+      "agency": "Darien Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://www.darien.il.us/reference-desk/news/darien-pd-use-of-technology/",
+      "allowed_document_hosts": [
+        "www.darien.il.us"
+      ]
+    },
+    {
+      "id": "wa-ag-public-alpr-agency-registrations",
+      "state": "WA",
+      "agency": "Washington State Attorney General ALPR Registration",
+      "publisher_role": "government_legal_authority",
+      "kind": "html_index",
+      "url": "https://www.atg.wa.gov/ALPR",
+      "allowed_document_hosts": [
+        "www.atg.wa.gov"
+      ]
     }
   ]
 }

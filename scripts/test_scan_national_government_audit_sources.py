@@ -19,8 +19,8 @@ class Reader:
 
 class TestNationalPublisherWatch(unittest.TestCase):
  def test_curated_government_domains_are_exact_and_multistate(self):
-  self.assertEqual(len(SOURCES),10)
-  self.assertEqual({s['state'] for s in SOURCES},{'CA','WI','OR','TX','VA','DE'})
+  self.assertEqual(len(SOURCES),14)
+  self.assertEqual({s['state'] for s in SOURCES},{'CA','WI','OR','TX','VA','DE','IL','WA'})
   self.assertEqual(sum(s['kind']=='pdf_original' for s in SOURCES),3)
   for source in SOURCES:self.assertTrue(M.canonical(source['url'],set(source['allowed_document_hosts'])))
   self.assertFalse(M.canonical('https://www.sanbruno.ca.gov.evil.example/a',{'www.sanbruno.ca.gov'}))

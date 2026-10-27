@@ -15,10 +15,25 @@ const {chromium}=require('playwright');
   assert.equal(await page.locator('#results article').count(),4);
   await page.waitForFunction(()=>document.querySelector('#oversightStatus')?.textContent?.startsWith('3 original government oversight'),
     null,{timeout:15000});
-  await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('10 official government'),
+  await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('14 official government'),
     null,{timeout:15000});
   assert.equal(await page.locator('#oversightResults article').count(),3);
-  assert.equal(await page.locator('#publisherResults article').count(),10);
+  await page.waitForFunction(()=>document.querySelector('#primaryStatus')?.textContent?.startsWith('8 page-verified'),
+   null,{timeout:18000});
+  assert.equal(await page.locator('#primaryResults article').count(),8);
+  assert.match(await page.locator('#primaryStatus').textContent(),/1 source\(s\) remain unavailable/);
+  assert.match(await page.locator('#policyContrast').textContent(),/30-day maximum/);
+  assert.match(await page.locator('#policyContrast').textContent(),/not verified as adopted/i);
+  const primary=await page.locator('#primaryResults').textContent();
+  assert.match(primary,/443,664 unique plate reads/);
+  assert.match(primary,/seven days/i);
+  assert.match(primary,/City Council ordered a halt/);
+  assert.match(primary,/1,392,000/);
+  const pageLinks=await page.locator('#primaryResults a').evaluateAll(as=>as.map(x=>x.href));
+  assert.ok(pageLinks.some(x=>x.includes('/DocumentCenter/View/19136/')&&x.includes('#page=4')));
+  assert.ok(pageLinks.some(x=>x.includes('document.cfm?id=452847#page=3')));
+
+  assert.equal(await page.locator('#publisherResults article').count(),14);
   const reviewed=await page.locator('#oversightResults').textContent();
   assert.match(reviewed,/San Mateo County Civil Grand Jury/);
   assert.match(reviewed,/Austin Police Department/);
@@ -44,6 +59,7 @@ const {chromium}=require('playwright');
      href.startsWith('https://www.sanbruno.ca.gov/')||
      href.startsWith('https://www.greenbaywi.gov/'),'Only government originals may be linked');
   await page.locator('#state').selectOption('TX');
+  assert.equal(await page.locator('#primaryResults article').count(),3);
   assert.equal(await page.locator('#oversightResults article').count(),1);
   assert.equal(await page.locator('#publisherResults article').count(),2);
   await page.locator('#state').selectOption('WI');

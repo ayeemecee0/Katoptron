@@ -43,7 +43,14 @@ The oversight section explicitly separates independent government reviewers (suc
 The official-source watch monitors publisher pages and PDF links as <em>unreviewed metadata only</em> until original pages are independently checked. See <a href="./mn-alpr-audits.html">Minnesota's separate independent audit library</a>.</div>
 <div id="metrics" class="metrics" aria-label="Reviewed original publication counts"></div>
 <div class="controls"><label for="q"><span>Search agency, report or finding</span><input id="q" type="search" maxlength="120" placeholder="San Bruno, Green Bay, sharing..."></label>
-<label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option><option value="TX">Texas</option><option value="OR">Oregon</option><option value="VA">Virginia</option><option value="DE">Delaware</option></select></label></div>
+<label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option><option value="TX">Texas</option><option value="OR">Oregon</option><option value="VA">Virginia</option><option value="DE">Delaware</option><option value="IL">Illinois</option><option value="WA">Washington</option></select></label></div>
+<section aria-labelledby="primaryHeading">
+<h2 id="primaryHeading">Original government policies, public contracts, monthly totals and oversight decisions</h2>
+<p>Documents here are verified directly against original government PDF bytes and numbered pages. An adopted-version policy, a later <strong>DRAFT</strong>, an order form and a nonbinding commission vote have different legal and evidentiary meanings.</p>
+<div class="notice" id="policyContrast"><strong>Green Bay source-date policy comparison:</strong> The May 2026 published Policy 424 specifies a 30-day maximum for ordinary ALPR system data, while the September document <strong>marked DRAFT</strong> proposes seven days. The September proposal is <strong>not verified as adopted</strong>. Neither text proves what retention settings are active in the system today. See their independently checked original pages below.</div>
+<p id="primaryStatus" role="status" aria-live="polite">Loading source-pinned government original documents…</p>
+<div id="primaryMetrics" class="metrics"></div>
+<div id="primaryResults" class="list"></div></section>
 <section aria-labelledby="oversightHeading"><h2 id="oversightHeading">Government oversight and original impact assessments</h2>
 <p>External government oversight (city auditor and civil grand jury) is labeled separately from a police-department-authored impact assessment. Each statement cites a pinned original government PDF and an examined page.</p>
 <p id="oversightStatus" role="status" aria-live="polite">Loading independently reviewed source reports…</p>
@@ -53,6 +60,9 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p>These four previously reviewed reports are government publications, but are not independent third-party audits.</p>
 <p id="status" role="status" aria-live="polite">Loading original agency-authored government publications…</p>
 <div id="results" class="list"></div></section>
+<section aria-labelledby="waHeading"><h2 id="waHeading">Washington state agency ALPR registrations</h2>
+<p>The Washington Attorney General's original public registry contains a snapshot of <strong>97 agency self-certifications</strong> and <strong>96 linked policy locations</strong>. The Attorney General has not independently verified those attestations. These are not Flock camera counts or confirmed device positions.</p>
+<p><a href="./wa-alpr-registrations.html">Search all 97 Washington agency registrations and inspect state-listed policies</a>.</p></section>
 <section aria-labelledby="publisherWatchHeading"><h2 id="publisherWatchHeading">Original government source watch</h2>
 <p>Authoritative government publication starting points across multiple states. A portal listing verifies its publisher URL, not the content of every link on that page. The read-only weekly scanner discovers candidate reports and issues original PDF hash/page receipts, retaining metadata in a 14-day CI artifact. It does not publish unreviewed findings.</p>
 <p id="publisherStatus" role="status" aria-live="polite">Loading government publisher registry…</p>
@@ -60,9 +70,9 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p class="muted"><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/scan_national_government_audit_sources.yml" rel="noopener noreferrer" target="_blank">View national government source acquisition runs and source-review artifacts</a></p>
 </section>
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
-</main><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script>
+</main><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[]};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[]};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
@@ -88,6 +98,52 @@ function render(){
   $('results').append(card);
  }
  if(!results.length)$('results').append(el('p','No source matches. This does not establish an agency has no ALPR program or no published audit.'));
+}
+
+
+const Primary=window.KatoptronNationalPrimaryDocuments;
+function renderPrimary(){
+ const q=$('q').value.trim().toLowerCase(),st=$('state').value;
+ const rows=APP.primary.filter(x=>(st==='all'||x.state===st)&&
+  [x.agency,x.title,x.kind,...x.findings.map(f=>f.statement)].join(' ').toLowerCase().includes(q));
+ $('primaryStatus').textContent=rows.length+' page-verified original government document(s) match filters; '+
+  APP.primaryHeld.length+' source(s) remain unavailable and are explicitly held from factual publication.';
+ $('primaryResults').replaceChildren();
+ for(const d of rows){
+  const item=el('article'),meta=el('div',null,'meta');
+  meta.append(el('span',d.state,'tag'),el('span',Primary.label(d.kind),'tag'));
+  item.append(meta,el('h2',d.agency+' · '+d.title),el('p',d.source_date?
+   'Source date: '+d.source_date:'Date not established: '+d.source_date_note,'muted'));
+  if(d.kind==='draft_policy_unadopted'||d.kind==='advisory_recommendation_not_binding_action'||
+   d.kind==='government_published_vendor_order_form')
+   item.append(el('p',d.kind==='draft_policy_unadopted'?
+    'Unadopted proposal. Do not interpret as current ALPR policy.':
+    d.kind==='advisory_recommendation_not_binding_action'?
+    'Commission recommendation only. City Council action and ALPR shutdown are not established.':
+    'Published form terms only. Execution, installation and payment are not established.','muted'));
+  const url=Primary.sourceLink(d);
+  if(url){const a=el('a','Original government publication PDF');a.href=url;a.target='_blank';a.rel='noopener noreferrer';item.append(a);}
+  for(const f of d.findings){
+   const sec=el('section',null,'finding');sec.append(el('p',f.statement));
+   if(url){const a=el('a','Source PDF page '+f.page);a.href=url+'#page='+f.page;
+    a.target='_blank';a.rel='noopener noreferrer';sec.append(a);}
+   item.append(sec);
+  }
+  $('primaryResults').append(item);
+ }
+ if(!rows.length)$('primaryResults').append(el('p','No reviewed original document matches. This does not mean an agency lacks published documents.'));
+}
+async function loadPrimary(){
+ const res=await fetch('./data/verified-national-government-documents.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Page-reviewed original government documents currently unavailable');
+ const raw=await res.json();
+ APP.primary=Primary.catalog(raw);APP.primaryHeld=raw.source_review_held;
+ for(const [v,label] of [[APP.primary.length,'Page-pinned original government documents'],
+ [APP.primary.filter(x=>x.kind==='draft_policy_unadopted').length,'Proposed draft policies, not adopted'],
+ [APP.primaryHeld.length,'Unverified official documents held']]){
+  const block=el('div');block.append(el('strong',v),el('span',label));$('primaryMetrics').append(block);
+ }
+ renderPrimary();
 }
 
 const Nation=window.KatoptronNationalGovernmentSources;
@@ -170,8 +226,9 @@ async function load(){
  }
  render();
 }
-$('q').addEventListener('input',()=>{render();renderOversight();renderPublishers();});
-$('state').addEventListener('change',()=>{render();renderOversight();renderPublishers();});
+$('q').addEventListener('input',()=>{render();renderOversight();renderPublishers();renderPrimary();});
+$('state').addEventListener('change',()=>{render();renderOversight();renderPublishers();renderPrimary();});
+loadPrimary().catch(e=>{$('primaryStatus').textContent=e.message+'; unverified findings not shown.';});
 load().catch(e=>{$('status').textContent=e.message+'; no inferred reports shown.';});
 loadOversight().catch(e=>{$('oversightStatus').textContent=e.message+'; no inferred reports shown.';});
 loadPublishers().catch(e=>{$('publisherStatus').textContent=e.message+'; no inferred publisher list shown.';});
