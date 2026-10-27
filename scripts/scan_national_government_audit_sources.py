@@ -152,7 +152,26 @@ def receipt(source,body,reader=PdfReader):
   "sha256":hashlib.sha256(body).hexdigest(),"pages":len(doc.pages),"bytes":len(body),
   "status":"machine_original_pdf_receipt_no_content_claims"}
 
-def run(sources,fetcher=fetch,reader=PdfReader):
+def curated_original_urls():
+ """Only exact URLs already in source-pinned, individually reviewed catalogs.
+
+ The current discovery scan NEVER turns an unseen report into a verified one.
+ Existing reviews remain subject to their own byte/page CI verifiers.
+ """
+ seen=set()
+ for name in ("verified-national-government-oversight.json","verified-agency-published-alpr-audits.json"):
+  obj=json.loads((ROOT/"data"/name).read_text(encoding="utf-8"))
+  if obj.get("schema_version")!=1 or not isinstance(obj.get("reports"),list):
+   raise ValueError("Incomplete individually reviewed original source catalog")
+  for r in obj["reports"]:
+   url=r.get("source_url")
+   if not isinstance(url,str) or not re.fullmatch(r"[0-9a-f]{64}",r.get("content_sha256","")):
+    raise ValueError("Unverified original content cannot be marked reviewed")
+   if url in seen:raise ValueError("Reviewed original duplicated across independent attribution catalogs")
+   seen.add(url)
+ return seen
+
+def run(sources,fetcher=fetch,reader=PdfReader,reviewed=None):
  results=[];all_candidates=[];pdfs=[]
  for source in sources:
   try:
@@ -174,13 +193,26 @@ def run(sources,fetcher=fetch,reader=PdfReader):
  dedup={}
  for row in all_candidates:
   dedup.setdefault(row["source_url"],row)
- ranked=sorted(dedup.values(),key=lambda x:(x["state"],x["source_id"],x["source_url"]))
+ checked=reviewed if reviewed is not None else curated_original_urls()
+ if not isinstance(checked,set):raise ValueError("Invalid reviewed-original registry")
+ priorities={"original_audit_or_oversight_candidate":0,
+             "government_policy_contract_or_decision_candidate":1,
+             "other_official_alpr_metadata_candidate":2}
+ ranked=sorted(dedup.values(),key=lambda x:(x["source_url"] in checked,
+              priorities[x["candidate_type"]],x["state"],x["source_url"]))
+ for item in ranked:
+  item["review_status"]=(
+    "already_individually_page_reviewed_with_pinned_original"
+    if item["source_url"] in checked else "new_original_link_needs_individual_content_review")
+
  return {"schema_version":1,"generated_at":dt.datetime.now(dt.timezone.utc).isoformat(),
   "scope":"original_official_government_link_metadata_and_machine_receipts_only",
   "states_monitored":len({s["state"] for s in sources}),
   "government_publishers_monitored":len(sources),
   "source_checks":results,"linked_candidates":ranked[:MAX_RESULTS],
   "linked_candidates_truncated":len(ranked)>MAX_RESULTS,
+  "unreviewed_original_link_candidates":sum(x["source_url"] not in checked for x in ranked),
+  "already_reviewed_original_links":sum(x["source_url"] in checked for x in ranked),
   "original_pdf_receipts":pdfs,"substantive_facts_auto_published":0,
   "camera_locations_auto_published":0,"sharing_edges_auto_published":0}
 
@@ -197,6 +229,8 @@ def main():
  for s in result["source_checks"]:print("GOVERNMENT_SOURCE",s["id"],s["status"],"LINKS",s["links_found"])
  print("STATES",result["states_monitored"],"PUBLISHER_SOURCES",len(src),
   "LINK_CANDIDATES",len(result["linked_candidates"]),
+  "UNREVIEWED_LINKS",result["unreviewed_original_link_candidates"],
+  "ALREADY_REVIEWED_LINKS",result["already_reviewed_original_links"],
   "DIRECT_ORIGINAL_PDF_RECEIPTS",len(result["original_pdf_receipts"]))
  print("NEW FACTS",result["substantive_facts_auto_published"],"CAMERA PINS",
   result["camera_locations_auto_published"],"SHARING EDGES",result["sharing_edges_auto_published"])
