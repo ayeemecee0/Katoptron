@@ -7,6 +7,7 @@ be independently resolved. No private documents, account identifiers, or
 ALPR records are retrieved.
 """
 import io
+import hashlib
 import json
 import re
 import socket
@@ -102,6 +103,7 @@ def run():
   data=get_pdf(row["source_url"])
   pages=verify_pdf(row,data)
   print("Original independent audit source OK:",row["id"],"pages",pages,
+        "SHA256",hashlib.sha256(data).hexdigest(),
         "manual findings retained only at their documented source dates")
  print("SOURCE CHECK PASS: original audit bytes checked; no raw plates, source file or private data retained")
 if __name__=="__main__":
