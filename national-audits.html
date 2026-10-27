@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>Katoptron | Nationwide Original Government ALPR Audit Library</title>
-<meta name="description" content="Source-pinned government-published Flock ALPR audits and historical internal agency reports, distinctly labeled from independent external auditor reports.">
+<title>Katoptron | National Government ALPR Evidence & Original Source Watch</title>
+<meta name="description" content="Original government ALPR reports from multiple states: independent government oversight, agency-authored reviews, and monitored official-source publication portals.">
 <link rel="stylesheet" href="./a11y.css">
 <style>
 :root{color-scheme:dark;background:#09141d;color:#eaf4f8;font-family:system-ui,sans-serif}
@@ -36,26 +36,39 @@ a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9de7
 <nav aria-label="Primary"><a href="./index.html">CAMERA MAP</a><a href="./agency-audit.html">ACCOUNTABILITY</a>
 <a href="./mn-alpr-audits.html">MINNESOTA INDEPENDENT AUDITS</a><a href="./methodology.html">METHODOLOGY</a></nav></header>
 <main id="main"><p class="kicker">Government original source evidence · multiple states</p>
-<h1>Nationwide ALPR audit source library</h1>
+<h1>National ALPR original-source library</h1>
 <p>Read original public government reports and inspect precisely what each publisher reported at the time. Every published finding is linked to its original source PDF page and guarded by independent source-byte verification.</p>
-<div class="notice"><strong>Government-authored, not independently verified.</strong>
-These records are agency-published internal reviews or source documents, <strong>not external independent audits</strong>.
-They may describe Flock and other vendors. Counts, sharing settings and operational conditions are attributed historical publisher claims, never a real-time census, a verified recipient network, new map pins or a Katoptron legal conclusion. If a source was temporarily unavailable or changed since review, our periodic verification cannot establish its current contents until checked again. The <a href="./mn-alpr-audits.html">Minnesota state library</a> separately tracks external independent reports.</div>
+<div class="notice"><strong>Publisher roles and evidence limits matter.</strong>
+The oversight section explicitly separates independent government reviewers (such as city auditors and a civil grand jury) from reports written by the agencies whose programs are described. Earlier police-authored audit records remain in their own section. All findings are source-attributed historical documents. They are <strong>not live camera locations, legally adjudicated wrongdoing, complete recipient networks, or ongoing operating statuses</strong>.
+The official-source watch monitors publisher pages and PDF links as <em>unreviewed metadata only</em> until original pages are independently checked. See <a href="./mn-alpr-audits.html">Minnesota's separate independent audit library</a>.</div>
 <div id="metrics" class="metrics" aria-label="Reviewed original publication counts"></div>
 <div class="controls"><label for="q"><span>Search agency, report or finding</span><input id="q" type="search" maxlength="120" placeholder="San Bruno, Green Bay, sharing..."></label>
-<label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option></select></label></div>
-<p id="status" role="status" aria-live="polite">Loading independently source-pinned original government publications…</p>
-<div id="results" class="list"></div>
+<label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option><option value="TX">Texas</option><option value="OR">Oregon</option><option value="VA">Virginia</option><option value="DE">Delaware</option></select></label></div>
+<section aria-labelledby="oversightHeading"><h2 id="oversightHeading">Government oversight and original impact assessments</h2>
+<p>External government oversight (city auditor and civil grand jury) is labeled separately from a police-department-authored impact assessment. Each statement cites a pinned original government PDF and an examined page.</p>
+<p id="oversightStatus" role="status" aria-live="polite">Loading independently reviewed source reports…</p>
+<div id="oversightMetrics" class="metrics" aria-label="Additional reviewed government oversight totals"></div>
+<div id="oversightResults" class="list"></div></section>
+<section aria-labelledby="agencyAuthoredHeading"><h2 id="agencyAuthoredHeading">Police-department-authored and internal reports</h2>
+<p>These four previously reviewed reports are government publications, but are not independent third-party audits.</p>
+<p id="status" role="status" aria-live="polite">Loading original agency-authored government publications…</p>
+<div id="results" class="list"></div></section>
+<section aria-labelledby="publisherWatchHeading"><h2 id="publisherWatchHeading">Original government source watch</h2>
+<p>Authoritative government publication starting points across multiple states. A portal listing verifies its publisher URL, not the content of every link on that page. The read-only weekly scanner discovers candidate reports and issues original PDF hash/page receipts, retaining metadata in a 14-day CI artifact. It does not publish unreviewed findings.</p>
+<p id="publisherStatus" role="status" aria-live="polite">Loading government publisher registry…</p>
+<div id="publisherResults" class="list"></div>
+<p class="muted"><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/scan_national_government_audit_sources.yml" rel="noopener noreferrer" target="_blank">View national government source acquisition runs and source-review artifacts</a></p>
+</section>
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
-</main><script src="./agency-published-audits.js"></script><script>
+</main><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[]};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[]};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
  const results=APP.rows.filter(r=>(st==='all'||r.state===st)&&
  [r.agency_name,r.report_title,r.report_scope,...r.findings.map(f=>f.statement)].join(' ').toLowerCase().includes(q));
- $('status').textContent=results.length+' source-pinned original government publication(s) match these filters. All are agency-authored or internal, not external independent audits.';
+ $('status').textContent=results.length+' source-pinned original government publication(s) match these filters. These are agency-authored or internal, not external independent audits.';
  $('results').replaceChildren();
  for(const r of results){
   const card=el('article'),meta=el('div',null,'meta');
@@ -76,6 +89,77 @@ function render(){
  }
  if(!results.length)$('results').append(el('p','No source matches. This does not establish an agency has no ALPR program or no published audit.'));
 }
+
+const Nation=window.KatoptronNationalGovernmentSources;
+function matches(q,record){return JSON.stringify([record.agency_name||record.agency,record.report_title,record.report_scope,
+ ...(record.findings||[]).map(x=>x.statement)]).toLowerCase().includes(q);}
+function renderOversight(){
+ const q=$('q').value.trim().toLowerCase(),st=$('state').value;
+ const rows=APP.oversight.filter(r=>(st==='all'||r.state===st)&&matches(q,r));
+ $('oversightStatus').textContent=rows.length+' original government oversight/impact report(s) match the filters. Independence is explicitly labeled per publisher.';
+ $('oversightResults').replaceChildren();
+ for(const r of rows){
+  const card=el('article'),meta=el('div',null,'meta');
+  meta.append(el('span',r.state,'tag'),el('span',
+   r.publisher_type==='independent_government_oversight'?'Independent government oversight':'Agency-authored impact assessment, not independent','tag'));
+  card.append(meta,el('h2',r.agency_name+' · '+r.report_title),
+   el('p','Original publishing body: '+r.publisher,'muted'),
+   el('p',r.report_scope,'muted'),
+   el('p','Original date: '+(r.source_date||'month only or unspecified')+
+      (r.source_date_note?' · '+r.source_date_note:''),'muted'));
+  const root=Nation.safe(r.source_url);
+  if(root){const a=el('a','Open original government report');a.href=root;a.target='_blank';a.rel='noopener noreferrer';card.append(a);}
+  for(const f of r.findings){
+   const sec=el('section',null,'finding');sec.append(el('p',f.statement));
+   if(root){const a=el('a','Original source page '+f.page);a.href=root+'#page='+f.page;
+    a.target='_blank';a.rel='noopener noreferrer';sec.append(a);}
+   card.append(sec);
+  }
+  $('oversightResults').append(card);
+ }
+ if(!rows.length)$('oversightResults').append(el('p','No reviewed original matches this filter. This does not prove missing agencies or programs.'));
+}
+async function loadOversight(){
+ const res=await fetch('./data/verified-national-government-oversight.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Original independent government oversight files unavailable');
+ APP.oversight=Nation.oversightCatalog(await res.json());
+ const c=Nation.counts(APP.oversight);
+ for(const [num,name] of [[c.documents,'Additional page-reviewed government reports'],
+  [APP.oversight.filter(r=>r.publisher_type==='independent_government_oversight').length,'Independent government oversight reports'],
+  [c.states,'States represented in these original reports']]){
+  const item=el('div');item.append(el('strong',num),el('span',name));$('oversightMetrics').append(item);
+ }
+ renderOversight();
+}
+function renderPublishers(){
+ const st=$('state').value,q=$('q').value.trim().toLowerCase();
+ const rows=APP.publishers.filter(r=>(st==='all'||r.state===st)&&
+  (r.agency+' '+r.id+' '+r.publisher_role).toLowerCase().includes(q));
+ const totalStates=new Set(APP.publishers.map(r=>r.state)).size;
+ $('publisherStatus').textContent=APP.publishers.length+' official government source starting points across '+
+  totalStates+' states registered; '+rows.length+' match filters. Unreviewed linked documents remain metadata-only.';
+ $('publisherResults').replaceChildren();
+ for(const p of rows){
+  const card=el('article'),tags=el('div',null,'meta');
+  tags.append(el('span',p.state,'tag'),el('span',
+   p.publisher_role==='government_independent_oversight'?'Independent government publisher':
+   p.publisher_role==='government_legal_authority'?'Government legal authority':
+   'Police department publisher','tag'));
+  card.append(tags,el('h2',p.agency),el('p',
+   p.kind==='html_index'?'Official document publication index':'Original government publication PDF',
+   'muted'));
+  const safe=Nation.safe(p.url);
+  if(safe){const a=el('a','Open official government source');a.href=safe;a.target='_blank';a.rel='noopener noreferrer';card.append(a);}
+  $('publisherResults').append(card);
+ }
+ if(!rows.length)$('publisherResults').append(el('p','No registered government source matches this filter. Source coverage is not a complete national census.'));
+}
+async function loadPublishers(){
+ const res=await fetch('./data/national-government-audit-source-portals.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Government publication source list unavailable');
+ APP.publishers=Nation.portals(await res.json());
+ renderPublishers();
+}
 async function load(){
  const res=await fetch('./data/verified-agency-published-alpr-audits.json',{cache:'no-store',referrerPolicy:'no-referrer'});
  if(!res.ok)throw Error('Original publication catalog temporarily unavailable');
@@ -86,6 +170,9 @@ async function load(){
  }
  render();
 }
-$('q').addEventListener('input',render);$('state').addEventListener('change',render);
+$('q').addEventListener('input',()=>{render();renderOversight();renderPublishers();});
+$('state').addEventListener('change',()=>{render();renderOversight();renderPublishers();});
 load().catch(e=>{$('status').textContent=e.message+'; no inferred reports shown.';});
+loadOversight().catch(e=>{$('oversightStatus').textContent=e.message+'; no inferred reports shown.';});
+loadPublishers().catch(e=>{$('publisherStatus').textContent=e.message+'; no inferred publisher list shown.';});
 </script></body></html>

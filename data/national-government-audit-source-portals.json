@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "registered_as_of": "2026-10-27",
+  "note": "Curated official-government PUBLIC publication portals and original documents. A listed portal is a discovery starting point, not independent confirmation of any claims found on linked pages. No private plates or raw audit logs are acquired.",
+  "sources": [
+    {
+      "id": "ca-san-bruno-alpr-audits",
+      "state": "CA",
+      "agency": "San Bruno Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://www.sanbruno.ca.gov/2346/Automated-License-Plate-Reader-ALPR-Prog",
+      "allowed_document_hosts": [
+        "www.sanbruno.ca.gov"
+      ]
+    },
+    {
+      "id": "ca-san-mateo-grand-jury",
+      "state": "CA",
+      "agency": "San Mateo County Civil Grand Jury",
+      "publisher_role": "government_independent_oversight",
+      "kind": "html_index",
+      "url": "https://sanmateo.courts.ca.gov/general-information/news-events",
+      "allowed_document_hosts": [
+        "sanmateo.courts.ca.gov"
+      ]
+    },
+    {
+      "id": "ca-palo-alto-transparency",
+      "state": "CA",
+      "agency": "Palo Alto Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://www.paloalto.gov/Departments/Police/Public-Information-Portal/Automated-License-Plate-Recognition-ALPR",
+      "allowed_document_hosts": [
+        "www.paloalto.gov"
+      ]
+    },
+    {
+      "id": "wi-green-bay-police-reports",
+      "state": "WI",
+      "agency": "Green Bay Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://www.greenbaywi.gov/1223/Policy-Manual",
+      "allowed_document_hosts": [
+        "www.greenbaywi.gov"
+      ]
+    },
+    {
+      "id": "va-richmond-flock-updates",
+      "state": "VA",
+      "agency": "Richmond Police Department",
+      "publisher_role": "police_department",
+      "kind": "html_index",
+      "url": "https://rva.gov/police/flock-safety",
+      "allowed_document_hosts": [
+        "rva.gov",
+        "www.rva.gov"
+      ]
+    },
+    {
+      "id": "tx-austin-public-safety-audits",
+      "state": "TX",
+      "agency": "Austin Public Safety Commission",
+      "publisher_role": "government_independent_oversight",
+      "kind": "html_index",
+      "url": "https://www.austintexas.gov/boards-commissions/meetings/2025_41_1",
+      "allowed_document_hosts": [
+        "www.austintexas.gov",
+        "services.austintexas.gov"
+      ]
+    },
+    {
+      "id": "de-dover-foia-opinion",
+      "state": "DE",
+      "agency": "Delaware Department of Justice",
+      "publisher_role": "government_legal_authority",
+      "kind": "html_index",
+      "url": "https://attorneygeneral.delaware.gov/2026/09/09/26-ib53-9-9-26-foia-opinion-letter-to-jason-steagall-re-city-of-dover/",
+      "allowed_document_hosts": [
+        "attorneygeneral.delaware.gov"
+      ]
+    },
+    {
+      "id": "or-woodburn-flock-impact-report",
+      "state": "OR",
+      "agency": "Woodburn Police Department",
+      "publisher_role": "police_department",
+      "kind": "pdf_original",
+      "url": "https://www.woodburn-or.gov/DocumentCenter/View/3298/Flock-Impact-Assessment-FINAL-2-3-26",
+      "allowed_document_hosts": [
+        "www.woodburn-or.gov"
+      ]
+    },
+    {
+      "id": "tx-austin-city-auditor-original",
+      "state": "TX",
+      "agency": "Austin Office of the City Auditor",
+      "publisher_role": "government_independent_oversight",
+      "kind": "pdf_original",
+      "url": "https://services.austintexas.gov/edims/document.cfm?id=452710",
+      "allowed_document_hosts": [
+        "services.austintexas.gov"
+      ]
+    },
+    {
+      "id": "ca-san-mateo-grand-jury-original",
+      "state": "CA",
+      "agency": "San Mateo County Civil Grand Jury",
+      "publisher_role": "government_independent_oversight",
+      "kind": "pdf_original",
+      "url": "https://sanmateo.courts.ca.gov/system/files/grand-jury/auto-license-plate-readers-report.pdf",
+      "allowed_document_hosts": [
+        "sanmateo.courts.ca.gov"
+      ]
+    }
+  ]
+}

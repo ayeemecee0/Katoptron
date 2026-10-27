@@ -13,6 +13,28 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#oversightStatus')?.textContent?.startsWith('3 original government oversight'),
+    null,{timeout:15000});
+  await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('10 official government'),
+    null,{timeout:15000});
+  assert.equal(await page.locator('#oversightResults article').count(),3);
+  assert.equal(await page.locator('#publisherResults article').count(),10);
+  const reviewed=await page.locator('#oversightResults').textContent();
+  assert.match(reviewed,/San Mateo County Civil Grand Jury/);
+  assert.match(reviewed,/Austin Police Department/);
+  assert.match(reviewed,/Woodburn Police Department/);
+  assert.match(reviewed,/Independent government oversight/);
+  assert.match(reviewed,/Agency-authored impact assessment, not independent/);
+  assert.match(reviewed,/NOT 582 individually verified Flock cameras/i);
+  assert.match(reviewed,/May 2025/);
+  const oversightLinks=await page.locator('#oversightResults a').evaluateAll(links=>links.map(x=>x.href));
+  for(const href of oversightLinks)
+   assert.ok(href.startsWith('https://sanmateo.courts.ca.gov/')||
+    href.startsWith('https://services.austintexas.gov/')||
+    href.startsWith('https://www.woodburn-or.gov/'));
+  assert.ok(oversightLinks.some(x=>x.includes('auto-license-plate-readers-report.pdf#page=2')));
+  assert.ok(oversightLinks.some(x=>x.includes('document.cfm?id=452710#page=2')));
+
   assert.match(await page.locator('main').textContent(),/not external independent audits/i);
   assert.match(await page.locator('#results').textContent(),/Northern California Regional Intelligence Center/);
   assert.match(await page.locator('#results').textContent(),/299 agencies/);
@@ -21,8 +43,12 @@ const {chromium}=require('playwright');
    assert.ok(href.startsWith('https://www.lrl.mn.gov/')||
      href.startsWith('https://www.sanbruno.ca.gov/')||
      href.startsWith('https://www.greenbaywi.gov/'),'Only government originals may be linked');
+  await page.locator('#state').selectOption('TX');
+  assert.equal(await page.locator('#oversightResults article').count(),1);
+  assert.equal(await page.locator('#publisherResults article').count(),2);
   await page.locator('#state').selectOption('WI');
   assert.equal(await page.locator('#results article').count(),1);
+  assert.equal(await page.locator('#oversightResults article').count(),0);
   assert.match(await page.locator('#results').textContent(),/Green Bay/);
   await page.locator('#state').selectOption('CA');
   assert.equal(await page.locator('#results article').count(),2);

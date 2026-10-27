@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "verified_as_of": "2026-10-27",
+  "scope_note": "Original-page-reviewed government oversight / department impact PDF sources, separately attributed by publisher role. These are dated publisher conclusions, not a current map camera census, network edges, person-level movements, or a legal judgment by Katoptron.",
+  "reports": [
+    {
+      "id": "san-mateo-ca-2026-grand-jury",
+      "state": "CA",
+      "jurisdiction_key": "san mateo county|CA",
+      "agency_name": "San Mateo County law enforcement operators (countywide review)",
+      "publisher": "San Mateo County Civil Grand Jury",
+      "publisher_type": "independent_government_oversight",
+      "report_title": "Is Our Flock of ALPR Cameras Properly Tended?",
+      "source_date": "2026-08-03",
+      "report_scope": "2025–2026 grand jury review of multiple San Mateo County ALPR operators; camera counts and policies dated within the original source.",
+      "source_url": "https://sanmateo.courts.ca.gov/system/files/grand-jury/auto-license-plate-readers-report.pdf",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        2,
+        3
+      ],
+      "content_sha256": "8f38bed56c568d6e6875bbbcc92d3578f59098d4e86c402a4ae87c79ecdb8489",
+      "findings": [
+        {
+          "key": "countywide_policy_and_in_state_sharing_gaps",
+          "page": 2,
+          "statement": "The San Mateo County Civil Grand Jury reported deficiencies in ALPR policy documentation and consistency of audit practices among reviewed agencies. It did not identify current out-of-state sharing in the materials it reviewed, but found that in-state sharing criteria and controls were often insufficiently documented. These are grand jury findings at the report's date, not individual legal rulings or a live sharing network."
+        },
+        {
+          "key": "countywide_historical_inventory",
+          "page": 3,
+          "statement": "The grand jury reported more than 582 ALPR cameras across San Mateo County agencies as of March 30, 2026. This is a dated countywide ALPR figure across operators and technologies, NOT 582 individually verified Flock cameras, unique street coordinates, or today's camera count."
+        }
+      ]
+    },
+    {
+      "id": "austin-tx-2025-city-auditor",
+      "state": "TX",
+      "jurisdiction_key": "austin|TX",
+      "agency_name": "Austin Police Department (city auditor review)",
+      "publisher": "City of Austin Office of the City Auditor",
+      "publisher_type": "independent_government_oversight",
+      "report_title": "APD License Plate Reader Audit Report",
+      "source_date": null,
+      "source_date_note": "Month and year reported as May 2025; exact date of issuance not established by the original auditor document.",
+      "report_scope": "Independent City Auditor review of Austin's ALPR pilot and departmental quarterly audit process through March 2025, with publisher source dates.",
+      "source_url": "https://services.austintexas.gov/edims/document.cfm?id=452710",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        2,
+        3
+      ],
+      "content_sha256": "3399cc05ee5f8cc48b4b1dd7c215a3e65f0786d61501a662591df2f595b3eea0",
+      "findings": [
+        {
+          "key": "auditor_process_and_contract_risk",
+          "page": 2,
+          "statement": "Austin's City Auditor found that APD's quarterly ALPR audit metrics were generally accurate, but sometimes incomplete or late. It also identified ambiguous provisions in the Flock Safety contract that could allow use or retention of certain data inconsistent with the city council resolution. This is an auditor-identified contractual risk, not proof that unauthorized data sharing actually occurred."
+        },
+        {
+          "key": "original_fixed_flock_mobile_axon_separation",
+          "page": 3,
+          "statement": "The May 2025 original City Auditor report attributes 40 fixed ALPR cameras deployed in Austin's Flock program beginning March 2024, while describing nearly 500 Axon-equipped patrol vehicle cameras as of April 2025. These are separate historical vendors and mobility classes, not a combined fixed-Flock installation total."
+        }
+      ]
+    },
+    {
+      "id": "woodburn-or-2026-impact-assessment",
+      "state": "OR",
+      "jurisdiction_key": "woodburn|OR",
+      "agency_name": "Woodburn Police Department",
+      "publisher": "Woodburn Police Department",
+      "publisher_type": "agency_authored_impact_assessment",
+      "report_title": "Flock Safety Cameras: Impact Assessment",
+      "source_date": "2026-02-02",
+      "report_scope": "Police-department-authored retrospective review of Flock activity from January 15 to November 13, 2025. Not an independent external audit.",
+      "source_url": "https://www.woodburn-or.gov/DocumentCenter/View/3298/Flock-Impact-Assessment-FINAL-2-3-26",
+      "reviewed_on": "2026-10-27",
+      "pages_reviewed": [
+        1,
+        7
+      ],
+      "content_sha256": "24ef40a0d2f72e9b618cfe98e27e3f059d6012effafd621f83f6f70880810f33",
+      "findings": [
+        {
+          "key": "historical_flock_program_access_window",
+          "page": 7,
+          "statement": "Woodburn's police-department-authored impact assessment reports that its first Flock camera became operational March 3, 2025 and police user access ended November 11, 2025. This is retrospective agency testimony about its own program, not independently confirmed ongoing status or coordinates."
+        },
+        {
+          "key": "source_attribution_and_period",
+          "page": 1,
+          "statement": "The Woodburn report is a department-authored impact assessment concerning the January 15–November 13, 2025 overall Flock network activity period. Its publication does not independently certify the completeness of the underlying Flock network logs."
+        }
+      ]
+    }
+  ]
+}
