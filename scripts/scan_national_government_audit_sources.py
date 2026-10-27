@@ -25,7 +25,8 @@ OFFICIAL_HOSTS={
  "www.sanbruno.ca.gov","sanmateo.courts.ca.gov","www.paloalto.gov",
  "www.greenbaywi.gov","rva.gov","www.rva.gov",
  "www.austintexas.gov","services.austintexas.gov",
- "attorneygeneral.delaware.gov","www.woodburn-or.gov"
+ "attorneygeneral.delaware.gov","www.woodburn-or.gov",
+ "www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.atg.wa.gov"
 }
 KEYWORDS=re.compile(r"\b(?:flock|alpr|automated license plate|license plate reader|plate recognition)\b",re.I)
 DOCWORDS=re.compile(r"\b(?:audit|report|review|assessment|oversight|jury|commission|policy|contract|agreement|flock|alpr|license plate|reader|privacy)\b",re.I)
@@ -60,7 +61,7 @@ def catalog(obj):
   if not isinstance(row,dict) or row.get("id") in ids or not re.fullmatch(r"[a-z0-9-]{10,90}",row.get("id","")):
    raise ValueError("Duplicate original publisher source")
   ids.add(row["id"])
-  if row.get("state") not in {"CA","WI","VA","TX","DE","OR"} or row.get("kind") not in {"html_index","pdf_original"}:
+  if row.get("state") not in {"CA","WI","VA","TX","DE","OR","IL","WA"} or row.get("kind") not in {"html_index","pdf_original"}:
    raise ValueError("Unexpected source state or document type")
   hosts=row.get("allowed_document_hosts")
   if not isinstance(hosts,list) or not 1<=len(hosts)<=3 or len(hosts)!=len(set(hosts)) or not set(hosts)<=OFFICIAL_HOSTS:
