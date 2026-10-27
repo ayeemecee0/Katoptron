@@ -1,4 +1,4 @@
-name: Verify nine government original policy contract and oversight PDFs
+name: Verify ten government original policy contract and oversight PDFs
 on:
   workflow_dispatch:
   push:

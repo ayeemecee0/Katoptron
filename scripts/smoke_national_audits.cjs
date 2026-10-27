@@ -18,9 +18,9 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('14 official government'),
     null,{timeout:15000});
   assert.equal(await page.locator('#oversightResults article').count(),3);
-  await page.waitForFunction(()=>document.querySelector('#primaryStatus')?.textContent?.startsWith('9 page-verified'),
+  await page.waitForFunction(()=>document.querySelector('#primaryStatus')?.textContent?.startsWith('10 page-verified'),
    null,{timeout:18000});
-  assert.equal(await page.locator('#primaryResults article').count(),9);
+  assert.equal(await page.locator('#primaryResults article').count(),10);
   assert.match(await page.locator('#primaryStatus').textContent(),/1 source\(s\) remain unavailable/);
   assert.match(await page.locator('#policyContrast').textContent(),/30-day maximum/);
   assert.match(await page.locator('#policyContrast').textContent(),/not verified as adopted/i);
@@ -33,6 +33,12 @@ const {chromium}=require('playwright');
   assert.match(primary,/27,624\.98/);
   assert.match(primary,/visually reviewed scanned pages/i);
   assert.match(primary,/Signed in December 2024/);
+  assert.match(primary,/one-time \$4,500 fee/);
+  assert.match(primary,/February 1, 2028/);
+  assert.match(primary,/not a verification that Flock equipment was actually disabled or removed/);
+  assert.match(await page.locator('#molineContrast').textContent(),/cannot be treated as a verified five-camera expansion/);
+  assert.ok((await page.locator('#primaryResults a').evaluateAll(as=>as.map(a=>a.href)))
+   .some(x=>x.includes('/DocumentCenter/View/16700/Flock-Safety-Contract-Pause-September-2026#page=1')));
   assert.ok((await page.locator('#primaryResults a').evaluateAll(as=>as.map(a=>a.href)))
     .some(x=>x.includes('/DocumentCenter/View/15716/Flock-Safety-2023#page=5')));
   const pageLinks=await page.locator('#primaryResults a').evaluateAll(as=>as.map(x=>x.href));

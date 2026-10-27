@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify source-pinned original government ALPR primary documents.
 
-Nine exact public government PDFs, mutually exclusive role and status types.
+Ten exact public government PDFs, mutually exclusive role and status types.
 A PDF with an unreviewed redirect is HELD rather than grandfathered into facts.
 No full PDF, person-level plate read, private search log or movement data stored.
 """
@@ -11,14 +11,16 @@ from pypdf import PdfReader
 from inspect_national_link_candidates import SOURCES,fetch
 MOLINE_ID="moline-il-signed-flock-order-2024"
 MOLINE_URL="https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023"
+MOLINE_PAUSE_ID="moline-il-signed-pause-2026"
+MOLINE_PAUSE_URL="https://moline.il.us/DocumentCenter/View/16700/Flock-Safety-Contract-Pause-September-2026"
 VISUAL_PAGES={2,3,5}
 class DenyRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise ValueError("Original government publisher redirect")
-def fetch_scanned_moline_original():
+def fetch_scanned_moline_original(url=MOLINE_URL):
  op=urllib.request.build_opener(DenyRedirect())
- req=urllib.request.Request(MOLINE_URL,headers={"Accept":"application/pdf","User-Agent":"Katoptron-original-government-Moline/1.0"})
+ req=urllib.request.Request(url,headers={"Accept":"application/pdf","User-Agent":"Katoptron-original-government-Moline/1.0"})
  with op.open(req,timeout=25) as res:
-  if res.status!=200 or res.geturl()!=MOLINE_URL:raise ValueError("Unexpected original URL")
+  if res.status!=200 or res.geturl()!=url:raise ValueError("Unexpected original URL")
   payload=res.read(8_000_001)
  if not 100<len(payload)<=8_000_000 or not payload.startswith(b"%PDF-"):
   raise ValueError("Source no longer a bounded PDF")
@@ -44,17 +46,18 @@ ROLE={
  "green-bay-wi-policy-draft-sept-2026":("draft_policy_unadopted","police_department"),
  "green-bay-wi-flock-order-2025":("government_published_vendor_order_form","police_department"),
  "austin-tx-commission-recommendation":("advisory_recommendation_not_binding_action","government_advisory_commission"),
- "moline-il-signed-flock-order-2024":("signed_city_published_vendor_order_form_scanned","police_department")
+ "moline-il-signed-flock-order-2024":("signed_city_published_vendor_order_form_scanned","police_department"),
+ "moline-il-signed-pause-2026":("signed_city_published_vendor_pause_agreement_scanned","police_department")
 }
 def valid(records):
- if not isinstance(records,dict) or records.get("schema_version")!=1 or not isinstance(records.get("documents"),list) or len(records["documents"])!=9:
+ if not isinstance(records,dict) or records.get("schema_version")!=1 or not isinstance(records.get("documents"),list) or len(records["documents"])!=10:
   raise ValueError("Original government document ledger count/schema invalid")
  seen=set()
  for row in records["documents"]:
   ident=row.get("id")
   if ident not in ROLE or ident in seen:raise ValueError("Original document identity unknown/duplicate")
   seen.add(ident)
-  source_url=MOLINE_URL if ident==MOLINE_ID else SOURCES[ident][0]
+  source_url=MOLINE_URL if ident==MOLINE_ID else MOLINE_PAUSE_URL if ident==MOLINE_PAUSE_ID else SOURCES[ident][0]
   if row.get("source_url")!=source_url or (row.get("kind"),row.get("publisher_role"))!=ROLE[ident]:
    raise ValueError("Original source or document status changed")
   if not re.fullmatch("[a-f0-9]{64}",row.get("content_sha256","")):raise ValueError("Missing full original SHA")
@@ -66,6 +69,13 @@ def valid(records):
        row.get("source_date")!="2024-12-04" or
        "visually_reviewed_original_signatures" not in row.get("status","")):
     raise ValueError("Visual review scope or original signed date changed")
+  elif ident==MOLINE_PAUSE_ID:
+   if (row["page_count"]!=1 or row.get("pages_reviewed")!=[1] or
+       row.get("verification_method")!="visual_page_review_sha256_pinned_scanned_pdf" or
+       row.get("source_date")!="2026-09-15" or
+       row.get("status")!="signed_pause_terms_not_proof_of_completed_deactivation" or
+       row.get("related_official_announcement_url")!="https://www.moline.il.us/1955/License-Plate-Readers"):
+    raise ValueError("Signed pause scope or non-deactivation boundary changed")
   elif not set(ANCHORS[ident]).issubset(set(row.get("pages_reviewed",[]))):
    raise ValueError("Page review trace incomplete")
   findings=row.get("findings",[])
@@ -87,10 +97,10 @@ def verify(row,raw,reader=PdfReader):
   raise ValueError("Original government document hash drift")
  pdf=reader(io.BytesIO(raw),strict=True)
  if pdf.is_encrypted or len(pdf.pages)!=row["page_count"]:raise ValueError("Original page count or encryption changed")
- if row["id"]==MOLINE_ID:
-  # Raster-only city original. Exact PDF SHA256 and page count guard
+ if row["id"] in (MOLINE_ID,MOLINE_PAUSE_ID):
+  # Raster-only city originals. Exact PDF SHA256 and page count guard
   # the visually reviewed content; never invent OCR/text anchors.
-  for page in VISUAL_PAGES:
+  for page in (VISUAL_PAGES if row["id"]==MOLINE_ID else {1}):
    if not pdf.pages[page-1].images:
     raise ValueError("Visually reviewed scanned page images unavailable")
  else:
@@ -102,10 +112,10 @@ def verify(row,raw,reader=PdfReader):
 def main():
  ledger=json.loads(PATH.read_text(encoding="utf-8"))
  for row in valid(ledger):
-  pdf=fetch_scanned_moline_original() if row["id"]==MOLINE_ID else fetch(row["id"])
+  pdf=fetch_scanned_moline_original(row["source_url"]) if row["id"] in (MOLINE_ID,MOLINE_PAUSE_ID) else fetch(row["id"])
   print("GOVERNMENT_PRIMARY_ORIGINAL_VERIFIED",row["state"],row["id"],"PAGES",verify(row,pdf),
         "SHA",row["content_sha256"],"ROLE",row["kind"])
- print("NINE ORIGINALS VERIFIED; one blocked source held; scanned original verified with SHA256 and image pages")
+ print("TEN ORIGINALS VERIFIED; one blocked source held; scanned original verified with SHA256 and image pages")
 if __name__=="__main__":
  try:main()
  except Exception as exc:

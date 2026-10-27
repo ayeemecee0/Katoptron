@@ -1,0 +1,50 @@
+name: Inspect Moline signed Flock pause agreement original
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect_moline_pause_original.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Fingerprint official signed pause source without trusting raster OCR
+        run: |
+          python - <<'PY'
+          import hashlib,io,urllib.request
+          from pypdf import PdfReader
+          urls=[
+            'https://moline.il.us/DocumentCenter/View/16700/Flock-Safety-Contract-Pause-September-2026',
+            'https://www.moline.il.us/DocumentCenter/View/16700/Flock-Safety-Contract-Pause-September-2026'
+          ]
+          class Stop(urllib.request.HTTPRedirectHandler):
+           def redirect_request(self,*args,**kwargs):raise ValueError('Unreviewed redirect')
+          op=urllib.request.build_opener(Stop())
+          errors=[]
+          for url in urls:
+           try:
+            req=urllib.request.Request(url,headers={'Accept':'application/pdf','User-Agent':'Katoptron-Moline-government-original-review/1.0'})
+            with op.open(req,timeout=25) as res:
+             assert res.status==200 and res.geturl()==url
+             body=res.read(8_000_001)
+            assert 100<len(body)<=8_000_000 and body.startswith(b'%PDF-')
+            pdf=PdfReader(io.BytesIO(body),strict=True)
+            assert not pdf.is_encrypted and len(pdf.pages)==1
+            assert pdf.pages[0].images, 'Missing original scanned signed document page'
+            print('MOLINE_SIGNED_PAUSE_ORIGINAL',url,'SHA256',hashlib.sha256(body).hexdigest(),'PAGES',len(pdf.pages),'BYTES',len(body),'HAS_IMAGES',bool(pdf.pages[0].images))
+            break
+           except Exception as exc:
+            errors.append(type(exc).__name__)
+          else:
+           raise SystemExit('Official Moline signed original unavailable without redirect: '+','.join(errors))
+          PY

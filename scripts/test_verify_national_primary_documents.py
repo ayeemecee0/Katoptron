@@ -9,19 +9,19 @@ class Page:
  def __init__(self,t):self.t=t
  def extract_text(self):return self.t
 class TestPageBoundGovernmentDocuments(unittest.TestCase):
- def test_nine_source_distinct_roles_and_one_held(self):
+ def test_ten_source_distinct_roles_and_one_held(self):
   rows=M.valid(DATA)
-  self.assertEqual(len(rows),9)
+  self.assertEqual(len(rows),10)
   self.assertEqual(len(DATA["source_review_held"]),1)
   self.assertEqual(sum(x["kind"]=="draft_policy_unadopted" for x in rows),1)
   self.assertEqual(sum(x["kind"]=="advisory_recommendation_not_binding_action" for x in rows),1)
   self.assertEqual(sum(x["kind"]=="government_published_vendor_order_form" for x in rows),1)
   self.assertEqual(sum(x["kind"]=="agency_monthly_aggregate_report" for x in rows),1)
-  self.assertEqual(len(set(x["source_url"] for x in rows)),9)
+  self.assertEqual(len(set(x["source_url"] for x in rows)),10)
  def test_original_byte_and_page_anchors_change_fail_closed(self):
   raw=b"%PDF-1.7 synthetic original reviewed public report"+b"a"*250
   for row in M.valid(DATA):
-   if row["id"]==M.MOLINE_ID:continue
+   if row["id"] in (M.MOLINE_ID,M.MOLINE_PAUSE_ID):continue
    anchors=M.ANCHORS[row["id"]]
    class Reader:
     def __init__(self,*_args,**_kwargs):
@@ -61,6 +61,34 @@ class TestPageBoundGovernmentDocuments(unittest.TestCase):
   changed={**row,"verification_method":"text_anchors_verified_by_ocr"}
   with self.assertRaisesRegex(ValueError,"Visual review scope"):
    M.valid({**DATA,"documents":[changed if x["id"]==row["id"] else x for x in DATA["documents"]]})
+ def test_moline_signed_pause_original_is_not_actual_deactivation(self):
+  row=next(x for x in M.valid(DATA) if x["id"]==M.MOLINE_PAUSE_ID)
+  self.assertEqual(row["source_date"],"2026-09-15")
+  self.assertEqual(row["pages_reviewed"],[1])
+  self.assertEqual(row["content_sha256"],"13496c7ce0e83787d6010963dddedd6ca54473947b054f887488a02c23923c81")
+  self.assertEqual(row["status"],"signed_pause_terms_not_proof_of_completed_deactivation")
+  self.assertIn("not proof",row["findings"][0]["statement"].lower())
+  raw=b"%PDF-1.7 synthetic signed city pause agreement"+b"z"*350
+  class RasterPage:
+   images=[object()]
+  class RasterDoc:
+   def __init__(self,*args,**kwargs):
+    self.is_encrypted=False
+    self.pages=[RasterPage()]
+  fixture={**row,"content_sha256":hashlib.sha256(raw).hexdigest()}
+  self.assertEqual(M.verify(fixture,raw,RasterDoc),1)
+  with self.assertRaisesRegex(ValueError,"hash drift"):M.verify(row,raw,RasterDoc)
+  class Blank:
+   images=[]
+  class MissingImage(RasterDoc):
+   def __init__(self,*args,**kwargs):
+    super().__init__(*args,**kwargs)
+    self.pages=[Blank()]
+  with self.assertRaisesRegex(ValueError,"scanned page images unavailable"):M.verify(fixture,raw,MissingImage)
+  for attr,val in [("status","confirmed_all_cameras_deactivated"),("source_date","2026-09-14"),("related_official_announcement_url","https://moline.il.us.evil.example/1955/License-Plate-Readers")]:
+   mutated={**row,attr:val}
+   with self.assertRaisesRegex(ValueError,"Signed pause scope"):
+    M.valid({**DATA,"documents":[mutated if x["id"]==M.MOLINE_PAUSE_ID else x for x in DATA["documents"]]})
  def test_2026_draft_and_2025_advisory_can_never_claim_adoption(self):
   originals=DATA["documents"]
   draft=next(r for r in originals if r["kind"]=="draft_policy_unadopted")

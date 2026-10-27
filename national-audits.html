@@ -48,6 +48,7 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <h2 id="primaryHeading">Original government policies, public contracts, monthly totals and oversight decisions</h2>
 <p>Documents here are verified directly against original government PDF bytes and numbered pages. An adopted-version policy, a later <strong>DRAFT</strong>, an unsigned order form, a visually reviewed signed Flock order and a nonbinding commission vote have different legal and evidentiary meanings.</p>
 <div class="notice" id="policyContrast"><strong>Green Bay source-date policy comparison:</strong> The May 2026 published Policy 424 specifies a 30-day maximum for ordinary ALPR system data, while the September document <strong>marked DRAFT</strong> proposes seven days. The September proposal is <strong>not verified as adopted</strong>. Neither text proves what retention settings are active in the system today. See their independently checked original pages below.</div>
+<div class="notice" id="molineContrast"><strong>Moline, Illinois original-source sequence:</strong> A <a href="#moline-il-signed-flock-order-2024">December 2024 signed Flock order</a> lists four contracted Falcon readers. In September 2026, the city <a href="https://www.moline.il.us/1955/License-Plate-Readers" target="_blank" rel="noopener noreferrer">announced a planned pause</a> of what it described as a nine-camera fixed ALPR program, and published a <a href="#moline-il-signed-pause-2026">signed pause agreement</a> addressing removal, platform access and conditional billing through February 2028. The different quantities concern different dated documents and <strong>cannot be treated as a verified five-camera expansion</strong>. The agreement and announcement do <strong>not independently confirm completed deactivation or removal</strong>.</div>
 <p id="primaryStatus" role="status" aria-live="polite">Loading source-pinned government original documents…</p>
 <div id="primaryMetrics" class="metrics"></div>
 <div id="primaryResults" class="list"></div></section>
@@ -111,21 +112,29 @@ function renderPrimary(){
  $('primaryResults').replaceChildren();
  for(const d of rows){
   const item=el('article'),meta=el('div',null,'meta');
+  if(d.id==='moline-il-signed-flock-order-2024'||d.id==='moline-il-signed-pause-2026')item.id=d.id;
   meta.append(el('span',d.state,'tag'),el('span',Primary.label(d.kind),'tag'));
   item.append(meta,el('h2',d.agency+' · '+d.title),el('p',d.source_date?
    'Source date: '+d.source_date:'Date not established: '+d.source_date_note,'muted'));
   if(d.kind==='draft_policy_unadopted'||d.kind==='advisory_recommendation_not_binding_action'||
    d.kind==='government_published_vendor_order_form'||
-   d.kind==='signed_city_published_vendor_order_form_scanned')
+   d.kind==='signed_city_published_vendor_order_form_scanned'||
+   d.kind==='signed_city_published_vendor_pause_agreement_scanned')
    item.append(el('p',d.kind==='draft_policy_unadopted'?
     'Unadopted proposal. Do not interpret as current ALPR policy.':
     d.kind==='advisory_recommendation_not_binding_action'?
     'Commission recommendation only. City Council action and ALPR shutdown are not established.':
+    d.kind==='signed_city_published_vendor_pause_agreement_scanned'?
+    'Signed agreement terms, not a verification that Flock equipment was actually disabled or removed. One-page scanned government PDF is hash-pinned and visually reviewed.':
     d.kind==='signed_city_published_vendor_order_form_scanned'?
     'Signed in December 2024 according to scanned original signatures. Source PDF hash and reviewed images verified, but no searchable text layer. Do not infer installed cameras, renewed service or actual payments.':
     'Published form terms only. Execution, installation and payment are not established.','muted'));
   const url=Primary.sourceLink(d);
   if(url){const a=el('a','Original government publication PDF');a.href=url;a.target='_blank';a.rel='noopener noreferrer';item.append(a);}
+  if(d.id==='moline-il-signed-pause-2026'){
+   const a=el('a','Related September 15 city announcement (anticipated shutdown, not confirmed outcome)');
+   a.href='https://www.moline.il.us/1955/License-Plate-Readers';a.target='_blank';a.rel='noopener noreferrer';item.append(el('p','See also the separate city announcement.','muted'),a);
+  }
   for(const f of d.findings){
    const sec=el('section',null,'finding');sec.append(el('p',f.statement));
    if(url){const a=el('a','Source PDF page '+f.page);a.href=url+'#page='+f.page;
