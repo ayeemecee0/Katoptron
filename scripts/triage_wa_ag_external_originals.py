@@ -167,13 +167,46 @@ def build(registry,loader=fetch,workers=5,date=None):
   "scope":"external_source_metadata_only_no_policy_facts",
   "notes":"Registry link identity and byte/page inspection are not adoption, Flock deployment, current access, installed camera locations, or compliance evidence.",
   "receipts":results},registry)
+def compare_to_published(fresh,baseline):
+ """Separate original-PDF content drift from frequently changing HTML wrappers.
+
+ This never promotes any source into verified policy findings. A changed PDF
+ requires a new page review. HTML hash change is a recheck lead, not an
+ authoritative update to adopted policy or vendor status.
+ """
+ by_agency={r["agency_name"]:r for r in baseline["receipts"]}
+ results={"pdf_original_bytes_or_pages_changed_requires_review":[],
+  "html_wrapper_bytes_changed_recheck_leads":[],
+  "previously_retrieved_now_held":[],
+  "previously_held_now_retrieved_requires_review":[]}
+ for x in fresh["receipts"]:
+  old=by_agency[x["agency_name"]]
+  was=old["inspection_status"].startswith("original_")
+  is_now=x["inspection_status"].startswith("original_")
+  if was and is_now:
+   if x["content_sha256"]!=old["content_sha256"] or x["page_count"]!=old["page_count"]:
+    key=("html_wrapper_bytes_changed_recheck_leads" if
+      old["inspection_status"]=="original_html_text_detected" and
+      x["inspection_status"]=="original_html_text_detected"
+      else "pdf_original_bytes_or_pages_changed_requires_review")
+    results[key].append(x["agency_name"])
+  elif was and not is_now:results["previously_retrieved_now_held"].append(x["agency_name"])
+  elif not was and is_now:results["previously_held_now_retrieved_requires_review"].append(x["agency_name"])
+ return results
 def main():
  p=argparse.ArgumentParser()
  p.add_argument("--out",type=Path,default=OUTPUT)
  p.add_argument("--workers",type=int,default=5)
  args=p.parse_args()
  if not 1<=args.workers<=8:raise ValueError("Excessive network fanout")
- data=build(json.loads(REGISTRY.read_text(encoding="utf8")),workers=args.workers)
+ registry=json.loads(REGISTRY.read_text(encoding="utf8"))
+ data=build(registry,workers=args.workers)
+ baseline_path=ROOT/"data"/"wa-ag-external-policy-source-inspection.json"
+ baseline=validate(json.loads(baseline_path.read_text(encoding="utf8")),registry)
+ changes=compare_to_published(data,baseline)
+ print("WA_AG_EXTERNAL_POLICY_RECHECK",json.dumps(changes,sort_keys=True))
+ if changes["pdf_original_bytes_or_pages_changed_requires_review"]:
+  raise ValueError("Original PDF byte or page drift requires source and policy review")
  output=args.out.resolve()
  if not output.is_relative_to(ROOT):raise ValueError("Output outside trusted directory")
  output.parent.mkdir(parents=True,exist_ok=True)
