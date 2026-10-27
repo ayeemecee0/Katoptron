@@ -71,6 +71,26 @@ def convert(html,as_of=None):
    'registrations':registrations,
    'camera_points_published':0,'flock_vendor_assertions_published':0,
    'sharing_network_edges_published':0}
+def compare_published(fresh,previous):
+ """Summary of original agency self-certification changes, not manufacturer or
+ location deltas. A deleted/renamed index row must not mean a system shut down.
+ """
+ curr={r['id']:r for r in fresh['registrations']}
+ old={r['id']:r for r in previous.get('registrations',[])}
+ added=sorted(curr.keys()-old.keys())
+ missing=sorted(old.keys()-curr.keys())
+ changed=sorted(k for k in curr.keys()&old.keys() if (
+  curr[k]['submitted_on']!=old[k]['submitted_on'] or
+  curr[k]['policy_links_from_official_ago_page']!=old[k]['policy_links_from_official_ago_page'] or
+  curr[k]['policy_link_label']!=old[k]['policy_link_label']))
+ return {'registered_name_entries_added_to_original_index':len(added),
+  'registered_name_entries_no_longer_listed_unknown_reason':len(missing),
+  'existing_original_policy_or_date_metadata_changed':len(changed),
+  'new_agency_names':[curr[k]['agency_name'] for k in added[:20]],
+  'omitted_agency_names_needs_followup':[old[k]['agency_name'] for k in missing[:20]],
+  'changed_agency_names':[curr[k]['agency_name'] for k in changed[:20]],
+  'verified_flock_camera_additions':0,'confirmed_shutdowns':0}
+
 def run():
  src=next(s for s in catalog(json.loads(PORTALS.read_text(encoding='utf-8')))
           if s['id']=='wa-ag-public-alpr-agency-registrations')
@@ -90,6 +110,13 @@ def main():
    "UNKNOWN_SUBMISSION_DATES",sum(r['submitted_on'] is None for r in d['registrations']),
    "SOURCE_SHA256",d['source_sha256'])
  print("WA_AG_WARNING_AGENCY_CERTIFICATIONS_NOT_INDEPENDENTLY_VERIFIED")
+ published=ROOT/"data"/"wa-original-agency-alpr-registrations.json"
+ if published.exists():
+  prev=json.loads(published.read_text(encoding='utf-8'))
+  if prev.get('source_url')!="https://www.atg.wa.gov/ALPR":raise ValueError("Published registry original source identity changed")
+  changes=compare_published(d,prev)
+  print("WA_AG_ORIGINAL_PUBLISHED_SNAPSHOT_DIFF",json.dumps(changes,sort_keys=True,ensure_ascii=False))
+
  if opts.print_snapshot_json:print('WA_AG_OFFICIAL_SNAPSHOT_JSON '+json.dumps(d,separators=(',',':'),ensure_ascii=False))
 if __name__=='__main__':
  try:main()
