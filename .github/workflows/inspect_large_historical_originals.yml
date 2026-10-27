@@ -36,7 +36,12 @@ jobs:
              data=res.read(8_000_001)
             if len(data)>8_000_000 or not data.startswith(b'%PDF-'):raise ValueError('Original exceeds 8 MB PDF bound')
             doc=PdfReader(io.BytesIO(data),strict=True)
-            if doc.is_encrypted or len(doc.pages)>110:raise ValueError('Original encrypted or exceeds 110 pages')
+            print('DOCUMENT_FLAG',key,'encrypted=',doc.is_encrypted,'hash=',hashlib.sha256(data).hexdigest(),'bytes=',len(data))
+            if doc.is_encrypted:
+             unlocked=doc.decrypt('')
+             print('EMPTY_PASSWORD_RESULT',key,str(unlocked))
+             if not unlocked:raise ValueError('Non-publicly-decryptable original held')
+            if len(doc.pages)>110:raise ValueError('Original exceeds 110 pages')
             print('ORIGINAL',key,'PAGES',len(doc.pages),'BYTES',len(data),'SHA256',hashlib.sha256(data).hexdigest())
             found=0
             for i,page in enumerate(doc.pages[:10]):
