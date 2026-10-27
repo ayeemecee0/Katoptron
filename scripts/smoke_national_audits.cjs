@@ -25,7 +25,7 @@ const {chromium}=require('playwright');
   assert.match(reviewed,/Woodburn Police Department/);
   assert.match(reviewed,/Independent government oversight/);
   assert.match(reviewed,/Agency-authored impact assessment, not independent/);
-  assert.match(reviewed,/not individually verified Flock cameras/i);
+  assert.match(reviewed,/NOT 582 individually verified Flock cameras/i);
   assert.match(reviewed,/May 2025/);
   const oversightLinks=await page.locator('#oversightResults a').evaluateAll(links=>links.map(x=>x.href));
   for(const href of oversightLinks)
