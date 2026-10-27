@@ -212,7 +212,24 @@ async function loadOriginalAudits(){
  }catch(_error){originalAuditReports=[];originalAuditStatus='unavailable';}
 }
 Promise.all([A.load(),loadOriginalAudits()]).then(([data])=>{
- groups=data;renderMatches();
+ groups=data;
+ // A reviewed original audit can exist without an already-indexed camera,
+ // council event or manufacturer portal. Create only the *exactly identified*
+ // source-dated agency dossier, never a fuzzy locality or manufacturer join.
+ if(originalAuditStatus==='ok'){
+  for(const r of originalAuditReports){
+   if(!r.jurisdiction_label||!r.jurisdiction_key||
+      groups.some(g=>g.key===r.jurisdiction_key))continue;
+   groups.push({
+    key:r.jurisdiction_key,label:r.jurisdiction_label,
+    events:[],programs:[],portals:[],cameras:[],
+    originalOutgoing:[],originalIncoming:[],secondary:[],
+    secondaryRetention:[],identityMatches:[]
+   });
+  }
+ }
+ groups.sort((a,b)=>a.label.localeCompare(b.label));
+ renderMatches();
  const key=new URL(location.href).searchParams.get('place');
  const g=groups.find(g=>g.key===key);if(g)select(g);
 }).catch(error=>{
