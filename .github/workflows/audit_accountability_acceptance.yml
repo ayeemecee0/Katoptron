@@ -21,6 +21,12 @@ on:
       - 'wa-alpr-registrations.html'
       - 'wa-original-policies.js'
       - 'wa-reviewed-flock-sources.js'
+      - 'wa-external-policy-origins.js'
+      - 'wa-kittitas-draft-review.js'
+      - 'data/wa-ag-external-policy-source-inspection.json'
+      - 'data/verified-wa-kittitas-scanned-draft-review.json'
+      - 'scripts/test_wa_external_policy_origins.cjs'
+      - 'scripts/test_wa_kittitas_draft_review.cjs'
       - 'data/verified-wa-flock-policy-originals.json'
       - 'scripts/test_wa_reviewed_flock_sources.cjs'
       - 'wa-policy-source-triage.js'
@@ -88,6 +94,10 @@ jobs:
           node scripts/test_wa_original_policies.cjs
           node --check wa-reviewed-flock-sources.js
           node scripts/test_wa_reviewed_flock_sources.cjs
+          node --check wa-external-policy-origins.js
+          node scripts/test_wa_external_policy_origins.cjs
+          node --check wa-kittitas-draft-review.js
+          node scripts/test_wa_kittitas_draft_review.cjs
           node --check wa-policy-source-triage.js
           node scripts/test_wa_policy_source_triage.cjs
           node --check wa-held-original-diagnostics.js
