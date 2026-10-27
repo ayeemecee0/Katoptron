@@ -63,14 +63,16 @@ const {chromium}=require('playwright');
    ['brooklyn%20center%7CMN','Brooklyn Center, MN','nine active stationary ALPR units'],
    ['champlin%7CMN','Champlin, MN','six active stationary/flex Flock ALPR devices'],
    ['corcoran%7CMN','Corcoran, MN','nine active stationary Flock ALPR units'],
-   ['orono%7CMN','Orono, MN','three active stationary/flex ALPR devices']
+   ['orono%7CMN','Orono, MN','three active stationary/flex ALPR devices'],
+   ['west%20saint%20paul%7CMN','West Saint Paul, MN','ten stationary Flock ALPR units'],
+   ['wyoming%7CMN','Wyoming, MN','four stationary Flock ALPR units']
   ]){
    await page.goto(new URL('agency-audit.html?place='+id,base).href,
      {waitUntil:'domcontentloaded',timeout:40000});
    await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
      null,{timeout:55000});
    assert.equal(await page.locator('#reportTitle').textContent(),name);
-   assert.match(await page.locator('#counts').textContent(),new RegExp((name==='Woodbury, MN'?'2':'1')+'Independent original audit reports'));
+   assert.match(await page.locator('#counts').textContent(),new RegExp((name==='Woodbury, MN'?'3':'1')+'Independent original audit reports'));
    assert.ok((await page.locator('#sources').textContent()).includes(sourceFragment),
      'Publisher-attributed dated exact-identity observations should appear');
    assert.match(await page.locator('#disclaimer').textContent(),/NOT a legality/);
@@ -85,6 +87,21 @@ const {chromium}=require('playwright');
   const citations=await historical.locator('a').evaluateAll(items=>items.map(x=>x.href));
   assert.ok(citations.some(x=>x.includes('/240350.pdf#page=2')));
   assert.ok(citations.some(x=>x.includes('/260248.pdf#page=2')));
+  assert.match(await historical.textContent(),/Manufacturer unconfirmed \(BOSS software\)/);
+  assert.match(await historical.textContent(),/December 2019/);
+  assert.ok(citations.some(x=>x.includes('/211119.pdf#page=2')));
+  await page.goto(new URL('agency-audit.html?place=edina%7CMN',base).href,
+    {waitUntil:'domcontentloaded',timeout:40000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+    null,{timeout:55000});
+  assert.match(await page.locator('#historicalFindings').textContent(),/Manufacturer unconfirmed \(BOSS software\)/);
+  assert.match(await page.locator('#historicalFindings').textContent(),/audit snapshot/);
+  assert.ok((await page.locator('#historicalFindings a').evaluateAll(links=>
+    links.some(a=>a.href.includes('/210885.pdf#page=2')))));
+  await page.goto(new URL('agency-audit.html?place=woodbury%7CMN',base).href,
+    {waitUntil:'domcontentloaded',timeout:40000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+    null,{timeout:55000});
   assert.equal(await page.locator('#reportTitle').textContent(),'Woodbury, MN');
   assert.deepEqual(problems,[],'Unexpected browser exceptions');
   console.log('AUTOMATED ACCOUNTABILITY BROWSER PASS: live agency evidence, citations, safe draft, deep link, 390px viewport');
