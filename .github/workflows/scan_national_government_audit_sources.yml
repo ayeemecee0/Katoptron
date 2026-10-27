@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'data/national-government-audit-source-portals.json'
+      - 'data/verified-national-government-documents.json'
+      - 'data/verified-national-government-oversight.json'
+      - 'data/verified-agency-published-alpr-audits.json'
       - 'scripts/scan_national_government_audit_sources.py'
       - 'scripts/test_scan_national_government_audit_sources.py'
       - '.github/workflows/scan_national_government_audit_sources.yml'

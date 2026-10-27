@@ -46,7 +46,7 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option><option value="TX">Texas</option><option value="OR">Oregon</option><option value="VA">Virginia</option><option value="DE">Delaware</option><option value="IL">Illinois</option><option value="WA">Washington</option></select></label></div>
 <section aria-labelledby="primaryHeading">
 <h2 id="primaryHeading">Original government policies, public contracts, monthly totals and oversight decisions</h2>
-<p>Documents here are verified directly against original government PDF bytes and numbered pages. An adopted-version policy, a later <strong>DRAFT</strong>, an order form and a nonbinding commission vote have different legal and evidentiary meanings.</p>
+<p>Documents here are verified directly against original government PDF bytes and numbered pages. An adopted-version policy, a later <strong>DRAFT</strong>, an unsigned order form, a visually reviewed signed Flock order and a nonbinding commission vote have different legal and evidentiary meanings.</p>
 <div class="notice" id="policyContrast"><strong>Green Bay source-date policy comparison:</strong> The May 2026 published Policy 424 specifies a 30-day maximum for ordinary ALPR system data, while the September document <strong>marked DRAFT</strong> proposes seven days. The September proposal is <strong>not verified as adopted</strong>. Neither text proves what retention settings are active in the system today. See their independently checked original pages below.</div>
 <p id="primaryStatus" role="status" aria-live="polite">Loading source-pinned government original documents…</p>
 <div id="primaryMetrics" class="metrics"></div>
@@ -115,11 +115,14 @@ function renderPrimary(){
   item.append(meta,el('h2',d.agency+' · '+d.title),el('p',d.source_date?
    'Source date: '+d.source_date:'Date not established: '+d.source_date_note,'muted'));
   if(d.kind==='draft_policy_unadopted'||d.kind==='advisory_recommendation_not_binding_action'||
-   d.kind==='government_published_vendor_order_form')
+   d.kind==='government_published_vendor_order_form'||
+   d.kind==='signed_city_published_vendor_order_form_scanned')
    item.append(el('p',d.kind==='draft_policy_unadopted'?
     'Unadopted proposal. Do not interpret as current ALPR policy.':
     d.kind==='advisory_recommendation_not_binding_action'?
     'Commission recommendation only. City Council action and ALPR shutdown are not established.':
+    d.kind==='signed_city_published_vendor_order_form_scanned'?
+    'Signed in December 2024 according to scanned original signatures. Source PDF hash and reviewed images verified, but no searchable text layer. Do not infer installed cameras, renewed service or actual payments.':
     'Published form terms only. Execution, installation and payment are not established.','muted'));
   const url=Primary.sourceLink(d);
   if(url){const a=el('a','Original government publication PDF');a.href=url;a.target='_blank';a.rel='noopener noreferrer';item.append(a);}

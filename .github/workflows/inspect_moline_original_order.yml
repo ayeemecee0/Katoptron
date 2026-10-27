@@ -1,0 +1,45 @@
+name: Inspect original Moline government Flock order
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect_moline_original_order.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Hash exact city-published original and inspect public order clauses
+        run: |
+          python - <<'PY'
+          import hashlib,io,urllib.request
+          from pypdf import PdfReader
+          url='https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023'
+          class Stop(urllib.request.HTTPRedirectHandler):
+           def redirect_request(self,*args,**kwargs):raise ValueError('Unapproved publisher redirect')
+          try:
+           op=urllib.request.build_opener(Stop())
+           with op.open(urllib.request.Request(url,headers={'Accept':'application/pdf','User-Agent':'Katoptron-original-government-Moline-review/1.0'}),timeout=25) as req:
+            assert req.status==200 and req.geturl()==url
+            body=req.read(7_000_001)
+           assert body.startswith(b'%PDF-') and 100<len(body)<=7_000_000
+           pdf=PdfReader(io.BytesIO(body),strict=True)
+           assert not pdf.is_encrypted and 1<=len(pdf.pages)<=40
+           print('ORIGINAL_SOURCE',url,'SHA256',hashlib.sha256(body).hexdigest(),'PAGES',len(pdf.pages),'BYTES',len(body))
+           for i,page in enumerate(pdf.pages[:8]):
+            text=' '.join((page.extract_text() or '').split())
+            lower=text.lower()
+            for phrase in ('flock safety','moline','initial term','total contract','total fee','order form','retention','licensing','camera','axon'):
+             idx=lower.find(phrase)
+             if idx>=0:print('REVIEW_ANCHOR','PAGE',i+1,phrase,'CONTEXT',text[max(0,idx-70):idx+140][:210])
+          except Exception as ex:print('ORIGINAL_HELD',type(ex).__name__,str(ex)[:160])
+          PY
