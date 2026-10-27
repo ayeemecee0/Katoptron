@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Nationwide Original Government ALPR Audit Library</title>
+<meta name="description" content="Source-pinned government-published Flock ALPR audits and historical internal agency reports, distinctly labeled from independent external auditor reports.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#09141d;color:#eaf4f8;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.6}
+header{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem max(1rem,3vw);background:#102332;border-bottom:1px solid #365468}
+.brand{font-weight:800;letter-spacing:.12em;color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:.9rem}a{color:#9eddeb}
+main{max-width:1120px;margin:auto;padding:2.2rem 1.1rem 5rem}
+h1{font-size:clamp(1.8rem,4vw,2.55rem);margin:.25rem 0}
+h2{font-size:1.17rem;margin:.3rem 0}p{color:#d1dce4}
+.kicker{color:#9ee1ee;letter-spacing:.13em;text-transform:uppercase;font-size:.78rem;font-weight:700}
+.notice{border-left:3px solid #83c7d5;background:#112e3c;padding:1rem;margin:1.3rem 0}
+.controls{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.6rem 0}
+.controls label{flex:1 1 240px;font-weight:600}
+.controls span{display:block;font-size:.85rem;margin-bottom:.2rem}
+input,select{width:100%;padding:.72rem;color:inherit;background:#183041;border:1px solid #7391a1;border-radius:8px;font:inherit}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:.7rem;margin:1.2rem 0}
+.metrics div{padding:1rem;border-radius:10px;border:1px solid #2e4b5d;background:#142b3a}
+.metrics strong{font-size:1.65rem;display:block;font-variant-numeric:tabular-nums}
+.metrics span{font-size:.82rem;color:#bfd2da}
+.list{display:grid;gap:.9rem}
+article{background:#122837;padding:1.2rem;border-radius:10px;border:1px solid #395569;overflow-wrap:anywhere}
+.meta{display:flex;gap:.5rem;flex-wrap:wrap;font-size:.8rem}
+.tag{border:1px solid #658797;border-radius:5px;padding:.12rem .5rem}
+.finding{padding:.7rem 0;border-top:1px solid #345064}
+.finding p{margin:.3rem 0}.muted{font-size:.89rem;color:#c0ced8}
+a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9de7f4;outline-offset:3px}
+</style></head>
+<body><a href="#main" class="skip-link">Skip to original government audit reports</a>
+<header><a class="brand" href="./index.html">KATOPTRON</a>
+<nav aria-label="Primary"><a href="./index.html">CAMERA MAP</a><a href="./agency-audit.html">ACCOUNTABILITY</a>
+<a href="./mn-alpr-audits.html">MINNESOTA INDEPENDENT AUDITS</a><a href="./methodology.html">METHODOLOGY</a></nav></header>
+<main id="main"><p class="kicker">Government original source evidence · multiple states</p>
+<h1>Nationwide ALPR audit source library</h1>
+<p>Read original public government reports and inspect precisely what each publisher reported at the time. Every published finding is linked to its original source PDF page and guarded by independent source-byte verification.</p>
+<div class="notice"><strong>Government-authored, not independently verified.</strong>
+These records are agency-published internal reviews or source documents, <strong>not external independent audits</strong>.
+They may describe Flock and other vendors. Counts, sharing settings and operational conditions are attributed historical publisher claims, never a real-time census, a verified recipient network, new map pins or a Katoptron legal conclusion. If a source was temporarily unavailable or changed since review, our periodic verification cannot establish its current contents until checked again. The <a href="./mn-alpr-audits.html">Minnesota state library</a> separately tracks external independent reports.</div>
+<div id="metrics" class="metrics" aria-label="Reviewed original publication counts"></div>
+<div class="controls"><label for="q"><span>Search agency, report or finding</span><input id="q" type="search" maxlength="120" placeholder="San Bruno, Green Bay, sharing..."></label>
+<label for="state"><span>State</span><select id="state"><option value="all">All states</option><option value="CA">California</option><option value="WI">Wisconsin</option><option value="MN">Minnesota</option></select></label></div>
+<p id="status" role="status" aria-live="polite">Loading independently source-pinned original government publications…</p>
+<div id="results" class="list"></div>
+<p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
+</main><script src="./agency-published-audits.js"></script><script>
+'use strict';
+const $=x=>document.getElementById(x),APP={rows:[]};
+function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
+function render(){
+ const q=$('q').value.trim().toLowerCase(),st=$('state').value;
+ const results=APP.rows.filter(r=>(st==='all'||r.state===st)&&
+ [r.agency_name,r.report_title,r.report_scope,...r.findings.map(f=>f.statement)].join(' ').toLowerCase().includes(q));
+ $('status').textContent=results.length+' source-pinned original government publication(s) match these filters. All are agency-authored or internal, not external independent audits.';
+ $('results').replaceChildren();
+ for(const r of results){
+  const card=el('article'),meta=el('div',null,'meta');
+  meta.append(el('span',r.state,'tag'),el('span',r.publisher_type==='agency_internal_audit'?'Internal government audit':'Police-department-authored audit','tag'));
+  card.append(meta,el('h2',r.agency_name+' · '+r.report_title),
+    el('p',r.report_scope,'muted'),el('p','Original source date: '+(r.source_date||'ambiguous; inspect date note')+' · '+r.source_date_note,'muted'));
+  const root=window.KatoptronAgencyPublishedAudits.safeUrl(r.source_url);
+  if(root){
+   const link=el('a','Original government PDF');link.href=root;link.target='_blank';link.rel='noopener noreferrer';card.append(link);
+  }
+  for(const f of r.findings){
+   const sec=el('section',null,'finding');
+   sec.append(el('p',f.statement));
+   if(root){const a=el('a','Original source page '+f.page);a.href=root+'#page='+f.page;a.target='_blank';a.rel='noopener noreferrer';sec.append(a);}
+   card.append(sec);
+  }
+  $('results').append(card);
+ }
+ if(!results.length)$('results').append(el('p','No source matches. This does not establish an agency has no ALPR program or no published audit.'));
+}
+async function load(){
+ const res=await fetch('./data/verified-agency-published-alpr-audits.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('Original publication catalog temporarily unavailable');
+ APP.rows=window.KatoptronAgencyPublishedAudits.catalog(await res.json());
+ const m=window.KatoptronAgencyPublishedAudits.count(APP.rows);
+ for(const [n,label] of [[m.reports,'Page-reviewed source reports'],[m.agencies,'Source-specific agency identities'],[m.states,'States with reviewed publisher reports']]){
+  const card=el('div');card.append(el('strong',n),el('span',label));$('metrics').append(card);
+ }
+ render();
+}
+$('q').addEventListener('input',render);$('state').addEventListener('change',render);
+load().catch(e=>{$('status').textContent=e.message+'; no inferred reports shown.';});
+</script></body></html>
