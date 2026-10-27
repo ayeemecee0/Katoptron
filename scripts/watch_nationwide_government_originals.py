@@ -28,7 +28,7 @@ def exact(url):
  try:
   p=urllib.parse.urlsplit(url)
   return (p.scheme=="https" and p.hostname is not None and
-   (p.hostname.endswith(".gov") or p.hostname=="gov") and
+   (p.hostname.endswith(".gov") or p.hostname=="www.state.wv.us") and
    p.netloc==p.hostname and not p.fragment and not p.username and not p.password and
    len(p.path)>1 and len(p.query)<=190)
  except (ValueError,TypeError):return False
