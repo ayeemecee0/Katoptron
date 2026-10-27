@@ -23,25 +23,17 @@ const rows=[
 ];
 const plan=H.plan(rows,original);
 assert.equal(plan.scanned_reports,10);
-assert.equal(plan.curated_reports,22);
+assert.equal(plan.curated_reports,40);
 assert.equal(plan.flock_titles_unreviewed,0);
-assert.equal(plan.candidates.length,4);
-assert.equal(plan.exact_agency_historical_candidates,4);
-assert.equal(plan.candidates[0].priority,'P1');
-const sh=plan.candidates.find(x=>x.report_id==='20-0577.pdf');
-assert.equal(sh.jurisdiction_key,'shakopee|MN');
-assert.equal(sh.identity_basis,'original_title_exact_curated_agency_phrase');
-assert.equal(sh.title_scope,'unspecified_alpr_title');
-assert.equal(sh.priority,'P1');
-assert.ok(plan.candidates.some(x=>x.report_id==='26-0804.pdf'&&x.jurisdiction_key==='richfield|MN'));
-assert.ok(plan.candidates.some(x=>x.report_id==='19-1276.pdf'&&x.jurisdiction_key==='woodbury|MN'));
-assert.ok(plan.candidates.some(x=>x.report_id==='25-1686.pdf'&&x.priority==='P2'));
-assert.ok(!plan.candidates.some(x=>['18-0202.pdf','25-1700.pdf','25-1639.pdf','26-1013.pdf','26-1167.pdf','26-1268.pdf'].includes(x.report_id)));
+assert.equal(plan.candidates.length,0);
+assert.equal(plan.exact_agency_historical_candidates,0);
 assert.ok(!plan.candidates.some(x=>x.reason.includes('confirmed')));
+assert.ok(['20-0577.pdf','26-0804.pdf','19-1276.pdf','25-1686.pdf'].every(id=>
+ !plan.candidates.some(x=>x.report_id===id)),'Newly reviewed source must leave machine queue');
 const notYetReviewed={...original,reports:original.reports.filter(x=>!x.id.includes('west-saint-paul-mn-independent-flock')&&!x.id.includes('wyoming-mn-independent-flock'))};
 const preReview=H.plan(rows,notYetReviewed);
 assert.equal(preReview.flock_titles_unreviewed,2,'Source titles remain candidates until PDFs independently reviewed');
-assert.equal(preReview.candidates.length,6);
+assert.equal(preReview.candidates.length,2);
 
 const single=[rows[0]];
 assert.throws(()=>H.plan([...single,single[0]],original),/Duplicate/);
