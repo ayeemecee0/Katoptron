@@ -13,7 +13,7 @@ class TestOriginalCityStatusSources(unittest.TestCase):
   self.assertIsNone(next(x for x in rows if x["city"]=="Moline")["effective_as_of"])
  def test_valid_html_and_byte_drift_metadata(self):
   for row in M.catalog(DATA):
-   raw=("<html><body>"+" ".join(row["source_text_anchors"])+"</body></html>").encode()
+   raw=("<html><body>"+" ".join(row["source_text_anchors"])+(" "*140)+"</body></html>").encode()
    result=M.verify(row,raw)
    self.assertEqual(result["sha256"],hashlib.sha256(raw).hexdigest())
    self.assertTrue(result["original_html_changed"])
