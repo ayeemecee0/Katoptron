@@ -97,6 +97,24 @@ def verify_pdf(report,payload,reader_class=None):
    text=normalized(page)
    if not all(p in text for p in phrases):
     raise ValueError("Original auditor page text differs; held for independent re-review")
+ elif report["id"]=="stillwater-mn-independent-flock-alpr-audit-2026":
+  anchors={
+   2:("stillwater police department","17 stationary flock","default 30-day retention period"),
+   3:("sharing among law enforcement agencies","out-of-state sharing","shared network section"),
+  }
+  for page,phrases in anchors.items():
+   content=normalized(page)
+   if not all(p in content for p in phrases):
+    raise ValueError("Stillwater original auditor PDF page changed; hold for review")
+ elif report["id"]=="hennepin-county-mn-independent-flock-alpr-audit-2025":
+  anchors={
+   2:("hennepin county","4 active stationary flock","default 30-day retention period"),
+   3:("sharing among law enforcement agencies","agency command"),
+  }
+  for page,phrases in anchors.items():
+   content=normalized(page)
+   if not all(p in content for p in phrases):
+    raise ValueError("Hennepin original auditor PDF page changed; hold for review")
  else:
   raise ValueError("New audit requires a scoped independent verifier")
  return len(pdf.pages)
