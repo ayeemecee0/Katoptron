@@ -18,9 +18,9 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#publisherStatus')?.textContent?.startsWith('14 official government'),
     null,{timeout:15000});
   assert.equal(await page.locator('#oversightResults article').count(),3);
-  await page.waitForFunction(()=>document.querySelector('#primaryStatus')?.textContent?.startsWith('8 page-verified'),
+  await page.waitForFunction(()=>document.querySelector('#primaryStatus')?.textContent?.startsWith('9 page-verified'),
    null,{timeout:18000});
-  assert.equal(await page.locator('#primaryResults article').count(),8);
+  assert.equal(await page.locator('#primaryResults article').count(),9);
   assert.match(await page.locator('#primaryStatus').textContent(),/1 source\(s\) remain unavailable/);
   assert.match(await page.locator('#policyContrast').textContent(),/30-day maximum/);
   assert.match(await page.locator('#policyContrast').textContent(),/not verified as adopted/i);
@@ -29,6 +29,12 @@ const {chromium}=require('playwright');
   assert.match(primary,/seven days/i);
   assert.match(primary,/City Council ordered a halt/);
   assert.match(primary,/1,392,000/);
+  assert.match(primary,/Moline Police Department/);
+  assert.match(primary,/27,624\.98/);
+  assert.match(primary,/visually reviewed scanned pages/i);
+  assert.match(primary,/Signed in December 2024/);
+  assert.ok((await page.locator('#primaryResults a').evaluateAll(as=>as.map(a=>a.href)))
+    .some(x=>x.includes('/DocumentCenter/View/15716/Flock-Safety-2023#page=5')));
   const pageLinks=await page.locator('#primaryResults a').evaluateAll(as=>as.map(x=>x.href));
   assert.ok(pageLinks.some(x=>x.includes('/DocumentCenter/View/19136/')&&x.includes('#page=4')));
   assert.ok(pageLinks.some(x=>x.includes('document.cfm?id=452847#page=3')));
