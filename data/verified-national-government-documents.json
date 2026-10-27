@@ -238,6 +238,45 @@
         1,
         3
       ]
+    },
+    {
+      "id": "moline-il-signed-flock-order-2024",
+      "state": "IL",
+      "agency": "Moline Police Department",
+      "publisher_role": "police_department",
+      "kind": "signed_city_published_vendor_order_form_scanned",
+      "status": "visually_reviewed_original_signatures_2024_not_live_deployment_or_payment_proof",
+      "source_date": "2024-12-04",
+      "source_date_note": "The original order-form signatures show a Moline Police signature December 3, 2024 and Flock Group signature December 4, 2024. The public filename contains '2023', which does not establish the executed date.",
+      "title": "Moline Police Department Flock Safety signed order form",
+      "source_url": "https://www.moline.il.us/DocumentCenter/View/15716/Flock-Safety-2023",
+      "reviewed_on": "2026-10-27",
+      "content_sha256": "6904610d03b2c44ebaa73d90e9b10a3d4022b1520924a2d37df8fd3da3b662df",
+      "page_count": 6,
+      "pages_reviewed": [
+        2,
+        3,
+        5
+      ],
+      "verification_method": "visual_page_review_sha256_pinned_scanned_pdf",
+      "verification_note": "Scanned original has no reliable text layer. Human-readable image pages 2, 3 and 5 were visually reviewed. Recurring checker validates the exact original government PDF SHA-256, page count, and image presence; it does not claim OCR or text-layer semantic anchors.",
+      "findings": [
+        {
+          "page": 2,
+          "category": "signed_order_historical_scope",
+          "statement": "The Moline city-hosted Flock order form lists four Flock Safety Falcon readers with three solar units, a 30-day retention term, an 11-month initial term and 24-month renewal terms. These are signed contract-line terms, not a verified current camera inventory or device coordinates."
+        },
+        {
+          "page": 3,
+          "category": "signed_order_billing_and_amount",
+          "statement": "The original Moline order form lists a $27,624.98 first-year contract total and a $28,499.98 recurring annual subtotal after year one, before applicable tax. These are contract-stated pricing terms; they do not establish actual payments, future renewals or current subscriptions."
+        },
+        {
+          "page": 5,
+          "category": "signed_execution_date",
+          "statement": "The Moline Police Department and Flock Group signature blocks on page five are dated December 3 and December 4, 2024 respectively. The historical signed form does not independently establish the precise equipment activation date or continuing program operation."
+        }
+      ]
     }
   ],
   "source_review_held": [
