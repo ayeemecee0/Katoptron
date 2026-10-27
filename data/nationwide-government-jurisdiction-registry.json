@@ -895,6 +895,56 @@
       "source_url": "https://www.akleg.gov/basis/Journal/Pages/32?Chamber=H&Page=2647&pageEnd=2676",
       "origin_role": "government_authored_publication_not_independently_page_reviewed",
       "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "la-enacted-crime-camera-protection-statute-not-alpr-operations",
+      "state": "LA",
+      "publisher": "Louisiana Legislature",
+      "publisher_role": "enacted_crime_camera_protection_statute_not_alpr_operations",
+      "kind": "html",
+      "source_url": "https://legis.la.gov/Legis/Law.aspx?d=1388419",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nv-county-alpr-grant-application-not-installation",
+      "state": "NV",
+      "publisher": "Nevada State Emergency Response Commission",
+      "publisher_role": "county_alpr_grant_application_not_installation",
+      "kind": "pdf",
+      "source_url": "https://serc.nv.gov/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "nj-original-state-alpr-directive",
+      "state": "NJ",
+      "publisher": "New Jersey Office of the Attorney General",
+      "publisher_role": "original_state_alpr_directive",
+      "kind": "pdf",
+      "source_url": "https://www.nj.gov/oag/dcj/agguide/directives/Dir-2010-5-LicensePlateReadersl-120310.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ny-state-model-policy-not-agency-adoption",
+      "state": "NY",
+      "publisher": "New York Division of Criminal Justice Services",
+      "publisher_role": "state_model_policy_not_agency_adoption",
+      "kind": "pdf",
+      "source_url": "https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/MPTC%20LPR%20Model%20Policy%202021.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "wv-other-vendor-alpr-procurement-not-flock",
+      "state": "WV",
+      "publisher": "West Virginia Public Service Commission",
+      "publisher_role": "other_vendor_alpr_procurement_not_flock",
+      "kind": "pdf",
+      "source_url": "https://www.state.wv.us/admin/purchase/Awards/Documents/2026/Q2/A_0926_CPO_PSC2600000003.pdf",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
     }
   ]
 }
