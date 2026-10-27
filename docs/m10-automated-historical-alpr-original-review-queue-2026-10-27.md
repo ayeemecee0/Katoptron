@@ -2,6 +2,12 @@
 
 **Created October 27, 2026.** This is an original government archive *metadata and receipt* acquisition workflow, not automated authority to publish findings from original PDFs.
 
+## October 27 verified evidence-conversion update
+
+The original queue's first-run numbers below are retained as a historical scanner baseline. After independent page-level review, the active audited-document catalog contains **22** source-pinned originals, the Flock-titled independent-review backlog is **0 of 16**, and the original registry identifies **21** additional same-agency historical or other-vendor candidates. The new historical scanner's source run [40547015500](https://github.com/ayeemecee0/Katoptron/actions/runs/40547015500) successfully generated **12 of 12** selected machine PDF receipts with **zero** automatic publication of content-derived claims.
+
+The remaining **21** items are opportunities for future individual original-page review, **not 21 proven earlier Flock installations or breaches**. The two previously pending West Saint Paul and Wyoming Flock-title originals, along with older Woodbury, Edina and Shakopee ALPR reports, have moved from metadata-only to separately checked original-content findings. Refer to the [source-by-source audit history](./m10-cross-period-original-audit-history-2026-10-27.md).
+
 ## Verified acquisition coverage
 
 The first scheduled-scanner test on the live [Minnesota Legislative Reference Library mandated-report listing](https://www.lrl.mn.gov/mndocs/mandates_detail?orderid=8735) found:
@@ -15,7 +21,7 @@ The first scheduled-scanner test on the live [Minnesota Legislative Reference Li
 | First 12 top-priority original PDFs receiving bounded automated hash/page inspection | **10 successful**, **2 unavailable/unreadable in that pass** |
 | New substantive facts automatically promoted from machine readings | **0** |
 
-The two unmatched Flock-title PDFs are West Saint Paul and Wyoming. Their *titles* name Flock, but the site's curated original-content catalog has not yet independently reviewed their precise claims. The other 23 are candidate historical sources, **not 23 confirmed earlier Flock deployments**. A current-state figure cannot be derived by adding state reports or historical device snapshots.
+At this **earlier baseline scan**, the two unmatched Flock-title PDFs were West Saint Paul and Wyoming. Both have since been independently reviewed in the October 27 expansion. The other 23 are candidate historical sources, **not 23 confirmed earlier Flock deployments**. A current-state figure cannot be derived by adding state reports or historical device snapshots.
 
 ## Automatic operation
 
@@ -30,7 +36,7 @@ Priority is **P0** for unreviewed titles explicitly naming Flock, **P1** for old
 
 The [public audit library](../mn-alpr-audits.html) computes the same priorities from current public index records. Its list is immediately updated as the existing weekly official-index import discovers new source links. If the independently reviewed manifest or original registry is unavailable, it displays no inferred candidates.
 
-The [weekly original-source inspector](../scripts/scan_mn_historical_queue.py) runs each Thursday using the [scheduled GitHub workflow](../.github/workflows/scan_mn_historical_queue.yml). It uses the **same JavaScript candidate engine** through a bounded Node subprocess, then fetches up to **12** prioritised original state-hosted PDF documents. It records their SHA-256 digest, page count and byte size, but **does not extract PDF prose** or retain raw PDFs. A failed PDF is reported as `unavailable_needs_recheck`, never removed or treated as evidence of document withdrawal. It writes the queue and machine receipt data to a short-lived **14-day GitHub Actions artifact**, not to a public evidence fact table or a privileged database. To avoid an undownloadable historical PDF permanently consuming a receipt slot, the inspector rechecks the two P0 Flock-titled reports on each run and rotates the other receipt slots across the remaining P1/P2 source queue by ISO week. Failure remains a per-source *unknown*; other candidates continue to be inspected. No secrets or paid services are required.
+The [weekly original-source inspector](../scripts/scan_mn_historical_queue.py) runs each Thursday using the [scheduled GitHub workflow](../.github/workflows/scan_mn_historical_queue.yml). It uses the **same JavaScript candidate engine** through a bounded Node subprocess, then fetches up to **12** prioritised original state-hosted PDF documents. It records their SHA-256 digest, page count and byte size, but **does not extract PDF prose** or retain raw PDFs. A failed PDF is reported as `unavailable_needs_recheck`, never removed or treated as evidence of document withdrawal. It writes the queue and machine receipt data to a short-lived **14-day GitHub Actions artifact**, not to a public evidence fact table or a privileged database. To avoid an undownloadable historical PDF permanently consuming a receipt slot, the inspector prioritizes any outstanding P0 Flock-titled reports on each run and rotates the other receipt slots across the remaining P1/P2 source queue by ISO week. Failure remains a per-source *unknown*; other candidates continue to be inspected. No secrets or paid services are required.
 
 ## Exclusions and next step
 
