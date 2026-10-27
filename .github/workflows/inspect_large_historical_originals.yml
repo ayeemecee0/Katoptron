@@ -1,0 +1,52 @@
+name: Recheck two bounded high-page Minnesota original ALPR reports
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/inspect_large_historical_originals.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Read exact 2 government sources with at most 8MB and 110 pages, no redirects
+        run: |
+          python - <<'PY'
+          import io,hashlib,re,urllib.request
+          from pypdf import PdfReader
+          from scripts.verify_independent_audit_source import DenyRedirect
+          originals={
+           'hennepin-2020':'https://www.lrl.mn.gov/docs/2020/mandated/200290.pdf',
+           'woodbury-2019':'https://www.lrl.mn.gov/docs/2019/mandated/191307.pdf'
+          }
+          for key,url in originals.items():
+           try:
+            op=urllib.request.build_opener(DenyRedirect())
+            with op.open(urllib.request.Request(url,headers={'Accept':'application/pdf','User-Agent':'Katoptron-original-public-auditor-recheck/1.0'}),timeout=25) as res:
+             if res.status!=200 or res.geturl()!=url:raise ValueError('Original URL response invalid')
+             data=res.read(8_000_001)
+            if len(data)>8_000_000 or not data.startswith(b'%PDF-'):raise ValueError('Original exceeds 8 MB PDF bound')
+            doc=PdfReader(io.BytesIO(data),strict=True)
+            if doc.is_encrypted or len(doc.pages)>110:raise ValueError('Original encrypted or exceeds 110 pages')
+            print('ORIGINAL',key,'PAGES',len(doc.pages),'BYTES',len(data),'SHA256',hashlib.sha256(data).hexdigest())
+            found=0
+            for i,page in enumerate(doc.pages[:10]):
+             t=' '.join((page.extract_text() or '').split())
+             segments=re.split(r'(?<=[.!?])\\s+(?=[A-Z])',t)
+             terms=('alpr','license plate reader','stationary','mobile','flock','boss','audit','vehicle','purge','retention')
+             selected=[v[:300] for v in segments if any(term in v.lower() for term in terms) and len(v)>35][:5]
+             if selected:
+              print('PAGE',key,i+1,repr(selected)[:1200])
+              found+=1
+            print('READABLE_PAGES',key,found)
+           except Exception as e:print('HELD',key,type(e).__name__,str(e)[:130])
+          PY
