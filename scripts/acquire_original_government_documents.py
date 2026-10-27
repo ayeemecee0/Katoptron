@@ -40,6 +40,17 @@ PATTERNS=(
  ("meeting_record",re.compile(r"meeting|council|agenda|minutes|staff.report|resolution",re.I)),
 )
 LIKELY_RESOURCE=re.compile(r"\.(?:pdf|csv|xlsx?|docx?)(?:$|\?)",re.I)
+# Top-level city-site navigation often contains "Privacy Policy", "City Auditor",
+# "Auditorium", or "Contract Administration" links. Those aren't Flock
+# documents merely because the parent page describes ALPR.
+DIRECT_FLOCK_LABEL=re.compile(r"\bflock\b|\balpr\b|\blicen[cs]e\s+plate\s+read(?:er|ers|ing)?\b|\blpr\b",re.I)
+def relevant_document_link(label,url,kind):
+ if kind in ("contract","policy","audit","sharing_export"):
+  title_and_path=label+" "+urllib.parse.urlsplit(url).path.replace("-"," ")
+  if not DIRECT_FLOCK_LABEL.search(title_and_path):
+   return False
+ return True
+
 
 class Links(HTMLParser):
  def __init__(self):
@@ -121,6 +132,7 @@ def extract_links(html,root,jurisdiction):
   if not url or url==root:continue
   kind=classify(label,url)
   if not kind:continue
+  if not relevant_document_link(label,url,kind):continue
   if not LIKELY_RESOURCE.search(url) and not re.search(r"download|flock|alpr|sharing|policy|contract|council|audit",label,re.I):
    continue
   if not label:label="Original government document link: "+kind

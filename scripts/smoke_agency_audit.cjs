@@ -39,6 +39,17 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
     null,{timeout:65000});
   assert.match(await page.locator('#reportTitle').textContent(),/Folsom/);
+  await page.goto(new URL('agency-audit.html?place=shakopee%7CMN',base).href,
+    {waitUntil:'domcontentloaded',timeout:40000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('Audit generated'),
+    null,{timeout:55000});
+  assert.match(await page.locator('#reportTitle').textContent(),/Shakopee, MN/);
+  assert.match(await page.locator('#counts').textContent(),/Independent original audit reports/);
+  assert.match(await page.locator('#sources').textContent(),/Independent audit of Shakopee Police Department ALPR system/);
+  assert.match(await page.locator('#sources').textContent(),/30-day retention setting/);
+  assert.ok((await page.locator('#sources a').evaluateAll(links=>
+    links.some(a=>a.href.startsWith('https://www.lrl.mn.gov/docs/2026/mandated/261013.pdf')))),
+    'Original Minnesota archive evidence source must be directly inspectable');
   assert.deepEqual(problems,[],'Unexpected browser exceptions');
   console.log('AUTOMATED ACCOUNTABILITY BROWSER PASS: live agency evidence, citations, safe draft, deep link, 390px viewport');
  }catch(e){console.error('AUTOMATED ACCOUNTABILITY BROWSER FAILED:',e.stack||e,problems.slice(0,4));process.exitCode=1;}
