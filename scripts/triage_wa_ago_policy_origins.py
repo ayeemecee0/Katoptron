@@ -67,6 +67,7 @@ def evaluate(candidate,fetcher=fetch):
    if len(t)>=35:textpages+=1
    if page.images:images+=1
    if re.search(r"\bflock\s+safety\b",t):flock.append(i)
+  if not textpages and not images:raise ValueError("unsearchable_with_no_images")
   row.update(inspection_status="exact_pdf_text_detected" if textpages else "exact_pdf_scan_only",
    page_count=len(pdf.pages),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw),
    searchable_text_pages=textpages,scanned_image_pages=images,potential_flock_term_pages=flock[:160])
