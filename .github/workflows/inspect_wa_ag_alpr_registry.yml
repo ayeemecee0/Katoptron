@@ -1,0 +1,22 @@
+name: Inspect Washington Attorney General ALPR registration table
+on:
+  push:
+    paths:
+      - 'scripts/inspect_wa_ag_alpr_registry.py'
+      - '.github/workflows/inspect_wa_ag_alpr_registry.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - run: python scripts/inspect_wa_ag_alpr_registry.py
