@@ -35,7 +35,7 @@ class TestPublicAuditSource(unittest.TestCase):
    "https://www.lrl.mn.gov/admin"):
    self.assertFalse(M.allowed(x),x)
  def test_no_source_facts_without_exact_page_receipts(self):
-  self.assertEqual(len(M.manifest_rows(CATALOG)),1)
+  self.assertEqual(len(M.manifest_rows(CATALOG)),3)
   raw=b"%PDF-1.7"+b" synthetic test only "
   fixture={**RECORD,"content_sha256":hashlib.sha256(raw).hexdigest()}
   self.assertEqual(M.verify_pdf(fixture,raw,Reader),5)
