@@ -13,6 +13,11 @@ on:
       - 'national-government-sources.js'
       - 'national-primary-documents.js'
       - 'data/verified-national-government-documents.json'
+      - 'data/wa-original-agency-alpr-registrations.json'
+      - 'wa-alpr-registrations.js'
+      - 'wa-alpr-registrations.html'
+      - 'scripts/test_wa_alpr_registrations.cjs'
+      - 'scripts/smoke_wa_alpr_registrations.cjs'
       - 'scripts/test_national_primary_documents.cjs'
       - 'data/verified-national-government-oversight.json'
       - 'data/national-government-audit-source-portals.json'
@@ -60,6 +65,8 @@ jobs:
           node scripts/test_national_government_sources.cjs
           node --check national-primary-documents.js
           node scripts/test_national_primary_documents.cjs
+          node --check wa-alpr-registrations.js
+          node scripts/test_wa_alpr_registrations.cjs
       - name: Start local preview
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/audit-preview.log 2>&1 &
@@ -74,3 +81,4 @@ jobs:
           node scripts/smoke_agency_audit.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs
+          node scripts/smoke_wa_alpr_registrations.cjs
