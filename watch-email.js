@@ -23,14 +23,15 @@
  async function refresh(){
   if(!user||!locality)return;
   const {data,error}=await client.from('flock_watch_subscriptions')
-   .select('email_enabled,watch_government,watch_vendor,watch_sharing,watch_renewals')
+   .select('email_enabled,watch_government,watch_vendor,watch_sharing,watch_renewals,watch_policies')
    .eq('user_id',user.id).eq('locality_key',locality.key).maybeSingle();
   if(error){report('Subscription status unavailable: '+error.message);return}
   report(data?.email_enabled?
    'Email preference enabled for '+locality.label+'; source-change mail requires an active sender.':
    'Email alerts currently OFF for '+locality.label+'.');
   if(data){$('watchGov').checked=data.watch_government;$('watchVendor').checked=data.watch_vendor;
-   $('watchSharing').checked=data.watch_sharing;$('watchRenewal').checked=data.watch_renewals;}
+   $('watchSharing').checked=data.watch_sharing;$('watchRenewal').checked=data.watch_renewals;
+   $('watchPolicies').checked=data.watch_policies===true;}
  }
  async function verifiedUser(){
   const {data,error}=await client.auth.getUser();
@@ -64,10 +65,11 @@
    watch_government:$('watchGov').checked,
    watch_vendor:$('watchVendor').checked,
    watch_sharing:$('watchSharing').checked,
-   watch_renewals:$('watchRenewal').checked
+   watch_renewals:$('watchRenewal').checked,
+   watch_policies:$('watchPolicies').checked
   };
   if(![record.watch_government,record.watch_vendor,record.watch_sharing,
-       record.watch_renewals].some(Boolean)){
+       record.watch_renewals,record.watch_policies].some(Boolean)){
     report('Select at least one alert category. No subscription created.');return;
   }
   const {error}=await client.from('flock_watch_subscriptions').upsert(record,{
