@@ -128,6 +128,17 @@ async function load(){
  if(!resp.ok||!back.ok||!receiptResponse.ok)throw Error('Required qualified source files unavailable');
  verified=window.KatoptronAgencyOriginalHTML.validate(await resp.json());
  backlog=await back.json();
+ waReceipts=await receiptResponse.json();
+ if(waReceipts.schema_version!==1||waReceipts.previously_individually_page_reviewed!==11||
+   waReceipts.new_pdf_original_acquisitions!==60||waReceipts.acquisition_holds!==26||
+   waReceipts.new_verified_Flock_operator_agencies!==0||
+   !Array.isArray(waReceipts.receipts)||waReceipts.receipts.length!==86||
+   waReceipts.receipts.filter(x=>x.acquisition_status==='retrieved_unreviewed_original_pdf').length!==60||
+   waReceipts.receipts.some(x=>x.original_individual_pages_reviewed!==false||
+     x.flock_equipment_installed_verified!==false||
+     x.legal_policy_adoption_verified!==false||x.live_agency_sharing_verified!==false))
+   throw Error('State AG original policy acquisition cannot verify legal or operational facts');
+ $('acquisitionStatus').textContent='60 of 86 remaining AGO-linked original policies retrieved, with PDF source hash and page count; 26 source retrieval holds. These receipts are NOT independent individual-page policy verification or proof of Flock use.';
  if(backlog.schema_version!==1||backlog.counts?.held_original_government_urls!==12||
    backlog.counts.wa_registrations!==97||backlog.counts.wa_original_policies_page_reviewed!==11||
    backlog.counts.wa_original_policy_rechecks_needed!==86||backlog.counts.open_review_items!==99||
