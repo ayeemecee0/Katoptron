@@ -50,8 +50,8 @@ def parse(data,require_count=True):
   if st not in STATES:continue  # The scope is specifically 50 US states plus DC.
   code=(row.get(ori) or "").strip().upper()
   label=" ".join((row.get(name) or "").split())
-  if not re.fullmatch(r"[A-Z0-9]{7,12}",code) or not 3<=len(label)<=180 or
-      any(ord(ch)<32 for ch in label):
+  if (not re.fullmatch(r"[A-Z0-9]{7,12}",code) or not 3<=len(label)<=180 or
+      any(ord(ch)<32 for ch in label)):
    raise ValueError("Unusable FBI-derived ORI / agency name at line "+str(line))
   if code in seen:raise ValueError("Duplicate ORI in secondary FBI directory")
   seen.add(code)
