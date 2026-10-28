@@ -28,6 +28,31 @@ jobs:
         run: python3 scripts/verify_apache_junction_primary_sources.py
       - name: Retrieve bounded public original PDFs into private CI review queue only
         run: python3 scripts/inspect_apache_junction_originals.py --out apache-junction-original-review-queue.json
+      - name: Export only city clerk's public original scanned ordinance for independent visual review
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,"scripts")
+          from inspect_apache_junction_originals import ORIGINALS, fetch
+          raw,kind=fetch(ORIGINALS["city_clerk_ordinance_1579"])
+          expected="9d4f0ff58b906c65112abd3cf725b00d95e3418a843cd5df0c9e30e9ea9a7e93"
+          if hashlib.sha256(raw).hexdigest()!=expected:
+              raise RuntimeError("Clerk source bytes no longer equal independently captured government original")
+          dest=Path("original-city-clerk")
+          dest.mkdir(exist_ok=True)
+          (dest/"ordinance-1579.pdf").write_bytes(raw)
+          print("EXACT_PUBLIC_CITY_CLERK_PDF_READY",len(raw),"SHA256",expected)
+          print("Not a final content or signature verification; source is exported for visual review only.")
+          PY
+      - name: Retain the source-visible public city clerk PDF for direct page review
+        uses: actions/upload-artifact@v4
+        with:
+          name: apache-junction-city-clerk-original-public-pdf
+          path: original-city-clerk/ordinance-1579.pdf
+          if-no-files-found: error
+          retention-days: 3
       - name: Archive original review receipts only, never auto-approve municipal ordinance text
         uses: actions/upload-artifact@v4
         with:
