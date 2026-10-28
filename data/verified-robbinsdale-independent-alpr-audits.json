@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "independent_historical_Flock_and_separate_AXON_audits_archived_original_PDF_plus_later_department_self_disclosure_not_current_operational_confirmation",
+  "agency": "Robbinsdale Police Department",
+  "state": "MN",
+  "audit_originals": [
+    {
+      "id": "robbinsdale-2025-mnsec-flock-independent-audit",
+      "technology": "flock",
+      "publisher": "Minnesota Security Consortium, independent auditor; original archived Minnesota Legislative Reference Library",
+      "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251675.pdf",
+      "original_sha256": "5374d507c1853a37df377cfab5068a24f36df04935b0fd5d66c79a9e3740c010",
+      "page_count": 5,
+      "audit_date": "2025-10-23",
+      "audited_through": "2025-09-30",
+      "pages_visually_reviewed": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "findings": [
+        {
+          "page": 2,
+          "kind": "flock_historical_stationary_equipment",
+          "statement": "The independent 2025 Minnesota Security Consortium audit reported two active stationary Flock ALPR units and no mobile Flock units for the audited 2023–September 2025 period. This is a source-dated auditor observation, not proof of the number operating today."
+        },
+        {
+          "page": 2,
+          "kind": "flock_historical_retention_review",
+          "statement": "The 2025 Flock audit reports an administrative setting review against a 60-day maximum and a manufacturer-default 30-day retention period, confirmed against a Flock Vehicle Reads report. This historical independent audit cannot independently establish how every category of data is stored in October 2026."
+        },
+        {
+          "page": 3,
+          "kind": "flock_access_and_requests",
+          "statement": "The 2025 Flock audit reviewed user roles and described external ALPR access through recorded inter-agency data requests. It does not identify real-time Flock sharing connections with other jurisdictions or prove that access settings remain unchanged."
+        },
+        {
+          "page": 4,
+          "kind": "flock_historical_accountability_audit",
+          "statement": "The audit reviewed monthly logs and the agency's notification and incident-response procedures, and described this as the first independent review of the new Flock ALPR program. These are the auditor's historical findings, not a verified 2026 compliance determination."
+        }
+      ],
+      "limitations": "Auditor summary dated October 23, 2025; the government original is archived with an exact SHA and individual page verification. Historical reported unit count, retention config and independent audit conclusion cannot prove the department's current installation count, live access settings or current retention behavior."
+    },
+    {
+      "id": "robbinsdale-2026-mnsec-axon-independent-audit",
+      "technology": "axon",
+      "publisher": "Minnesota Security Consortium, independent auditor; original archived Minnesota Legislative Reference Library",
+      "source_url": "https://www.lrl.mn.gov/docs/2026/mandated/260189.pdf",
+      "original_sha256": "6e08a704cf379560212c57a9155e4c88c2d0160221e0811bb9e6fbe3ca99751c",
+      "page_count": 5,
+      "audit_date": "2026-01-29",
+      "audited_through": "2025-12-31",
+      "pages_visually_reviewed": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "findings": [
+        {
+          "page": 2,
+          "kind": "axon_separate_mobile_equipment",
+          "statement": "A separate 2026 Minnesota Security Consortium audit covers the Robbinsdale Police Department's AXON mobile ALPR system, reporting 11 active AXON mobile units at audit time. AXON mobile systems must not be counted as additional Flock cameras."
+        },
+        {
+          "page": 2,
+          "kind": "axon_separate_retention_review",
+          "statement": "The separate Axon audit describes review of a 30-day default retention configuration within its own mobile system, and does not establish retention practices for Flock images or hotlist data."
+        }
+      ],
+      "limitations": "This is a separate AXON technology and reporting window. It cannot be combined with the Flock audit as a fleet count, represented as a 2026 Flock audit, or used to resolve current Flock retention."
+    }
+  ],
+  "later_agency_disclosure": {
+    "source_url": "https://www.robbinsdalemn.gov/389/4241/Automated-License-Plate-Readers-ALPR",
+    "as_of": "2026-08",
+    "publisher": "Robbinsdale Police Department",
+    "source_type": "agency_authored_faq_not_independent_external_audit",
+    "claims": {
+      "reported_flock_cameras": 2,
+      "agency_reported_photo_retention": "two years",
+      "agency_reported_hotlist_hit_retention_days": 30
+    },
+    "scope_note": "The agency's August 2026 FAQ states two Flock cameras and asserts its Flock license-plate photographs are retained two years, while total Flock hits and hotlist hits are kept 30 days. This report is not a third-party audit and references different time and data categories from the 2025 external review; there is an unresolved source-scope discrepancy, not an established legal violation. No live configuration was independently inspected."
+  },
+  "comparison": {
+    "classification": "historical_independent_audit_versus_later_agency_self_disclosure_requires_clarification",
+    "question": "How should the 2025 audit's 30-day default Vehicle Reads retention finding and August 2026 statement that Flock plate photos are kept for two years be reconciled by data category and date?",
+    "automatic_compliance_finding": false,
+    "automatic_legal_violation": false,
+    "current_camera_coordinates_verified": 0,
+    "limits": "Auditor document date and agency disclosure as-of differ; whether record types or settings changed cannot be concluded without a later original system audit and dated access-retention records."
+  }
+}
