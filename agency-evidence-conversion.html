@@ -47,6 +47,12 @@ details summary{cursor:pointer;font-weight:600}details p{margin:.5rem 0;font-siz
 <article class="card"><h3>Lexington, KY</h3><p>City police publication links a separate LPR locations reference. Source-reported counts are not independently verified individual coordinates.</p><a href="https://www.lexingtonky.gov/government/departments-programs/public-safety/police/license-plate-readers" target="_blank" rel="noopener noreferrer">Inspect official disclosure</a></article>
 <article class="card"><h3>Columbia, MO</h3><p>City describes a camera distribution map by ward without publishing individual equipment positions in this record.</p><a href="https://beheard.como.gov/safety-cameras-review" target="_blank" rel="noopener noreferrer">Inspect city source</a></article>
 </div></section>
+<section aria-labelledby="waPolicySourceHeading">
+<h2 id="waPolicySourceHeading">Washington source-page policy findings and identity reconciliation</h2>
+<p>Bonney Lake and Enumclaw original policy text refers to transparency portals documenting Flock usage. Sultan's submitted policy attachment refers to Snohomish County Sheriff's Office login and training, not an independently established Sultan agency account. These are original PDF page citations, not verified installed equipment.</p>
+<p id="waPolicySourceStatus" role="status" aria-live="polite">Checking original PDF source-page fingerprints…</p>
+<div id="waPolicySourceCards" class="layout"></div>
+</section>
 <section aria-labelledby="backlogHeading"><h2 id="backlogHeading">Held source and registration review queue</h2>
 <p>A held government URL is a specific acquisition problem. A Washington ALPR registration is an agency self-certification, not proof of Flock vendor equipment. This queue preserves what action is required for each record without pretending verification is complete.</p>
 <div class="controls"><div><label for="queueType">Review backlog category</label><select id="queueType"><option value="held">12 held government originals</option><option value="wa">97 Washington registrations</option><option value="pdf">Two discovered PDF candidates</option></select></div>
@@ -57,6 +63,7 @@ details summary{cursor:pointer;font-weight:600}details p{margin:.5rem 0;font-siz
 </section>
 </main>
 <script src="./agency-html-disclosures.js"></script>
+<script src="./wa-policy-page-findings.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
