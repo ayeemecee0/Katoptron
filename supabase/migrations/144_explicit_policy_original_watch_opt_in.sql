@@ -15,7 +15,9 @@ set search_path = pg_catalog
 as $$
 begin
  if new.watch_policies is true then
-  if tg_op='INSERT' or old.watch_policies is distinct from true then
+  if tg_op='INSERT' then
+   new.policy_opted_in_at=transaction_timestamp();
+  elsif old.watch_policies is distinct from true then
    new.policy_opted_in_at=transaction_timestamp();
   else
    new.policy_opted_in_at=old.policy_opted_in_at;
