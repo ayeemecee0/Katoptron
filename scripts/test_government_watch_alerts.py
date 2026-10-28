@@ -207,6 +207,41 @@ class GovernmentWatchSafety(unittest.TestCase):
             self.assertEqual(M.deliver("https://supabase.example.org","key",settings,send=send),0)
         finally:M.api=original
 
+    def test_meaningful_original_government_changes_are_optin_and_source_pinned(self):
+        national,okc,apache,adoption=S.load_landmark_sources()
+        changes=S.build_landmark_change_events(national,okc,apache,adoption)
+        self.assertEqual(len(changes),3)
+        self.assertEqual(len({x["event_key"] for x in changes}),3)
+        self.assertEqual({x["locality_key"] for x in changes},
+            {"moline|IL","oklahoma city|OK","apache junction|AZ"})
+        self.assertEqual(sum(x["kind"]=="contract_document" for x in changes),2)
+        self.assertEqual(sum(x["kind"]=="government_decision" for x in changes),1)
+        self.assertTrue(all(x["source_date"] and x["source_url"].startswith("https://")
+                            and x["evidence_tier"]=="original_government" for x in changes))
+        contract_only={"watch_government":False,"watch_vendor":False,
+                       "watch_renewals":True,"watch_sharing":False}
+        self.assertTrue(M.eligible("contract_document",contract_only))
+        self.assertFalse(M.eligible("government_decision",contract_only))
+        none={"watch_government":False,"watch_vendor":False,
+              "watch_renewals":False,"watch_sharing":False}
+        self.assertTrue(all(not M.eligible(event["kind"],none) for event in changes))
+        import copy
+        forged=copy.deepcopy(apache);forged["legal_effective_date_verified"]=True
+        with self.assertRaisesRegex(ValueError,"Apache"):
+            S.build_landmark_change_events(national,okc,forged,adoption)
+        forged=copy.deepcopy(adoption)
+        next(x for x in forged["records"] if x["state"]=="AZ")["effective_date"]="2026-10-06"
+        with self.assertRaisesRegex(ValueError,"Apache"):
+            S.build_landmark_change_events(national,okc,apache,forged)
+        forged=copy.deepcopy(national)
+        next(x for x in forged["documents"] if x["id"]=="moline-il-signed-pause-2026")["content_sha256"]="f"*64
+        with self.assertRaisesRegex(ValueError,"Moline"):
+            S.build_landmark_change_events(forged,okc,apache,adoption)
+        forged=copy.deepcopy(okc)
+        next(x for x in forged["documents"] if x["id"]=="okc-2026-signed-flock-amendment")["status"]="unsigned_proposal"
+        with self.assertRaisesRegex(ValueError,"Oklahoma"):
+            S.build_landmark_change_events(national,forged,apache,adoption)
+
     def test_missing_source_url_cannot_be_alert(self):
         self.assertEqual(S.build_events([{"event_key":"a",
           "event_type":"recorded_legislative_decision",
