@@ -51,9 +51,9 @@ def parse_archive(kind,data):
  if not zipfile.is_zipfile(io.BytesIO(data)):raise ValueError("Official government data is not a ZIP")
  with zipfile.ZipFile(io.BytesIO(data)) as z:
   members=[i for i in z.infolist() if not i.is_dir()]
-  if len(members)!=1 or members[0].file_size>CONTENT_LIMIT or
-     not members[0].filename.endswith(".txt") or
-     "/" in members[0].filename or "\\" in members[0].filename:
+  if (len(members)!=1 or members[0].file_size>CONTENT_LIMIT or
+      not members[0].filename.endswith(".txt") or
+      "/" in members[0].filename or "\\" in members[0].filename):
    raise ValueError("Unexpected Census archive layout")
   payload=z.read(members[0],pwd=None)
   if len(payload)>CONTENT_LIMIT:raise ValueError("Expanded government archive exceeded size cap")
