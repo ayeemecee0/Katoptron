@@ -1,0 +1,29 @@
+name: Authenticate Apache Junction signed resolution and attached Chapter 17 source
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/verify_apache_resolution_chapter.py'
+      - 'data/apache-junction-adopted-resolution-chapter-2026-10-28.json'
+      - 'scripts/test_verify_apache_resolution_chapter.py'
+      - '.github/workflows/verify_apache_resolution_chapter.yml'
+  schedule:
+    - cron: '11 16 * * 4'
+permissions:
+  contents: read
+jobs:
+  original:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install 'pypdf>=5,<7'
+      - name: Test source scope and no legal or live inference
+        run: python3 -m unittest discover -s scripts -p 'test_verify_apache_resolution_chapter.py' -v
+      - name: Recheck city clerk Resolution 26-43 original bytes and 5 physical pages
+        run: python3 scripts/verify_apache_resolution_chapter.py

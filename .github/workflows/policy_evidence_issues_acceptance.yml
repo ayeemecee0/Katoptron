@@ -11,6 +11,7 @@ on:
       - 'scripts/smoke_policy_evidence_issues.cjs'
       - 'data/verified-wa-flock-policy-originals.json'
       - 'data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json'
+      - 'data/apache-junction-adopted-resolution-chapter-2026-10-28.json'
       - 'data/verified-policy-adoption-status-2026-10-27.json'
       - 'data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json'
       - 'data/verified-robbinsdale-2025-independent-flock-audit.json'
