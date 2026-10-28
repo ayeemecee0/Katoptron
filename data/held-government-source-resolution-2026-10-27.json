@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-27",
+  "source_review_ci": "https://github.com/ayeemecee0/Katoptron/actions/runs/40634047460",
+  "original_baseline_source_holds": 12,
+  "closed_as_superseded_original": 1,
+  "originals_newly_retrieved_and_sha_verified": 0,
+  "still_unresolved_original_source_items": 11,
+  "source_status_class": "historical_source_lifecycle_not_independent_current_Flock_equipment_audit",
+  "records": [
+    {
+      "id": "fl-police-operational-status-statement",
+      "state": "FL",
+      "agency": "Panama City Beach Police Department",
+      "original_url": "https://www.pcbfl.gov/m/NewsFlash/Home/Detail/38",
+      "old_status": "held_http_error",
+      "current_disposition": "still_held_original_unreachable",
+      "fetch_error": "HTTPError",
+      "review_action": "Acquire the exact city chief's September 1, 2026 original statement using a government-authorized retrieval path; original webpage content remains a review candidate rather than a SHA-pinned verified publication.",
+      "original_publisher_statement_verified_in_ci": false,
+      "flock_usage_live_verified": false,
+      "confirmed_removal": false
+    },
+    {
+      "id": "nc-police-technology-disclosure",
+      "state": "NC",
+      "agency": "Raleigh Police Department",
+      "original_url": "https://raleighnc.gov/services/how-does-raleigh-use-flock-cameras",
+      "old_status": "held_http_error",
+      "current_disposition": "still_held_original_unreachable",
+      "fetch_error": "HTTPError",
+      "review_action": "Recover the official Raleigh publisher original through a permitted HTTP/browser rendering route, then independently verify hash, dated policy, and exact original ALPR policy before publication.",
+      "original_publisher_statement_verified_in_ci": false,
+      "flock_usage_live_verified": false,
+      "confirmed_removal": false
+    },
+    {
+      "id": "co-police-technology-disclosure",
+      "state": "CO",
+      "agency": "Lafayette Police Department",
+      "original_url": "https://www.lafayetteco.gov/4282/Flock-Safety-ALPR-Program",
+      "old_status": "held_redirect",
+      "current_disposition": "superseded_original_government_source_lead",
+      "newer_verified_url": "https://www.lafayetteco.gov/m/newsflash/home/detail/10277",
+      "newer_original_html_sha256": "5a3e5f2ef5378e76c0b64bdb12ebfa7b2e29e801e6de2c8fbc9343688e320f46",
+      "newer_announcement_kind": "announced_termination_process",
+      "review_action": "Original program webpage is superseded as a status source by SHA-pinned city termination announcement of October 22, 2026; separately monitor physical equipment removal and contract closeout.",
+      "original_publisher_statement_verified_in_ci": false,
+      "flock_usage_live_verified": false,
+      "confirmed_removal": false
+    }
+  ],
+  "notes": "The old 12 held-source snapshots are immutable historical receipts. A newer signed/source-hashed official Lafayette Colorado statement supersedes its old active program summary; the former original itself remains redirected. Florida and North Carolina were accessible to public web indexing but CI received HTTP errors, so their source text was not automatically promoted to hash-verified facts. Zero new exact equipment positions, live sharing access or completion-of-removal claims."
+}
