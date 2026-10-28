@@ -51,6 +51,7 @@ select:focus-visible,a:focus-visible{outline:3px solid #90d8ed;outline-offset:3p
 <a href="./agency-xray.html">Browse individual agency dossiers</a>
 <a href="./policy-history.html">Review policy versions and drafts</a></div>
 <p class="status" id="compareStatus" role="status" aria-live="polite">Choose two agencies to compare.</p>
+<section id="intelligenceMatrix" aria-labelledby="intelligenceHeading" hidden><h2 id="intelligenceHeading">Agency intelligence · verified source status and changes</h2><p>Comparisons below report the availability of sourced written findings and signed/proposed changes. They are not rankings of privacy protection, camera prevalence, or actual regulatory compliance.</p><div id="intelligenceColumns"></div></section>
 <div id="comparison" aria-label="Original government agency evidence comparison"></div>
 <p class="muted" id="limits">Only individually reviewed original pages qualify. Source coverage is incomplete nationwide.</p>
 </main>
@@ -64,6 +65,7 @@ select:focus-visible,a:focus-visible{outline:3px solid #90d8ed;outline-offset:3p
 <script src="./wa-original-policies.js"></script>
 <script src="./wa-original-agency-dossiers.js"></script>
 <script src="./original-evidence-comparison.js"></script>
+<script src="./agency-intelligence-v2.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -79,7 +81,7 @@ const PATHS={
  waHeld:'./data/wa-held-original-policy-diagnostics.json',
  national:'./data/verified-national-government-documents.json'
 };
-let index=null;
+let index=null,investigation=null;
 function element(tag,text,css){
  const n=document.createElement(tag);
  if(text!==undefined)n.textContent=String(text);
@@ -138,6 +140,39 @@ function render(){
   ' reviewed original-page finding(s) in '+compared.topic_label.toLowerCase()+
   '. Different record types and missing findings are not directly comparable compliance measurements.';
  $('limits').textContent=compared.evidence_limit;
+ // Independent exact-source overview: no locality/portal fuzzy matching.
+ try{
+  const insight=investigation.compare(keys);
+  const panel=$('intelligenceColumns');panel.replaceChildren();
+  for(const p of insight.columns){
+   const card=element('article',undefined,'agency');
+   card.append(element('h3',p.label+' · '+p.state),
+    element('p',p.documents+' individually reviewed original documents; '+p.findings.length+
+      ' page-specific findings. These are source-coverage figures, not equipment counts.'));
+   for(const t of p.transitions){
+    const a=element('section',undefined,'doc');
+    a.append(element('strong',t.title),element('p',t.status+' · '+(t.event_date||'Proposal / adoption date unverified')),
+     element('p',t.after));
+    for(const s of t.sources){
+     const link=element('a',s.label);link.href=s.url;link.rel='noopener noreferrer';link.target='_blank';
+     a.append(link,element('p','SHA-256 '+s.sha,'muted'));
+    }
+    card.append(a);
+   }
+   if(!p.transitions.length)card.append(element('p','No independently qualified status transition in this exact-agency source catalog.'));
+   for(const [topic,facts] of Object.entries(p.topics)){
+    card.append(element('p',window.KatoptronInvestigations.TYPES[topic]+': '+
+      facts.length+' page-cited finding(s). No finding means unreviewed / unknown, not absent.'));
+   }
+   const report=element('a','Print this agency\'s source-cited investigation');
+   report.href='./agency-investigation.html?original='+encodeURIComponent(p.key);
+   card.append(report);panel.append(card);
+  }
+  $('intelligenceMatrix').hidden=false;
+ }catch(error){
+  $('intelligenceMatrix').hidden=true;
+  $('compareStatus').textContent='Identity-safe comparative intelligence unavailable: '+error.message;
+ }
  for(const row of compared.columns){
   const article=element('article',undefined,'agency');
   article.append(element('h2',row.label+' · '+row.state),
@@ -193,6 +228,7 @@ async function load(){
  $('loadStatus').textContent=index.agencies+' individually source-identified agency dossiers; '+
   index.original_documents+' original-page-reviewed documents. '+
   (waProblem?'Washington extension failed closed: '+waProblem+'.':'Sultan attribution hold excluded.');
+ investigation=window.KatoptronInvestigations.build(index);
  fillSelectors();
  render();
 }
