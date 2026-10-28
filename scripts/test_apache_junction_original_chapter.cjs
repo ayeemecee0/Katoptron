@@ -24,7 +24,7 @@ assert.equal(A.pdfPage('https://example.gov/file#wrong',1),null);
 function corrupt(fn,match){
  const a=structuredClone(original);fn(a);assert.throws(()=>A.verify(a),match);
 }
-corrupt(a=>a.signed_original_visually_reviewed[0]='forged',/signed|visually/);
+corrupt(a=>a.signed_original_visually_reviewed.status='forged',/signed|visually/);
 corrupt(a=>a.signed_original_visually_reviewed.legal_effective_date='2026-10-06',/signed|visually/);
 corrupt(a=>a.signed_original_visually_reviewed.verification_method='unsigned',/signed|visually/);
 corrupt(a=>a.signed_original_visually_reviewed.original_sha256='0'.repeat(64),/signed|visually/);
