@@ -121,11 +121,23 @@
    if(group)group.secondaryRetention.push(entry);
   }
   const structuralTypes=new Set(['sharing_list_changed','retention_changed',
-      'contract_renewal','vendor_count_changed']);
+      'contract_renewal','vendor_count_changed','policy_original_reviewed','policy_draft_reviewed']);
   for(const event of watchEvents){
-    if(!structuralTypes.has(event.kind)||!map.has(event.locality_key))continue;
-    const g=map.get(event.locality_key);
-    g.watchEvents.push(event);
+    if(!structuralTypes.has(event.kind))continue;
+    const isPolicy=event.kind==='policy_original_reviewed'||event.kind==='policy_draft_reviewed';
+    if(isPolicy&&(event.evidence_tier!=='original_government'||
+      !event.source_url?.startsWith('https://')||
+      !/^[a-z0-9 ]+\|[A-Z]{2}$/.test(event.locality_key||'')))continue;
+    if(!map.has(event.locality_key)){
+     if(!isPolicy)continue;
+     map.set(event.locality_key,{
+      key:event.locality_key,label:labelForKey(event.locality_key),
+      events:[],portals:[],cameras:[],programs:[],secondary:[],
+      secondaryRetention:[],watchEvents:[],identityMatches:[],
+      originalOutgoing:[],originalIncoming:[],matchedLabels:new Set()
+     });
+    }
+    map.get(event.locality_key).watchEvents.push(event);
   }
   return [...map.values()].sort((a,b)=>a.label.localeCompare(b.label));
  }
@@ -141,8 +153,14 @@
    ...group.watchEvents.filter(r=>r.observed_at&&r.event_key).map(r=>({
      id:'change:'+r.event_key,
      date:String(r.source_date||r.observed_at).slice(0,10),
-     type:'Source change',title:r.title,source_url:r.source_url,
-     confidence:'Newly observed '+r.evidence_tier+
+     type:r.kind==='policy_draft_reviewed'?'Unadopted policy draft':
+       r.kind==='policy_original_reviewed'?'Reviewed original policy':'Source change',
+     title:r.title,source_url:r.source_url,
+     confidence:(r.kind==='policy_draft_reviewed'?
+       'Explicitly unadopted draft; no evidence of an enacted change or operational retention setting. ':
+       r.kind==='policy_original_reviewed'?
+       'Original-page-reviewed published policy language, not independently verified current system behavior. ':'')+
+      'Newly observed '+r.evidence_tier+
       ' record; publisher date and notification date may differ'
    })),
    ...group.portals.filter(r=>r.source_date&&r.portal_url).map(r=>({
