@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'policy-evidence-issues.html'
+      - 'policy-history.html'
+      - 'agency-evidence-conversion.html'
       - 'policy-evidence-issues.js'
       - 'scripts/test_policy_evidence_issues.cjs'
       - 'scripts/smoke_policy_evidence_issues.cjs'
