@@ -28,7 +28,7 @@ const wa=WA.catalog({
  other:require('../wa-original-policies.js')
 });
 const index=WA.combine(base,wa);
-assert.equal(index.agencies,17);
+assert.equal(index.agencies,18);
 const sample=Compare.compare(index,['providence-police-ri','brookings-police-sd'],'retention');
 assert.equal(sample.columns.length,2);
 assert.ok(sample.total_matches>=2);
@@ -39,6 +39,19 @@ const draft=Compare.compare(index,['kittitas-police-wa','mukilteo-police-wa'],'r
 assert.equal(draft.columns[0].documents[0].date_basis,'manual_imprint_not_adoption');
 assert.equal(draft.columns[1].documents[0].date_basis,'attorney_general_registration_date_not_policy_date');
 assert.match(draft.columns[0].documents[0].findings[0].statement,/draft/i);
+const green=Compare.compare(index,['green-bay-police-wi','providence-police-ri'],'retention');
+assert.equal(green.columns.length,2);
+assert.equal(green.columns[0].total_verified_documents,4);
+assert.ok(green.columns[0].documents.some(d=>d.kind==='published_department_policy'&&
+ d.findings.some(f=>/30-day maximum/i.test(f.statement))));
+const draft=green.columns[0].documents.find(d=>d.kind==='draft_policy_unadopted');
+assert.equal(draft.date,null);
+assert.equal(draft.date_basis,'undated_original_not_verified_effective');
+assert.match(draft.date_note,/DRAFT/);
+assert.ok(draft.findings.some(f=>/not a verified adopted policy change/.test(f.statement)));
+const greenAll=Compare.compare(index,['green-bay-police-wi','moline-police-il'],'all');
+assert.ok(greenAll.columns[0].documents.some(d=>d.kind==='government_published_vendor_order_form'&&
+ d.date===null&&/not independently confirmed/.test(d.date_note)));
 const nuance=Compare.compare(index,['federal-way-police-wa','moline-police-il'],'all');
 assert.ok(nuance.columns[0].documents[0].findings.some(f=>/proposed/i.test(f.statement)));
 assert.ok(nuance.columns[1].documents.some(d=>d.findings.some(f=>/not (proof|confirmation)/i.test(f.statement))));
@@ -68,4 +81,4 @@ const changed=structuredClone(index);
 changed.dossiers.find(x=>x.key==='providence-police-ri').documents[0].source_url='https://evil.example/';
 changed.dossiers.find(x=>x.key==='providence-police-ri').documents[0].findings[0].page=0;
 assert.throws(()=>Compare.compare(changed,['providence-police-ri','brookings-police-sd']));
-console.log('ORIGINAL EVIDENCE COMPARISON PASS: 17 verified agency options; source-page scoped topics, drafts, uncertainty, missing findings and invalid attribution held');
+console.log('ORIGINAL EVIDENCE COMPARISON PASS: 18 verified agency options; source-page scoped topics, drafts, uncertainty, missing findings and invalid attribution held');
