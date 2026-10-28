@@ -1,0 +1,50 @@
+name: Validate M12 integrated agency intelligence, change tracker and investigations
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'agency-intelligence-v2.js'
+      - 'agency-original-loader.js'
+      - 'agency-change-tracker.js'
+      - 'agency-xray.html'
+      - 'agency-compare.html'
+      - 'agency-investigation.html'
+      - 'surveillance-changes.html'
+      - 'government-watch.html'
+      - 'policy-history.html'
+      - 'scripts/test_investigations.cjs'
+      - 'scripts/smoke_investigations.cjs'
+      - 'scripts/sync_agency_watch_events.py'
+      - 'scripts/test_government_watch_alerts.py'
+      - 'data/verified-national-government-documents.json'
+      - 'data/apache-junction-adopted-resolution-chapter-2026-10-28.json'
+      - 'data/verified-policy-adoption-status-2026-10-27.json'
+      - '.github/workflows/m12_integrated_intelligence.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Source-bound JS integrity and adversarial tests
+        run: |
+          node --check agency-intelligence-v2.js
+          node --check agency-original-loader.js
+          node --check agency-change-tracker.js
+          node scripts/test_investigations.cjs
+      - name: Validate source-qualified opt-in Watch notifications
+        run: python3 -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+      - name: Start read-only original-source site
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/katoptron-m12-site.log 2>&1 &
+      - name: Install pinned browser tester
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Source-linked investigation, tracker, mobile and comparison acceptance
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_investigations.cjs
