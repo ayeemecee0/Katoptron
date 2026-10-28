@@ -37,7 +37,7 @@ def publisher_url(url):
    u.port is None and u.hostname and
    u.hostname.endswith(".gov") and u.netloc==u.hostname and
    not u.fragment and not re.search(r"%2e|\\|/\.\.?/",u.path,re.I) and
-   len(u.path)>3 and not re.search(r"/(?:plate[-_]?reads|search[-_]?logs|vehicle[-_]?queries)",u.path,re.I))
+   len(u.path)>3 and not re.search(r"(?:plate[-_]?reads|search[-_]?logs|vehicle[-_]?queries)",u.path,re.I))
  except (ValueError,TypeError):return False
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,req,fp,code,msg,headers,newurl):
