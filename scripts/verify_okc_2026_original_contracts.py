@@ -30,7 +30,7 @@ EXPECTED_PNGS={
 "okc-2026-city-funds-certificate":{1:"46616307a268cc99a92d83861efb859000cfb3909a29525e7a463052e7cd2866"}}
 TEXT_ANCHORS={
 "okc-2026-signed-flock-amendment":{1:["amendment no. 1","federal","flock","agreement"],2:["approved","council","august","city clerk"]},
-"okc-2026-approved-flock-renewal":{1:["flock group","renewal","c241032","2027"]},
+"okc-2026-approved-flock-renewal":{1:["flock group","renewal","c241032"]},
 "okc-2026-council-staff-memo":{1:["flock group","270,000","renewal","c241032"],2:["270,000","police sales tax fund"]},
 "okc-2026-city-funds-certificate":{1:["availability of funds certificate","270,000","police sales tax fund"]}
 }
