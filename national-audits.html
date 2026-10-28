@@ -54,6 +54,12 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <details id="nationalCoverageDetails"><summary>Browse all 51 jurisdictions and official publication sources</summary>
 <div id="nationalCoverageResults" class="list"></div></details>
 </section>
+<section id="nyWvOriginalEvents" aria-labelledby="nyWvEventsHeading">
+<h2 id="nyWvEventsHeading">New York Flock history and termination · West Virginia oversight hearing</h2>
+<p>Verified original government documents tell different stories. A New York sheriff's July 2025 Flock use disclosure precedes a county legislature's April 2026 decision to terminate the contract. West Virginia legislative records document an August 2026 Flock hearing, <strong>not</strong> an enacted surveillance statute, confirmed state deployment or installed camera coordinates.</p>
+<p id="nyWvEventsStatus" role="status" aria-live="polite">Loading four original New York and West Virginia government records…</p>
+<div id="nyWvEventsResults" class="list"></div>
+</section>
 <section id="riSdPolicyVersions" aria-labelledby="riSdPolicyHeading">
 <h2 id="riSdPolicyHeading">2026 original police ALPR policies · Rhode Island and South Dakota</h2>
 <p>Two government-hosted, dated police policy versions have verified original-PDF and visually reviewed page hashes. Providence's policy expressly identifies Flock as a hosting vendor. Brookings publicly describes a Flock partnership on its city website, while its scanned policy specifies ALPR procedures. <strong>Policy requirements are not independently confirmed system configuration, completed audit events or verified camera coordinates.</strong></p>
@@ -106,9 +112,9 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p class="muted"><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/scan_national_government_audit_sources.yml" rel="noopener noreferrer" target="_blank">View national government source acquisition runs and source-review artifacts</a></p>
 </section>
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
-</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script src="./nebraska-original-aggregate.js"></script><script src="./okc-original-contracts.js"></script><script src="./ri-sd-original-policies.js"></script><script>
+</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script src="./nebraska-original-aggregate.js"></script><script src="./okc-original-contracts.js"></script><script src="./ri-sd-original-policies.js"></script><script src="./ny-wv-original-events.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null,nebraskaAggregate:null,okcOriginal:null,riSdOriginalPolicies:[]};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null,nebraskaAggregate:null,okcOriginal:null,riSdOriginalPolicies:[],nyWvOriginalEvents:[]};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
@@ -258,6 +264,44 @@ async function loadOversight(){
   const item=el('div');item.append(el('strong',num),el('span',name));$('oversightMetrics').append(item);
  }
  renderOversight();
+}
+function renderNYWVEvents(){
+ const rows=APP.nyWvOriginalEvents,area=$('nyWvEventsResults');
+ area.replaceChildren();
+ $('nyWvEventsStatus').textContent=rows.length+
+  ' original government event records: New York 2025 historical Flock use followed by April 2026 12–1 county termination approval, West Virginia legislative hearing. No confirmed camera removal or enacted state law inferred.';
+ const labels={
+ 'agency_authored_historical_flock_use_and_sharing_policy_self_report':'Historical sheriff Flock use · department self-report',
+ 'county_legislature_approved_flock_contract_termination_resolution':'Approved county termination resolution · not hardware telemetry',
+ 'official_proposed_public_hearing_agenda':'Legislative hearing agenda · not a vote',
+ 'state_legislature_retrospective_public_hearing_report':'Legislature-reported oversight discussion · not enacted law'
+ };
+ for(const x of rows){
+  const card=el('article'),meta=el('div',null,'meta');
+  meta.append(el('span',x.state,'tag'),el('span',labels[x.kind],'tag'));
+  card.append(meta,el('h3',x.agency),
+   el('p',(x.id==='ny-tompkins-sheriff-july2025-flock-disclosure'?
+    'July 2025 monthly-report period ended ':'Original government event dated ')+x.source_date,'muted'));
+  if(x.source_date_note)card.append(el('p',x.source_date_note,'muted'));
+  for(const f of x.findings){
+   const detail=el('section',null,'finding');detail.append(el('p',f.statement));
+   const link=el('a',x.source_type==='pdf'?'Visually verified original government PDF · page '+f.page:
+    'Read official government original publication');
+   link.href=x.source_url+(x.source_type==='pdf'?'#page='+f.page:'');
+   link.target='_blank';link.rel='noopener noreferrer';detail.append(link);
+   card.append(detail);
+  }
+  card.append(el('p',x.state==='NY'?
+   'Historical government evidence: do not infer current Flock operations or completed removals.':
+   'Government hearing or report: not proof of enacted legislation or operating state Flock cameras.','muted'));
+  area.append(card);
+ }
+}
+async function loadNYWVEvents(){
+ const r=await fetch('./data/verified-ny-wv-original-flock-events.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!r.ok)throw Error('New York/West Virginia original event evidence unavailable');
+ APP.nyWvOriginalEvents=window.KatoptronNYWVOriginalEvents.catalog(await r.json());
+ renderNYWVEvents();
 }
 function renderRISDPolicies(){
  const rows=APP.riSdOriginalPolicies,area=$('riSdPolicyResults');area.replaceChildren();
@@ -466,4 +510,5 @@ loadNationalCoverage().catch(e=>{$('nationalCoverageStatus').textContent=e.messa
 loadNebraskaAggregate().catch(e=>{$('nebraskaAggregateStatus').textContent=e.message+'; no unsupported aggregate findings shown.';});
 loadOKCOriginals().catch(e=>{$('okcOriginalStatus').textContent=e.message+'; unverified contract and council findings withheld.';});
 loadRISDPolicies().catch(e=>{$('riSdPolicyStatus').textContent=e.message+'; original policy findings withheld.';});
+loadNYWVEvents().catch(e=>{$('nyWvEventsStatus').textContent=e.message+'; unsupported historical government findings withheld.';});
 </script></body></html>
