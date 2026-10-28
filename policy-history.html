@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Original Policy History</title>
+<meta name="description" content="Source-page-reviewed ALPR policy history, carefully distinguished drafts, and local opt-in source-version watch.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0a121a;color:#e7f0f6;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0}a{color:#9fdceb}
+header{background:#10202d;border-bottom:1px solid #354c60;padding:1.1rem max(1rem,4vw);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+header nav{display:flex;gap:1rem;flex-wrap:wrap}header a{color:inherit}
+main{max-width:1150px;margin:auto;padding:2rem 1rem 5rem}
+h1{font-size:clamp(1.7rem,4vw,2.5rem)}h2{font-size:1.3rem}
+p{color:#c0d3df;line-height:1.55}
+.notice{border-left:3px solid #81b6c8;background:#132938;padding:1rem;margin:1rem 0}
+.controls{display:flex;gap:.8rem;flex-wrap:wrap;align-items:end;margin:1.2rem 0}
+label{display:block;margin-bottom:.4rem;font-weight:600}
+select,button{font:inherit;color:inherit;background:#182f40;border:1px solid #7b92a4;padding:.75rem;border-radius:8px}
+select{min-width:min(100%,260px);max-width:100%}button{cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #89dceb;outline-offset:3px}
+.card{padding:1rem;border:1px solid #455c6d;background:#10222f;border-radius:11px;margin:1rem 0}
+.card h3{font-size:1.08rem;margin:.3rem 0}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1rem}
+.field{font-size:.85rem;color:#bad1df}.finding{border-top:1px solid #324e62;padding:.7rem 0}
+strong.state{color:#e9cf9e}.status{min-height:1.3rem}
+[hidden]{display:none!important}
+</style></head><body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a><nav aria-label="Primary">
+<a href="./agency-xray.html">AGENCY X-RAY</a>
+<a href="./agency-compare.html">COMPARE AGENCIES</a>
+<a href="./government-watch.html">GOVERNMENT WATCH</a></nav></header>
+<main id="main-content">
+<h1>Original agency policy history</h1>
+<p>Inspect original-page-reviewed ALPR policies, their published dates or date limitations, and documented proposals. A draft is not an adopted change. The library is selective, not a complete catalog of policies or a live record of equipment behavior.</p>
+<div class="notice"><strong>Evidence standard:</strong> A newly indexed document is not automatically a new law, an effective policy, a verified software configuration, or proof of actual compliance. Only a source-reviewed before/after pair can support a narrowly described comparison. This page does not infer camera locations, live data sharing or current vendor access.</div>
+<p id="loadStatus" role="status" aria-live="polite">Loading page-verified government source originals…</p>
+<div class="controls">
+ <div><label for="agency">Agency with reviewed original policy documents</label>
+ <select id="agency"><option value="">Select an agency</option></select></div>
+ <button id="track" disabled type="button">Watch original versions on this device</button>
+ <button id="untrack" disabled type="button">Stop watching</button>
+ <button id="review" disabled type="button">Mark new originals reviewed</button>
+</div>
+<p id="watchStatus" role="status" aria-live="polite">On-device watch is off by default.</p>
+<div class="notice"><strong>On-device source watch:</strong> Watching stores this agency and the already seen source fingerprints in this browser only. When you return to this page it can identify new individually verified originals added to Katoptron since your last review. It does not send emails, push notifications or background alerts. Existing government email alerts are a separate opt-in service.</div>
+<section id="agencySection" hidden aria-labelledby="agencyHeading">
+<h2 id="agencyHeading"></h2>
+<p id="agencyIntro"></p>
+<div id="history"></div>
+</section>
+<section aria-labelledby="changesHeading" id="comparisonSection" hidden>
+<h2 id="changesHeading">Documented version comparison</h2>
+<p>Version differences below distinguish an existing published statement from an unadopted proposed revision. No change in actual practice is claimed.</p>
+<div id="comparisons"></div>
+</section>
+<p><a href="./agency-compare.html">Compare source-reviewed policy provisions across agencies</a></p>
+</main>
+<script src="./okc-original-contracts.js"></script>
+<script src="./nebraska-original-aggregate.js"></script>
+<script src="./ri-sd-original-policies.js"></script>
+<script src="./wa-kittitas-draft-review.js"></script>
+<script src="./national-primary-documents.js"></script>
+<script src="./verified-agency-dossiers.js"></script>
+<script src="./wa-reviewed-flock-sources.js"></script>
+<script src="./wa-original-policies.js"></script>
+<script src="./wa-original-agency-dossiers.js"></script>
+<script src="./policy-history.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const Policy=window.KatoptronPolicyHistory;
+const PATHS={
+ okc:'./data/verified-okc-2026-original-flock-contract-review.json',
+ ne:'./data/verified-nebraska-original-aggregate-reports.json',
+ riSd:'./data/verified-ri-sd-original-alpr-policies.json',
+ kittitas:'./data/verified-wa-kittitas-scanned-draft-review.json',
+ waRegistry:'./data/wa-original-agency-alpr-registrations.json',
+ waHeld:'./data/wa-held-original-policy-diagnostics.json',
+ national:'./data/verified-national-government-documents.json'
+};
+let catalog=null,selected=null,localState={schema:1,follows:[],seen:{}};
+function element(tag,value,cls){const d=document.createElement(tag);
+ if(value!==undefined)d.textContent=String(value);if(cls)d.className=cls;return d;
+}
+function link(parent,href,title){
+ const a=element('a',title);a.href=href;a.target='_blank';a.rel='noopener noreferrer';parent.append(a);
+}
+function readState(){
+ try{localState=Policy.validateStore(JSON.parse(localStorage.getItem(Policy.STORAGE)||'null'));}
+ catch{localState=Policy.validateStore(null);}
+}
+function writeState(next){
+ try{localStorage.setItem(Policy.STORAGE,JSON.stringify(next));localState=next;return true;}
+ catch{$('watchStatus').textContent='Browser storage unavailable. No watch was saved.';return false;}
+}
+function updateWatch(){
+ if(!selected){
+  $('track').disabled=true;$('untrack').disabled=true;$('review').disabled=true;return;
+ }
+ const followed=localState.follows.includes(selected.key);
+ const changes=Policy.updates(localState,selected);
+ $('track').disabled=followed;
+ $('untrack').disabled=!followed;
+ $('review').disabled=!followed||!changes.length;
+ $('watchStatus').textContent=followed?
+  'On-device watch enabled for '+selected.name+'. '+changes.length+
+   ' new source-verified original(s) since your last review. No background or email notifications are enabled by this watch.':
+  'No on-device source watch enabled for '+selected.name+'. Existing originals will be the baseline if you opt in.';
+}
+function render(){
+ const key=$('agency').value;
+ selected=catalog.agencies.find(x=>x.key===key)||null;
+ $('agencySection').hidden=!selected;$('comparisonSection').hidden=true;
+ $('history').replaceChildren();$('comparisons').replaceChildren();
+ if(!selected){updateWatch();return;}
+ $('agencyHeading').textContent=selected.name+' · '+selected.state;
+ $('agencyIntro').textContent=selected.documents.length+
+  ' individually page-reviewed policy original(s), not a complete agency policy or operational history.';
+ const newDocs=new Set(Policy.updates(localState,selected).map(x=>x.id));
+ for(const d of selected.documents){
+  const item=element('article',undefined,'card');
+  const title=element('h3',(newDocs.has(d.id)?'NEW ORIGINAL · ':'')+d.title);
+  const date=d.date||'Original date unverified';
+  item.append(title,element('p',date+' · '+d.date_basis.replaceAll('_',' ')+(d.date_note?' · '+d.date_note:''),'field'));
+  if(d.status==='draft_unadopted')item.append(element('strong','DRAFT · NOT VERIFIED ADOPTED','state'));
+  else if(d.status==='document_effective_date')item.append(element('strong','Document bears a published effective date'));
+  else item.append(element('p','Published original; current effective policy status not independently verified.'));
+  item.append(element('p','Original SHA-256: '+d.sha,'field'));
+  for(const f of d.findings){
+   const row=element('div',undefined,'finding');
+   row.append(element('p',f.statement));link(row,f.original_page,'Read original · page '+f.page);item.append(row);
+  }
+  item.append(element('p',d.limits,'field'));
+  $('history').append(item);
+ }
+ const pairs=catalog.comparisons.filter(x=>x.agency_key===selected.key);
+ if(pairs.length){
+  $('comparisonSection').hidden=false;
+  for(const pair of pairs){
+   const card=element('article',undefined,'card');
+   card.append(element('h3',pair.topic+' · proposed change only'),
+    element('p',pair.interpretation));
+   const grid=element('div',undefined,'pair');
+   for(const [heading,version] of [['Published source',pair.old],['DRAFT proposal',pair.proposed]]){
+    const v=element('div',undefined,'card');
+    v.append(element('strong',heading),element('p',version.statement),
+     element('p',version.date||version.date_note,'field'));
+    link(v,version.source_page,'Open original PDF page');
+    grid.append(v);
+   }
+   card.append(grid);$('comparisons').append(card);
+  }
+ }
+ updateWatch();
+ const url=new URL(location.href);url.searchParams.set('agency',selected.key);
+ history.replaceState(null,'',url);
+}
+$('agency').addEventListener('change',render);
+$('track').addEventListener('click',()=>{
+ if(selected&&writeState(Policy.follow(localState,selected)))updateWatch();
+});
+$('untrack').addEventListener('click',()=>{
+ if(selected&&writeState(Policy.unwatch(localState,selected.key)))updateWatch();
+});
+$('review').addEventListener('click',()=>{
+ if(selected&&writeState(Policy.markReviewed(localState,selected)))render();
+});
+async function original(url){
+ const response=await fetch(url,{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Original government source manifest unavailable');
+ return response.json();
+}
+async function load(){
+ readState();
+ const keys=Object.keys(PATHS);
+ const values=await Promise.all(keys.map(k=>original(PATHS[k])));
+ const raw={};keys.forEach((k,i)=>raw[k]=values[i]);
+ const base=window.KatoptronVerifiedAgencyDossiers.catalog(raw,{
+  okc:window.KatoptronOKCOriginalContracts,
+  ne:window.KatoptronNebraskaOriginalAggregate,
+  riSd:window.KatoptronRISDOriginalPolicies,
+  kittitas:window.KatoptronKittitasDraftReview,
+  national:window.KatoptronNationalPrimaryDocuments
+ });
+ let index=base,waError=null;
+ try{
+  const [flock,other,receipts]=await Promise.all([
+   original('./data/verified-wa-flock-policy-originals.json'),
+   original('./data/verified-wa-agency-policies.json'),
+   original('./data/wa-ago-original-policy-source-inspection.json')
+  ]);
+  const wa=window.KatoptronWAOriginalAgencyDossiers.catalog({
+   flock,other,receipts,registry:raw.waRegistry
+  },{
+   flock:window.KatoptronWAReviewedFlockSources,
+   other:window.KatoptronWashingtonOriginalPolicies
+  });
+  index=window.KatoptronWAOriginalAgencyDossiers.combine(base,wa);
+ }catch(error){waError=error.message;}
+ catalog=Policy.catalog(index);
+ for(const row of catalog.agencies){const option=element('option',row.name+' · '+row.state);
+  option.value=row.key;$('agency').append(option);}
+ $('loadStatus').textContent=catalog.original_policy_documents+
+  ' original-page-reviewed policy documents at '+catalog.agency_count+
+  ' source-identified agencies. '+(waError?'Washington extension held: '+waError:
+   'Publisher mismatch holds remain excluded.')+
+  ' This is not proof of complete national policy coverage.';
+ const request=new URL(location.href).searchParams.get('agency');
+ const preferred=request&&catalog.agencies.some(x=>x.key===request)?request:
+  'green-bay-police-wi';
+ if(catalog.agencies.some(x=>x.key===preferred))$('agency').value=preferred;
+ render();
+}
+load().catch(error=>{
+ $('loadStatus').textContent='Policy-history source validation failed: '+error.message+
+  '. No unverified source versions will be displayed.';
+});
+</script></body></html>

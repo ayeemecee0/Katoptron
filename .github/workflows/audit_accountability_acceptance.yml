@@ -11,6 +11,11 @@ on:
       - 'verified-agency-dossiers.js'
       - 'original-evidence-comparison.js'
       - 'agency-compare.html'
+      - 'policy-history.html'
+      - 'policy-history.js'
+      - 'scripts/test_policy_history.cjs'
+      - 'scripts/smoke_policy_history.cjs'
+      - 'government-watch.html'
       - 'scripts/test_original_evidence_comparison.cjs'
       - 'scripts/smoke_original_evidence_comparison.cjs'
       - 'wa-original-agency-dossiers.js'
@@ -104,6 +109,8 @@ jobs:
           node scripts/test_verified_agency_dossiers.cjs
           node --check original-evidence-comparison.js
           node scripts/test_original_evidence_comparison.cjs
+          node --check policy-history.js
+          node scripts/test_policy_history.cjs
           node --check wa-original-agency-dossiers.js
           node scripts/test_wa_original_agency_dossiers.cjs
           node scripts/test_audit_history.cjs
@@ -153,6 +160,7 @@ jobs:
           node scripts/smoke_agency_audit.cjs
           node scripts/smoke_verified_agency_dossiers.cjs
           node scripts/smoke_original_evidence_comparison.cjs
+          node scripts/smoke_policy_history.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs
           node scripts/smoke_wa_alpr_registrations.cjs
