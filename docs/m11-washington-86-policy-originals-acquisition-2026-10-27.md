@@ -20,3 +20,13 @@ Source files:
 - Dedicated data integrity, browser and general accountability regressions prevent falsely upgrading receipt retrieval to live Flock operation or legal policy status.
 
 **Remaining substantive review:** Individually examine the retrieved originals' agency policy text and original pages before qualifying any specific claim. The 26 acquisition holds require canonical source recovery or alternate official publisher original. The 11 historical page reviews remain preserved and separate.
+
+## Follow-up: three individual source-page original reviews
+
+The review script `scripts/inspect_wa_flock_reference_policy_originals.py` re-fetched three state-linked PDFs whose first pages mentioned Flock and verified the exact previously observed original SHA and pagination. CI original page-review run: https://github.com/ayeemecee0/Katoptron/actions/runs/40630806814.
+
+- **Bonney Lake PD:** Original PDF p3 requires a public transparency portal documenting Flock camera usage. Source text is not proof of deployment or actual policy compliance.
+- **Enumclaw PD:** Original PDF p3 likewise contains a Flock-specific transparency portal requirement. Not independent confirmation of current operating equipment or the policy legal-effective date.
+- **Sultan/Snohomish County Sheriff:** The 30-page document linked under the Sultan AG registration addresses **Snohomish County Sheriff’s Office** Flock account, staff, and training, on pp2–4. The [City of Sultan’s official police-services page](https://sultanwa.gov/176/Police) confirms the city has received law enforcement services from the Sheriff's Office under contract since 2009. The original must **not** be counted as an independent Sultan-administered Flock account or separate operator without additional agency-level confirmation.
+
+These page-text findings are recorded in `data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json`, source-validated by `wa-policy-page-findings.js`, and visible on the agency evidence conversion page. Two are qualified as page-text requirements; one is held as an operator identity crosswalk issue. No new camera geocoordinates, live sharing permissions or enacted-policy dates are reported.
