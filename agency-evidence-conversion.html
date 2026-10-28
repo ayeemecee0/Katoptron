@@ -115,6 +115,15 @@ function queue(){
   div.append(el('strong',x.agency||x.publisher||x.id),
     el('span','State '+x.state+' · '+x.disposition,'small'),
     el('span',x.next_action||'Prior original review recorded; recheck source version','small'));
+  if(mode==='wa'&&waReceipts){
+   const receipt=waReceipts.receipts.find(r=>r.id===x.id);
+   if(receipt){
+    const info=receipt.acquisition_status==='retrieved_unreviewed_original_pdf'?
+     'Original PDF acquired, '+receipt.pdf_pages+' pages, SHA-256 '+receipt.sha256.slice(0,16)+'…; contents NOT individually reviewed.':
+     'Original acquisition held: '+receipt.acquisition_status;
+    div.append(el('span',info,'small'));
+   }
+  }
   const url=x.url||x.original_url||x.policy_urls?.[0];
   if(url)link(div,url,'Open source');
   $('queue').append(div);
