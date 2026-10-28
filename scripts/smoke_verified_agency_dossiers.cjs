@@ -33,7 +33,7 @@ const {chromium}=require('playwright');
   await page.locator('#originalList button').first().click();
   assert.equal(await page.locator('#originalDocuments article').count(),1);
   assert.match(await page.locator('#originalDocuments').textContent(),/DRAFT/);
-  assert.match(await page.locator('#originalDocuments').textContent(),/does not verify/i);
+  assert.match(await page.locator('#originalDocuments').textContent(),/Neither the draft nor its training reference verifies/i);
   assert.match(await page.locator('#originalSummary').textContent(),/not live device timestamps/);
   await page.locator('#originalSearch').fill('Moline');
   await page.locator('#originalList button').first().click();
