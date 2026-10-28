@@ -1,0 +1,34 @@
+'use strict';
+const assert=require('node:assert/strict');
+const API=require('../robbinsdale-independent-audit.js');
+const audit=require('../data/verified-robbinsdale-2025-independent-flock-audit.json');
+const agencies=require('../data/verified-agency-html-source-disclosures-2026-10-27.json');
+const agency=agencies.source_disclosures.find(r=>r.id==='robbinsdale-mn');
+const x=API.verify(audit,agency);
+assert.equal(x.new_independently_page_reviewed_historical_audit_documents,1);
+assert.equal(x.new_individually_reviewed_final_policy_427_versions,0);
+assert.equal(x.confirmed_live_sharing_edges,0);
+assert.equal(x.confirmed_current_geolocated_camera_points,0);
+assert.equal(x.independent_audit.findings.length,5);
+assert.equal(x.independent_audit.findings[0].original_page,API.ORIGINAL+'#page=2');
+assert.equal(x.independent_audit.findings[4].original_page,API.ORIGINAL+'#page=5');
+assert.match(x.historical_retention,/Vehicle Reads/);
+assert.match(x.agency_2026_photos,/two years/);
+assert.match(x.agency_2026_hits,/30 days/);
+assert.match(x.comparison_status,/Not established as a contradiction/);
+function tamper(original,fn){
+ const a=structuredClone(audit),b=structuredClone(agency);
+ fn(a,b);
+ assert.throws(()=>API.verify(a,b),/source|audit|city|finding/i);
+}
+tamper(0,(a,b)=>{a.sha256='0'.repeat(64)});
+tamper(0,(a,b)=>{a.source_date='2026-10-27'});
+tamper(0,(a,b)=>{a.pages_reviewed=[2,3,4]});
+tamper(0,(a,b)=>{a.findings[0].page=3});
+tamper(0,(a,b)=>{a.current_operating_equipment_verified=true});
+tamper(0,(a,b)=>{a.live_directed_sharing_edges_verified=1});
+tamper(0,(a,b)=>{a.exact_camera_coordinates_added=1});
+tamper(0,(a,b)=>{b.original_html_sha256='0'.repeat(64)});
+tamper(0,(a,b)=>{b.policy_enactment_verified=true});
+tamper(0,(a,b)=>{b.claim_anchors=[]});
+console.log('ROBBINSDALE ORIGINAL AUDIT COMPARISON PASS: 5 state-archived source-page findings, city 2026 record types distinct, no current fleet/sharing/location inference');
