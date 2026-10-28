@@ -1,0 +1,47 @@
+name: Independently review Robbinsdale original Flock and Axon ALPR audits
+on:
+  push:
+    paths:
+      - 'scripts/inspect_robbinsdale_original_alpr_audits.py'
+      - 'scripts/test_inspect_robbinsdale_original_alpr_audits.py'
+      - '.github/workflows/inspect_robbinsdale_original_alpr_audits.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install 'pypdf>=5,<7'
+      - run: python3 -m unittest discover -s scripts -p 'test_inspect_robbinsdale_original_alpr_audits.py' -v
+      - run: python3 scripts/inspect_robbinsdale_original_alpr_audits.py
+      - name: Export exact public original audit PDFs for independent visual review
+        run: |
+          python3 - <<'PY'
+          import sys,hashlib
+          from pathlib import Path
+          sys.path.insert(0,"scripts")
+          import inspect_robbinsdale_original_alpr_audits as A
+          dest=Path(".katoptron-ci/robbinsdale-original-public-pdfs")
+          dest.mkdir(parents=True,exist_ok=True)
+          for kind in ("flock_2025","axon_2026"):
+              raw=A.fetch(kind)
+              result=A.inspect(kind,raw)
+              (dest/(kind+".pdf")).write_bytes(raw)
+              print("SOURCE_PDF_READY",kind,result["sha256"],result["page_count"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: robbinsdale-state-archived-public-original-audit-review
+          path: |
+            .katoptron-ci/robbinsdale-original-audit-source-review.json
+            .katoptron-ci/robbinsdale-original-public-pdfs/*.pdf
+          if-no-files-found: error
+          retention-days: 7
