@@ -1,0 +1,41 @@
+name: Validate original-source policy evidence issue ledger and mobile browser
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'policy-evidence-issues.html'
+      - 'policy-history.html'
+      - 'agency-evidence-conversion.html'
+      - 'policy-evidence-issues.js'
+      - 'scripts/test_policy_evidence_issues.cjs'
+      - 'scripts/smoke_policy_evidence_issues.cjs'
+      - 'data/verified-wa-flock-policy-originals.json'
+      - 'data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json'
+      - 'data/verified-policy-adoption-status-2026-10-27.json'
+      - 'data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json'
+      - 'data/verified-robbinsdale-2025-independent-flock-audit.json'
+      - '.github/workflows/policy_evidence_issues_acceptance.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify evidence identities, fingerprints, dates and status labels
+        run: |
+          node --check policy-evidence-issues.js
+          node scripts/test_policy_evidence_issues.cjs
+      - name: Start local read-only site
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/source-evidence-issues.log 2>&1 &
+      - name: Install pinned mobile Chromium client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Verify mobile filter and sources without making operational claims
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_policy_evidence_issues.cjs

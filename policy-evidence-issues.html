@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="Original government-source discrepancies, policy adoption holds and provenance questions, each linked to dated evidence.">
+<title>Katoptron | Source Evidence Questions</title><link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0b1721;color:#e7f4f8;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.55}
+a{color:#9bdeee}header{padding:1.1rem max(1rem,4vw);background:#102737;border-bottom:1px solid #476475;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+header nav{display:flex;gap:1rem;flex-wrap:wrap;font-size:.9rem}
+main{max-width:1140px;padding:2rem 1rem 5rem;margin:auto}h1{font-size:clamp(1.6rem,4vw,2.45rem)}
+h2{font-size:1.12rem;margin:.2rem 0 .45rem}p{color:#c6d9e3}
+.note{padding:1rem;border-left:4px solid #7ec6d7;background:#17303d;margin:1rem 0}
+.stats{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0}
+.stat{padding:.8rem 1rem;background:#142c3b;border:1px solid #426678;border-radius:8px;min-width:160px}
+.stat strong{font-size:1.5rem;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:1rem}
+article{background:#152b39;border:1px solid #496a7c;padding:1.1rem;border-radius:9px;overflow-wrap:anywhere}
+article p{margin:.5rem 0}article .kicker{font-size:.82rem;letter-spacing:.02em;color:#f3cf9a}
+article .next{border-top:1px solid #426576;padding-top:.65rem}
+.links{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.65rem}
+label{font-weight:600;display:block;margin-bottom:.3rem}
+select{font:inherit;padding:.65rem;color:inherit;background:#183545;border:1px solid #83a7b8;border-radius:7px;max-width:100%}
+.controls{display:flex;gap:1rem;flex-wrap:wrap;margin:1.3rem 0}
+a:focus-visible,select:focus-visible{outline:3px solid #a2ebf8;outline-offset:3px}
+small{color:#bbd2dc}
+</style></head><body><a class="skip-link" href="#main">Skip to source evidence questions</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a><nav><a href="./agency-evidence-conversion.html">Evidence conversion</a><a href="./policy-history.html">Policy history</a><a href="./nationwide-policy.html">Nationwide coverage</a></nav></header>
+<main id="main">
+<h1>Evidence questions requiring original-source resolution</h1>
+<p>These are precise government-document discrepancies and unresolved source questions, not allegations of surveillance misconduct or assertions about the live Flock network. A separate comparison caution prevents false conflict claims across record types.</p>
+<div class="note"><strong>Evidence rule:</strong> A proposed policy is not an adopted one. A signed ordinance may incorporate another text that still requires authentication. A word-number inconsistency does not measure actual deletion. An agency listed as a registrant is not necessarily the operator.</div>
+<p id="status" role="status" aria-live="polite">Checking original evidence references…</p>
+<div class="stats" id="stats"></div>
+<div class="controls"><div><label for="stateFilter">State</label><select id="stateFilter"><option value="ALL">All states</option></select></div><div><label for="kindFilter">Question type</label><select id="kindFilter"><option value="ALL">All questions and cautions</option><option value="high">High priority</option><option value="medium">Other unresolved source questions</option><option value="context">Interpretation cautions</option></select></div></div>
+<div class="cards" id="cards"></div>
+</main>
+<script src="./policy-evidence-issues.js"></script>
+<script>
+(async function(){
+ const status=document.getElementById('status'),cards=document.getElementById('cards'),
+ stats=document.getElementById('stats'),sf=document.getElementById('stateFilter'),kf=document.getElementById('kindFilter');
+ try{
+  const paths={
+   wa:'./data/verified-wa-flock-policy-originals.json',
+   apache:'./data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json',
+   adoptions:'./data/verified-policy-adoption-status-2026-10-27.json',
+   waPages:'./data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json',
+   robbinsdale:'./data/verified-robbinsdale-2025-independent-flock-audit.json'
+  };
+  const entries=await Promise.all(Object.entries(paths).map(async ([k,p])=>{
+   const r=await fetch(p,{cache:'no-store'});if(!r.ok)throw Error('Original evidence unavailable');
+   return [k,await r.json()];
+  }));
+  const report=KatoptronPolicyEvidenceIssues.build(Object.fromEntries(entries));
+  function stat(n,label){const node=document.createElement('div');node.className='stat';
+   const strong=document.createElement('strong');strong.textContent=String(n);
+   const caption=document.createElement('small');caption.textContent=label;node.append(strong,caption);return node;}
+  stats.append(stat(report.open_source_questions,'Unresolved evidence questions'),
+   stat(report.interpretive_cautions,'Interpretation cautions'),stat(0,'Live-system claims made'));
+  for(const state of [...new Set(report.items.map(x=>x.state))].sort()){
+   const opt=document.createElement('option');opt.value=state;opt.textContent=state;sf.append(opt);
+  }
+  function render(){
+   cards.replaceChildren();
+   const data=report.items.filter(x=>(sf.value==='ALL'||x.state===sf.value)&&(kf.value==='ALL'||x.priority===kf.value));
+   for(const issue of data){
+    const article=document.createElement('article'),h=document.createElement('h2'),k=document.createElement('p');
+    k.className='kicker';k.textContent=issue.state+' · '+issue.agency+' · '+(issue.priority==='context'?'Caution':issue.priority+' priority');
+    h.textContent=issue.title;
+    const detail=document.createElement('p');detail.textContent=issue.detail;
+    const next=document.createElement('p');next.className='next';next.textContent='Next verification: '+issue.next;
+    const meta=document.createElement('small');meta.textContent='Source date / review checkpoint: '+issue.observed+' · '+issue.status;
+    const links=document.createElement('div');links.className='links';
+    for(const s of issue.citations){const a=document.createElement('a');a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=s.label;links.append(a);}
+    article.append(k,h,detail,next,meta,links);cards.append(article);
+   }
+   status.textContent=data.length+' source questions / interpretation cautions displayed. None asserts verified live compliance or equipment.';
+  }
+  sf.addEventListener('change',render);kf.addEventListener('change',render);render();
+ }catch(_){cards.replaceChildren();stats.replaceChildren();status.textContent='Original evidence validation unavailable. No findings displayed.';}
+})();
+</script></body></html>
