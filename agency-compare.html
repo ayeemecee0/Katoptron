@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Compare original agency evidence</title>
+<meta name="description" content="Compare individually original-page-reviewed ALPR policy, audit and government contract evidence with explicit source dates and limitations.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0a121a;color:#e7f0f6}
+*{box-sizing:border-box}body{margin:0}a{color:#9fdceb}
+header{background:#10202d;border-bottom:1px solid #354c60;padding:1rem max(1rem,4vw);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+header a{text-decoration:none;color:inherit}header nav{display:flex;gap:1rem;flex-wrap:wrap}
+main{max-width:1250px;margin:auto;padding:2rem 1rem 5rem}h1{font-size:clamp(1.6rem,4vw,2.4rem)}
+p,small{line-height:1.55;color:#c2d3df}.note{border-left:3px solid #7db9c8;padding:1rem;background:#132936}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.85rem;margin:1.4rem 0}
+.controls label{display:block;font-weight:650;margin-bottom:.4rem}
+select{font:inherit;color:inherit;background:#172b3c;border:1px solid #8195a7;border-radius:8px;padding:.75rem;width:100%}
+select:focus-visible,a:focus-visible{outline:3px solid #90d8ed;outline-offset:3px}
+#comparison{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:1rem;align-items:start;margin:1rem 0}
+.agency{background:#11222e;border:1px solid #486071;border-radius:11px;padding:1rem;overflow-wrap:anywhere}
+.agency h2{font-size:1.15rem;margin:.15rem 0}
+.doc{border-top:1px solid #385064;margin-top:1rem;padding-top:.7rem}
+.doc h3{font-size:1rem;margin:.25rem 0}
+.finding{border-left:2px solid #7998a7;padding-left:.75rem;margin:1rem 0}
+.finding p{margin:.35rem 0}.type{color:#b6cbd7;font-size:.78rem}
+.muted{font-size:.85rem;color:#c2d3df}.status{min-height:1.4rem}
+.share{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+[hidden]{display:none!important}
+</style></head><body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a><nav aria-label="Primary">
+<a href="./agency-xray.html">AGENCY X-RAY</a><a href="./national-audits.html">NATIONAL SOURCE LIBRARY</a>
+<a href="./government-watch.html">GOVERNMENT WATCH</a></nav></header>
+<main id="main-content">
+<h1>Compare original government agency evidence</h1>
+<p>Place two or three source-identified agencies side by side. Every displayed finding links to the exact page of a reviewed government original, with its document date, evidence type and limits. Topic filters search <strong>reviewed finding categories</strong>, not an entire agency's records.</p>
+<div class="note"><strong>Not an agency ranking or compliance score.</strong> A policy tells you what an agency wrote, not necessarily what it does. Different documents may cover different years or document types. Missing evidence is unknown, not zero. The catalog does not establish live cameras or sharing relationships.</div>
+<p class="status" id="loadStatus" role="status" aria-live="polite">Loading source-validated government agency dossiers…</p>
+<div class="controls">
+<div><label for="agencyA">First agency</label><select id="agencyA"><option value="">Choose an agency</option></select></div>
+<div><label for="agencyB">Second agency</label><select id="agencyB"><option value="">Choose an agency</option></select></div>
+<div><label for="agencyC">Optional third agency</label><select id="agencyC"><option value="">No third agency</option></select></div>
+<div><label for="topic">Reviewed evidence topic</label><select id="topic">
+<option value="all">All page-reviewed findings</option>
+<option value="retention">Written retention / deletion provisions</option>
+<option value="sharing">Written access / sharing restrictions</option>
+<option value="oversight">Written audits / oversight / reporting</option>
+<option value="contracts">Original contracts / agreements</option>
+</select></div>
+</div>
+<div class="share"><a id="share" href="#" hidden>Copyable comparison link</a>
+<a href="./agency-xray.html">Browse individual agency dossiers</a></div>
+<p class="status" id="compareStatus" role="status" aria-live="polite">Choose two agencies to compare.</p>
+<div id="comparison" aria-label="Original government agency evidence comparison"></div>
+<p class="muted" id="limits">Only individually reviewed original pages qualify. Source coverage is incomplete nationwide.</p>
+</main>
+<script src="./okc-original-contracts.js"></script>
+<script src="./nebraska-original-aggregate.js"></script>
+<script src="./ri-sd-original-policies.js"></script>
+<script src="./wa-kittitas-draft-review.js"></script>
+<script src="./national-primary-documents.js"></script>
+<script src="./verified-agency-dossiers.js"></script>
+<script src="./wa-reviewed-flock-sources.js"></script>
+<script src="./wa-original-policies.js"></script>
+<script src="./wa-original-agency-dossiers.js"></script>
+<script src="./original-evidence-comparison.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const Core=window.KatoptronVerifiedAgencyDossiers;
+const WA=window.KatoptronWAOriginalAgencyDossiers;
+const Comparison=window.KatoptronOriginalEvidenceComparison;
+const PATHS={
+ okc:'./data/verified-okc-2026-original-flock-contract-review.json',
+ ne:'./data/verified-nebraska-original-aggregate-reports.json',
+ riSd:'./data/verified-ri-sd-original-alpr-policies.json',
+ kittitas:'./data/verified-wa-kittitas-scanned-draft-review.json',
+ waRegistry:'./data/wa-original-agency-alpr-registrations.json',
+ waHeld:'./data/wa-held-original-policy-diagnostics.json',
+ national:'./data/verified-national-government-documents.json'
+};
+let index=null;
+function element(tag,text,css){
+ const n=document.createElement(tag);
+ if(text!==undefined)n.textContent=String(text);
+ if(css)n.className=css;
+ return n;
+}
+async function fetchOriginal(url){
+ const r=await fetch(url,{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!r.ok)throw Error('Original source receipt unavailable');
+ return r.json();
+}
+function fillSelectors(){
+ for(const id of ['agencyA','agencyB','agencyC']){
+  const select=$(id);
+  for(const row of index.dossiers){
+   const opt=element('option',row.label+' · '+row.state);
+   opt.value=row.key;select.append(opt);
+  }
+ }
+ const params=new URL(location.href).searchParams;
+ const direct=params.has('a')||params.has('b')||params.has('c');
+ if(direct){
+  for(const [field,param] of [['agencyA','a'],['agencyB','b'],['agencyC','c']]){
+   const key=params.get(param)||'';
+   if(index.dossiers.some(row=>row.key===key))$(field).value=key;
+  }
+ }else{
+  $('agencyA').value='providence-police-ri';
+  $('agencyB').value='brookings-police-sd';
+ }
+ const topic=params.get('topic');
+ if(Object.prototype.hasOwnProperty.call(Comparison.TOPICS,topic))$('topic').value=topic;
+}
+function render(){
+ if(!index)return;
+ const keys=['agencyA','agencyB','agencyC'].map(id=>$(id).value).filter(Boolean);
+ const out=$('comparison');out.replaceChildren();
+ if(keys.length<2){
+  $('share').hidden=true;
+  $('compareStatus').textContent='Select at least two original-source-verified agencies.';
+  return;
+ }
+ let compared;
+ try{compared=Comparison.compare(index,keys,$('topic').value);}
+ catch(error){
+  $('share').hidden=true;$('compareStatus').textContent=error.message;
+  return;
+ }
+ const url=new URL(location.href);
+ for(const name of ['a','b','c','topic'])url.searchParams.delete(name);
+ keys.forEach((key,i)=>url.searchParams.set(['a','b','c'][i],key));
+ url.searchParams.set('topic',compared.topic);
+ $('share').href=url.href;$('share').hidden=false;
+ history.replaceState(null,'',url);
+ $('compareStatus').textContent=keys.length+' agencies · '+compared.total_matches+
+  ' reviewed original-page finding(s) in '+compared.topic_label.toLowerCase()+
+  '. Different record types and missing findings are not directly comparable compliance measurements.';
+ $('limits').textContent=compared.evidence_limit;
+ for(const row of compared.columns){
+  const article=element('article',undefined,'agency');
+  article.append(element('h2',row.label+' · '+row.state),
+   element('p',row.tier.replaceAll('_',' '),'type'),
+   element('p',row.total_verified_documents+' source-page-reviewed original document(s) in this dossier.','muted'));
+  if(!row.documents.length){
+   article.append(element('p','No reviewed original-page finding indexed for this topic. This does not establish absence of a policy, device or behavior.'));
+  }
+  for(const doc of row.documents){
+   const block=element('section',undefined,'doc');
+   block.append(element('h3',doc.title),
+    element('p',doc.date+' · '+doc.date_basis.replaceAll('_',' ')+' · '+doc.kind.replaceAll('_',' '),'muted'),
+    element('p','Original PDF SHA-256: '+doc.sha,'muted'));
+   for(const finding of doc.findings){
+    const item=element('div',undefined,'finding');
+    item.append(element('p',finding.category.replaceAll('_',' '),'type'),
+     element('p',finding.statement));
+    const link=element('a','Inspect government original · page '+finding.page);
+    link.href=finding.source_page_url;link.target='_blank';link.rel='noopener noreferrer';
+    item.append(link);block.append(item);
+   }
+   block.append(element('p',doc.limits,'muted'));
+   article.append(block);
+  }
+  for(const note of row.notes)article.append(element('p',note,'muted'));
+  out.append(article);
+ }
+}
+async function load(){
+ const keys=Object.keys(PATHS);
+ const values=await Promise.all(keys.map(k=>fetchOriginal(PATHS[k])));
+ const raw={};keys.forEach((k,i)=>raw[k]=values[i]);
+ const base=Core.catalog(raw,{
+  okc:window.KatoptronOKCOriginalContracts,
+  ne:window.KatoptronNebraskaOriginalAggregate,
+  riSd:window.KatoptronRISDOriginalPolicies,
+  kittitas:window.KatoptronKittitasDraftReview,
+  national:window.KatoptronNationalPrimaryDocuments
+ });
+ index=base;let waProblem=null;
+ try{
+  const [flock,other,receipts]=await Promise.all([
+   fetchOriginal('./data/verified-wa-flock-policy-originals.json'),
+   fetchOriginal('./data/verified-wa-agency-policies.json'),
+   fetchOriginal('./data/wa-ago-original-policy-source-inspection.json')
+  ]);
+  const wa=WA.catalog({flock,other,receipts,registry:raw.waRegistry},{
+   flock:window.KatoptronWAReviewedFlockSources,
+   other:window.KatoptronWashingtonOriginalPolicies
+  });
+  index=WA.combine(base,wa);
+ }catch(error){waProblem=error.message;}
+ $('loadStatus').textContent=index.agencies+' individually source-identified agency dossiers; '+
+  index.original_documents+' original-page-reviewed documents. '+
+  (waProblem?'Washington extension failed closed: '+waProblem+'.':'Sultan attribution hold excluded.');
+ fillSelectors();
+ render();
+}
+for(const id of ['agencyA','agencyB','agencyC','topic'])$(id).addEventListener('change',render);
+load().catch(error=>{
+ $('loadStatus').textContent='Verified original evidence unavailable: '+error.message+
+  '. No unverified source will be shown.';
+ $('compareStatus').textContent='Comparison unavailable.';
+});
+</script></body></html>
