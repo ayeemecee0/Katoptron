@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('node:assert/strict');
+const A=require('../robbinsdale-independent-audits.js');
+const raw=require('../data/verified-robbinsdale-independent-alpr-audits.json');
+const v=A.validate(raw);
+assert.equal(v.original_page_reviewed_independent_Flock_audit_count,1);
+assert.equal(v.reports.length,2);
+assert.equal(v.reports[0].technology,'flock');
+assert.equal(v.reports[1].technology,'axon');
+assert.ok(v.reports[0].findings[1].original_page.endsWith('251675.pdf#page=2'));
+assert.ok(v.reports[1].findings[0].original_page.endsWith('260189.pdf#page=2'));
+assert.match(v.reports[0].findings[1].statement,/30-day retention/);
+assert.match(v.reports[1].findings[0].statement,/11 active AXON/);
+assert.equal(v.agency_disclosure.claims.agency_reported_photo_retention,'two years');
+assert.equal(v.comparison.automatic_legal_violation,false);
+assert.equal(v.comparison.automatic_compliance_finding,false);
+assert.equal(v.new_exact_camera_coordinates,0);
+assert.equal(v.complete_current_flock_configuration_verified,false);
+function reject(fn){const x=structuredClone(raw);fn(x);assert.throws(()=>A.validate(x),/audit|original|source|violation|disclosure/i);}
+reject(x=>x.audit_originals[0].original_sha256='0'.repeat(64));
+reject(x=>x.audit_originals[0].technology='axon');
+reject(x=>x.audit_originals[1].technology='flock');
+reject(x=>x.audit_originals[0].findings[1].page=3);
+reject(x=>x.audit_originals[0].pages_visually_reviewed=[2]);
+reject(x=>x.later_agency_disclosure.claims.reported_flock_cameras=11);
+reject(x=>x.comparison.automatic_legal_violation=true);
+reject(x=>x.comparison.current_camera_coordinates_verified=2);
+console.log('ROBBINSDALE INDEPENDENT AUDITS PASS: source SHA/paged 2025 Flock vs 2026 Axon evidence, no unsupported 2026 violation');
