@@ -75,7 +75,7 @@
   return results.sort((a,b)=>a.label.localeCompare(b.label));
  }
  function combine(base,wa){
-  if(!base||base.agencies!==6||base.original_documents!==10||base.no_live_camera_or_sharing_claims!==true||
+  if(!base||base.agencies!==7||base.original_documents!==14||base.no_live_camera_or_sharing_claims!==true||
    !Array.isArray(wa)||wa.length!==11)throw Error('Cannot join unverified or incomplete original agency datasets');
   const all=[...base.dossiers,...wa],keys=new Set(),ids=new Set(),urls=new Set();
   for(const row of all){
@@ -87,7 +87,7 @@
    }
   }
   const total=all.reduce((n,x)=>n+x.documents.length,0);
-  if(all.length!==17||total!==21)throw Error('Original agency source coverage changed without verification');
+  if(all.length!==18||total!==25)throw Error('Original agency source coverage changed without verification');
   return {dossiers:all.sort((a,b)=>a.label.localeCompare(b.label)||a.state.localeCompare(b.state)),
     agencies:all.length,original_documents:total,
     findings:all.reduce((n,r)=>n+r.documents.reduce((m,d)=>m+d.findings.length,0),0),
