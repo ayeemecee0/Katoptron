@@ -103,9 +103,10 @@ POLICY_ANCHOR=re.compile(
 POLICY_ROLE=re.compile(r"\b(?:policy|general\s+order|ordinance|"
  r"(?:alpr|flock|lpr).{0,25}(?:document|report|audit|transparency))\b",re.I)
 SENSITIVE_PATH=re.compile(r"(?:plate[-_/]?(?:read|search)|"
- r"vehicle[-_/]?(?:query|log|event)|"
+ r"vehicle(?:[-_/][a-z0-9]{1,20}){0,2}[-_/]?(?:read|search|query|log|event)|"
  r"(?:case|person)[-_/]?(?:record|detail)|"
- r"raw[-_/]?(?:data|hit)|access[-_/]?log)",re.I)
+ r"(?:search|access)[-_/]?(?:log|query|read)|"
+ r"raw[-_/]?(?:data|hit))",re.I)
 def policy_candidates(original,raw):
  """Only same-host official government document-link candidates.
 
