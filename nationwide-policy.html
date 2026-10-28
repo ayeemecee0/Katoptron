@@ -37,12 +37,14 @@ button{font:inherit;border:1px solid #729aac;border-radius:6px;padding:.5rem .75
 <p>Research coverage for every U.S. state and Washington, D.C. This is a national <strong>research and evidence gap index</strong>, not a directory of every local agency or a census of installed Flock Safety cameras. Inspect original-source evidence by state without treating a government page or a registration as proof of adoption.</p>
 <div class="notice"><strong>51 state-level research queues ≠ all jurisdictions verified.</strong> Local cities, counties, departments and agencies are not exhaustively enumerated here. A state can have an accessible policy website while zero agency policies are individually reviewed. Washington Attorney General registrations are self-reported ALPR listings, not confirmed Flock users. Original-page-reviewed dossiers provide historical document evidence, not present compliance, camera locations or active sharing.</div>
 <p id="loadStatus" role="status" aria-live="polite">Validating nationwide original-source registries…</p>
+<p id="censusStatus" class="fine" role="status" aria-live="polite">Validating official 2026 Census geographic denominator…</p>
+<p class="fine">Census geographies provide a nationwide *search universe*, not a police agency or Flock inventory. Places include unincorporated census-designated places; county subdivisions can be statistical and may overlap.</p>
 <div id="stats" class="stats" aria-label="National source evidence totals"></div>
 <section aria-labelledby="matrixHeading">
 <h2 id="matrixHeading">All 50 states and D.C. · evidence gap matrix</h2>
 <p>Government source links include original-source leads and legacy registries; the response status of 43 independently observed newer seeds is shown separately. Verified dossier counts are exact agency identities with page-reviewed original evidence.</p>
 <div class="scroll">
-<table><thead><tr><th scope="col">State</th><th scope="col">Original-source links</th><th scope="col">Reachable new seeds</th><th scope="col">Held new seeds</th><th scope="col">Reviewed agency dossiers</th><th scope="col">State registrations</th><th scope="col">Open</th></tr></thead>
+<table><thead><tr><th scope="col">State</th><th scope="col">Census counties</th><th scope="col">Census places incl. CDPs</th><th scope="col">County subdivisions</th><th scope="col">Original-source links</th><th scope="col">Reachable new seeds</th><th scope="col">Held new seeds</th><th scope="col">Reviewed agency dossiers</th><th scope="col">State registrations</th><th scope="col">Open</th></tr></thead>
 <tbody id="matrix"></tbody></table>
 </div>
 </section>
@@ -63,6 +65,7 @@ button{font:inherit;border:1px solid #729aac;border-radius:6px;padding:.5rem .75
 <p><a href="./policy-history.html">Review individually verified policy text and adoption-status exceptions</a></p>
 </main>
 <script src="./nationwide-jurisdictions.js"></script>
+<script src="./census-geography-coverage.js"></script>
 <script src="./wa-alpr-registrations.js"></script>
 <script src="./policy-adoption-evidence.js"></script>
 <script src="./okc-original-contracts.js"></script>
@@ -78,7 +81,7 @@ button{font:inherit;border:1px solid #729aac;border-radius:6px;padding:.5rem .75
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-let index=null;
+let index=null,census=null;
 function node(tag,value,className){
  const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);
  if(className)e.className=className;return e;
@@ -102,7 +105,10 @@ function matrix(){
  $('matrix').replaceChildren();
  for(const s of index.states){
   const row=node('tr');
-  const fields=[s.name+' · '+s.state,s.original_source_urls,s.source_reachable,
+  const federal=census.byState.get(s.state);
+  if(!federal)throw Error('Original Census state geography missing');
+  const fields=[s.name+' · '+s.state,federal.counties,federal.places,
+   federal.subdivisions,s.original_source_urls,s.source_reachable,
    s.source_held,s.reviewed.length,s.registered.length];
   for(let i=0;i<fields.length;i++){
    const td=node('td',fields[i],i===0?'':'num');
@@ -174,8 +180,12 @@ async function load(){
   waReceipts:'./data/wa-ago-original-policy-source-inspection.json',
   national:'./data/verified-national-government-documents.json'
  };
+ const [geo,...vals]=await Promise.all([
+  json('./data/census-2026-state-geography-coverage.json'),
+  ...Object.keys(paths).map(k=>json(paths[k]))
+ ]);
+ census=window.KatoptronCensusGeographyCoverage.validate(geo);
  const keys=Object.keys(paths);
- const vals=await Promise.all(keys.map(x=>json(paths[x])));
  const data={};keys.forEach((k,i)=>data[k]=vals[i]);
  const base=window.KatoptronVerifiedAgencyDossiers.catalog({
   okc:data.okc,ne:data.ne,riSd:data.riSd,kittitas:data.kittitas,
@@ -203,6 +213,9 @@ async function load(){
  const c=index.counts;
  const cards=[
   ['State and D.C. research queues',c.states_enrolled],
+  ['2026 Census counties',census.counties],
+  ['2026 Census places incl. CDPs',census.places],
+  ['2026 county subdivisions',census.subdivisions],
   ['Original government links',c.original_source_links],
   ['Newer sources accessible',c.new_seed_accessible],
   ['Newer sources held',c.new_seed_held],
@@ -216,6 +229,9 @@ async function load(){
   $('state').append(option);
  }
  matrix();
+ $('censusStatus').textContent='Official 2026 Census research denominator: '+
+  census.total.toLocaleString()+' geographic records across 51 states (counties, places incl. CDPs, and county subdivisions). These are NOT police agencies, confirmed municipalities, or Flock deployments. '+
+  'Full named-geography research dataset is attached to the federal Census import workflow run.';
  $('loadStatus').textContent='Validated 51/51 state-level research entries, '+
   c.original_source_links+' original government links, '+
   c.individually_source_reviewed_dossier_agencies+' agency original-source dossiers and '+
