@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Robbinsdale independent Flock audit, 2025 vs 2026</title>
+<meta name="description" content="Compare a Minnesota state-archived independent ALPR audit of Robbinsdale and separately sourced 2026 municipal ALPR statements, with exact source page citations.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0c1720;color:#ebf3f6;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0}header{padding:1rem 4vw;background:#102535;border-bottom:1px solid #3d5867;display:flex;align-items:center;flex-wrap:wrap;justify-content:space-between;gap:1rem}header nav{display:flex;gap:1rem;flex-wrap:wrap}
+main{max-width:1100px;margin:auto;padding:2rem 1.2rem 4rem}
+h1{font-size:clamp(1.7rem,4vw,2.5rem)}h2{font-size:1.3rem}h3{font-size:1.08rem}
+a{color:#96ddeb}p{color:#c5d7e3;line-height:1.55}
+.notice{border-left:4px solid #90cbdf;padding:1rem;background:#173243;margin:1rem 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(315px,100%),1fr));gap:.9rem}
+.card{border:1px solid #425e70;background:#142938;border-radius:9px;padding:1rem}
+.card h3{margin:.2rem 0 .6rem}.meta{font-size:.83rem;color:#c3d7df}
+.timeline{border-left:3px solid #53859f;padding:.6rem 1rem;margin:1.1rem 0}
+.state{font-weight:650;color:#f2d1aa}footer{margin-top:2rem;border-top:1px solid #486474;padding-top:1rem}
+:focus-visible{outline:3px solid #8cdef0;outline-offset:3px}
+</style></head><body>
+<a href="#main-content" class="skip-link">Skip to evidence</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a><nav aria-label="Primary">
+<a href="./agency-xray.html">Agency X-Ray</a>
+<a href="./agency-evidence-conversion.html">Original agency sources</a>
+<a href="./nationwide-policy.html">Nationwide source gaps</a></nav></header>
+<main id="main-content">
+<h1>Robbinsdale: independent ALPR audit and later city disclosure</h1>
+<p>An original, state-archived independent audit of Robbinsdale Police Department's Flock system compares to a separately authored municipal disclosure describing its August 2026 ALPR program. These sources cover different dates and potentially different types of data. They should not be collapsed into a single universal retention claim.</p>
+<div class="notice"><strong>Provenance boundary:</strong> the 2025 independent auditor's evidence includes Flock administrator settings, vehicle-read retention, roles, reporting and audit controls during its historical scope. The city's 2026 FAQ is the department's own published representation. Neither establishes current platform access, live camera position, a later independent audit outcome or the final, separately signed status of its Policy 427.</div>
+<p id="sourceStatus" role="status" aria-live="polite">Validating original state and municipal sources…</p>
+<div id="summary" class="cards"></div>
+<section aria-labelledby="timelineHeading"><h2 id="timelineHeading">Dated evidence and retention-class comparison</h2>
+<div id="timeline" class="cards"></div></section>
+<section aria-labelledby="findingsHeading"><h2 id="findingsHeading">Page-reviewed independent auditor findings</h2>
+<p>Each individual finding links directly to the original document page, with the exact PDF SHA-256 and report date retained.</p>
+<div id="findings" class="cards"></div>
+</section>
+<section aria-labelledby="gapsHeading"><h2 id="gapsHeading">Remaining gaps</h2>
+<div class="notice"><p>The final filed and currently applicable version of Robbinsdale Police Department's Policy 427 remains a separate original-document verification item. The dated 2025 audit and August 2026 city FAQ do not prove the legal status of later policy changes, photo deletion, present-time sharing grants, or the precise installation coordinates of two Flock devices.</p></div>
+</section>
+<footer><a href="./agency-evidence-conversion.html">Back to source-qualified agency research</a> · <a href="./index.html">Return to camera map</a></footer>
+</main>
+<script src="./robbinsdale-independent-audit.js"></script>
+<script>
+'use strict';
+const el=(tag,value,className)=>{const x=document.createElement(tag);if(value!==undefined)x.textContent=String(value);if(className)x.className=className;return x;};
+const link=(target,url,label)=>{const a=el('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';target.append(a);};
+function box(label,text,url,title){
+ const card=el('article',undefined,'card');card.append(el('h3',label),el('p',text));
+ if(url)link(card,url,title||'Inspect original source');
+ return card;
+}
+async function data(url){
+ const r=await fetch(url,{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!r.ok)throw Error('Required original government evidence not available');
+ return r.json();
+}
+async function load(){
+ const [audited,municipal]=await Promise.all([
+  data('./data/verified-robbinsdale-2025-independent-flock-audit.json'),
+  data('./data/verified-agency-html-source-disclosures-2026-10-27.json')
+ ]);
+ const agency=municipal.source_disclosures?.find(x=>x.id==='robbinsdale-mn');
+ const evidence=window.KatoptronRobbinsdaleAudit.verify(audited,agency);
+ const intro=document.getElementById('summary');
+ intro.append(box('2025 independent auditor original',
+  'MNSec report dated '+audited.source_date+'; audit period '+evidence.evidence_period+
+  '; separately state-archived five-page report with four independently source-text-reviewed pages.',
+  audited.source_url,'Open 2025 government-archived original PDF'));
+ intro.append(box('2026 municipality source',
+  'Robbinsdale Police Department\'s own August 2026 FAQ and source-hash-verified government HTML. Agency-authored status and system descriptions are not independently observed settings.',
+  agency.source_url,'Read 2026 municipality statement'));
+ const compare=document.getElementById('timeline');
+ compare.append(box('2023–2025 · Historical equipment',
+  evidence.historical_equipment,audited.source_url+'#page=2','See 2025 independent audit p2'));
+ compare.append(box('2025 · Vehicle reads retention',
+  evidence.historical_retention,audited.source_url+'#page=2','See 2025 independent audit p2'));
+ compare.append(box('August 2026 · Photograph retention',
+  evidence.agency_2026_photos,agency.source_url,'See agency 2026 FAQ'));
+ compare.append(box('August 2026 · Hit retention',
+  evidence.agency_2026_hits,agency.source_url,'See agency 2026 FAQ'));
+ compare.append(box('Interpretation · Not established as a contradiction',
+  evidence.identity_resolution+' '+evidence.comparison_status));
+ const findings=document.getElementById('findings');
+ for(const f of evidence.independent_audit.findings){
+  findings.append(box('Page '+f.page+' · '+f.category.replaceAll('_',' '),
+   f.statement,f.original_page,'Open Minnesota archival original · page '+f.page));
+ }
+ document.getElementById('sourceStatus').textContent=
+  'Original 2025 state-archived audit SHA-256: '+audited.sha256+
+  '. Five source findings with page citations. One separately source-hashed 2026 municipal publication. Zero new exact camera points or confirmed present sharing grants.';
+}
+load().catch(e=>{
+ for(const id of ['summary','timeline','findings'])document.getElementById(id).replaceChildren();
+ document.getElementById('sourceStatus').textContent='Original evidence validation held: '+e.message;
+});
+</script></body></html>
