@@ -1,0 +1,53 @@
+name: Verify and convert 11 original municipality Flock disclosures
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/convert_official_flock_disclosures.py'
+      - 'scripts/test_convert_official_flock_disclosures.py'
+      - 'data/agency-official-html-source-candidates-2026-10-27.json'
+      - '.github/workflows/convert_official_flock_disclosures.yml'
+  schedule:
+    - cron: '33 16 * * 2'
+permissions:
+  contents: read
+concurrency:
+  group: m11-official-disclosure-originals
+  cancel-in-progress: true
+jobs:
+  original-authenticated-html:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Reject cross-site publishers, script injection, sensitive URLs, unsourced facts
+        run: |
+          python3 -m py_compile scripts/convert_official_flock_disclosures.py
+          python3 -m unittest discover -s scripts -p 'test_convert_official_flock_disclosures.py' -v
+      - name: Independently retrieve 11 specific municipal originals and check claim-level anchors
+        run: python3 scripts/convert_official_flock_disclosures.py
+      - name: Report actually corroborated originals and held pages, never claim camera telemetry
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          x=json.load(open(".katoptron-ci/new-original-agency-publication-verification.json",encoding="utf8"))
+          print("## Exact government Flock publication verification")
+          print("Original agency statements with matched claim-specific anchors:",x["verified_agency_publisher_statements"])
+          print("Distinct states:",len(x["states_new_source_disclosures"]))
+          print("\n| Agency | State | Source status |")
+          print("|---|---|---|")
+          for row in x["records"]:
+              print("| "+row["agency"]+" | "+row["state"]+" | "+row["status"]+" |")
+          print("\nNo individual physical camera positions, live sharing edges, adopted policy PDF content or configured system state are verified by HTML alone.")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eleven-original-government-flock-html-review-receipts
+          path: .katoptron-ci/new-original-agency-publication-verification.json
+          if-no-files-found: error
+          retention-days: 21
