@@ -89,8 +89,9 @@ def inspect_bytes(row):
   if hashlib.sha256(bpng).hexdigest()!=EXPECTED_PNGS[row["id"]][p]:
    raise ValueError("Visual source-page changed; review signatures/legal terms")
   text=" ".join((page.get_text() or "").casefold().split())
-  if any(anchor.casefold() not in text for anchor in TEXT_ANCHORS[row["id"]][p]):
-   raise ValueError("Legal original page text anchor no longer matches")
+  missing=[anchor for anchor in TEXT_ANCHORS[row["id"]][p] if anchor.casefold() not in text]
+  if missing:
+   raise ValueError(f"Legal original page text anchor no longer matches: {row['id']} page={p} missing={missing}")
  return True
 def main():
  documents=validate(json.loads(DATA.read_text(encoding="utf8")))
