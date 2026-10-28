@@ -123,7 +123,7 @@ function render(){
   const title=element('h3',(newDocs.has(d.id)?'NEW ORIGINAL · ':'')+d.title);
   const date=d.date||'Original date unverified';
   item.append(title,element('p',date+' · '+d.date_basis.replaceAll('_',' ')+(d.date_note?' · '+d.date_note:''),'field'));
-  if(d.kind==='draft_policy_unadopted')item.append(element('strong','DRAFT · NOT VERIFIED ADOPTED','state'));
+  if(d.status==='draft_unadopted')item.append(element('strong','DRAFT · NOT VERIFIED ADOPTED','state'));
   else if(d.status==='document_effective_date')item.append(element('strong','Document bears a published effective date'));
   else item.append(element('p','Published original; current effective policy status not independently verified.'));
   item.append(element('p','Original SHA-256: '+d.sha,'field'));
