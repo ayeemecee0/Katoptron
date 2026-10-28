@@ -81,7 +81,7 @@ const {chromium}=require('playwright');
   assert.match(gb,/not independently confirmed/);
   assert.match(gb,/not known to be adopted/);
   assert.ok((await page.locator('#originalDocuments a').evaluateAll(as=>as.map(a=>a.href)))
-   .every(url=>url.startsWith('https://www.greenbaywi.gov/')&&/#page=\\d+/.test(url)));
+   .every(url=>url.startsWith('https://www.greenbaywi.gov/')&&/#page=\d+/.test(url)));
   await page.locator('#originalSearch').fill('Sultan');
   assert.equal(await page.locator('#originalList button').count(),0);
   assert.match(await page.locator('#originalList').textContent(),/Unknown is not zero cameras/);
