@@ -1,0 +1,38 @@
+name: Validate government original-source hold reconciliation website
+on:
+  push:
+    paths:
+      - 'government-source-hold-review.html'
+      - 'government-source-hold-reviews.js'
+      - 'data/held-government-source-resolution-2026-10-27.json'
+      - 'scripts/test_government_source_hold_reviews.cjs'
+      - 'scripts/smoke_government_source_hold_reviews.cjs'
+      - '.github/workflows/government_source_hold_review_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: government-original-review-acceptance
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Source hash, official government authority and remaining backlog status gate
+        run: |
+          node --check government-source-hold-reviews.js
+          node scripts/test_government_source_hold_reviews.cjs
+      - name: Serve website read-only on localhost
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/government-holds.log 2>&1 &
+      - name: Install pinned Chromium client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Verify official-source hold lifecycle labels in mobile browser
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_government_source_hold_reviews.cjs
