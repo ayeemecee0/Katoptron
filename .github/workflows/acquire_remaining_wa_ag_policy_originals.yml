@@ -1,0 +1,32 @@
+name: Acquire Washington AGO policy document originals
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/acquire_remaining_wa_ag_policy_originals.py'
+      - 'scripts/test_acquire_remaining_wa_ag_policy_originals.py'
+      - '.github/workflows/acquire_remaining_wa_ag_policy_originals.yml'
+  schedule:
+    - cron: '13 18 * * 1'
+permissions:
+  contents: read
+jobs:
+  acquire:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install 'pypdf>=5,<7'
+      - run: python3 -m unittest discover -s scripts -p 'test_acquire_remaining_wa_ag_policy_originals.py' -v
+      - run: python3 scripts/acquire_remaining_wa_ag_policy_originals.py --workers 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wa-policy-original-source-receipts
+          path: .katoptron-ci/wa-remaining-agency-original-pdf-receipts.json
+          retention-days: 21
+          if-no-files-found: error

@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+const api=require('../wa-policy-page-findings.js');
+const docs=require('../data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json');
+const receipts=require('../data/wa-ago-remaining-original-acquisition-2026-10-27.json');
+const valid=api.validate(docs,receipts);
+assert.equal(valid.verified_original_page_statements,2);
+assert.equal(valid.identity_hold,1);
+assert.equal(valid.new_flock_deployment_claims,0);
+const copy=structuredClone(docs);
+copy.documents[2].publisher_actor='Sultan Police Department';
+assert.throws(()=>api.validate(copy,receipts));
+console.log('Three AGO policy originals verified: two page-text claims; Sultan/Sheriff identity collision held');

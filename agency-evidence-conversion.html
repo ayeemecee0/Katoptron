@@ -47,21 +47,29 @@ details summary{cursor:pointer;font-weight:600}details p{margin:.5rem 0;font-siz
 <article class="card"><h3>Lexington, KY</h3><p>City police publication links a separate LPR locations reference. Source-reported counts are not independently verified individual coordinates.</p><a href="https://www.lexingtonky.gov/government/departments-programs/public-safety/police/license-plate-readers" target="_blank" rel="noopener noreferrer">Inspect official disclosure</a></article>
 <article class="card"><h3>Columbia, MO</h3><p>City describes a camera distribution map by ward without publishing individual equipment positions in this record.</p><a href="https://beheard.como.gov/safety-cameras-review" target="_blank" rel="noopener noreferrer">Inspect city source</a></article>
 </div></section>
+<section aria-labelledby="waPolicySourceHeading">
+<h2 id="waPolicySourceHeading">Washington source-page policy findings and identity reconciliation</h2>
+<p>Bonney Lake and Enumclaw original policy text refers to transparency portals documenting Flock usage. Sultan's submitted policy attachment refers to Snohomish County Sheriff's Office login and training, not an independently established Sultan agency account. These are original PDF page citations, not verified installed equipment.</p>
+<p id="waPolicySourceStatus" role="status" aria-live="polite">Checking original PDF source-page fingerprints…</p>
+<div id="waPolicySourceCards" class="layout"></div>
+</section>
 <section aria-labelledby="backlogHeading"><h2 id="backlogHeading">Held source and registration review queue</h2>
 <p>A held government URL is a specific acquisition problem. A Washington ALPR registration is an agency self-certification, not proof of Flock vendor equipment. This queue preserves what action is required for each record without pretending verification is complete.</p>
 <div class="controls"><div><label for="queueType">Review backlog category</label><select id="queueType"><option value="held">12 held government originals</option><option value="wa">97 Washington registrations</option><option value="pdf">Two discovered PDF candidates</option></select></div>
 <div><label for="queueQuery">Filter review queue</label><input id="queueQuery" type="search" placeholder="Agency, state or hold reason"></div></div>
+<p id="acquisitionStatus" role="status" aria-live="polite">Checking latest Washington policy source receipts…</p>
 <p id="queueStatus" role="status" aria-live="polite">Loading source-specific review dispositions…</p>
 <div id="queue" class="card"></div>
 </section>
 </main>
 <script src="./agency-html-disclosures.js"></script>
+<script src="./wa-policy-page-findings.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
 const el=(tag,txt,cls)=>{const x=document.createElement(tag);if(txt!==undefined)x.textContent=String(txt);if(cls)x.className=cls;return x;};
 const link=(p,url,label)=>{const a=el('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';p.append(a);};
-let verified=null,backlog=null;
+let verified=null,backlog=null,waReceipts=null;
 function summarizeStatus(r){
  return {agency_reports_flock_use:'GOVERNMENT REPORTS FLOCK USE',
  announced_not_renewing:'NONRENEWAL ANNOUNCED, REMOVAL UNCONFIRMED',
@@ -114,6 +122,15 @@ function queue(){
   div.append(el('strong',x.agency||x.publisher||x.id),
     el('span','State '+x.state+' · '+x.disposition,'small'),
     el('span',x.next_action||'Prior original review recorded; recheck source version','small'));
+  if(mode==='wa'&&waReceipts){
+   const receipt=waReceipts.receipts.find(r=>r.id===x.id);
+   if(receipt){
+    const info=receipt.acquisition_status==='retrieved_unreviewed_original_pdf'?
+     'Original PDF acquired, '+receipt.pdf_pages+' pages, SHA-256 '+receipt.sha256.slice(0,16)+'…; contents NOT individually reviewed.':
+     'Original acquisition held: '+receipt.acquisition_status;
+    div.append(el('span',info,'small'));
+   }
+  }
   const url=x.url||x.original_url||x.policy_urls?.[0];
   if(url)link(div,url,'Open source');
   $('queue').append(div);
@@ -121,18 +138,48 @@ function queue(){
  if(filtered.length>35)$('queue').append(el('p','Showing 35 of '+filtered.length+' entries. Refine the filter to inspect additional individual cases.','small'));
 }
 async function load(){
- const [resp,back]=await Promise.all([fetch('./data/verified-agency-html-source-disclosures-2026-10-27.json'),
- fetch('./data/nationwide-original-source-and-agency-backlog-2026-10-27.json')]);
- if(!resp.ok||!back.ok)throw Error('Required qualified source files unavailable');
+ const [resp,back,receiptResponse]=await Promise.all([fetch('./data/verified-agency-html-source-disclosures-2026-10-27.json'),
+ fetch('./data/nationwide-original-source-and-agency-backlog-2026-10-27.json'),
+ fetch('./data/wa-ago-remaining-original-acquisition-2026-10-27.json')]);
+ if(!resp.ok||!back.ok||!receiptResponse.ok)throw Error('Required qualified source files unavailable');
  verified=window.KatoptronAgencyOriginalHTML.validate(await resp.json());
  backlog=await back.json();
+ waReceipts=await receiptResponse.json();
+ const originalPageResponse=await fetch('./data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json');
+ if(!originalPageResponse.ok)throw Error('State AG original-page review ledger unavailable');
+ const reviewedPages=window.KatoptronWAPolicyPages.validate(await originalPageResponse.json(),waReceipts);
+ const sourceCards=$('waPolicySourceCards');
+ for(const entry of reviewedPages.documents){
+  const article=el('article',undefined,'card');
+  article.append(el('h3',entry.submitted_agency+' · '+entry.state),
+   el('div',entry.agency_identity_issue?'AGENCY IDENTITY RECONCILIATION HELD':'ORIGINAL PDF PAGE-TEXT VERIFIED','kicker'),
+   el('p',entry.original_policy_finding),
+   el('p','Original SHA-256: '+entry.sha256+' · Publisher: '+entry.publisher_actor,'small'));
+  for(const page of entry.reviewed_pages){
+   const pageURL=new URL(entry.source_url);pageURL.hash='page='+page;
+   link(article,pageURL.href,'Original policy PDF · page '+page);
+  }
+  if(entry.agency_identity_issue)link(article,entry.identity_authority_source,'Original city law-enforcement services authority');
+  sourceCards.append(article);
+ }
+ $('waPolicySourceStatus').textContent='Two original department policy references verified by exact source-page text; one Sheriff/municipal identity ambiguity held. No additional deployed Flock devices or effective dates claimed.';
+ if(waReceipts.schema_version!==1||waReceipts.previously_individually_page_reviewed!==11||
+   waReceipts.new_pdf_original_acquisitions!==60||waReceipts.acquisition_holds!==26||
+   waReceipts.new_verified_Flock_operator_agencies!==0||
+   !Array.isArray(waReceipts.receipts)||waReceipts.receipts.length!==86||
+   waReceipts.receipts.filter(x=>x.acquisition_status==='retrieved_unreviewed_original_pdf').length!==60||
+   waReceipts.receipts.some(x=>x.original_individual_pages_reviewed!==false||
+     x.flock_equipment_installed_verified!==false||
+     x.legal_policy_adoption_verified!==false||x.live_agency_sharing_verified!==false))
+   throw Error('State AG original policy acquisition cannot verify legal or operational facts');
+ $('acquisitionStatus').textContent='60 of 86 remaining AGO-linked original policies retrieved, with PDF source hash and page count; 26 source retrieval holds. These receipts are NOT independent individual-page policy verification or proof of Flock use.';
  if(backlog.schema_version!==1||backlog.counts?.held_original_government_urls!==12||
    backlog.counts.wa_registrations!==97||backlog.counts.wa_original_policies_page_reviewed!==11||
    backlog.counts.wa_original_policy_rechecks_needed!==86||backlog.counts.open_review_items!==99||
    backlog.counts.verified_current_WA_flock_operators_from_registration!==0||
    backlog.held_government_sources.length!==12||backlog.wa_agency_registrations.length!==97)
    throw Error('Backlog source qualification mismatch');
- const stats=[['New official agency disclosures',11],['Additional states',11],['Held government originals',12],['Washington registrations',97],['WA originals already page-reviewed',11],['WA page reviews pending',86]];
+ const stats=[['New official agency disclosures',11],['Additional states',11],['Held government originals',12],['Washington registrations',97],['WA originals already page-reviewed',11],['WA page reviews pending',86],['New WA original PDFs acquired',60],['WA source acquisition holds',26]];
  for(const [label,val] of stats){
   const box=el('div',undefined,'stat');box.append(el('strong',val),el('small',label));$('stats').append(box);
  }
