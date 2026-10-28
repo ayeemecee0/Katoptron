@@ -39,7 +39,7 @@ const {chromium}=require('playwright');
    {waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#comparison')?.textContent?.includes('DRAFT'),
    null,{timeout:18000});
-  assert.match(await page.locator('#comparison').textContent(),/not verified adoption/i);
+  assert.match(await page.locator('#comparison').textContent(),/not validated retention practice/i);
   assert.match(await page.locator('#comparison').textContent(),/attorney general registration date not policy date/);
   await page.locator('#topic').selectOption('contracts');
   assert.match(await page.locator('#comparison').textContent(),/No reviewed original-page finding indexed for this topic/);
