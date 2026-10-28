@@ -9,6 +9,8 @@ on:
       - 'agency-audit.html'
       - 'agency-xray.html'
       - 'verified-agency-dossiers.js'
+      - 'wa-original-agency-dossiers.js'
+      - 'scripts/test_wa_original_agency_dossiers.cjs'
       - 'scripts/test_verified_agency_dossiers.cjs'
       - 'scripts/smoke_verified_agency_dossiers.cjs'
       - 'mn-alpr-audits.html'
@@ -96,6 +98,8 @@ jobs:
           node scripts/test_agency_audit_engine.cjs
           node --check verified-agency-dossiers.js
           node scripts/test_verified_agency_dossiers.cjs
+          node --check wa-original-agency-dossiers.js
+          node scripts/test_wa_original_agency_dossiers.cjs
           node scripts/test_audit_history.cjs
           node --check mn-audit-candidates.js
           node scripts/test_mn_audit_candidates.cjs
