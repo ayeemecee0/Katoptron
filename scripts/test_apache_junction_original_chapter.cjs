@@ -13,7 +13,7 @@ assert.equal(x.individually_verified_exact_camera_coordinates,0);
 assert.equal(x.agency_self_disclosure.claimed_cameras,30);
 assert.equal(x.agency_self_disclosure.claimed_retention_days,30);
 assert.equal(x.agency_self_disclosure.map_marked_date,'2026-08-24');
-assert.match(x.scope_note,/do not prove final executed/);
+assert.match(x.scope_note,/do not prove final enacted chapter text/);
 assert.ok(x.original_agenda_documents[0].findings.some(f=>f.page===3&&/30 consecutive calendar days/.test(f.statement)));
 assert.equal(x.original_agenda_documents[1].publication_status,
  'unsigned_agenda_ordinance_version_not_proof_of_executed_instrument');
