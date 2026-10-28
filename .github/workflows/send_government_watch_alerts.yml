@@ -9,6 +9,10 @@ on:
       - 'scripts/sync_agency_watch_events.py'
       - 'scripts/send_government_watch_alerts.py'
       - 'scripts/test_government_watch_alerts.py'
+      - 'data/apache-junction-adopted-resolution-chapter-2026-10-28.json'
+      - 'data/verified-okc-2026-original-flock-contract-review.json'
+      - 'data/verified-national-government-documents.json'
+      - 'data/verified-policy-adoption-status-2026-10-27.json'
       - '.github/workflows/send_government_watch_alerts.yml'
 permissions:
   contents: read
