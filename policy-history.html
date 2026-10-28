@@ -40,6 +40,12 @@ strong.state{color:#e9cf9e}.status{min-height:1.3rem}
 <p id="adoptionLoadStatus" role="status" aria-live="polite">Loading exact government adoption evidence…</p>
 <div id="adoptionRecords" aria-label="Source-qualified government adoption and draft evidence"></div>
 </section>
+<section aria-labelledby="apache-originals-heading">
+<h2 id="apache-originals-heading">Apache Junction · Primary government ordinance attachments and Flock source map</h2>
+<p>City Council original attachments have page citations but are pre-meeting versions, not authenticated final enacted text. The City Clerk's separately scanned adopted ordinance remains held for visual comparison. Agency-published Flock camera totals and the city's schematic map are distinct from independently verified GPS points.</p>
+<p id="apacheLoadStatus" role="status" aria-live="polite">Checking original source and map limitations…</p>
+<div id="apacheOriginals"></div>
+</section>
 <p id="loadStatus" role="status" aria-live="polite">Loading page-verified government source originals…</p>
 <div class="controls">
  <div><label for="agency">Agency with reviewed original policy documents</label>
@@ -73,6 +79,7 @@ strong.state{color:#e9cf9e}.status{min-height:1.3rem}
 <script src="./wa-original-agency-dossiers.js"></script>
 <script src="./policy-adoption-evidence.js"></script>
 <script src="./policy-history.js"></script>
+<script src="./apache-junction-original-chapter.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -173,6 +180,54 @@ $('untrack').addEventListener('click',()=>{
 $('review').addEventListener('click',()=>{
  if(selected&&writeState(Policy.markReviewed(localState,selected)))render();
 });
+async function loadApacheOriginals(){
+ try{
+  const raw=await original('./data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json');
+  const evidence=window.KatoptronApacheOriginalChapter.verify(raw);
+  const out=$('apacheOriginals');out.replaceChildren();
+  const disclosed=evidence.agency_self_disclosure;
+  const pub=element('article',undefined,'card');
+  pub.append(element('h3','Police Department official Flock disclosure and schematic'),
+   element('p',disclosed.claimed_cameras+' Flock cameras and '+
+    disclosed.claimed_retention_days+' days ordinary ALPR retention: department-reported, NOT independent live verification.'),
+   element('p','Department-reported sharing: state, county and local law-enforcement agencies within Arizona only. Do not infer actual grant configurations or an exhaustive sharing network.'),
+   element('p','Map dated '+disclosed.map_marked_date+
+     ' contains separate legends for directional traffic cameras, offline devices, relocation and proposed sites. No exact coordinates qualified.','field'));
+  const mapActions=element('div',undefined,'controls');
+  link(mapActions,disclosed.official_map_url,'Inspect government Flock location diagram');
+  link(mapActions,disclosed.source_url,'Read police department disclosure');
+  pub.append(mapActions,element('p',disclosed.limitations,'field'));out.append(pub);
+  for(const doc of evidence.original_agenda_documents){
+   const article=element('article',undefined,'card');
+   const label=doc.id.includes('chapter')?'Original Chapter 17 Council attachment':'Unsigned proposed Ordinance 1579 Council attachment';
+   article.append(element('h3',label),
+    element('strong','ORIGINAL AGENDA ATTACHMENT · NOT VERIFIED FINAL ENACTED TEXT','state'),
+    element('p','Source PDF SHA-256: '+doc.pdf_sha256+' · '+
+      doc.page_count+' pages','field'));
+   for(const f of doc.findings){
+    const item=element('div',undefined,'finding');
+    item.append(element('p',f.statement));
+    link(item,f.original_page,'Open exact original source · page '+f.page);
+    article.append(item);
+   }
+   article.append(element('p',doc.limitations,'field'));
+   out.append(article);
+  }
+  const held=evidence.held_city_clerk_original;
+  const card=element('article',undefined,'card');
+  card.append(element('h3','City Clerk adopted Ordinance 1579 · original scanned PDF'),
+   element('strong','RETRIEVED · VISUAL COMPARISON PENDING','state'),
+   element('p',held.page_count+' scanned pages · Original SHA-256: '+
+      held.original_sha256,'field'),
+   element('p',held.limitations,'field'));
+  link(card,held.source_url,'Open distinct City Clerk original');
+  out.append(card);
+  $('apacheLoadStatus').textContent='2 original page-cited Council attachments; 1 distinct scanned Clerk original held for visual review; 1 government Flock source map. Zero exact camera GIS points added.';
+ }catch(err){
+  $('apacheOriginals').replaceChildren();
+  $('apacheLoadStatus').textContent='Apache Junction original receipt validation held: '+err.message;
+ }
+}
 async function loadAdoption(){
  try{
   const raw=await original('./data/verified-policy-adoption-status-2026-10-27.json');
@@ -254,6 +309,7 @@ async function load(){
  render();
 }
 loadAdoption();
+loadApacheOriginals();
 load().catch(error=>{
  $('loadStatus').textContent='Policy-history source validation failed: '+error.message+
   '. No unverified source versions will be displayed.';

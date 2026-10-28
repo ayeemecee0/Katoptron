@@ -14,6 +14,9 @@ on:
       - 'policy-history.html'
       - 'policy-history.js'
       - 'policy-adoption-evidence.js'
+      - 'apache-junction-original-chapter.js'
+      - 'data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json'
+      - 'scripts/test_apache_junction_original_chapter.cjs'
       - 'data/verified-policy-adoption-status-2026-10-27.json'
       - 'scripts/test_policy_adoption_evidence.cjs'
       - 'scripts/monitor_policy_adoption_originals.py'
@@ -127,6 +130,8 @@ jobs:
           node scripts/test_policy_history.cjs
           node --check policy-adoption-evidence.js
           node scripts/test_policy_adoption_evidence.cjs
+          node --check apache-junction-original-chapter.js
+          node scripts/test_apache_junction_original_chapter.cjs
           python3 -m unittest discover -s scripts -p 'test_monitor_policy_adoption_originals.py' -v
           node --check wa-original-agency-dossiers.js
           node scripts/test_wa_original_agency_dossiers.cjs

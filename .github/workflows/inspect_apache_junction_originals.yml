@@ -1,0 +1,37 @@
+name: Inspect Apache Junction original enacted ALPR ordinance and chapter
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/inspect_apache_junction_originals.py'
+      - 'scripts/test_inspect_apache_junction_originals.py'
+      - 'scripts/verify_apache_junction_primary_sources.py'
+      - 'data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json'
+      - '.github/workflows/inspect_apache_junction_originals.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install 'pypdf>=5,<7'
+      - name: Test official source URL allowlist and no automatic policy publication
+        run: python3 -m unittest discover -s scripts -p 'test_inspect_apache_junction_originals.py' -v
+      - name: Verify SHA-pinned agenda source page anchors and hold scanned Clerk original
+        run: python3 scripts/verify_apache_junction_primary_sources.py
+      - name: Retrieve bounded public original PDFs into private CI review queue only
+        run: python3 scripts/inspect_apache_junction_originals.py --out apache-junction-original-review-queue.json
+      - name: Archive original review receipts only, never auto-approve municipal ordinance text
+        uses: actions/upload-artifact@v4
+        with:
+          name: apache-junction-original-review-receipts
+          path: apache-junction-original-review-queue.json
+          if-no-files-found: error
+          retention-days: 7
