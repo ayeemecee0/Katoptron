@@ -1,0 +1,28 @@
+name: Verify source-pinned OKC 2026 executed Flock amendment and city renewal originals
+on:
+  push:
+    paths:
+      - 'data/verified-okc-2026-original-flock-contract-review.json'
+      - 'scripts/inspect_okc_2026_contract_originals.py'
+      - 'scripts/verify_okc_2026_original_contracts.py'
+      - 'scripts/test_verify_okc_2026_original_contracts.py'
+      - '.github/workflows/verify_okc_2026_original_contracts.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '19 19 * * 5'
+permissions:
+  contents: read
+jobs:
+  originals:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7' 'pymupdf>=1.24,<1.27'
+      - run: python -m unittest discover -s scripts -p 'test_verify_okc_2026_original_contracts.py' -v
+      - run: python scripts/verify_okc_2026_original_contracts.py
