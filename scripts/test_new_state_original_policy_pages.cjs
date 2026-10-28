@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('node:assert/strict');
+const API=require('../new-state-original-policy-pages.js');
+const raw=require('../data/verified-idaho-columbia-government-policy-originals-2026-10-27.json');
+const r=API.validate(raw);
+assert.equal(r.documents.length,2);
+assert.equal(r.individually_reviewed_original_government_PDFs_added,2);
+assert.equal(r.distinct_new_state_PDF_governance_records,2);
+assert.equal(r.exact_camera_points_added,0);
+assert.equal(r.verified_current_Flock_sharing_access_edges_added,0);
+const [id,mo]=r.documents;
+assert.equal(id.state,'ID');assert.equal(mo.state,'MO');
+assert.equal(id.findings.length,4);assert.equal(mo.findings.length,7);
+assert.ok(id.findings.every(x=>x.original_page.includes('DocumentCenter/View/20519')));
+assert.ok(mo.findings.every(x=>x.original_page.endsWith('#page='+x.page)));
+assert.match(id.source_limitations,/no signed effective date/i);
+assert.match(mo.source_limitations,/not a device inventory/i);
+function alter(fn){const v=structuredClone(raw);fn(v);assert.throws(()=>API.validate(v),/original|government|page|scope|PDF|state/i);}
+alter(d=>{d.documents[0].sha256='0'.repeat(64)});
+alter(d=>{d.documents[0].findings[0].page=2});
+alter(d=>{d.documents[0].verified_exact_camera_points=1});
+alter(d=>{d.documents[0].verified_live_sharing_edges=1});
+alter(d=>{d.documents[1].kind='signed_flock_contract'});
+alter(d=>{d.documents[1].findings.pop()});
+alter(d=>{d.documents[1].state='ID'});
+alter(d=>{d.active_sharing_edges_added=1});
+alter(d=>{d.new_verified_original_PDF_documents=3});
+console.log('TWO-STATE ORIGINAL PAGE EVIDENCE PASS: Idaho original Flock procedure, Columbia broader enacted oversight law, zero speculative camera or live sharing claims');
