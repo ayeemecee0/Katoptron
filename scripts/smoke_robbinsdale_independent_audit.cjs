@@ -21,7 +21,7 @@ const {chromium}=require('playwright');
   assert.match(pageText,/hits retained 30 days/);
   assert.match(pageText,/Not established as a contradiction/);
   assert.match(pageText,/currently configured|current platform access/);
-  assert.match(pageText,/does not prove the legal status/i);
+  assert.match(pageText,/do not prove the legal status/i);
   assert.deepEqual(errors,[]);
   const xray=await page.goto(new URL('agency-xray.html',base).href,{waitUntil:'domcontentloaded'});
   assert.equal(xray.status(),200);
