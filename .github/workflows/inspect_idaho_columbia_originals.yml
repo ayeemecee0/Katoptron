@@ -5,6 +5,9 @@ on:
       - 'scripts/inspect_idaho_columbia_originals.py'
       - '.github/workflows/inspect_idaho_columbia_originals.yml'
       - 'scripts/test_inspect_idaho_columbia_originals.py'
+      - 'scripts/verify_idaho_columbia_policy_originals.py'
+      - 'scripts/test_verify_idaho_columbia_policy_originals.py'
+      - 'data/verified-idaho-columbia-government-policy-originals-2026-10-27.json'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,5 +28,8 @@ jobs:
         run: |
           python3 -m py_compile scripts/inspect_idaho_columbia_originals.py
           python3 -m unittest discover -s scripts -p 'test_inspect_idaho_columbia_originals.py' -v
+          python3 -m unittest discover -s scripts -p 'test_verify_idaho_columbia_policy_originals.py' -v
+      - name: Independently match government-published original hashes and page-specific claims
+        run: python3 scripts/verify_idaho_columbia_policy_originals.py
       - name: Retrieve original two-state government policy text and page receipts
         run: python3 scripts/inspect_idaho_columbia_originals.py
