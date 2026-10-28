@@ -1,0 +1,54 @@
+name: National FBI-derived 51-state law enforcement ORI research universe
+on:
+  push:
+    paths:
+      - 'scripts/build_fbi_derived_agency_roster.py'
+      - 'scripts/test_build_fbi_derived_agency_roster.py'
+      - '.github/workflows/build_fbi_derived_agency_roster.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '25 20 1 * *'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-secondary-fbi-ori-directory
+  cancel-in-progress: true
+jobs:
+  ori:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate agency identifiers and reject false vendor/policy/coordinate claims
+        run: |
+          python3 -m py_compile scripts/build_fbi_derived_agency_roster.py
+          python3 -m unittest discover -s scripts -p 'test_build_fbi_derived_agency_roster.py' -v
+      - name: Acquire bounded CC0 secondary FBI-derived agency directory
+        run: python3 scripts/build_fbi_derived_agency_roster.py
+      - name: Document research-only coverage for all US states
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          x=json.load(open(".katoptron-ci/fbi-derived-ori-agency-directory-research.json",encoding="utf8"))
+          print("## FBI-derived ORI research roster (secondary CC0 source)")
+          print("**Not original agency verification, live government police operations, Flock deployments or approved policies.**")
+          print("Agency ORI research leads:",x["research_agency_count"])
+          print("Original FBI endpoint referenced:",x["original_source_reference"])
+          print("Secondary publisher:",x["secondary_source_url"])
+          print("Source SHA-256:",x["original_csv_sha256"])
+          print("| State | Historical FBI-directory agency entries |")
+          print("|---|---:|")
+          for s,n in x["state_counts"].items():print("| "+s+" | "+str(n)+" |")
+          print("\nFlock deployments and individually verified operating agencies from this source: **0**.")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: all-us-secondary-fbi-derived-ori-agency-research-roster
+          path: .katoptron-ci/fbi-derived-ori-agency-directory-research.json
+          if-no-files-found: error
+          retention-days: 21
