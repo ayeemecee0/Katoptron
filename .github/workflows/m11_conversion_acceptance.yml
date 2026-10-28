@@ -1,0 +1,42 @@
+name: Validate M11 government original disclosure and source backlog publication
+on:
+  push:
+    paths:
+      - 'agency-evidence-conversion.html'
+      - 'agency-html-disclosures.js'
+      - 'data/verified-agency-html-source-disclosures-2026-10-27.json'
+      - 'data/nationwide-original-source-and-agency-backlog-2026-10-27.json'
+      - 'scripts/test_agency_html_disclosures.cjs'
+      - 'scripts/build_all_agency_source_backlog.cjs'
+      - 'scripts/test_all_agency_source_backlog.cjs'
+      - 'scripts/smoke_evidence_conversion.cjs'
+      - '.github/workflows/m11_conversion_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-m11-government-source-conversion-acceptance
+  cancel-in-progress: true
+jobs:
+  original-agency-evidence:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify source hashes, official HTML claims, and all 111 dispositions
+        run: |
+          node --check agency-html-disclosures.js
+          node scripts/test_agency_html_disclosures.cjs
+          node scripts/test_all_agency_source_backlog.cjs
+      - name: Start localhost website preview
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-m11-preview.log 2>&1 &
+      - name: Install pinned Chromium API
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Verify 11 source-backed agency profiles, actions and diagram-only source documentation
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_evidence_conversion.cjs
