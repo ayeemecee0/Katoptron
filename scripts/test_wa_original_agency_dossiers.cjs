@@ -44,8 +44,8 @@ assert.ok(wa.some(r=>r.key==='normandy-park-police-wa'));
 assert.ok(!wa.some(r=>r.key.includes('sultan')));
 assert.ok(wa.every(r=>r.documents.every(d=>d.findings.every(f=>d.pages.includes(f.page)))));
 const merged=WA.combine(Base.catalog(baseFiles,baseValidators),wa);
-assert.equal(merged.agencies,17);
-assert.equal(merged.original_documents,21);
+assert.equal(merged.agencies,18);
+assert.equal(merged.original_documents,25);
 assert.ok(merged.findings>30);
 assert.ok(merged.no_live_camera_or_sharing_claims);
 assert.ok(merged.dossiers.some(r=>r.key==='kittitas-police-wa'&&r.documents[0].kind==='draft_not_proven_adopted'));
@@ -61,4 +61,4 @@ tamper(x=>{x.flock.held_review_candidates[0].publish_document_page_links=true;})
 tamper(x=>{x.other.documents[0].source_url='https://elsewhere.example/a';});
 tamper(x=>{x.other.documents[0].vendor='Flock Safety';});
 tamper(x=>{x.flock.documents.pop();});
-console.log('WA AGENCY X-RAY ORIGINAL DOSSIERS PASS: 11 original agency policy records + 6 existing profiles = 17 exact publishers / 21 originals; Sultan held');
+console.log('WA AGENCY X-RAY ORIGINAL DOSSIERS PASS: 11 original agency policy records + 7 existing profiles = 18 exact publishers / 25 originals; Sultan held');

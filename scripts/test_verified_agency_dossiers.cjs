@@ -18,8 +18,8 @@ const files={
  national:require('../data/verified-national-government-documents.json')
 };
 const index=D.catalog(files,validators);
-assert.equal(index.agencies,6);
-assert.equal(index.original_documents,10);
+assert.equal(index.agencies,7);
+assert.equal(index.original_documents,14);
 assert.ok(index.findings>=20);
 assert.equal(index.no_live_camera_or_sharing_claims,true);
 const okc=D.byKey(index,'oklahoma-city-ok');
@@ -36,6 +36,16 @@ assert.equal(moline.documents[0].date,'2026-09-15');
 assert.equal(moline.documents[1].date,'2024-12-04');
 assert.match(moline.documents[0].kind,/pause/);
 assert.ok(moline.documents[0].findings.some(f=>/not confirmation/i.test(f.statement)||/not proof/i.test(f.statement)));
+const green=D.byKey(index,'green-bay-police-wi');
+assert.equal(green.documents.length,4);
+assert.equal(green.agency,'Green Bay Police Department');
+assert.ok(green.documents.some(d=>d.kind==='agency_monthly_aggregate_report'&&d.findings.some(f=>/443,664/.test(f.statement))));
+assert.ok(green.documents.some(d=>d.kind==='published_department_policy'&&d.findings.some(f=>/30-day maximum/.test(f.statement))));
+assert.ok(green.documents.some(d=>d.kind==='draft_policy_unadopted'&&d.date===null&&
+ d.date_basis==='undated_original_not_verified_effective'&&/DRAFT/.test(d.date_note)));
+assert.ok(green.documents.some(d=>d.kind==='government_published_vendor_order_form'&&d.date===null&&
+ /not independently confirmed/.test(d.date_note)));
+assert.match(green.notes.join(' '),/not known to be adopted/);
 const draft=D.byKey(index,'kittitas-police-wa');
 assert.equal(draft.documents[0].kind,'draft_not_proven_adopted');
 assert.equal(draft.documents[0].date_basis,'manual_imprint_not_adoption');
@@ -57,4 +67,4 @@ for(const fn of [
  const tampered=JSON.parse(JSON.stringify(files));fn(tampered);
  assert.throws(()=>D.catalog(tampered,validators),/original|Unverified|government|mismatch|invalid|Missing|changed|improperly|not|held/i);
 }
-console.log('AGENCY X-RAY ORIGINAL DOSSIERS PASS: 6 exact agencies / 10 page-reviewed source documents, no camera or sharing upgrades');
+console.log('AGENCY X-RAY ORIGINAL DOSSIERS PASS: 7 exact agencies / 14 page-reviewed source documents, no camera or sharing upgrades');

@@ -156,7 +156,7 @@ function selectOriginal(r){
  for(const d of r.documents){
   const card=node('article',null,'card');
   card.append(node('strong',d.title),
-   node('small',d.date+' · '+d.date_basis.replaceAll('_',' ')+' · '+d.kind.replaceAll('_',' ')),
+   node('small',(d.date||'Original date unverified')+' · '+d.date_basis.replaceAll('_',' ')+' · '+d.kind.replaceAll('_',' ')+(d.date_note?' · '+d.date_note:'')),
    node('p','Original government source SHA-256: '+d.sha,'muted'));
   for(const f of d.findings){
    const section=node('section',null,'original-item');

@@ -13,7 +13,8 @@
   ['providence-police-ri','Providence Police Department','Providence Police Department','RI','effective_policy'],
   ['brookings-police-sd','Brookings Police Department','Brookings Police Department','SD','signed_policy_revision'],
   ['kittitas-police-wa','Kittitas Police Department','Kittitas Police Department','WA','draft_not_adopted'],
-  ['moline-police-il','Moline Police Department','Moline Police Department','IL','signed_order_and_pause']
+  ['moline-police-il','Moline Police Department','Moline Police Department','IL','signed_order_and_pause'],
+  ['green-bay-police-wi','Green Bay Police Department','Green Bay Police Department','WI','dated_report_published_policy_and_unadopted_draft']
  ];
  function checkUrl(url){
   if(typeof url!=='string'||url.length>1100)return false;
@@ -32,13 +33,18 @@
   const national=api.national.catalog(raw.national);
   const moline=national.filter(r=>r.id==='moline-il-signed-flock-order-2024'||
     r.id==='moline-il-signed-pause-2026');
-  if(policies.length!==2||moline.length!==2||okc.documents.length!==4||
+  const greenBayIds=new Set(['green-bay-wi-monthly-2026','green-bay-wi-policy-may-2026',
+    'green-bay-wi-policy-draft-sept-2026','green-bay-wi-flock-order-2025']);
+  const greenBay=national.filter(r=>greenBayIds.has(r.id));
+  if(policies.length!==2||moline.length!==2||greenBay.length!==4||
+    !greenBay.every(r=>r.agency==='Green Bay Police Department'&&r.state==='WI')||
+    okc.documents.length!==4||
     ne.document.id!=='ne-dakota-county-sheriff-2025-state-alpr-aggregate'||
     wa.id!=='kittitas-wa-original-four-page-scanned-draft-2026')
    throw Error('Reviewed original agency document set incomplete');
   const rows=new Map(AGENCIES.map(([key,label,agency,state,tier])=>
     [key,{key,label,agency,state,tier,documents:[],notes:[]}]));
-  function add(key,{id,title,kind,date,date_basis,source_url,sha,pages,findings,limits}){
+  function add(key,{id,title,kind,date,date_basis,date_note=null,source_url,sha,pages,findings,limits}){
    const target=rows.get(key);
    if(!target||typeof id!=='string'||!checkUrl(source_url)||!/^[a-f0-9]{64}$/.test(sha||'')||
     !Array.isArray(pages)||!pages.length||
@@ -46,13 +52,15 @@
     !Array.isArray(findings)||!findings.length||
     !findings.every(f=>pages.includes(f.page)&&typeof f.statement==='string'&&f.statement.length>=50&&
       f.statement.length<=950&&typeof f.category==='string'&&f.category.length>=8)||
-    !/^20\d{2}-\d{2}-\d{2}$/.test(date||'')||
-    !['original_source_date','policy_effective_date','manual_imprint_not_adoption','report_period_end_not_publication'].includes(date_basis)||
+    !((/^20\d{2}-\d{2}-\d{2}$/.test(date||'')&&
+      ['original_source_date','policy_effective_date','manual_imprint_not_adoption','report_period_end_not_publication'].includes(date_basis))||
+      (date===null&&date_basis==='undated_original_not_verified_effective'&&
+       typeof date_note==='string'&&date_note.length>=40))||
     typeof limits!=='string'||limits.length<40)
     throw Error('Unpinned original agency page evidence cannot appear in dossier');
    if(Array.from(rows.values()).some(r=>r.documents.some(d=>d.id===id)))
     throw Error('Original agency source linked to multiple unrelated identities');
-   target.documents.push({id,title,kind,date,date_basis,source_url,sha,pages,
+   target.documents.push({id,title,kind,date,date_basis,date_note,source_url,sha,pages,
     findings,limits,agency:target.agency,state:target.state});
   }
   for(const r of okc.documents)add('oklahoma-city-ok',{
@@ -100,10 +108,25 @@
    findings:r.findings.map(f=>({page:f.page,category:f.category,statement:f.statement})),
    limits:r.verification_note||'Signed city-published records are historical and do not prove device installation, continuous operation or completion of deactivation.'
   });
+  for(const r of greenBay){
+   if(['verified_camera_coordinates','operational_status','flock_device_installed',
+       'actual_data_access'].some(k=>Object.hasOwn(r,k)))
+    throw Error('Green Bay original source cannot assert live device facts');
+   add('green-bay-police-wi',{
+    id:r.id,title:r.title,kind:r.kind,date:r.source_date,
+    date_basis:r.source_date?'original_source_date':'undated_original_not_verified_effective',
+    date_note:r.source_date_note||null,source_url:r.source_url,sha:r.content_sha256,
+    pages:r.pages_reviewed,findings:r.findings.map(f=>({
+     page:f.page,category:f.category,statement:f.statement})),
+    limits:raw.national.scope_note
+   });
+  }
+  rows.get('green-bay-police-wi').notes.push(
+   'The May 2026 published policy is not verified as the currently effective policy. The September revision is expressly DRAFT and not known to be adopted; the published Flock order form is not independently confirmed executed. The October report gives dated agency-reported aggregates and access recipients, not live camera or sharing verification.');
   const dossiers=Array.from(rows.values());
   for(const r of dossiers){
    if(!r.documents.length)throw Error('Empty original agency dossier');
-   r.documents.sort((a,b)=>b.date.localeCompare(a.date)||a.id.localeCompare(b.id));
+   r.documents.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||a.id.localeCompare(b.id));
   }
   return {dossiers,agencies:dossiers.length,
     original_documents:dossiers.reduce((n,r)=>n+r.documents.length,0),

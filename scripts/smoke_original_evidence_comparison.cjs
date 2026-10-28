@@ -10,9 +10,9 @@ const {chromium}=require('playwright');
   const res=await page.goto(new URL('agency-compare.html',base).href,
    {waitUntil:'domcontentloaded',timeout:25000});
   assert.equal(res.status(),200);
-  await page.waitForFunction(()=>document.querySelector('#loadStatus')?.textContent?.includes('17 individually source-identified'),
+  await page.waitForFunction(()=>document.querySelector('#loadStatus')?.textContent?.includes('18 individually source-identified'),
    null,{timeout:20000});
-  assert.equal(await page.locator('#agencyA option').count(),18);
+  assert.equal(await page.locator('#agencyA option').count(),19);
   assert.ok(!((await page.locator('#agencyA').textContent()).includes('Sultan')));
   assert.equal(await page.locator('#agencyA').inputValue(),'providence-police-ri');
   assert.equal(await page.locator('#agencyB').inputValue(),'brookings-police-sd');
@@ -43,7 +43,18 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#comparison').textContent(),/attorney general registration date not policy date/);
   await page.locator('#topic').selectOption('contracts');
   assert.match(await page.locator('#comparison').textContent(),/No reviewed original-page finding indexed for this topic/);
+  await page.goto(new URL('agency-compare.html?a=green-bay-police-wi&b=providence-police-ri&topic=retention',base).href,
+   {waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>document.querySelector('#comparison')?.textContent?.includes('Green Bay Police Department'),
+   null,{timeout:18000});
+  const green=await page.locator('#comparison').textContent();
+  assert.match(green,/30-day maximum/);
+  assert.match(green,/seven days/);
+  assert.match(green,/not a verified adopted policy change/);
+  assert.match(green,/Original date unverified/);
+  await page.locator('#topic').selectOption('all');
+  assert.match(await page.locator('#comparison').textContent(),/not independently confirmed/);
   assert.equal(errors.length,0,errors.join('; '));
-  console.log('AGENCY ORIGINAL COMPARISON CHROMIUM PASS: 17 agencies, topic scope, source-page deep links, missing evidence, duplicate rejection and narrow-screen view');
+  console.log('AGENCY ORIGINAL COMPARISON CHROMIUM PASS: 18 agencies, topic scope, source-page deep links, missing evidence, duplicate rejection and narrow-screen view');
  }finally{await browser.close();}
 })().catch(e=>{console.error('AGENCY ORIGINAL COMPARISON FAILED',e);process.exit(1);});

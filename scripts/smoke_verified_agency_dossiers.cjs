@@ -9,10 +9,10 @@ const {chromium}=require('playwright');
   const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
   const res=await page.goto(new URL('agency-xray.html',base).href,{waitUntil:'domcontentloaded',timeout:25000});
   assert.equal(res.status(),200);
-  await page.waitForFunction(()=>document.querySelector('#originalStatus')?.textContent?.includes('17 source-identified agency dossiers'),
+  await page.waitForFunction(()=>document.querySelector('#originalStatus')?.textContent?.includes('18 source-identified agency dossiers'),
    null,{timeout:18000});
-  assert.equal(await page.locator('#originalList button').count(),17);
-  assert.match(await page.locator('#originalStatus').textContent(),/21 original-page-reviewed documents/);
+  assert.equal(await page.locator('#originalList button').count(),18);
+  assert.match(await page.locator('#originalStatus').textContent(),/25 original-page-reviewed documents/);
   assert.match(await page.locator('#verifiedOriginals').textContent(),/not live camera verification/);
   await page.locator('#originalSearch').fill('Oklahoma City');
   assert.equal(await page.locator('#originalList button').count(),1);
@@ -69,17 +69,30 @@ const {chromium}=require('playwright');
   await page.locator('#originalSearch').fill('Black Diamond');
   await page.locator('#originalList button').first().click();
   assert.match(await page.locator('#originalDocuments').textContent(),/Original state-linked ALPR department policy document/);
+  await page.locator('#originalSearch').fill('Green Bay');
+  assert.equal(await page.locator('#originalList button').count(),1);
+  await page.locator('#originalList button').first().click();
+  assert.equal(await page.locator('#originalDocuments article').count(),4);
+  const gb=await page.locator('#originalDocuments').textContent();
+  assert.match(gb,/443,664 unique plate reads/);
+  assert.match(gb,/30-day maximum/);
+  assert.match(gb,/proposes reducing ordinary ALPR plate-read retention to seven days/);
+  assert.match(gb,/Original date unverified/);
+  assert.match(gb,/not independently confirmed/);
+  assert.match(gb,/not known to be adopted/);
+  assert.ok((await page.locator('#originalDocuments a').evaluateAll(as=>as.map(a=>a.href)))
+   .every(url=>url.startsWith('https://www.greenbaywi.gov/')&&/#page=\d+/.test(url)));
   await page.locator('#originalSearch').fill('Sultan');
   assert.equal(await page.locator('#originalList button').count(),0);
   assert.match(await page.locator('#originalList').textContent(),/Unknown is not zero cameras/);
   await page.locator('#originalClear').click();
-  assert.equal(await page.locator('#originalList button').count(),17);
+  assert.equal(await page.locator('#originalList button').count(),18);
   assert.equal(await page.locator('#originalDossier').getAttribute('hidden'),'');
   assert.ok(!page.url().includes('original='));
   assert.equal(errors.length,0,errors.join('; '));
   await page.goto(new URL('agency-xray.html?original=moline-police-il',base).href,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#originalTitle')?.textContent?.includes('Moline Police Department'),null,{timeout:18000});
   assert.equal(await page.locator('#originalDocuments article').count(),2);
-  console.log('AGENCY X-RAY ORIGINAL DOSSIERS CHROMIUM PASS: 17 independently typed agency profiles, 21 sources, historical/proposed/other policy tiers and source links');
+  console.log('AGENCY X-RAY ORIGINAL DOSSIERS CHROMIUM PASS: 18 independently typed agency profiles, 25 sources, historical/proposed/other policy tiers and source links');
  }finally{await browser.close();}
 })().catch(e=>{console.error('AGENCY X-RAY ORIGINAL DOSSIERS FAILED',e);process.exit(1);});

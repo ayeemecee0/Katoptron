@@ -148,7 +148,7 @@ function render(){
   for(const doc of row.documents){
    const block=element('section',undefined,'doc');
    block.append(element('h3',doc.title),
-    element('p',doc.date+' · '+doc.date_basis.replaceAll('_',' ')+' · '+doc.kind.replaceAll('_',' '),'muted'),
+    element('p',(doc.date||'Original date unverified')+' · '+doc.date_basis.replaceAll('_',' ')+' · '+doc.kind.replaceAll('_',' ')+(doc.date_note?' · '+doc.date_note:''),'muted'),
     element('p','Original PDF SHA-256: '+doc.sha,'muted'));
    for(const finding of doc.findings){
     const item=element('div',undefined,'finding');
