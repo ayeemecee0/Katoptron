@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Agency Evidence Conversion</title><link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0a131d;color:#e7f1f5;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0}a{color:#8bd4e8}header{padding:1rem max(1rem,4vw);border-bottom:1px solid #38566a;background:#10232f;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}header a{color:inherit}header nav{display:flex;gap:1rem;flex-wrap:wrap}main{max-width:1170px;margin:auto;padding:2rem 1rem 5rem}h1{font-size:clamp(1.6rem,4vw,2.3rem)}h2{font-size:1.3rem}p{color:#bcd0dc;line-height:1.55}
+.note{border-left:4px solid #74bbc8;padding:1rem;background:#122838;margin:1.1rem 0}
+.stats,.layout{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:.8rem}
+.stat,.card{background:#142736;border:1px solid #405f74;padding:1rem;border-radius:9px}
+.stat strong{display:block;font-size:1.65rem}.stat small{color:#c1d4df}
+.card h3{font-size:1.05rem;margin:0 0 .4rem}
+.kicker{font-size:.82rem;color:#f0c998;font-weight:650;letter-spacing:.02em}
+.small{font-size:.84rem;color:#b4ccd8}
+.controls{display:flex;flex-wrap:wrap;gap:1rem;margin:1rem 0;align-items:end}
+label{display:block;font-weight:600;margin-bottom:.3rem}
+input,select{max-width:100%;min-width:min(240px,100%);border-radius:7px;padding:.65rem;background:#182f40;color:inherit;border:1px solid #7ca1b5;font:inherit}
+input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #90dff5;outline-offset:3px}
+#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(285px,100%),1fr));gap:.8rem}
+.card a{display:inline-block;margin:.45rem .5rem .2rem 0;overflow-wrap:anywhere}
+details{border-top:1px solid #456475;margin-top:.7rem;padding-top:.5rem}
+details summary{cursor:pointer;font-weight:600}details p{margin:.5rem 0;font-size:.86rem}
+#compare{margin:1rem 0}#queue{max-height:600px;overflow:auto}
+.queue-row{border-bottom:1px solid #466070;padding:.7rem .2rem}.queue-row strong{display:block;margin-bottom:.2rem}.queue-row span{display:block}
+@media(max-width:650px){header nav{font-size:.85rem}}
+</style></head><body><a class="skip-link" href="#main">Skip to evidence</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a>
+<nav><a href="./agency-xray.html">Agency X-Ray</a><a href="./nationwide-policy.html">Nationwide coverage</a><a href="./index.html">Camera map</a></nav></header>
+<main id="main">
+<h1>Original government evidence conversion</h1>
+<p>Eleven additional public agency-authored Flock disclosures across eleven previously unrepresented states. The original HTML is source-hashed, and specific claim wording was confirmed at acquisition. These statements are <strong>not independent measurements of active camera equipment, data deletion, or platform access.</strong></p>
+<p class="note">Status matters. A municipality reporting that it removed cameras must not be displayed as a currently operating fleet. A government webpage is not an individually page-reviewed policy PDF or proof that every contract term is effective. No source-only map or camera count creates GPS points or surveillance-detection predictions.</p>
+<p id="status" role="status" aria-live="polite">Checking original government source receipts…</p>
+<div id="stats" class="stats"></div>
+<section aria-labelledby="agencyHeading"><h2 id="agencyHeading">Original municipal publication comparisons</h2>
+<div class="controls"><div><label for="query">Find agency or state</label><input id="query" type="search" placeholder="Idaho, South Portland, retention"></div>
+<div><label for="filter">Publisher-reported status</label><select id="filter"><option value="ALL">All statuses</option><option value="agency_reports_flock_use">Describes Flock use</option><option value="announced_not_renewing">Nonrenewal announced</option><option value="agency_reports_removed">Removal reported</option><option value="announced_termination_process">Termination initiated</option></select></div></div>
+<div id="cards"></div>
+<h2>Compare two original-government publications</h2>
+<div class="controls"><div><label for="first">Agency A</label><select id="first"></select></div><div><label for="second">Agency B</label><select id="second"></select></div></div>
+<div class="layout" id="compare"></div>
+</section>
+<section aria-labelledby="backlogHeading"><h2 id="backlogHeading">Held source and registration review queue</h2>
+<p>A held government URL is a specific acquisition problem. A Washington ALPR registration is an agency self-certification, not proof of Flock vendor equipment. This queue preserves what action is required for each record without pretending verification is complete.</p>
+<div class="controls"><div><label for="queueType">Review backlog category</label><select id="queueType"><option value="held">12 held government originals</option><option value="wa">97 Washington registrations</option><option value="pdf">Two discovered PDF candidates</option></select></div>
+<div><label for="queueQuery">Filter review queue</label><input id="queueQuery" type="search" placeholder="Agency, state or hold reason"></div></div>
+<p id="queueStatus" role="status" aria-live="polite">Loading source-specific review dispositions…</p>
+<div id="queue" class="card"></div>
+</section>
+</main>
+<script src="./agency-html-disclosures.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const el=(tag,txt,cls)=>{const x=document.createElement(tag);if(txt!==undefined)x.textContent=String(txt);if(cls)x.className=cls;return x;};
+const link=(p,url,label)=>{const a=el('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';p.append(a);};
+let verified=null,backlog=null;
+function summarizeStatus(r){
+ return {agency_reports_flock_use:'GOVERNMENT REPORTS FLOCK USE',
+ announced_not_renewing:'NONRENEWAL ANNOUNCED, REMOVAL UNCONFIRMED',
+ agency_reports_removed:'CITY REPORTS CAMERAS REMOVED',
+ announced_termination_process:'TERMINATION AND REMOVAL PROCESS ANNOUNCED'}[r.publisher_statement_category]||'UNKNOWN';
+}
+function card(r){
+ const div=el('article',undefined,'card');
+ div.append(el('h3',r.agency+' · '+r.state),el('div',summarizeStatus(r),'kicker'),
+  el('p',r.summary),el('div','Publisher statement date/context: '+r.source_date+' · Observed 2026-10-27','small'));
+ link(div,r.source_url,'Official government original');
+ const details=el('details'),summary=el('summary','Source verification details');details.append(summary,
+  el('p','Original HTML SHA-256: '+r.original_html_sha256,'small'),
+  el('p','Original claim-specific text anchors matched: '+r.claim_anchors.length,'small'));
+ for(const a of r.claim_anchors)details.append(el('p',a));
+ details.append(el('p','Not proof of currently operating cameras, approved effective policy, exact map coordinates or configured sharing.','small'));
+ div.append(details);return div;
+}
+function render(){
+ if(!verified)return;
+ const q=$('query').value.toLowerCase().trim(),filter=$('filter').value;
+ $('cards').replaceChildren();
+ let n=0;for(const r of verified.records){
+  if(filter!=='ALL'&&r.publisher_statement_category!==filter)continue;
+  if(q&&!(r.agency+' '+r.state+' '+r.summary).toLowerCase().includes(q))continue;
+  $('cards').append(card(r));n++;
+ }
+ if(!n)$('cards').append(el('p','No matching government statements; absence is not evidence of no Flock program.'));
+}
+function compare(){
+ if(!verified)return;
+ $('compare').replaceChildren();
+ for(const key of ['first','second']){
+  const r=verified.records.find(x=>x.id===$(key).value);
+  if(r)$('compare').append(card(r));
+ }
+}
+function queue(){
+ if(!backlog)return;
+ const mode=$('queueType').value;
+ const rows=mode==='held'?backlog.held_government_sources:
+  mode==='wa'?backlog.wa_agency_registrations:backlog.document_candidates;
+ const q=$('queueQuery').value.trim().toLowerCase();
+ const filtered=rows.filter(r=>JSON.stringify([r.id,r.agency,r.state,r.publisher,r.disposition,r.next_action,r.source_status]).toLowerCase().includes(q));
+ $('queueStatus').textContent=filtered.length+' of '+rows.length+
+  ' entries; each item is an actionable hold or already individually source-page-reviewed policy. No automatic Flock deployment claim.';
+ $('queue').replaceChildren();
+ for(const x of filtered.slice(0,35)){
+  const div=el('div',undefined,'queue-row');
+  div.append(el('strong',x.agency||x.publisher||x.id),
+    el('span','State '+x.state+' · '+x.disposition,'small'),
+    el('span',x.next_action||'Prior original review recorded; recheck source version','small'));
+  const url=x.url||x.original_url||x.policy_urls?.[0];
+  if(url)link(div,url,'Open source');
+  $('queue').append(div);
+ }
+ if(filtered.length>35)$('queue').append(el('p','Showing 35 of '+filtered.length+' entries. Refine the filter to inspect additional individual cases.','small'));
+}
+async function load(){
+ const [resp,back]=await Promise.all([fetch('./data/verified-agency-html-source-disclosures-2026-10-27.json'),
+ fetch('./data/nationwide-original-source-and-agency-backlog-2026-10-27.json')]);
+ if(!resp.ok||!back.ok)throw Error('Required qualified source files unavailable');
+ verified=window.KatoptronAgencyOriginalHTML.validate(await resp.json());
+ backlog=await back.json();
+ if(backlog.schema_version!==1||backlog.counts?.held_original_government_urls!==12||
+   backlog.counts.wa_registrations!==97||backlog.counts.wa_original_policies_page_reviewed!==11||
+   backlog.counts.wa_original_policy_rechecks_needed!==86||backlog.counts.open_review_items!==99||
+   backlog.counts.verified_current_WA_flock_operators_from_registration!==0||
+   backlog.held_government_sources.length!==12||backlog.wa_agency_registrations.length!==97)
+   throw Error('Backlog source qualification mismatch');
+ const stats=[['New official agency disclosures',11],['Additional states',11],['Held government originals',12],['Washington registrations',97],['WA originals already page-reviewed',11],['WA page reviews pending',86]];
+ for(const [label,val] of stats){
+  const box=el('div',undefined,'stat');box.append(el('strong',val),el('small',label));$('stats').append(box);
+ }
+ for(const r of verified.records){
+  for(const id of ['first','second']){
+   const op=el('option',r.agency+' · '+r.state);op.value=r.id;$(id).append(op);
+  }
+ }
+ $('first').selectedIndex=0;$('second').selectedIndex=1;
+ $('status').textContent='11 exact original-government agency statements checked; 11 states; zero new exact camera locations, live sharing relationships or individually page-reviewed policy PDF dossiers.';
+ render();compare();queue();
+}
+for(const [id,event,cb] of [['query','input',render],['filter','change',render],['first','change',compare],['second','change',compare],['queueType','change',queue],['queueQuery','input',queue]])$(id).addEventListener(event,cb);
+load().catch(e=>{$('status').textContent='Fail-closed government evidence load: '+e.message;$('cards').replaceChildren();$('queue').replaceChildren();});
+</script></body></html>
