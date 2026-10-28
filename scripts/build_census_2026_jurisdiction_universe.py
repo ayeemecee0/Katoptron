@@ -110,7 +110,7 @@ def build(fetcher=fetch,strict_counts=True):
  if len({r["id"] for r in all_rows})!=len(all_rows):
   raise ValueError("Cross-category geographic identity collision")
  county_states={r["state"] for r in all_rows if r["geo_type"]=="county"}
- if strict_counts and county_states!=set(STATES):
+ if county_states!=set(STATES):
   raise ValueError("Census 2026 geography excludes a U.S. state or DC")
  by_state=[{
   "state":s,
