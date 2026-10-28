@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "source_run": "https://github.com/ayeemecee0/Katoptron/actions/runs/40630806814",
+  "scope": "three_individually_original_SHA_verified_WA_AG_linked_Flock_policy_text_pages_not_current_agency_deployment_or_signed_adoption",
+  "documents": [
+    {
+      "id": "bonney-lake-wa-flock-transparency-policy",
+      "state": "WA",
+      "submitted_agency": "Bonney Lake Police Department",
+      "publisher_actor": "Bonney Lake Police Department",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Bonney%20Lake%20PD%20ALPR%20Policy.pdf?VersionId=8oNgjNe4Id.UeaCDUtGPCWhk4v2U1Szl",
+      "sha256": "9951c52f152cad5dc55ab1c1de1c48ebd7326aece40a16ff62845a7b43a4ea97",
+      "original_pdf_pages": 3,
+      "reviewed_pages": [
+        3
+      ],
+      "original_policy_finding": "Page 3 requires department-maintained public transparency documentation of Flock camera usage; supervisory approval precedes entering certain agency data. This is department source text, not proof of existing portal quality, current camera operation or verified compliance.",
+      "claim_category": "agency_published_flock_transparency_requirement",
+      "agency_identity_issue": false,
+      "actual_flock_equipment_verified": false,
+      "legal_effective_date_verified": false
+    },
+    {
+      "id": "enumclaw-wa-flock-transparency-policy",
+      "state": "WA",
+      "submitted_agency": "Enumclaw Police Department",
+      "publisher_actor": "Enumclaw Police Department",
+      "source_url": "https://www.cityofenumclaw.net/DocumentCenter/View/11660/Automated-License-Plate-Readers-PDF",
+      "sha256": "9fd0b96b4ada99898bd600fca753a18f90e8c5b34a26ca038411bd38662a9806",
+      "original_pdf_pages": 6,
+      "reviewed_pages": [
+        3
+      ],
+      "original_policy_finding": "Page 3 requires an ALPR transparency portal on the police website documenting Flock camera usage. This is written department policy wording, not independent verification that the department's current vendor, actual sharing controls or equipment match the wording.",
+      "claim_category": "agency_published_flock_transparency_requirement",
+      "agency_identity_issue": false,
+      "actual_flock_equipment_verified": false,
+      "legal_effective_date_verified": false
+    },
+    {
+      "id": "sultan-wa-sheriff-policy-identity-exception",
+      "state": "WA",
+      "submitted_agency": "Sultan Police Department",
+      "publisher_actor": "Snohomish County Sheriff's Office",
+      "source_url": "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sultan%20PD%20Policy.pdf?VersionId=2acQSop50YimzRsHtywAJExi_5.hqWUH",
+      "sha256": "b9b84eae00fed2b3f175a880fa2e0be1a17a7d79918ffc4936b991c57da18123",
+      "original_pdf_pages": 30,
+      "reviewed_pages": [
+        2,
+        3,
+        4
+      ],
+      "original_policy_finding": "Sultan's Attorney General-linked 30-page attachment refers to SCSO, a Sheriff's Office, the Sheriff's Office Flock login, and Sheriff user/training procedures on pages 2-4. City of Sultan contracts law enforcement services to Snohomish County Sheriff. Attribute the attachment to the Sheriff rather than inventing an independently administered Sultan Flock account; current configuration and effective policy still require independent corroboration.",
+      "claim_category": "state_ag_linked_sheriff_policy_provenance_collision_requires_reconciliation",
+      "agency_identity_issue": true,
+      "identity_authority_source": "https://sultanwa.gov/176/Police",
+      "actual_flock_equipment_verified": false,
+      "legal_effective_date_verified": false
+    }
+  ],
+  "agency_policies_with_original_page_claims_verified": 2,
+  "agency_identity_crosswalk_held": 1,
+  "new_independently_verified_camera_coordinates": 0,
+  "new_legal_adoptions_verified": 0,
+  "limits": "Original page-linked policy wording and document attribution are verified against SHA-pinned sources. The excerpts do not establish live Flock installed devices, independent policy effectivity, completed audits or current interagency access."
+}
