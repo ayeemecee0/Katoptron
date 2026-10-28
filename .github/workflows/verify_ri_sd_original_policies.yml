@@ -1,0 +1,28 @@
+name: Verify original Providence and Brookings 2026 public police ALPR policies
+on:
+  push:
+    paths:
+      - 'data/verified-ri-sd-original-alpr-policies.json'
+      - 'scripts/inspect_ri_sd_alpr_original_policies.py'
+      - 'scripts/verify_ri_sd_original_policies.py'
+      - 'scripts/test_verify_ri_sd_original_policies.py'
+      - '.github/workflows/verify_ri_sd_original_policies.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '29 19 * * 5'
+permissions:
+  contents: read
+jobs:
+  original-policy-sources:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7' 'pymupdf>=1.24,<1.27'
+      - run: python -m unittest discover -s scripts -p 'test_verify_ri_sd_original_policies.py' -v
+      - run: python scripts/verify_ri_sd_original_policies.py
