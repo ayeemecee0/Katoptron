@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "acquired_in_ci": "https://github.com/ayeemecee0/Katoptron/actions/runs/40633464566",
+  "scope": "two_distinct_original_city_PDF_page_anchored_governance_findings_not_current_flock_config_or_camera_geometry",
+  "documents": [
+    {
+      "id": "idaho-falls-id-flock-supplemental-procedure-127",
+      "state": "ID",
+      "agency": "Idaho Falls Police Department",
+      "title": "Department-published Flock ALPR Supplemental Procedure 127",
+      "url": "https://www.idahofallsidaho.gov/DocumentCenter/View/20519/Automated-License-Plate-Readers",
+      "sha256": "9d53f9a247818cffff263cd18cf2bf0a14ae66ceca20e126578625fd62e8cf60",
+      "pages": 2,
+      "reviewed_pages": [
+        1,
+        2
+      ],
+      "publisher_imprint": "2026/07/30",
+      "kind": "agency_published_supplemental_Flock_ALPR_procedure_text_not_signed_legal_effective_date",
+      "findings": [
+        {
+          "page": 1,
+          "category": "flock_policy_system_and_hotlists",
+          "statement": "Idaho Falls Police Department's department-published Supplemental Procedure 127 explicitly governs use of Flock Safety ALPR systems and describes custom hot-list entries with a normally 30-day presence in the Flock platform. This is a dated written procedure, not an independently tested live setting."
+        },
+        {
+          "page": 1,
+          "category": "flock_alert_independent_reasonable_suspicion",
+          "statement": "Supplemental Procedure 127 states a generated Flock alert must not by itself be treated as probable cause or reasonable suspicion for a traffic stop. This establishes a written department instruction rather than evidence officers followed it in any particular case."
+        },
+        {
+          "page": 2,
+          "category": "search_reason_and_case_fields",
+          "statement": "The department's Flock search procedure requires offense type, case number when available, and reason categories for traffic accidents, criminal cases and missing or endangered people. This is a documented departmental requirement, not a verified individual search audit."
+        },
+        {
+          "page": 2,
+          "category": "written_retention_and_preservation",
+          "statement": "The department's source-page-reviewed procedure describes Flock's standard 30-day retention period and separately directs officers to preserve records needed for criminal cases or evidence. It does not establish whether live vendor settings are currently configured or deletion occurs as written."
+        }
+      ],
+      "source_limitations": "This department-issued original is a dated, published supplemental procedure; no signed effective date, legal enactment, current operational configuration, per-device GPS location or confirmed active data-sharing permission is established by source text alone.",
+      "verified_current_camera_count": 0,
+      "verified_exact_camera_points": 0,
+      "verified_live_sharing_edges": 0
+    },
+    {
+      "id": "columbia-mo-surveillance-oversight-ordinance-025792",
+      "state": "MO",
+      "agency": "Columbia Police Department",
+      "title": "City of Columbia Ordinance 025792: law-enforcement surveillance oversight",
+      "url": "https://www.como.gov/archive/2024/10/ordinance-025792.pdf",
+      "sha256": "37e043de9a93a84337e3d9af37b7d4be377476084742832b63aca29353959f48",
+      "pages": 9,
+      "reviewed_pages": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        8,
+        9
+      ],
+      "publisher_imprint": "2024-10",
+      "kind": "city_published_surveillance_oversight_ordinance_broader_than_Flock_specific_approval",
+      "findings": [
+        {
+          "page": 1,
+          "category": "city_surveillance_oversight_enacted_code_text",
+          "statement": "City-published Ordinance 025792 creates an Article IV law-enforcement surveillance oversight process in City Code Chapter 21, with public notification, review and oversight procedures for police surveillance technology. The ordinance is a general framework, not proof of any specific Flock equipment purchase."
+        },
+        {
+          "page": 2,
+          "category": "annual_report_finance_sharing_and_audit_requirements",
+          "statement": "The original ordinance defines an annual surveillance report requiring general technology deployment, outside sharing, complaints, internal audit results, effectiveness information and costs. These are reporting obligations; this document does not prove the reports were actually submitted."
+        },
+        {
+          "page": 4,
+          "category": "alpr_explicit_technology_scope",
+          "statement": "Columbia's ordinance explicitly lists automatic license plate readers among surveillance technologies subject to its oversight framework. The ordinance also cautions that listing a technology is not endorsement or approval of the department's use of it."
+        },
+        {
+          "page": 6,
+          "category": "technology_policy_retention_and_location_notification",
+          "statement": "Ordinance 025792's policy provisions include routine retention and deletion criteria, limitations on third-party access and notice of general locations of fixed surveillance technology, subject to specified exceptions. It does not identify precise Flock camera positions."
+        },
+        {
+          "page": 7,
+          "category": "public_hearing_approval_and_data_sharing",
+          "statement": "The source requires public City Council review and a proposed surveillance impact report or use policy before certain acquisitions or data-sharing agreements, including newly proposed surveillance technology. The text does not certify that every subsequent purchase or sharing action complied."
+        },
+        {
+          "page": 8,
+          "category": "existing_technology_transitional_review",
+          "statement": "The ordinance includes a one-hundred-eighty-day transition for existing surveillance technology policies, municipal publication and subsequent changes, along with annual reporting obligations. Source text alone does not establish that any specific ALPR policy was revised or effective."
+        },
+        {
+          "page": 9,
+          "category": "annual_public_report_deadline",
+          "statement": "The city original requires the police chief to submit the previous calendar year's annual surveillance report to City Council before March 15, with publication and subsequent public discussion provisions. It does not establish whether the current year's report has been filed."
+        }
+      ],
+      "source_limitations": "A city-hosted nine-page ordinance source is not a device inventory, signed Flock vendor agreement, effective ALPR-specific policy, exact map or independent audit. A separate city-authored 2026 page corroborates Council adoption on October 7, 2024. Scanned signatures have not been independently visually inspected.",
+      "verified_current_camera_count": 0,
+      "verified_exact_camera_points": 0,
+      "verified_live_sharing_edges": 0
+    }
+  ],
+  "new_verified_original_PDF_documents": 2,
+  "distinct_states": 2,
+  "exact_camera_points_added": 0,
+  "active_sharing_edges_added": 0,
+  "verified_current_system_settings": 0,
+  "verified_signed_flock_specific_contracts": 0
+}

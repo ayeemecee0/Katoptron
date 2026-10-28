@@ -1,0 +1,38 @@
+name: Validate original Idaho and Missouri ALPR governance evidence publication
+on:
+  push:
+    paths:
+      - 'new-state-policy-originals.html'
+      - 'new-state-original-policy-pages.js'
+      - 'data/verified-idaho-columbia-government-policy-originals-2026-10-27.json'
+      - 'scripts/test_new_state_original_policy_pages.cjs'
+      - 'scripts/smoke_new_state_policy_originals.cjs'
+      - '.github/workflows/new_state_policy_originals_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-original-idaho-missouri-policy-browser-review
+  cancel-in-progress: true
+jobs:
+  originals:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify government original PDF identity, page findings and source limitations
+        run: |
+          node --check new-state-original-policy-pages.js
+          node scripts/test_new_state_original_policy_pages.cjs
+      - name: Start read-only localhost website preview
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/katoptron-original-2state.log 2>&1 &
+      - name: Install pinned Playwright client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Source-page and camera map classification browser acceptance
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_new_state_policy_originals.cjs
