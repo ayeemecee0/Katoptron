@@ -1,0 +1,29 @@
+name: Recheck held official government Flock original source URLs
+on:
+  push:
+    paths:
+      - 'scripts/recheck_three_held_government_originals.py'
+      - 'scripts/test_recheck_three_held_government_originals.py'
+      - '.github/workflows/recheck_three_held_government_originals.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '12 15 * * 3'
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify exact old government source IDs and current original authority limits
+        run: |
+          python3 -m py_compile scripts/recheck_three_held_government_originals.py
+          python3 -m unittest discover -s scripts -p 'test_recheck_three_held_government_originals.py' -v
+      - name: Retrieve original government HTML sources and qualify supersession
+        run: python3 scripts/recheck_three_held_government_originals.py
