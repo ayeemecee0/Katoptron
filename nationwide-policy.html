@@ -232,6 +232,9 @@ async function load(){
  $('censusStatus').textContent='Official 2026 Census research denominator: '+
   census.total.toLocaleString()+' geographic records across 51 states (counties, places incl. CDPs, and county subdivisions). These are NOT police agencies, confirmed municipalities, or Flock deployments. '+
   'Full named-geography research dataset is attached to the federal Census import workflow run.';
+  const details=node('p',undefined,'fine');
+  link(details,'https://github.com/ayeemecee0/Katoptron/actions/runs/40625767004','Open full official Census 2026 locality research dataset and source receipts');
+  $('censusStatus').after(details);
  $('loadStatus').textContent='Validated 51/51 state-level research entries, '+
   c.original_source_links+' original government links, '+
   c.individually_source_reviewed_dossier_agencies+' agency original-source dossiers and '+
