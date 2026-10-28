@@ -1,0 +1,42 @@
+name: Verify Robbinsdale original independent Flock audit source and browser presentation
+on:
+  push:
+    paths:
+      - 'data/verified-robbinsdale-2025-independent-flock-audit.json'
+      - 'data/verified-agency-html-source-disclosures-2026-10-27.json'
+      - 'robbinsdale-independent-audit.js'
+      - 'robbinsdale-audit.html'
+      - 'scripts/test_robbinsdale_independent_audit.cjs'
+      - 'scripts/smoke_robbinsdale_independent_audit.cjs'
+      - 'agency-xray.html'
+      - 'agency-evidence-conversion.html'
+      - 'nationwide-policy.html'
+      - '.github/workflows/robbinsdale_audit_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-robbinsdale-original-independent-audit-acceptance
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Independently validate original government historical audit identity and limitations
+        run: |
+          node --check robbinsdale-independent-audit.js
+          node scripts/test_robbinsdale_independent_audit.cjs
+      - name: Start local public evidence preview
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/robbinsdale-audit-preview.log 2>&1 &
+      - name: Install pinned headless Chromium client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Compare separate original source facts on mobile in Chromium
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_robbinsdale_independent_audit.cjs
