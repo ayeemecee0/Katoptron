@@ -1,0 +1,21 @@
+'use strict';
+const assert=require('node:assert/strict');
+const api=require('../agency-html-disclosures.js');
+const d=require('../data/verified-agency-html-source-disclosures-2026-10-27.json');
+const r=api.validate(d);
+assert.equal(r.agency_count,11);
+assert.equal(r.states_count,11);
+assert.equal(r.original_pdf_dossiers_added,0);
+assert.equal(r.exact_camera_locations_added,0);
+assert.equal(r.verified_live_sharing_edges_added,0);
+assert.equal(r.records.filter(x=>x.publisher_statement_category==='agency_reports_flock_use').length,8);
+assert.equal(r.records.filter(x=>x.publisher_statement_category!=='agency_reports_flock_use').length,3);
+assert.ok(r.records.every(x=>x.claim_anchors.length>=2));
+function reject(fn){const c=structuredClone(d);fn(c);assert.throws(()=>api.validate(c));}
+reject(c=>c.source_disclosures[0].original_html_sha256='0'.repeat(64));
+reject(c=>c.source_disclosures[0].publisher_statement_category='announced_not_renewing');
+reject(c=>c.source_disclosures[0].current_camera_operation_independently_verified=true);
+reject(c=>c.source_disclosures[0].device_coordinates_individually_verified=1);
+reject(c=>c.source_disclosures[0].policy_enactment_verified=true);
+reject(c=>c.source_disclosures.pop());
+console.log('Verified 11 original agency publication receipts and preserved shutdown, policy, map and access uncertainty');

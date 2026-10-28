@@ -1,0 +1,43 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+(async()=>{
+ const b=await chromium.launch({headless:true,args:['--no-sandbox']});
+ try{
+  const page=await b.newPage({viewport:{width:390,height:844}});
+  const errors=[];page.on('pageerror',x=>errors.push(x.message));
+  const url=new URL('agency-evidence-conversion.html',process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/').href;
+  const res=await page.goto(url,{waitUntil:'domcontentloaded',timeout:25000});
+  assert.equal(res.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('11 exact original-government'),null,{timeout:16000});
+  assert.equal(await page.locator('#cards article').count(),11);
+  assert.equal(await page.locator('#stats .stat').count(),6);
+  assert.equal(await page.locator('#compare article').count(),2);
+  assert.match(await page.locator('#status').textContent(),/zero new exact camera locations/);
+  await page.locator('#filter').selectOption('agency_reports_removed');
+  assert.equal(await page.locator('#cards article').count(),1);
+  assert.match(await page.locator('#cards').textContent(),/South Portland/);
+  await page.locator('#filter').selectOption('announced_not_renewing');
+  assert.equal(await page.locator('#cards article').count(),1);
+  await page.locator('#filter').selectOption('agency_reports_flock_use');
+  assert.equal(await page.locator('#cards article').count(),8);
+  await page.locator('#filter').selectOption('ALL');
+  await page.locator('#query').fill('Robbinsdale');
+  assert.equal(await page.locator('#cards article').count(),1);
+  await page.locator('#query').fill('');
+  assert.equal(await page.locator('#queue .queue-row').count(),12);
+  await page.locator('#queueType').selectOption('wa');
+  assert.equal(await page.locator('#queue .queue-row').count(),35);
+  assert.match(await page.locator('#queueStatus').textContent(),/97 of 97 entries/);
+  await page.locator('#queueType').selectOption('pdf');
+  assert.equal(await page.locator('#queue .queue-row').count(),2);
+  assert.equal(await page.locator('section[aria-labelledby="governmentMaps"] article').count(),3);
+  const xray=await page.goto(new URL('agency-xray.html',process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/').href,{waitUntil:'domcontentloaded',timeout:20000});
+  assert.equal(xray.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#municipalSourceStatus')?.textContent?.includes('11 original-government'),null,{timeout:12000});
+  assert.equal(await page.locator('#municipalSourceCards article').count(),11);
+  assert.match(await page.locator('#municipalSourceCards').textContent(),/South Portland Police Department/);
+  assert.deepEqual(errors,[]);
+  console.log('M11 EVIDENCE CONVERSION UI PASS: 11 agencies, cessation statuses, 12 source holds, 97 WA registrations, 3 source-only geographic documents');
+ }finally{await b.close();}
+})().catch(x=>{console.error(x);process.exit(1)});

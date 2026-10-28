@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const backlog=require('./build_all_agency_source_backlog.cjs').build();
+assert.equal(backlog.holds.length,12);
+assert.equal(backlog.wa_registrations.length,97);
+assert.equal(backlog.policy_link_candidates.length,2);
+assert.equal(backlog.counts.wa_page_reviewed_originals,11);
+assert.equal(backlog.counts.wa_individual_policy_reviews_pending,86);
+assert.equal(backlog.counts.open_source_review_items,99);
+assert.equal(backlog.counts.verified_new_exact_camera_points,0);
+assert.ok(backlog.holds.every(r=>r.disposition==='actionable_source_hold'&&r.next_action.length>25));
+assert.ok(backlog.wa_registrations.every(r=>!r.flock_vendor_or_operational_status_verified));
+console.log('Backlog coverage valid: 12 source holds and 97 registrations, with 11 previously page-reviewed originals');

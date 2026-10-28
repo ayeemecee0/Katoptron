@@ -1,0 +1,1638 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-10-27",
+  "scope": "exact_12_held_original_government_urls_plus_97_WA_AG_registrations_plus_2_policy_pdf_candidates",
+  "counts": {
+    "held_original_government_urls": 12,
+    "wa_registrations": 97,
+    "wa_original_policies_page_reviewed": 11,
+    "wa_original_policy_rechecks_needed": 86,
+    "new_policy_pdf_review_holds": 1,
+    "known_original_policy_duplicates": 1,
+    "open_review_items": 99,
+    "verified_current_WA_flock_operators_from_registration": 0
+  },
+  "held_government_sources": [
+    {
+      "id": "co-police-technology-disclosure",
+      "state": "CO",
+      "publisher": "Lafayette Police Department",
+      "url": "https://www.lafayetteco.gov/4282/Flock-Safety-ALPR-Program",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_redirect",
+      "next_action": "Inspect canonical municipal redirect destination and validate authority",
+      "facts_verified": false
+    },
+    {
+      "id": "fl-police-operational-status-statement",
+      "state": "FL",
+      "publisher": "Panama City Beach Police Department",
+      "url": "https://www.pcbfl.gov/m/NewsFlash/Home/Detail/38",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_http_error",
+      "next_action": "Find current government publisher or archive and retry",
+      "facts_verified": false
+    },
+    {
+      "id": "ia-judicial-original-opinion",
+      "state": "IA",
+      "publisher": "Iowa Court of Appeals",
+      "url": "https://www.iowacourts.gov/courtcases/24589/embed/CourtAppealsOpinion",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_wrong_format",
+      "next_action": "Identify actual government response and locate canonical original",
+      "facts_verified": false
+    },
+    {
+      "id": "mi-state-procurement-meeting-minutes",
+      "state": "MI",
+      "publisher": "Michigan State Administrative Board",
+      "url": "https://www.michigan.gov/dtmb/-/media/Project/Websites/dtmb/Law-and-Policies/SAB/2025/20250603-SAB-Minutes.pdf?hash=103637C0ADA9223A357B47ACEAA6FA06&rev=e78061078d86430aaa72a6edfc62c506",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_unreadable_original",
+      "next_action": "Render and visually review scanned original pages",
+      "facts_verified": false
+    },
+    {
+      "id": "ms-city-council-meeting-minutes",
+      "state": "MS",
+      "publisher": "Bay St. Louis City Council",
+      "url": "https://www.baystlouis-ms.gov/media/1921",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_http_error",
+      "next_action": "Find current government publisher or archive and retry",
+      "facts_verified": false
+    },
+    {
+      "id": "nc-police-technology-disclosure",
+      "state": "NC",
+      "publisher": "Raleigh Police Department",
+      "url": "https://raleighnc.gov/services/how-does-raleigh-use-flock-cameras",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_http_error",
+      "next_action": "Find current government publisher or archive and retry",
+      "facts_verified": false
+    },
+    {
+      "id": "ut-government-contract-proposal",
+      "state": "UT",
+      "publisher": "North Salt Lake Police Department",
+      "url": "https://www.utah.gov/pmn/files/1366651.pdf",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_oversized",
+      "next_action": "Obtain bounded original PDF and review pages",
+      "facts_verified": false
+    },
+    {
+      "id": "hi-state-alpr-technology-disclosure",
+      "state": "HI",
+      "publisher": "Hawaii Department of Law Enforcement",
+      "url": "https://law.hawaii.gov/safety-via-technology/automated-license-plate-recognition-alpr/",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_http_error",
+      "next_action": "Find current government publisher or archive and retry",
+      "facts_verified": false
+    },
+    {
+      "id": "oh-state-procurement-flock-subscription",
+      "state": "OH",
+      "publisher": "Ohio State Controlling Board",
+      "url": "https://controllingboard.obm.ohio.gov/Print/PrintCBRequest?id=511a4ceb-9a1e-420f-b949-2257330dbf4a",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_timeout_or_network",
+      "next_action": "Retry authority-preserving government source with bounded connection",
+      "facts_verified": false
+    },
+    {
+      "id": "nv-county-alpr-grant-application-not-installation",
+      "state": "NV",
+      "publisher": "Nevada State Emergency Response Commission",
+      "url": "https://serc.nv.gov/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_redirect",
+      "next_action": "Inspect canonical municipal redirect destination and validate authority",
+      "facts_verified": false
+    },
+    {
+      "id": "ny-state-model-policy-not-agency-adoption",
+      "state": "NY",
+      "publisher": "New York Division of Criminal Justice Services",
+      "url": "https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/MPTC%20LPR%20Model%20Policy%202021.pdf",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_redirect",
+      "next_action": "Inspect canonical municipal redirect destination and validate authority",
+      "facts_verified": false
+    },
+    {
+      "id": "wv-other-vendor-alpr-procurement-not-flock",
+      "state": "WV",
+      "publisher": "West Virginia Public Service Commission",
+      "url": "https://www.state.wv.us/admin/purchase/Awards/Documents/2026/Q2/A_0926_CPO_PSC2600000003.pdf",
+      "disposition": "actionable_source_hold",
+      "source_status": "held_oversized",
+      "next_action": "Obtain bounded original PDF and review pages",
+      "facts_verified": false
+    }
+  ],
+  "wa_agency_registrations": [
+    {
+      "id": "2caaf0cb4e1005cecffc",
+      "agency": "Aberdeen Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Aberdeen%20PD-ALPR%20Policy.pdf?VersionId=rDJjXgd.61ppVovXmumPvzfDQUHgm7w5"
+      ],
+      "submitted_on": "2026-07-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "9dffc8024ca399067e8d",
+      "agency": "Arlington Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Arlington%20Police%20Department%20ALPR%20Policy%20-%202026.pdf?VersionId=FPHVAxLS7gDphF_zSrTt8I.N66K7uB6s"
+      ],
+      "submitted_on": "2026-10-01",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "arlington-wa-fleet-policy-2026",
+      "reviewed_original_sha256": "bb2a0bfb0f4423ed19c23f6adf882b0d7263901fb937e638241c1bb4e1606d79",
+      "reviewed_pages": [
+        1
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "ae5f025b535dabef16f7",
+      "agency": "Auburn Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Auburn%20PD%20ALPR%20Policy.pdf?VersionId=bPOrBG6TYUmkpHt6dVALLEcyhx2utLnH"
+      ],
+      "submitted_on": "2026-07-07",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "auburn-wa-policy-july-2026",
+      "reviewed_original_sha256": "484830933e46300a5471d3fccc4354f33ae1b683bc8401fa938b8a4d3f53863f",
+      "reviewed_pages": [
+        2,
+        5,
+        6,
+        7
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "6996cffa5fff633b8fc2",
+      "agency": "Benton County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Benton%20Country%20Sheriff%20ALPR%20Policy.pdf?VersionId=gviTNAyTzPC_L6x1rUlQZPeoxvN2eOuV"
+      ],
+      "submitted_on": "2026-07-09",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "071d337b2f343047b871",
+      "agency": "Black Diamond Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://blackdiamondwa.gov/DocumentCenter/View/4324/BDPD-ALPR-Policy"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "black-diamond-wa-policy-june-2026",
+      "reviewed_original_sha256": "8ccf182125bf61bc624be72cb389f5ce218d36cf60f9db62d5ba8d58418f2446",
+      "reviewed_pages": [
+        1,
+        4
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "8c03b808c012fbec634a",
+      "agency": "Bonney Lake Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Bonney%20Lake%20PD%20ALPR%20Policy.pdf?VersionId=8oNgjNe4Id.UeaCDUtGPCWhk4v2U1Szl"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "10dd701e97a0b1cb9164",
+      "agency": "Cascadia College",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/UW%20Bothell%20-%20Cascadia%20College%20-%20Automated%20License%20Plate%20Reader%20%28ALPR%29%20Appropriate%20Use%20Policy.pdf?VersionId=mvmhfxRjdTf8wrWgKVpKkwt3x_UcyJuB"
+      ],
+      "submitted_on": "2026-09-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "bacf8e72fd2bd82932bb",
+      "agency": "Centralia Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Centralia%20PD%20ALPR%20Policy.pdf?VersionId=A1T9NJKwgRSmJs0jrH2PCv57dTrPzUXA"
+      ],
+      "submitted_on": "2026-07-09",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "e7b4c7f665da6132dd72",
+      "agency": "Central Washington University Police and Public Safety",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.cwu.edu/about/offices/campus-safety/parking/lpr-privacy-policy.php"
+      ],
+      "submitted_on": "2026-10-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "f5c5ddd7682bd647a2ba",
+      "agency": "Chehalis Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Chehalis%20PD%20Policy.pdf?VersionId=v4yjfCwWIsKtpbdfhSQS06src5.tOWxk"
+      ],
+      "submitted_on": "2026-08-31",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "0ae6e7f630feda662e5b",
+      "agency": "Chelan County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Chelan%20County%20Sheriff%27s%20Office%20ALPR%20Policy.pdf?VersionId=E2KyWo8a_9qRTUGvTomHgJL5.CiTCRh1"
+      ],
+      "submitted_on": "2026-09-30",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "f3a5fc87f5d7949942a7",
+      "agency": "Cheney Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Cheney%20PD%20Policy.pdf?VersionId=Fog5mSlyPSmtCECtxgN1vldXerej3Yiv"
+      ],
+      "submitted_on": "2026-07-31",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "adce7f6e1bda1a40af11",
+      "agency": "City of Bellingham Public Works",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/City%20of%20Bellingham%20PW%20ALPR%20Parking%20Policy%20FINAL%209-30-2026.pdf?VersionId=R74LkVdTKeeW_v5zMMlpzHpO0xY_o7eZ"
+      ],
+      "submitted_on": "2026-09-30",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "dcf19f4741d84f0e2965",
+      "agency": "City of Leavenworth Parking Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/City%20of%20Leavenworth%20-%20ALPR%20Camera%20Policy%2009-28-2026.pdf?VersionId=lP82zfF_Z8NMMM0tDacZ9pPlE0dgJli0"
+      ],
+      "submitted_on": "2026-09-28",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "fd6bc79301b7cc1b1f3f",
+      "agency": "College Place Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.cpwa.us/departments/police/policy___success_stories.php"
+      ],
+      "submitted_on": "2026-07-17",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "3e376c8022a8e370ec43",
+      "agency": "Coulee Dam Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Coulee%20Dam%20PD%20Policy.pdf?VersionId=fV1IABwIBuEctTTpoJ9x9FiuExt5Yxxi"
+      ],
+      "submitted_on": "2026-07-07",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "204cda0c291f10722459",
+      "agency": "Covington Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Covington%20PD%20Policy.pdf?VersionId=49cqgXD0DlaymXcZAJac0hrEtqp_tfTf"
+      ],
+      "submitted_on": "2026-06-30",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "cc70be0299b3540311e3",
+      "agency": "Des Moines Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Des%20Moines%20PD%20Policy.pdf?VersionId=fGSYjMNg.VziN25BQQ2st10ydAELnbmc"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "des-moines-wa-flock-search-policy-2026",
+      "reviewed_original_sha256": "222f7d012e07248f298b611611e8acec3ca07d368e2dcaefae59054c26e527cb",
+      "reviewed_pages": [
+        3
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "1ffec8f8854528d9dbe5",
+      "agency": "Douglas County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.douglascountysheriff.org/898/Policy-Manual"
+      ],
+      "submitted_on": "2026-07-27",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "0dd3fa35a7b59a57b204",
+      "agency": "East Wenatchee Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.eastwenatcheewa.gov/DocumentCenter/View/2013/East-Wenatchee-Police-Department-Policy-Manual?bidId="
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "d328d62825ea59639a6a",
+      "agency": "Eastern Washington University",
+      "state": "WA",
+      "policy_urls": [
+        "https://inside.ewu.edu/policies/knowledge-base/ewu-603-04-security-parking-cameras/"
+      ],
+      "submitted_on": "2026-09-28",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "15423bcf1c8694908cdf",
+      "agency": "Ellensburg Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.ellensburgwa.gov/DocumentCenter/View/23300/Automated-License-Plate-Readers-Policy"
+      ],
+      "submitted_on": "2026-08-17",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "d3f6bcebc80dad8e540c",
+      "agency": "Enumclaw Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.cityofenumclaw.net/DocumentCenter/View/11660/Automated-License-Plate-Readers-PDF"
+      ],
+      "submitted_on": "2026-07-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "fafbd8f6ff04ef86f8da",
+      "agency": "Everett Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.everettwa.gov/DocumentCenter/View/29059/Policy-Manual-Master-Current?bidId="
+      ],
+      "submitted_on": "2026-07-16",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "a42b43622b15aee68233",
+      "agency": "Federal Way Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Federal%20Way%20PD%20Policy.pdf?VersionId=JcuQlvcVLto6Q5fk_OmaJyS6wRaFqqW."
+      ],
+      "submitted_on": "2026-09-18",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "federal-way-wa-bulletin-2026",
+      "reviewed_original_sha256": "7dfed7573cb481965d3381d6886222c8b8701ad824dad64135a544cee5261df5",
+      "reviewed_pages": [
+        2
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "17fd9efbae9afda0a5f3",
+      "agency": "Grandview Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.grandview.wa.us/wp-content/uploads/2026/06/Grandview-Police-Department-Policy-Manual.pdf"
+      ],
+      "submitted_on": "2026-07-02",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "95f3299cc333db560e03",
+      "agency": "Granger Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Granger%20PD%20ALPR%20Policy.pdf?VersionId=rIU0mveIOUACWD1omHSdLqQKaVbRRRKT"
+      ],
+      "submitted_on": "2026-10-05",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "7670872df28885175423",
+      "agency": "Granite Falls Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Granite%20Falls%20PD%20Policy.pdf?VersionId=kZEfITiaCCmqk04P0dqwBUPy0HfnWJ5E"
+      ],
+      "submitted_on": "2026-08-28",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "90e97f856bf464a2cd5d",
+      "agency": "Grant County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Grant%20County%20Sheriff%27s%20Office%20Policy%202-10-26%20468%20ALPR.pdf?VersionId=H5POpzDg_47qbcI1of0MnDeQKQe38VQL"
+      ],
+      "submitted_on": "2026-10-05",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "2618ee8170711585e2b9",
+      "agency": "Grays Harbor County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Grays%20Harbor%20County%20Sheriff%20Policy.pdf?VersionId=TL__dOOmSP7008..kEKkZlbcjylfyuW1"
+      ],
+      "submitted_on": "2026-08-24",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "9a59d2e9737188702dcc",
+      "agency": "Kelso Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kelso%20PD%20Policy.pdf?VersionId=7zAYGI3q.ckPK1adC3YgkXVrRjS.0M43"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "7cec5351a70456a8971a",
+      "agency": "Kennewick Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kennewick%20PD%20Policy.pdf?VersionId=KXDsD_UjCZ90DS1uhW6AkHd2eSE6iKT6"
+      ],
+      "submitted_on": "2026-08-10",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "2904256f7d76aed802f3",
+      "agency": "Kent Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kent%20PD%20Policy.pdf?VersionId=.nogWD4BsM6DkQuXS8uEUDlE1qHdlhn9"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "c5e37be2c24d2c5234a2",
+      "agency": "King County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://public.powerdms.com/KCSO/tree/documents/1864243"
+      ],
+      "submitted_on": "2026-06-30",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "b76de165ce83ef88b9b7",
+      "agency": "Kirkland Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kirkland%20PD%20Policy.pdf?VersionId=bG3a7qF9XxNEyue.t1A6GDItRrevZ0an"
+      ],
+      "submitted_on": "2026-09-04",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "4fc3a5b924f9063932a0",
+      "agency": "Kittitas County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.co.kittitas.wa.us/sheriff/policy.aspx"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "8fb2eba8b1aa0e75016a",
+      "agency": "Kittitas Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Kittitas%20PD%20Policy.pdf?VersionId=kFMGZo4zqUbzsCu9cSrAdpkD1Ij.PutG"
+      ],
+      "submitted_on": "2026-07-15",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "e2ab5f97a380b829fe2f",
+      "agency": "Lake Stevens Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://public.powerdms.com/LAKESTEVENS/tree"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "53091a07fbd8179bea0e",
+      "agency": "Lakewood Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Lakewood%20Police%20Department%20-%20ALPR%20Policy.pdf?VersionId=LHi6GmdkJh.ipz9e9aWlCWoInkYeuk.j"
+      ],
+      "submitted_on": "2026-10-13",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "211d3d0cd9815d7aeb2f",
+      "agency": "Liberty Lake Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.libertylakewa.gov/DocumentCenter/View/10014/ALPR-POLICY---7-2026?bidId="
+      ],
+      "submitted_on": "2026-07-09",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "e48dd268eae232739640",
+      "agency": "Lincoln County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Lincoln%20County%20Sheriffs%20Office%20Policy.pdf?VersionId=q3Dp7klcPokSkvC5l45xqnb99g_VR.ev"
+      ],
+      "submitted_on": "2026-07-07",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "71a49a134c7194a01f4d",
+      "agency": "Maple Valley Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://public.powerdms.com/KCSO/tree/documents/1864243"
+      ],
+      "submitted_on": "2026-06-30",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "5a420b12a62f49c5c10a",
+      "agency": "Marysville Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://public.powerdms.com/MarysvillePD/tree/documents/3026517"
+      ],
+      "submitted_on": "2026-07-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "c5cde798fa793b06060d",
+      "agency": "Medina Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Medina%20PD%20Policy.pdf?VersionId=rw8.NKwl3NMPG7FjWve4nL.ThGrz9KKB"
+      ],
+      "submitted_on": "2026-07-10",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "c0d250c7c569b1419fc2",
+      "agency": "Mill Creek Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mill%20Creek%20PD%20Policy.pdf?VersionId=DfanFJ11.4NbaDICWw3EIS2H.z6WrlGu"
+      ],
+      "submitted_on": "2026-09-18",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "6c2215a04a7fe861b629",
+      "agency": "Monroe Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://public.powerdms.com/Mon9997/tree/documents/1979272"
+      ],
+      "submitted_on": "2026-07-10",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "fe24d58ba0ba0e614e85",
+      "agency": "Montesano Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.cityofmontesano.com/departments/police.php"
+      ],
+      "submitted_on": "2026-07-07",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "3872330121cfbe2e68d9",
+      "agency": "Moses Lake Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Moses%20Lake%20PD%20Policy.pdf?VersionId=ucZZk80rAeNRG1rql0Y.wZssVURLBGRe"
+      ],
+      "submitted_on": "2026-08-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "141d27d8833113f82c56",
+      "agency": "Mount Vernon Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mount%20Vernon%20PD%20Policy.pdf?VersionId=0i6sCkKw18BZLaIleD342ApuuzB8XYOD"
+      ],
+      "submitted_on": "2026-07-31",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "8d78f2867ceb64df0d8b",
+      "agency": "Moxee Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Moxee%20PD%20Policy.pdf?VersionId=MMQXarFgkkLBUohlKD2P5kOr7Iw1G8IO"
+      ],
+      "submitted_on": "2026-08-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "554ed7d0bc88913febe3",
+      "agency": "Mukilteo Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Mukilteo%20PD%20Policy.pdf?VersionId=LdzkjIQLuFri_z1exMJ7yp5PyOrWydw8"
+      ],
+      "submitted_on": "2026-07-06",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "mukilteo-wa-flock-retention-policy-2026",
+      "reviewed_original_sha256": "9889a6a207843c67cdabc62db674892e55de58cb5418dde27eb9de25c458a68b",
+      "reviewed_pages": [
+        6
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "24ad927b43784dcb3ce7",
+      "agency": "Normandy Park Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Normandy%20Park%20PD%20Policy.pdf?VersionId=18O0TMpqPRPGCuXKIAFSRKWNSwGnRuaY"
+      ],
+      "submitted_on": "2026-07-07",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "normandy-park-wa-policy-june-2026",
+      "reviewed_original_sha256": "b4b26800bc0d3966b83df83abd8ccd9eeb7485e61b4057f724adad2352e4e935",
+      "reviewed_pages": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "b1977ecd9d2ab3ec2d5c",
+      "agency": "Northwest Seaport Alliance",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/The%20Northwest%20Seaport%20Alliance%20Automated%20License%20Plate%20Reader%20Policy%20%28Transportation%20Agency%29.pdf?VersionId=PSIwWPA0t8b2LczbHnkgZLHxpZfFixhe"
+      ],
+      "submitted_on": "2026-09-27",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "73e628b55690b94d0ef0",
+      "agency": "Ocean Shores Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Ocean%20Shores%20PD%20Policy.pdf?VersionId=WJ4qazP5Vuv9xYvQqYVShhhZ1sKqZMnF"
+      ],
+      "submitted_on": "2026-08-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "66392ae1cb0153b2a3cf",
+      "agency": "Omak Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Omak%20PD%20Policy.pdf?VersionId=eh5YDmuIBIffr7ZG1t0p1o9Kmwck_eBQ"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "05c5148d0b4b22aabe3d",
+      "agency": "Orting Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Orting%20PD%20Policy.pdf?VersionId=L8qYrGHzR3R20nmTqLEtojMKXeVkkfkb"
+      ],
+      "submitted_on": "2026-07-29",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "87c292bc58eeb49248cb",
+      "agency": "Othello Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Othello%20PD%20Policy.pdf?VersionId=_0S08Rufur8Ry3xPe8Oc9RUl5_jcdIsj"
+      ],
+      "submitted_on": "2026-09-21",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "c2ccfa7047c61ecd2dbe",
+      "agency": "Pasco Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.pasco-wa.gov/DocumentCenter/View/71306/Chapter-4139-ALPR"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "6bd5d279d99ab9dadb1c",
+      "agency": "Port Angeles Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Port%20Angeles%20PD%20Policy.pdf?VersionId=cuGwYyYm0D.oVazJN6p_2ae34dAYopZC"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "b8311683236732616d93",
+      "agency": "Port of Everett",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Port%20of%20Everett%20ALPR%20Policy-Final.pdf?VersionId=bNnIlRDoa2JRW9WXAT5wfht.7RK4If2f"
+      ],
+      "submitted_on": "2026-09-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "c90866c7f7db26ba3d04",
+      "agency": "Port of Seattle Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Port%20of%20Seattle%20PD%20Policy.pdf?VersionId=.k9zcDl_4vmKXNEzhw.tNuMYP8ueifly"
+      ],
+      "submitted_on": "2026-09-17",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "fe12079236e2332bcc82",
+      "agency": "Prosser Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Prosser%20PD%20Policy.pdf?VersionId=cUQWobkFbN82JEWmrB9H2M.lk6U1B3ig"
+      ],
+      "submitted_on": "2026-07-24",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "prosser-wa-flock-transparency-policy-2026",
+      "reviewed_original_sha256": "c597c9edeeb78ffca4c737be2c475ca0f697a37dd72805414144e3bd5e88347e",
+      "reviewed_pages": [
+        2
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "ecba4fbc66c42c44f4f5",
+      "agency": "Puyallup Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Puyallup%20PD%20Policy.pdf?VersionId=lQN4t4GpK1exBtVj.AF8ymdfN3wM23ev"
+      ],
+      "submitted_on": "2026-08-19",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "2e5d7249950f4dc33f63",
+      "agency": "Richland Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Richland%20PD%20Policy.pdf?VersionId=f.5ccGj_LeThpkxCzQHgMHsFJv3quNtN"
+      ],
+      "submitted_on": "2026-08-24",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "b30caafe04764fc0b750",
+      "agency": "Ruston Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Ruston%20PD%20Policy.pdf?VersionId=Ff.xoPXZwteRxBpaAtMh.gMcsUbe066j"
+      ],
+      "submitted_on": "2026-09-04",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "00eb77f679d8991297ac",
+      "agency": "SeaTac Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Seatac%20PD%20Policy.pdf?VersionId=620kOEkKtwCxMu9kr6qdhaqkAVpKVAgm"
+      ],
+      "submitted_on": "2026-08-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "34639a68a2ec17100085",
+      "agency": "Seattle Tacoma Airport",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Seattle%20Tacoma%20Airport%20-%20ALPR%20Policy.pdf?VersionId=JMvPOLl3HrLq6wiIupx.PpZ_ffWt4dCT"
+      ],
+      "submitted_on": "2026-10-16",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "bbea75578d9a7271c80c",
+      "agency": "Sedro-Woolley Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sedro-Wooley%20PD%20Policy.pdf?VersionId=_99QC9Us9FMQqUrIRzfc8WlWlkgJCZ9F"
+      ],
+      "submitted_on": "2026-07-14",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "sedro-woolley-wa-flock-policy-2026",
+      "reviewed_original_sha256": "4778f1f07f139658be0306edbb5049b1036e2a91ae22175bbcbd18c31c82c3b6",
+      "reviewed_pages": [
+        4,
+        5
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "24502e9e65dbbace172b",
+      "agency": "Selah Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://selahwa.gov/DocumentCenter/View/1920/Policy-and-Procedure-Manual-792026"
+      ],
+      "submitted_on": "2026-07-09",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "5af3c2d07a3a718ff119",
+      "agency": "Shelton Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Shelton%20PD%20Policy.pdf?VersionId=VVqyZJOryYEvj5_epBRcTyZO_ub1FyXA"
+      ],
+      "submitted_on": "2026-08-19",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "3396cb2769ddeab75d1f",
+      "agency": "Snohomish County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Snohomish%20County%20Sheriffs%20ALPR%20Policy.pdf?VersionId=3i2Wq3IyfoYLKt.K9Cma5TcS87DdQO9Z"
+      ],
+      "submitted_on": "2026-08-21",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "20ed18ba9c2b6a6cf161",
+      "agency": "Sound Transit Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.soundtransit.org/sites/default/files/documents/agency-policy-1503-alprs-202609.pdf"
+      ],
+      "submitted_on": "2026-09-29",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "337c77343bc8fcac1786",
+      "agency": "Stanwood Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Stanwood%20PD%20Policy.pdf?VersionId=J3ICqZzbBfe53yaTM_wNvQuofGn.oWaG"
+      ],
+      "submitted_on": "2026-08-31",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "2270461569cc4dd2af62",
+      "agency": "Sultan Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sultan%20PD%20Policy.pdf?VersionId=2acQSop50YimzRsHtywAJExi_5.hqWUH"
+      ],
+      "submitted_on": "2026-08-31",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "247341488d3c2a3d5745",
+      "agency": "Sumner Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sumner%20PD%20Policy%20433.%20Automated_License_Plate_Readers.pdf?VersionId=CM8abh3IZsf5_eujM.hZTdPuDcGq0QVY"
+      ],
+      "submitted_on": "2026-08-27",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "d56823a0b6698b4524c4",
+      "agency": "Sunnyside Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Sunnyside%20PD%20Policy.pdf?VersionId=rfP6Wlao5riWz5OyjQZdN.sda39n__xl"
+      ],
+      "submitted_on": "2026-06-30",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "a0be523b1af2d50c6cbd",
+      "agency": "Tieton Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Tieton%20PD%20Policy.pdf?VersionId=hBocUGD986Pc2ohJuXIpsW75S3LHbpOl"
+      ],
+      "submitted_on": "2026-09-21",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "43a7be3927080b55dcfb",
+      "agency": "Tacoma Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Tacoma%20PD%20Policy.pdf?VersionId=eecT.Rs9Jf82k6rmhNvRhuTDL5S7twpP"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "4a5963c2da86e8d7d43b",
+      "agency": "Toppenish Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Toppenish%20PD%20Policy.pdf?VersionId=nQONIotqQYSW7Vcteus4AKLery8q6Vqh"
+      ],
+      "submitted_on": "2026-08-27",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "ca9f61922b337f4c03c8",
+      "agency": "Tukwila Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Tukwila%20PD%20Policy.pdf?VersionId=gJ1vGLpF92uvSrkb_DapGku1VTW04w_o"
+      ],
+      "submitted_on": "2026-07-09",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "84c877e5f169cc9cd670",
+      "agency": "Union Gap Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://uniongapwa.gov/police/policy-manual/"
+      ],
+      "submitted_on": "2026-07-22",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "3d7bcb331f7a8ca7f87d",
+      "agency": "University of Washington Tacoma Transportation Services",
+      "state": "WA",
+      "policy_urls": [
+        "https://www.washington.edu/privacy/notices/licenseplates/"
+      ],
+      "submitted_on": "2026-09-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "694516d5a1a1892046cb",
+      "agency": "University of Washington Transportation Services, Seattle Campus",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/UW%20Seattle%20-%20ALPR%20Policy%20Document%2009252026.pdf?VersionId=crGRHXr4L1E1h0XNzTPo2mF06ZSY42vu"
+      ],
+      "submitted_on": "2026-09-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "7745572c1e51e6d298c5",
+      "agency": "University of Washington, Bothell",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/UW%20Bothell%20-%20Cascadia%20College%20-%20Automated%20License%20Plate%20Reader%20%28ALPR%29%20Appropriate%20Use%20Policy.pdf?VersionId=mvmhfxRjdTf8wrWgKVpKkwt3x_UcyJuB"
+      ],
+      "submitted_on": "2026-09-25",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "1d2a52ffb538ac2583f5",
+      "agency": "Vancouver Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Vancouver%20Police%20Dept%20ALPR%20policy.pdf?VersionId=gjWkH0XhdGZDxpBmTf14IYfyFiM7pjFa"
+      ],
+      "submitted_on": "2026-09-29",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "d5fa52e8f91369043743",
+      "agency": "Walla Walla Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Walla%20Walla%20PD%20Policy.pdf?VersionId=a2dPMQIgBg9TGAppHCzRerNp6X7Uy3mo"
+      ],
+      "submitted_on": "2026-09-22",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "walla-walla-wa-flock-policy-2026",
+      "reviewed_original_sha256": "6a64c055386a085c667e17d5003c0b51247911a27d2bbc9802a3649ff6b61ca5",
+      "reviewed_pages": [
+        3
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "aeb968d92f46ae5a45bf",
+      "agency": "Wapato Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Wapato%20PD%20-%20ALPR%20Policy.pdf?VersionId=fyG4_F8sQTFcc0CxpOfzzJ3wXJgHZvEE"
+      ],
+      "submitted_on": "2026-10-11",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "8102a3be429ad352e6f3",
+      "agency": "Warden Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Warden%20PD%20Policy.pdf?VersionId=lAatxImKJpxd6T73nclzz1yqnHcrQd6Z"
+      ],
+      "submitted_on": "2026-09-14",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "77dcb20523f9ce55d97d",
+      "agency": "Washington State University Transportation Services (Pullman)",
+      "state": "WA",
+      "policy_urls": [
+        "https://transportation.wsu.edu/alpr-privacy-policy/"
+      ],
+      "submitted_on": "2026-09-29",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "17c671ff49087a8a8b39",
+      "agency": "Wenatchee Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Wenatchee%20PD%20Policy.pdf?VersionId=iWNsq4wPhHpD3JATooobFzrOG1mBXU9Y"
+      ],
+      "submitted_on": "2026-07-29",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "5586d4f116b999a9a411",
+      "agency": "Western Washington University Transportation Services",
+      "state": "WA",
+      "policy_urls": [
+        "https://transportation.wwu.edu/lpr-and-dol-data-privacy-notice"
+      ],
+      "submitted_on": "2026-10-07",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "a115fb9774543b7b9b32",
+      "agency": "Whitman County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Whitman%20County%20Sheriffs%20Office%20Policy.pdf?VersionId=lWdm_wh6jsmnLFpeTqUTDvUPbTYjrW4I"
+      ],
+      "submitted_on": "2026-07-09",
+      "disposition": "previously_individually_reviewed_original",
+      "reviewed_original_id": "whitman-wa-flock-system-policy-2026",
+      "reviewed_original_sha256": "7c826c6f2dfaf2c0fe754e01f2329e9754a39d3583a1898e0c1aa093699e5465",
+      "reviewed_pages": [
+        1,
+        4
+      ],
+      "next_action": "Monitor revisions and independently verify vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "60d2bdfa8c0b444677b5",
+      "agency": "Woodland Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Woodland%20PD%20Policy.pdf?VersionId=te.34k2QTCQid7I7jUu0ALYyl6RDprIK"
+      ],
+      "submitted_on": "2026-07-07",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "687b9857775f23820996",
+      "agency": "Yakima County Sheriff's Office",
+      "state": "WA",
+      "policy_urls": [],
+      "submitted_on": "2026-08-06",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "ccf6177a2c2d4fa29395",
+      "agency": "Yakima Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Yakima%20PD%20Policy%20Manual.pdf?VersionId=viXymHyBShV35y9W3.zwz_RYNUceGoXJ"
+      ],
+      "submitted_on": "2026-08-14",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "1b11b8e1fec425681fe3",
+      "agency": "Yelm Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Yelm%20PD%20Policy.pdf?VersionId=a.km6GXkKef5lN2MMf.vtiqlfXonMbj9"
+      ],
+      "submitted_on": "2026-07-08",
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    },
+    {
+      "id": "c80e886a194fdc73c31f",
+      "agency": "Zillah Police Department",
+      "state": "WA",
+      "policy_urls": [
+        "https://agportal-s3bucket.s3.us-west-2.amazonaws.com/ALPR/Zillah%20PD%20Policy.pdf?VersionId=i6LBmtxhLUi3nRpQob7xTc14n5qe2VyN"
+      ],
+      "submitted_on": null,
+      "disposition": "actionable_individual_policy_page_review_hold",
+      "reviewed_original_id": null,
+      "reviewed_original_sha256": null,
+      "reviewed_pages": [],
+      "next_action": "Acquire official policy original and verify individual pages, dates and vendor",
+      "flock_use_verified_from_registration": false
+    }
+  ],
+  "document_candidates": [
+    {
+      "state": "MN",
+      "agency": "Robbinsdale Police Department",
+      "url": "https://www.robbinsdalemn.gov/DocumentCenter/View/2520/Robbinsdale-Police-Department-Policy-Manual-Policy-427",
+      "disposition": "actionable_original_policy_pdf_page_review_hold"
+    },
+    {
+      "state": "SD",
+      "agency": "Brookings Police Department",
+      "url": "https://cityofbrookings-sd.gov/DocumentCenter/View/20501/Policy-13D1---Automated-License-Plate-Recognition-System",
+      "disposition": "duplicate_previously_reviewed_policy_original"
+    }
+  ],
+  "limits": "All holds have explicit actions; state registration is not Flock vendor proof. Prior individual original-page reviews remain separate from active operational equipment and data access."
+}

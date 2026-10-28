@@ -8,6 +8,13 @@ on:
       - 'scripts/test_audit_history.cjs'
       - 'agency-audit.html'
       - 'agency-xray.html'
+      - 'agency-evidence-conversion.html'
+      - 'agency-html-disclosures.js'
+      - 'data/verified-agency-html-source-disclosures-2026-10-27.json'
+      - 'data/nationwide-original-source-and-agency-backlog-2026-10-27.json'
+      - 'scripts/test_agency_html_disclosures.cjs'
+      - 'scripts/test_all_agency_source_backlog.cjs'
+      - 'scripts/smoke_evidence_conversion.cjs'
       - 'verified-agency-dossiers.js'
       - 'original-evidence-comparison.js'
       - 'agency-compare.html'
@@ -140,6 +147,8 @@ jobs:
           node scripts/test_policy_history.cjs
           node --check nationwide-policy-coverage.js
           node scripts/test_nationwide_policy_coverage.cjs
+          node scripts/test_agency_html_disclosures.cjs
+          node scripts/test_all_agency_source_backlog.cjs
           node --check census-geography-coverage.js
           node scripts/test_census_geography_coverage.cjs
           node --check ori-agency-coverage.js
@@ -200,6 +209,7 @@ jobs:
           node scripts/smoke_original_evidence_comparison.cjs
           node scripts/smoke_policy_history.cjs
           node scripts/smoke_nationwide_policy_coverage.cjs
+          node scripts/smoke_evidence_conversion.cjs
           node scripts/smoke_watch_email_preferences.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs

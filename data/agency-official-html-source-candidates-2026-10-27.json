@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "agency_attributed_original_government_HTML_vendor_disclosures_not_individually_page_reviewed_PDF_policies_or_live_device_verification",
+  "limitations": "Government-authored public source statements are source-dated evidence of what an agency says, not independent confirmation of configured retention, operational devices, active sharing, signed contracts, effective policy or map coordinates.",
+  "records": [
+    {
+      "id": "siloam-springs-ar",
+      "state": "AR",
+      "agency": "Siloam Springs Police Department",
+      "source_url": "https://siloamsprings.gov/1739/FLOCK-Safety-Cameras",
+      "status": "agency_reports_flock_use",
+      "anchor": "SSPD currently operates four Flock Safety cameras",
+      "summary": "Siloam Springs police department publicly describes four Flock ALPR cameras and separately five Flock park video-only cameras; these are publisher-reported categories, not verified present equipment.",
+      "source_date": "2026-10-27",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "Five additional Flock cameras in city parks",
+        "shorter 30-day retention period"
+      ]
+    },
+    {
+      "id": "idaho-falls-id",
+      "state": "ID",
+      "agency": "Idaho Falls Police Department",
+      "source_url": "https://www.idahofallsidaho.gov/2113/Automatic-License-Plate-Readers",
+      "status": "agency_reports_flock_use",
+      "anchor": "Idaho Falls Police Department first entered into agreements with Flock Safety",
+      "summary": "Department says it entered an agreement in spring 2025, installed cameras in fall 2025 and reports 13 Flock ALPR devices; none independently geo-verified.",
+      "source_date": "2026-10-27",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "IFPD currently operates 13 Flock Safety ALPR cameras",
+        "Images and the data are stored for 30 days"
+      ]
+    },
+    {
+      "id": "lexington-ky",
+      "state": "KY",
+      "agency": "Lexington Police Department",
+      "source_url": "https://www.lexingtonky.gov/government/departments-programs/public-safety/police/license-plate-readers",
+      "status": "agency_reports_flock_use",
+      "anchor": "LPRs used by the Lexington Police Department are provided by a company called Flock Safety",
+      "summary": "Police department attributes its ALPR vendor to Flock and reports 125 LPRs throughout Fayette County as a publication snapshot, not individually verified devices.",
+      "source_date": "2026-10-27",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "currently has 125 LPRs throughout Fayette County"
+      ]
+    },
+    {
+      "id": "rio-rancho-nm",
+      "state": "NM",
+      "agency": "Rio Rancho Police Department",
+      "source_url": "https://www.rrnm.gov/5071/Automated-License-Plate-Readers",
+      "status": "agency_reports_flock_use",
+      "anchor": "RRPD's ALPR system is currently provided by Flock Safety",
+      "summary": "Rio Rancho police department identifies Flock Safety as its vendor and reports 19 fixed cameras and 30-day routine retention as agency-authored statements.",
+      "source_date": "2026-10-27",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "currently operates 19 units",
+        "ALPR data is retained for 30 days"
+      ]
+    },
+    {
+      "id": "gallatin-tn",
+      "state": "TN",
+      "agency": "Gallatin Police Department",
+      "source_url": "https://gallatintn.gov/m/newsflash/home/detail/173",
+      "status": "agency_reports_flock_use",
+      "anchor": "department began utilizing the Flock system",
+      "summary": "Gallatin police page states it began using Flock in 2025 and adopted a 30-day internal retention policy; it also reports audit outcomes, not independently assessed compliance.",
+      "source_date": "2026-08-27",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "Gallatin Police Department retains ALPR data for 30 days"
+      ]
+    },
+    {
+      "id": "lafayette-in",
+      "state": "IN",
+      "agency": "Lafayette Police Department",
+      "source_url": "https://www.lafayette.in.gov/3787/Flock-Safety-Cameras-Frequently-Asked-Qu",
+      "status": "agency_reports_flock_use",
+      "anchor": "Lafayette Police Department’s use of Flock Safety Automated License Plate Reader",
+      "summary": "Lafayette police/legal FAQ describes ALPR use, source-reported 30-day retention and distinct Flock video security cameras excluded from ALPR; not independently tested system settings.",
+      "source_date": "2026-07-01",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "ALPR data is retained for 30 days",
+        "two Flock security cameras at Hedgewood Park"
+      ]
+    },
+    {
+      "id": "robbinsdale-mn",
+      "state": "MN",
+      "agency": "Robbinsdale Police Department",
+      "source_url": "https://www.robbinsdalemn.gov/389/4240/Automated-License-Plate-Readers-ALPR",
+      "status": "agency_reports_flock_use",
+      "anchor": "Robbinsdale Police Department (RPD) uses automated license plate recognition (ALPR) cameras from vendor Flock Safety",
+      "summary": "Robbinsdale source reports two Flock ALPR cameras as of August 2026, two-year plate photos and 30-day hits. Avoid confusing image retention with event retention.",
+      "source_date": "2026-08-01",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "two Flock cameras in Robbinsdale",
+        "License plate photos are retained for two years",
+        "Total Flock Hits and Hotlist Hits are retained for 30 days"
+      ]
+    },
+    {
+      "id": "columbia-mo",
+      "state": "MO",
+      "agency": "Columbia Police Department",
+      "source_url": "https://beheard.como.gov/safety-cameras-review",
+      "status": "agency_reports_flock_use",
+      "anchor": "Columbia Police Department’s (CPD) use of Flock Safety automated license plate reading",
+      "summary": "Columbia city government reports approved 2024 contract and 85 ALPR cameras, separately 36 video cameras, with a future November 2026 hearing. Figures are publisher snapshots, not verified points.",
+      "source_date": "2026-10-27",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "85 ALPR cameras and 36 video cameras",
+        "approved a two-year contract with Flock Safety"
+      ]
+    },
+    {
+      "id": "salem-ma",
+      "state": "MA",
+      "agency": "Salem Police Department",
+      "source_url": "https://www.salemma.gov/m/newsflash/home/detail/427",
+      "status": "announced_not_renewing",
+      "anchor": "City of Salem is not renewing the Salem Police Department’s contract with Flock Safety",
+      "summary": "Salem municipality announced July 23, 2026 nonrenewal and planned replacement of Flock ALPR equipment. Does not independently establish completion of removal or termination.",
+      "source_date": "2026-07-23",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "will be removing the Flock Automatic License Plate Readers"
+      ]
+    },
+    {
+      "id": "south-portland-me",
+      "state": "ME",
+      "agency": "South Portland Police Department",
+      "source_url": "https://www.southportland.gov/m/newsflash/home/detail/563",
+      "status": "agency_reports_removed",
+      "anchor": "Flock confirmed all cameras have been removed",
+      "summary": "South Portland government states July 1 that ALPR use and sharing stopped after June 11 council workshop and vendor confirmed all cameras removed by June 22. This is city-reported completion, not independent inspection.",
+      "source_date": "2026-07-01",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "as of June 22, 2026",
+        "all cameras have been removed"
+      ]
+    },
+    {
+      "id": "lafayette-co",
+      "state": "CO",
+      "agency": "Lafayette Police Department",
+      "source_url": "https://www.lafayetteco.gov/m/newsflash/home/detail/10277",
+      "status": "announced_termination_process",
+      "anchor": "Immediately end all use of Flock Safety technologies",
+      "summary": "Lafayette CO's October 2026 official statement reports 2027 budget removes Flock funding, decision to end use and initiation of contract termination and removal. This does not independently prove physical removal completed.",
+      "source_date": "2026-10-22",
+      "observed_on": "2026-10-27",
+      "original_html_sha256": null,
+      "source_verification": "pending_live_original_anchor_and_hash_check",
+      "policy_adoption_verified": false,
+      "actual_vendor_config_verified": false,
+      "exact_camera_coordinates_added": 0,
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "budget, which removes funding for Flock Safety",
+        "process of removing the 30 cameras"
+      ]
+    }
+  ]
+}
