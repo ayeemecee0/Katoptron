@@ -197,6 +197,86 @@ def build_policy_events(ledgers):
   out.append(evt)
  return out
 
+# Closed, reviewed, original-source status events. These are stronger than an
+# arbitrary new-document trigger, and are deliberately not live-device alerts.
+def build_landmark_change_events(national,okc,apache,adoption):
+    if not isinstance(national.get("documents"),list):
+        raise ValueError("National original-page ledger missing")
+    index={d["id"]:d for d in national["documents"]}
+    needed={
+      "moline-il-signed-flock-order-2024":(
+        "6904610d03b2c44ebaa73d90e9b10a3d4022b1520924a2d37df8fd3da3b662df","2024-12-04"),
+      "moline-il-signed-pause-2026":(
+        "13496c7ce0e83787d6010963dddedd6ca54473947b054f887488a02c23923c81","2026-09-15")
+    }
+    for doc_id,(sha,day) in needed.items():
+        d=index.get(doc_id)
+        if (not d or d.get("content_sha256")!=sha or d.get("source_date")!=day or
+            not d.get("source_url","").startswith("https://") or
+            not isinstance(d.get("pages_reviewed"),list) or
+            not d.get("findings")):
+            raise ValueError("Moline source identity or review scope changed")
+    pause=index["moline-il-signed-pause-2026"]
+    if not any(f.get("category")=="signed_contract_pause_terms" and
+               "remove" in f.get("statement","") for f in pause["findings"]):
+        raise ValueError("Moline signed terms not anchored")
+    okc_doc=next((d for d in okc.get("documents",[])
+         if d.get("id")=="okc-2026-signed-flock-amendment"),None)
+    if (not okc_doc or okc_doc.get("source_sha256")!=
+        "ed37e684252bec2c1938c3f927c777bf34ca67222c11ec86fccbd46da60f9ea0" or
+        okc_doc.get("event_date")!="2026-08-18" or
+        okc_doc.get("status")!="signed_city_and_vendor_amendment_original" or
+        not any(f.get("kind")=="executed_amendment_federal_access_restrictions"
+                    for f in okc_doc.get("findings",[]))):
+        raise ValueError("Oklahoma City executed amendment source held")
+    apache_sha="8173fcdc45105478522251a8a5d745ca4145767d438d4de91d4811e50907fc5a"
+    apache_url="https://www.apachejunctionaz.gov/DocumentCenter/View/33562/RES-26-43"
+    if (apache.get("id")!="apache-junction-resolution-26-43-signed-chapter-17" or
+        apache.get("source_url")!=apache_url or
+        apache.get("original_sha256")!=apache_sha or
+        apache.get("signed_resolution_adoption_date")!="2026-10-06" or
+        apache.get("notices_table_resolution_date")!="2026-10-08" or
+        apache.get("legal_effective_date_verified") is not False or
+        apache.get("original_council_agenda_appendix_exact_match_verified") is not False or
+        apache.get("exact_camera_points_added")!=0):
+        raise ValueError("Apache signed original or date discrepancy invalid")
+    action=next((a for a in adoption.get("records",[])
+        if a.get("id")=="apache-junction-az-ordinance-1579-adopted-2026-10-06"),None)
+    if (not action or action.get("status")!="adopted_government_original_notice" or
+        action.get("event_date")!="2026-10-06" or action.get("effective_date") is not None):
+        raise ValueError("Apache adoption or legal-effect boundary changed")
+    sources=[
+      ("moline-signed-pause-2026","contract_document","moline|IL",
+       "Signed Moline vendor pause agreement published",
+       "September 2026 signed Moline/Flock terms require fixed-LPR removal and platform-access termination, with conditional future contract terms. Actual removal and system shutdown were not independently verified.",
+       pause["source_url"],"2026-09-15",pause["content_sha256"]),
+      ("okc-signed-federal-access-amendment-2026","contract_document","oklahoma city|OK",
+       "Executed Oklahoma City vendor access amendment",
+       "The August 2026 executed amendment adds Flock-facing voluntary federal-data-access restrictions with compulsory-process exceptions. This is contractual language, not actual audited platform settings.",
+       okc_doc["source_url"],"2026-08-18",okc_doc["source_sha256"]),
+      ("apache-signed-resolution-chapter-17-2026","government_decision","apache junction|AZ",
+       "Signed Apache Junction Resolution 26-43 includes Chapter 17",
+       "The signed resolution publishes attached ALPR Chapter 17. Its signature reads October 6, 2026 while the city notices table reads October 8. Independent legal-effective date and agenda-to-final text comparison remain unverified.",
+       apache_url,"2026-10-06",apache_sha)
+    ]
+    events=[]
+    for ident,kind,place,title,summary,url,day,sha in sources:
+        event=as_event("landmark_"+fingerprint(ident+"|"+sha+"|"+day),
+             kind,title,summary,url,day,"original_government",place)
+        if not event:raise ValueError("Government change event invalid original source")
+        events.append(event)
+    return events
+
+
+def load_landmark_sources():
+    data=ROOT/"data"
+    return tuple(json.loads((data/name).read_text(encoding="utf8")) for name in (
+      "verified-national-government-documents.json",
+      "verified-okc-2026-original-flock-contract-review.json",
+      "apache-junction-adopted-resolution-chapter-2026-10-28.json",
+      "verified-policy-adoption-status-2026-10-27.json"))
+
+
 def api(url,key,path,method="GET",body=None):
     req=urllib.request.Request(url.rstrip("/")+"/rest/v1/"+path,
      method=method,
@@ -238,9 +318,10 @@ def main():
        "contract_key,jurisdiction_label,ends_on,source_url")
     events=build_events(govt,vendor,contracts)
     events.extend(build_policy_events(load_policy_ledgers()))
+    events.extend(build_landmark_change_events(*load_landmark_sources()))
     synchronize(url,token,events)
     print("Public evidence source Watch event identities reconciled:",len(events),
-          "; includes individually reviewed policy sources, never enacted-policy-change claims or plate logs")
+          "; includes source-qualified signed changes and separate unadopted policy drafts, never live ALPR activity")
 
 
 if __name__=="__main__":
