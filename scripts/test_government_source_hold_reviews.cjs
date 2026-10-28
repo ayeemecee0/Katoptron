@@ -1,0 +1,23 @@
+'use strict';
+const assert=require('node:assert/strict');
+const A=require('../government-source-hold-reviews.js');
+const raw=require('../data/held-government-source-resolution-2026-10-27.json');
+const x=A.verify(raw);
+assert.equal(x.old_source_holds,12);
+assert.equal(x.closed_as_superseded,1);
+assert.equal(x.remains_unresolved,11);
+assert.equal(x.new_original_html_sources_hash_verified,0);
+assert.equal(x.records.length,3);
+assert.ok(x.records.slice(0,2).every(x=>x.current_disposition==='still_held_original_unreachable'));
+assert.equal(x.records[2].newer_announcement_kind,'announced_termination_process');
+assert.equal(x.records[2].confirmed_removal,false);
+assert.match(x.note,/No current equipment uptime/);
+function bad(fn){const c=structuredClone(raw);fn(c);assert.throws(()=>A.verify(c),/Original|official|Government|source|status/i);}
+bad(d=>d.records[0].original_publisher_statement_verified_in_ci=true);
+bad(d=>d.records[1].current_disposition='verified_original_html');
+bad(d=>d.records[2].newer_original_html_sha256='0'.repeat(64));
+bad(d=>d.records[2].confirmed_removal=true);
+bad(d=>d.records.pop());
+bad(d=>d.still_unresolved_original_source_items=0);
+bad(d=>d.originals_newly_retrieved_and_sha_verified=2);
+console.log('HELD GOVERNMENT ORIGINAL LIFECYCLE PASS: 12 previous holds, 1 dated CO supersession, 11 still open, FL/NC no auto-verification or invented equipment claims');
