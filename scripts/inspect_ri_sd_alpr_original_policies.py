@@ -5,8 +5,6 @@ Explicit official publisher URLs; no redirect, private data, GPS map pins, or
 automatic interpretation of vendor deployment from a generic ALPR policy.
 """
 import hashlib,io,json,urllib.request
-import fitz
-from pypdf import PdfReader
 
 SOURCES={
  "providence-ri-police-350-05-2026":{
@@ -33,6 +31,7 @@ def fetch(key):
  if not 200<len(raw)<=6_000_000 or not raw.startswith(b"%PDF-"):raise ValueError("unbounded_or_non_pdf_original")
  return raw
 def inspect(key,b):
+ import fitz  # Required only for original PDF visual run, not schema-only regressions.
  if key not in SOURCES or not isinstance(b,bytes) or not b.startswith(b"%PDF-"):raise ValueError("Original invalid")
  source=SOURCES[key]
  d=fitz.open(stream=b,filetype="pdf")
