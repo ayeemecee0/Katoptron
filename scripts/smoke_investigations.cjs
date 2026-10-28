@@ -7,7 +7,7 @@ async function main(){
  const errors=[];page.on('pageerror',err=>errors.push(err.message));
  async function go(route,waitFor){
   await page.goto(new URL(route,base).href,{waitUntil:'domcontentloaded',timeout:40000});
-  try{await page.locator(waitFor).waitFor({state:'visible',timeout:18000});}
+  try{await page.locator(waitFor).first().waitFor({state:'visible',timeout:18000});}
   catch(error){
    const details=await page.evaluate(()=>({status:document.querySelector('#status')?.textContent,
     body:document.body.textContent.slice(-500)}));
