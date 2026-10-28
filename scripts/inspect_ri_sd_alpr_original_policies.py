@@ -19,7 +19,7 @@ SOURCES={
   "pages_to_render":[1,5,6]}
 }
 class NoRedirect(urllib.request.HTTPRedirectHandler):
- def redirect_request(self,*args,**kwargs):raise ValueError("source_redirect")
+ def redirect_request(self,req,fp,code,msg,headers,newurl):raise ValueError("source_redirect_to:"+str(newurl)[:240])
 def fetch(key):
  if key not in SOURCES:raise ValueError("Unapproved original")
  req=urllib.request.Request(SOURCES[key]["source_url"],headers={
@@ -41,9 +41,7 @@ def inspect(key,b):
  for i in source["pages_to_render"]:
   p=d[i-1];img=p.get_pixmap(matrix=fitz.Matrix(1.2,1.2),alpha=False).tobytes("png")
   text=" ".join((p.get_text() or "").split())
-  receipts.append({"page":i,"page_image_sha256":hashlib.sha256(img).hexdigest(),
-   "text_layer_character_count":len(text),
-   "text_layer_fl ock_refs":False}) if False else None
+
   receipts.append({"page":i,"page_image_sha256":hashlib.sha256(img).hexdigest(),
    "text_layer_character_count":len(text),
    "contains_explicit_flock_text":"flock safety" in text.casefold(),
