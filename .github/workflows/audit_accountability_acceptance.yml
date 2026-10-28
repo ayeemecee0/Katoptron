@@ -9,6 +9,10 @@ on:
       - 'agency-audit.html'
       - 'agency-xray.html'
       - 'verified-agency-dossiers.js'
+      - 'original-evidence-comparison.js'
+      - 'agency-compare.html'
+      - 'scripts/test_original_evidence_comparison.cjs'
+      - 'scripts/smoke_original_evidence_comparison.cjs'
       - 'wa-original-agency-dossiers.js'
       - 'scripts/test_wa_original_agency_dossiers.cjs'
       - 'scripts/test_verified_agency_dossiers.cjs'
@@ -98,6 +102,8 @@ jobs:
           node scripts/test_agency_audit_engine.cjs
           node --check verified-agency-dossiers.js
           node scripts/test_verified_agency_dossiers.cjs
+          node --check original-evidence-comparison.js
+          node scripts/test_original_evidence_comparison.cjs
           node --check wa-original-agency-dossiers.js
           node scripts/test_wa_original_agency_dossiers.cjs
           node scripts/test_audit_history.cjs
@@ -146,6 +152,7 @@ jobs:
         run: |
           node scripts/smoke_agency_audit.cjs
           node scripts/smoke_verified_agency_dossiers.cjs
+          node scripts/smoke_original_evidence_comparison.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs
           node scripts/smoke_wa_alpr_registrations.cjs
