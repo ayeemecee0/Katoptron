@@ -39,7 +39,7 @@ const {chromium}=require('playwright');
   await page.locator('#originalList button').first().click();
   assert.equal(await page.locator('#originalDocuments article').count(),2);
   assert.match(await page.locator('#originalDocuments').textContent(),/signed contract pause/i);
-  assert.match(await page.locator('#originalDocuments').textContent(),/not proof of completed/i);
+  assert.match(await page.locator('#originalDocuments').textContent(),/not proof that the devices were actually removed/i);
   await page.locator('#originalSearch').fill('Dakota County');
   await page.locator('#originalList button').first().click();
   assert.equal(await page.locator('#originalDocuments article').count(),1);
