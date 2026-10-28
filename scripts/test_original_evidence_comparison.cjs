@@ -44,11 +44,11 @@ assert.equal(green.columns.length,2);
 assert.equal(green.columns[0].total_verified_documents,4);
 assert.ok(green.columns[0].documents.some(d=>d.kind==='published_department_policy'&&
  d.findings.some(f=>/30-day maximum/i.test(f.statement))));
-const draft=green.columns[0].documents.find(d=>d.kind==='draft_policy_unadopted');
-assert.equal(draft.date,null);
-assert.equal(draft.date_basis,'undated_original_not_verified_effective');
-assert.match(draft.date_note,/DRAFT/);
-assert.ok(draft.findings.some(f=>/not a verified adopted policy change/.test(f.statement)));
+const greenDraft=green.columns[0].documents.find(d=>d.kind==='draft_policy_unadopted');
+assert.equal(greenDraft.date,null);
+assert.equal(greenDraft.date_basis,'undated_original_not_verified_effective');
+assert.match(greenDraft.date_note,/DRAFT/);
+assert.ok(greenDraft.findings.some(f=>/not a verified adopted policy change/.test(f.statement)));
 const greenAll=Compare.compare(index,['green-bay-police-wi','moline-police-il'],'all');
 assert.ok(greenAll.columns[0].documents.some(d=>d.kind==='government_published_vendor_order_form'&&
  d.date===null&&/not independently confirmed/.test(d.date_note)));
