@@ -26,7 +26,7 @@
   const counts=new Map();
   for(const item of data.state_counts){
    if(!STATES.includes(item.state)||counts.has(item.state)||
-      !Number.isInteger(item.count)||item.count<1||item.count>1700)
+      !Number.isInteger(item.count)||item.count<1||item.count>4000)
     throw Error('FBI-derived state ORI count invalid or duplicated');
    counts.set(item.state,item.count);
   }
