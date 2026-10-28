@@ -7,7 +7,7 @@ on:
       - '.github/workflows/build_census_2026_jurisdiction_universe.yml'
   workflow_dispatch:
   schedule:
-    - cron: '21 19 1 * *'
+    - cron: '21 19 * * 1'
 permissions:
   contents: read
 concurrency:
