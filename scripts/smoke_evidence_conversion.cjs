@@ -14,6 +14,8 @@ const {chromium}=require('playwright');
   assert.equal(await page.locator('#stats .stat').count(),8);
   assert.match(await page.locator('#acquisitionStatus').textContent(),/60 of 86/);
   assert.match(await page.locator('#acquisitionStatus').textContent(),/26 source retrieval holds/);
+  assert.equal(await page.locator('#waPolicySourceCards article').count(),3);
+  assert.match(await page.locator('#waPolicySourceStatus').textContent(),/one Sheriff\/municipal identity ambiguity held/);
   assert.equal(await page.locator('#compare article').count(),2);
   assert.match(await page.locator('#status').textContent(),/zero new exact camera locations/);
   await page.locator('#filter').selectOption('agency_reports_removed');
