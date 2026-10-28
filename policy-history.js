@@ -9,7 +9,7 @@
  'use strict';
  const STORAGE='katoptron-policy-history-watch-v1';
  const KINDS=new Set([
-  'published_department_policy','draft_policy_unadopted',
+  'published_department_policy','draft_policy_unadopted','draft_not_proven_adopted',
   'department_published_effective_general_order',
   'department_published_chief_signed_policy_revision',
   'agency_alpr_policy','state_linked_department_alpr_policy'
@@ -66,7 +66,7 @@
      id:doc.id,title:doc.title,kind:doc.kind,date:doc.date,
      date_basis:doc.date_basis,date_note:doc.date_note||null,
      sha:doc.sha,limits:doc.limits,source_url:doc.source_url,
-     status:doc.kind==='draft_policy_unadopted'?'draft_unadopted':
+     status:(doc.kind==='draft_policy_unadopted'||doc.kind==='draft_not_proven_adopted')?'draft_unadopted':
       doc.date_basis==='policy_effective_date'?'document_effective_date':
       'published_text_effective_status_unverified',
      findings:doc.findings.map(f=>({page:f.page,category:f.category,
