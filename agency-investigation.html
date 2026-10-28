@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>Katoptron | Original-source agency investigation</title>
+<meta name="description" content="Printable original-page-cited agency investigation, historical changes, side-by-side source comparison and evidence gaps.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font-family:system-ui,Arial,sans-serif;background:#ecf1f5;color:#163044}
+*{box-sizing:border-box}body{margin:0;line-height:1.52}a{color:#135c81;overflow-wrap:anywhere}
+header{display:flex;flex-wrap:wrap;gap:1rem;padding:1rem max(1rem,4vw);background:#102c40;color:white}
+header a{color:#d5edf7}
+main{max-width:900px;margin:2rem auto;padding:2rem;background:white;box-shadow:0 6px 24px #a6b6c444}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.2}h2{font-size:1.2rem;border-bottom:2px solid #dae3ea;padding-bottom:.3rem;margin-top:1.5rem}
+h3{font-size:1.03rem}.muted{color:#485f6d;font-size:.9rem}
+.note{padding:.8rem;border-left:4px solid #3888a6;background:#f0f6fa}
+.controls{display:flex;flex-wrap:wrap;gap:1rem;align-items:end}
+label{display:block;font-weight:650}
+select,button{font:inherit;padding:.6rem;border:1px solid #577187;border-radius:6px;background:white;color:#18364a;max-width:100%}
+article{padding:.65rem 0;border-bottom:1px solid #dce4e9;break-inside:avoid-page}
+article p{margin:.4rem 0;overflow-wrap:anywhere}
+ul{padding-left:1.35rem}li{margin:.4rem 0}
+#status{min-height:1.5rem}
+@media(max-width:550px){main{margin:0;padding:1.15rem;box-shadow:none}}
+@media print{header,.controls,.no-print{display:none!important}
+ html,body,main{background:white;box-shadow:none;margin:0;padding:0}
+ a::after{content:" (" attr(href) ")";font-size:8pt;word-break:break-all}
+ article{break-inside:avoid-page}@page{margin:15mm}}
+</style></head><body><a class="skip-link" href="#main">Skip to investigation</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./agency-compare.html">Cross-agency intelligence</a><a href="./government-watch.html">Government Watch</a></header>
+<main id="main">
+<h1 id="title">Original-source agency investigation</h1>
+<p class="muted" id="meta"></p>
+<p class="note">Only individually reviewed original government source pages qualify for written findings. A government document is not proof of device operation, actual ALPR reads, effective system settings or compliance. Absence from this catalog means unknown. Historical change labels preserve signed, proposed and unadopted distinctions.</p>
+<div class="controls no-print">
+ <div><label for="agency">Agency</label><select id="agency"><option value="">Choose verified agency</option></select></div>
+ <div><label for="compare">Compare with (optional)</label><select id="compare"><option value="">None</option></select></div>
+ <button id="print" type="button" disabled>Print / Save as PDF</button>
+</div>
+<p id="status" role="status" aria-live="polite">Loading verified source records…</p>
+<section id="report" hidden>
+<h2>Executive summary</h2><div id="summary"></div>
+<h2>Source-backed changes and proposals</h2><div id="timeline"></div>
+<h2>Written policies and original-page findings</h2><div id="findings"></div>
+<section id="comparisonPanel" hidden><h2>Cross-agency source comparison</h2>
+<p>Compare original written evidence by category. Differences in published words are not compliance or deployment scores.</p>
+<div id="comparison"></div></section>
+<h2>Evidence gaps and unresolved questions</h2><ul id="gaps"></ul>
+<h2>Original document inventory / verification fingerprints</h2><div id="sources"></div>
+<h2>Source scope and methodology</h2>
+<p>Agency identity is taken from the individually page-reviewed catalog, not a locality centroid or approximate city match. Each original includes its SHA-256 fingerprint and independently reviewed citation pages. Written access rights are not searches; signed orders do not establish payment or installation; unadopted proposals do not establish effective policy.</p>
+<p>Related methods: <a href="./methodology.html">Evidence qualification methodology</a>, <a href="./policy-evidence-issues.html">unresolved source issues</a>, <a href="./agency-compare.html">multi-agency evidence comparison</a>.</p>
+</section></main>
+<script src="./okc-original-contracts.js"></script>
+<script src="./nebraska-original-aggregate.js"></script>
+<script src="./ri-sd-original-policies.js"></script>
+<script src="./wa-kittitas-draft-review.js"></script>
+<script src="./national-primary-documents.js"></script>
+<script src="./verified-agency-dossiers.js"></script>
+<script src="./wa-reviewed-flock-sources.js"></script>
+<script src="./wa-original-policies.js"></script>
+<script src="./wa-original-agency-dossiers.js"></script>
+<script src="./agency-original-loader.js"></script>
+<script src="./agency-intelligence-v2.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let intelligence=null;
+function el(tag,t){const n=document.createElement(tag);if(t!==undefined)n.textContent=String(t);return n;}
+function cited(parent,url,label){
+ const href=window.KatoptronInvestigations.page(url.split('#')[0],Number(url.split('#page=')[1]));
+ if(!href||href!==url)return;
+ const a=el('a',label);a.href=href;a.rel='noopener noreferrer';a.target='_blank';parent.append(a);
+}
+function render(){
+ for(const id of ['summary','timeline','findings','comparison','gaps','sources'])$(id).replaceChildren();
+ $('report').hidden=true;$('print').disabled=true;
+ if(!intelligence)return;
+ const key=$('agency').value;
+ if(!key){$('status').textContent='Choose an exact-agency original-source dossier.';return;}
+ try{
+ const p=intelligence.profile(key);
+ const other=$('compare').value;
+ if(other===key){$('status').textContent='Select a different comparison agency.';return;}
+ $('title').textContent='Katoptron investigation: '+p.label+' · '+p.state;
+ $('meta').textContent='Generated '+new Date().toISOString().slice(0,10)+
+  ' UTC · '+p.documents+' individually verified original documents · '+p.findings.length+
+  ' page-cited findings · exact agency ID: '+p.key;
+ $('summary').append(el('p','This source inventory documents '+p.documents+
+  ' originals, '+p.findings.length+' distinct page-based statements and '+
+  p.transitions.length+' specifically qualified source-status transitions or comparisons. '+
+  'The published materials do not establish the current number, locations or activity of all Flock cameras.'));
+ for(const note of p.notes)$('summary').append(el('p',note));
+ for(const t of p.transitions){
+  const a=el('article');a.append(el('h3',t.title),
+   el('p',(t.event_date||'Unadopted proposal')+' · '+t.status),
+   el('p','Earlier context: '+t.before),el('p','Later publication: '+t.after));
+  for(const s of t.sources){const q=el('p');cited(q,s.url,s.label);q.append(el('span',' · SHA '+s.sha));a.append(q);}
+  $('timeline').append(a);
+ }
+ if(!p.transitions.length)$('timeline').append(el('p',
+  'No separately corroborated before/after transition for this exact agency. Multiple different dated documents are not automatically a policy change.'));
+ for(const f of p.findings){
+  const a=el('article');
+  a.append(el('h3',f.document),el('p',f.status+' · '+(f.date||'Source date not established')+
+   ' · '+f.date_basis+(f.date_note?' · '+f.date_note:'')),el('p',f.statement));
+  const q=el('p');cited(q,f.url,'Original government page');a.append(q);
+  a.append(el('p','Original SHA-256: '+f.sha));$('findings').append(a);
+ }
+ if(other){
+  const result=intelligence.compare([key,other]);$('comparisonPanel').hidden=false;
+  const otherProfile=result.columns.find(x=>x.key===other);
+  $('comparison').append(el('p','Compared with '+otherProfile.label+
+   '. Original-source coverage and dates differ, and no ranking or compliance inference is made.'));
+  for(const group of result.topics){
+   const section=el('article');section.append(el('h3',group.label));
+   for(const col of group.columns){
+    const statement=el('p',col.label+': '+col.findings.length+
+     ' reviewed qualifying finding(s). '+(col.missing?'Source coverage unknown.':''));
+    section.append(statement);
+    for(const f of col.findings.slice(0,2)){
+     const row=el('p',f.statement+' ');
+     cited(row,f.url,'Read original page');section.append(row);
+    }
+   }
+   $('comparison').append(section);
+  }
+ }else $('comparisonPanel').hidden=true;
+ for(const gap of p.gaps)$('gaps').append(el('li',gap));
+ const unique=new Map();
+ for(const row of p.timeline)unique.set(row.id,row);
+ for(const d of unique.values()){
+  const a=el('article');a.append(el('h3',d.title),
+   el('p',(d.date||d.date_note||'Unknown source date')+' · '+d.status+' · '+d.date_basis),
+   el('p','Source fingerprint SHA-256: '+d.sha));
+  const q=el('p');cited(q,d.url,'Original PDF reviewed page');a.append(q);$('sources').append(a);
+ }
+ const url=new URL(location.href);url.searchParams.set('original',key);
+ if(other)url.searchParams.set('compare',other);else url.searchParams.delete('compare');
+ history.replaceState(null,'',url);
+ $('status').textContent='Original-page citations and source fingerprints verified; printable report ready.';
+ $('report').hidden=false;$('print').disabled=false;
+ }catch(e){$('status').textContent='Investigation held: '+e.message;}
+}
+(async()=>{
+ try{
+ const loader=window.KatoptronOriginalLoader;
+ const {index}=await loader.load(fetch,loader.browserModules(window));
+ intelligence=window.KatoptronInvestigations.build(index);
+ for(const row of index.dossiers){
+  for(const id of ['agency','compare']){
+   const option=el('option',row.label+' · '+row.state);option.value=row.key;$(id).append(option);
+  }
+ }
+ const q=new URL(location.href).searchParams;
+ if(index.dossiers.some(x=>x.key===q.get('original')))$('agency').value=q.get('original');
+ if(index.dossiers.some(x=>x.key===q.get('compare')))$('compare').value=q.get('compare');
+ render();
+ }catch(e){$('status').textContent='Original source validation unavailable: '+e.message;}
+})();
+$('agency').addEventListener('change',render);$('compare').addEventListener('change',render);
+$('print').addEventListener('click',()=>window.print());
+</script></body></html>
