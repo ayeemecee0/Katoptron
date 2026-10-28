@@ -63,7 +63,11 @@ def review_apache_junction(source):
  adopted=re.search(r"(?:have been adopted|have\s+been\s+adopted)",text,re.I)
  at=re.search(r"Ordinance No\. 1579",text,re.I)
  first=at.start() if at else -1
- section=text[first:first+450] if first>=0 else ""
+ # Bound the adopted-date evidence to Ordinance 1579's own row. A date
+ # belonging to a following ordinance must not qualify its adoption.
+ following=text[first+len("Ordinance No. 1579"):] if first>=0 else ""
+ section=re.split(r"(?:Ordinance|Resolution)\\s+No\\.?\\s*\\d+",following,
+                  maxsplit=1,flags=re.I)[0][:450]
  approved=bool(adopted and first>adopted.start() and
   re.search(r"Automated\s+License\s+Plate\s+Readers",section,re.I)
   and re.search(r"10/06/2026",section))
