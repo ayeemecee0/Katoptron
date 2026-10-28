@@ -13,6 +13,32 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#okcOriginalStatus')?.textContent?.startsWith('4 source-pinned original'),
+    null,{timeout:15000});
+  assert.equal(await page.locator('#okcOriginalResults article').count(),5);
+  const okc=await page.locator('#okcContractOriginals').textContent();
+  assert.match(okc,/signed Flock amendment/i);
+  assert.match(okc,/approved renewal/i);
+  assert.match(okc,/staff recommendation/i);
+  assert.match(okc,/funds certificate/i);
+  assert.match(okc,/\$270,000/);
+  assert.match(okc,/90City-reported 2026 Flock readers/);
+  assert.match(okc,/109City-reported partner agencies/);
+  assert.match(okc,/7City-stated default retention/);
+  assert.match(okc,/does not prohibit the city itself from sharing data/);
+  assert.match(okc,/compelled disclosures/);
+  assert.match(okc,/the mayor's signed approval dated August 18, 2026/);
+  assert.match(okc,/recommendation, not a final vote/);
+  assert.match(okc,/not proof that \$270,000 was spent/);
+  assert.match(okc,/not independent verification of installed locations/);
+  const okcLinks=await page.locator('#okcOriginalResults a').evaluateAll(as=>as.map(a=>a.href));
+  assert.ok(okcLinks.some(x=>x.includes('/flock-amendment-august-2026.pdf#page=2')));
+  assert.ok(okcLinks.some(x=>x.includes('/flock-renewal-letter-august-2026.pdf#page=1')));
+  assert.ok(okcLinks.some(x=>x.includes('/flock-council-memo-august-2026.pdf#page=1')));
+  assert.ok(okcLinks.some(x=>x.includes('/availability-of-funds-certificate-august-2026.pdf#page=1')));
+  assert.ok(okcLinks.some(x=>x.includes('/Flock-Safety-license-plate-reader-LPR-usage-in-Oklahoma-City')));
+  assert.ok(okcLinks.every(x=>x.startsWith('https://www.okc.gov/')));
+
   await page.waitForFunction(()=>document.querySelector('#nebraskaAggregateStatus')?.textContent?.startsWith('1 source-pinned, visually reviewed'),
    null,{timeout:15000});
   assert.equal(await page.locator('#nebraskaAggregateResults article').count(),1);
