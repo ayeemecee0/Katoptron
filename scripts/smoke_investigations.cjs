@@ -7,7 +7,13 @@ async function main(){
  const errors=[];page.on('pageerror',err=>errors.push(err.message));
  async function go(route,waitFor){
   await page.goto(new URL(route,base).href,{waitUntil:'domcontentloaded',timeout:40000});
-  await page.locator(waitFor).waitFor({state:'visible',timeout:45000});
+  try{await page.locator(waitFor).waitFor({state:'visible',timeout:18000});}
+  catch(error){
+   const details=await page.evaluate(()=>({status:document.querySelector('#status')?.textContent,
+    body:document.body.textContent.slice(-500)}));
+   throw Error(route+': '+error.message+'\nDIAGNOSTIC '+JSON.stringify(details)+
+    '\nPAGE ERRORS '+JSON.stringify(errors.slice(-6)));
+  }
   const horizontal=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+2);
   if(horizontal)throw Error('Mobile horizontal overflow: '+route);
  }
