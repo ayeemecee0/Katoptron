@@ -13,6 +13,28 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#nyWvEventsStatus')?.textContent?.startsWith('4 original government event records'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#nyWvEventsResults article').count(),4);
+  const nywv=await page.locator('#nyWvOriginalEvents').textContent();
+  assert.match(nywv,/Tompkins County Sheriff's Office/);
+  assert.match(nywv,/Tompkins County Legislature/);
+  assert.match(nywv,/July 2025 monthly-report period/);
+  assert.match(nywv,/April 2026 12–1 county termination approval/);
+  assert.match(nywv,/did not participate in Flock's National Search/);
+  assert.match(nywv,/12–1 to terminate the county's contract/);
+  assert.match(nywv,/not independently establish the vendor's actual notice receipt/);
+  assert.match(nywv,/August 9, 2026 committee presentation/);
+  assert.match(nywv,/not proof of a passed bill/);
+  assert.match(nywv,/No confirmed camera removal or enacted state law inferred/);
+  const eventLinks=await page.locator('#nyWvEventsResults a').evaluateAll(as=>as.map(a=>a.href));
+  assert.ok(eventLinks.some(x=>x.endsWith('public-safety-meeting-report-july-2025.pdf#page=7')));
+  assert.ok(eventLinks.some(x=>x.includes('Highlights-of-the-4726-regular-and-41426-special')));
+  assert.ok(eventLinks.some(x=>x.includes('recordid=5649')));
+  assert.ok(eventLinks.some(x=>x.includes('interim-report-joint-committee-on-government-organization/')));
+  assert.ok(eventLinks.every(x=>x.startsWith('https://www.tompkinscountyny.gov/')||
+   x.startsWith('https://www.wvlegislature.gov/')||x.startsWith('https://blog.wvlegislature.gov/')));
+
   await page.waitForFunction(()=>document.querySelector('#riSdPolicyStatus')?.textContent?.startsWith('2 independently original-page-reviewed'),
    null,{timeout:15000});
   assert.equal(await page.locator('#riSdPolicyResults article').count(),2);
