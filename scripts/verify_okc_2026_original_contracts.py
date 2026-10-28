@@ -7,9 +7,13 @@ upgrade the separate signed amendment, city renewal or funding evidence tier.
 """
 import hashlib,json,re
 from pathlib import Path
-import fitz
 from inspect_okc_2026_contract_originals import retrieve,SOURCES
-from render_okc_2026_original_contract_review import ORIGINALS
+ORIGINALS={
+ "okc-2026-flock-amendment":("ed37e684252bec2c1938c3f927c777bf34ca67222c11ec86fccbd46da60f9ea0",2,[1,2]),
+ "okc-2026-flock-renewal-letter":("f2aa30d8b38fa8e35a88048d908f62162caaebf28bb12acc7291877ebe0d0ced",21,[1]),
+ "okc-2026-flock-council-memo":("fa6b7b8b81c1816ff5e09668af04d7160055a9385d1a8c844c74a2b174b4501e",2,[1,2]),
+ "okc-2026-funds-certificate":("1362ab7c9fe7e6902ed51657a616650ce0c6c8569fa553badacfb2be24c91b3c",1,[1])
+}
 
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/"data"/"verified-okc-2026-original-flock-contract-review.json"
@@ -77,6 +81,7 @@ def validate(data):
   raise ValueError("Original agency presentation was improperly source-reviewed")
  return data["documents"]
 def inspect_bytes(row):
+ import fitz  # Production source-render verifier dependency, not required for schema-only tests.
  source,_,pages=IDENTITY[row["id"]]
  b=retrieve(source)
  if len(b)!=row["source_bytes"] or hashlib.sha256(b).hexdigest()!=row["source_sha256"]:
