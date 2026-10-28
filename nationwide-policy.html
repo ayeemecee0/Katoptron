@@ -133,6 +133,14 @@ function render(){
  if(!index)return;
  const state=$('state').value,term=$('query').value,tier=$('tier').value;
  if(!state){$('detailStatus').textContent='Select one state. Every state remains an open agency census, regardless of listed documents.';return;}
+ if(state==='MN'&&(tier==='ALL'||tier==='verified')&&
+    (!term||'Robbinsdale Police Department'.toLowerCase().includes(term.toLowerCase()))){
+   const evidence=item('Robbinsdale Police Department · Minnesota archived independent ALPR audits',
+     'INDEPENDENT SOURCE-PAGE-REVIEWED HISTORICAL AUDITS · FLOCK AND AXON SEPARATED',
+     '2025 independent Flock audit and separate 2026 AXON audit, plus later dated agency FAQ. Original page citations show a historical retention discrepancy requiring clarification, not proof of current legal violations.',
+     [['Inspect independently reviewed Flock and AXON evidence','./robbinsdale-audits.html']]);
+   $('details').append(evidence);
+ }
  const rows=window.KatoptronNationwidePolicyCoverage.filter(index,state,term,tier);
  let found=0;
  for(const s of rows){
