@@ -51,6 +51,7 @@ details summary{cursor:pointer;font-weight:600}details p{margin:.5rem 0;font-siz
 <p>A held government URL is a specific acquisition problem. A Washington ALPR registration is an agency self-certification, not proof of Flock vendor equipment. This queue preserves what action is required for each record without pretending verification is complete.</p>
 <div class="controls"><div><label for="queueType">Review backlog category</label><select id="queueType"><option value="held">12 held government originals</option><option value="wa">97 Washington registrations</option><option value="pdf">Two discovered PDF candidates</option></select></div>
 <div><label for="queueQuery">Filter review queue</label><input id="queueQuery" type="search" placeholder="Agency, state or hold reason"></div></div>
+<p id="acquisitionStatus" role="status" aria-live="polite">Checking latest Washington policy source receipts…</p>
 <p id="queueStatus" role="status" aria-live="polite">Loading source-specific review dispositions…</p>
 <div id="queue" class="card"></div>
 </section>
@@ -61,7 +62,7 @@ details summary{cursor:pointer;font-weight:600}details p{margin:.5rem 0;font-siz
 const $=id=>document.getElementById(id);
 const el=(tag,txt,cls)=>{const x=document.createElement(tag);if(txt!==undefined)x.textContent=String(txt);if(cls)x.className=cls;return x;};
 const link=(p,url,label)=>{const a=el('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';p.append(a);};
-let verified=null,backlog=null;
+let verified=null,backlog=null,waReceipts=null;
 function summarizeStatus(r){
  return {agency_reports_flock_use:'GOVERNMENT REPORTS FLOCK USE',
  announced_not_renewing:'NONRENEWAL ANNOUNCED, REMOVAL UNCONFIRMED',
@@ -132,7 +133,7 @@ async function load(){
    backlog.counts.verified_current_WA_flock_operators_from_registration!==0||
    backlog.held_government_sources.length!==12||backlog.wa_agency_registrations.length!==97)
    throw Error('Backlog source qualification mismatch');
- const stats=[['New official agency disclosures',11],['Additional states',11],['Held government originals',12],['Washington registrations',97],['WA originals already page-reviewed',11],['WA page reviews pending',86]];
+ const stats=[['New official agency disclosures',11],['Additional states',11],['Held government originals',12],['Washington registrations',97],['WA originals already page-reviewed',11],['WA page reviews pending',86],['New WA original PDFs acquired',60],['WA source acquisition holds',26]];
  for(const [label,val] of stats){
   const box=el('div',undefined,'stat');box.append(el('strong',val),el('small',label));$('stats').append(box);
  }
