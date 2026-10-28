@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Katoptron | Washington Flock Policy Original-Page Review</title><link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0b1720;color:#e9f5fa;font-family:system-ui,sans-serif}
+body{margin:0;line-height:1.55}a{color:#9bddec}header{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 4vw;background:#112837}
+main{max-width:1100px;margin:auto;padding:2rem 1rem 4rem}h1{font-size:clamp(1.6rem,4vw,2.5rem)}
+.note,article{padding:1rem;background:#182f40;border:1px solid #4e7182;border-radius:8px}
+.note{margin:1rem 0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:1rem}
+h2{font-size:1.06rem}small{color:#c1d6de;overflow-wrap:anywhere}article a{display:inline-block;margin:.25rem .6rem .25rem 0;overflow-wrap:anywhere}
+a:focus-visible{outline:3px solid #9ee7f7;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to original source review</a>
+<header><strong>KATOPTRON</strong><nav><a href="./agency-evidence-conversion.html">Evidence conversion</a> <a href="./wa-alpr-registrations.html">Washington register</a></nav></header>
+<main id="main"><h1>Washington Flock wording: original source-page review queue</h1>
+<p>Ten source-pinned Washington Attorney General-linked ALPR policy PDFs contained searchable occurrences of “Flock Safety” in a dated metadata scan. These are <strong>page-review candidates, not ten confirmed Flock agencies</strong>. The state has not independently verified agency registrations. Document wording does not establish current equipment, legal policy adoption, camera locations, data retention in practice, or information sharing.</p>
+<div class="note">Each source link opens the original government-linked PDF at the candidate page. Document SHA-256 is a historical source fingerprint, not proof the agency adopted the document. A separately scheduled recheck tests exact PDF bytes and term pages; any discrepancy must be reviewed before content is promoted to a verified policy finding.</div>
+<p id="status" role="status" aria-live="polite">Loading original-source receipts…</p>
+<div id="cards" class="cards"></div>
+<p><a href="https://www.atg.wa.gov/ALPR" rel="noopener noreferrer" target="_blank">Original Washington Attorney General register and disclaimer</a></p>
+</main>
+<script src="./wa-alpr-registrations.js"></script>
+<script src="./wa-policy-source-triage.js"></script>
+<script src="./wa-flock-source-review.js"></script>
+<script>
+(async function(){
+ const status=document.getElementById('status'),cards=document.getElementById('cards');
+ try{
+  const paths=['./data/wa-original-agency-alpr-registrations.json','./data/wa-ago-original-policy-source-inspection.json'];
+  const responses=await Promise.all(paths.map(p=>fetch(p,{cache:'no-store'})));
+  if(responses.some(r=>!r.ok))throw Error('Original source register unavailable');
+  const [registry,source]=await Promise.all(responses.map(r=>r.json()));
+  const registrations=KatoptronWashingtonALPR.catalog(registry);
+  const triage=KatoptronWAOriginalSourceTriage.catalog(source,registrations);
+  const entries=KatoptronWAFlockSourceReview.build(triage);
+  for(const r of entries){
+    const card=document.createElement('article'),heading=document.createElement('h2');
+    heading.textContent=r.agency;card.append(heading);
+    const description=document.createElement('p');description.textContent=r.status;card.append(description);
+    for(const page of r.pages){
+      const a=document.createElement('a');
+      a.href=r.source+'#page='+page;a.textContent='Original source page '+page;
+      a.target='_blank';a.rel='noopener noreferrer';card.append(a);
+    }
+    const small=document.createElement('small');small.textContent='SHA-256: '+r.hash+' | Registered: '+(r.submitted||'not dated');
+    card.append(document.createElement('p'),small);cards.append(card);
+  }
+  status.textContent=entries.length+' original PDF source-page candidates; 0 inferred deployments.';
+ }catch(e){status.textContent='Source verification unavailable. No evidence conclusions displayed.';cards.replaceChildren();}
+})();
+</script></body></html>
