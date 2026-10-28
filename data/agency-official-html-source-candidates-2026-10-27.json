@@ -19,7 +19,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "Five additional Flock cameras in city parks",
+        "shorter 30-day retention period"
+      ]
     },
     {
       "id": "idaho-falls-id",
@@ -36,7 +40,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "IFPD currently operates 13 Flock Safety ALPR cameras",
+        "Images and the data are stored for 30 days"
+      ]
     },
     {
       "id": "lexington-ky",
@@ -53,7 +61,10 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "currently has 125 LPRs throughout Fayette County"
+      ]
     },
     {
       "id": "rio-rancho-nm",
@@ -70,7 +81,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "currently operates 19 units",
+        "ALPR data is retained for 30 days"
+      ]
     },
     {
       "id": "gallatin-tn",
@@ -87,7 +102,10 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "Gallatin Police Department retains ALPR data for 30 days"
+      ]
     },
     {
       "id": "lafayette-in",
@@ -104,7 +122,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "ALPR data is retained for 30 days",
+        "two Flock security cameras at Hedgewood Park"
+      ]
     },
     {
       "id": "robbinsdale-mn",
@@ -121,7 +143,12 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "two Flock cameras in Robbinsdale",
+        "License plate photos are retained for two years",
+        "Total Flock Hits and Hotlist Hits are retained for 30 days"
+      ]
     },
     {
       "id": "columbia-mo",
@@ -138,7 +165,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "85 ALPR cameras and 36 video cameras",
+        "approved a two-year contract with Flock Safety"
+      ]
     },
     {
       "id": "salem-ma",
@@ -155,7 +186,10 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "will be removing the Flock Automatic License Plate Readers"
+      ]
     },
     {
       "id": "south-portland-me",
@@ -172,7 +206,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "as of June 22, 2026",
+        "all cameras have been removed"
+      ]
     },
     {
       "id": "lafayette-co",
@@ -189,7 +227,11 @@
       "policy_adoption_verified": false,
       "actual_vendor_config_verified": false,
       "exact_camera_coordinates_added": 0,
-      "active_sharing_edges_added": 0
+      "active_sharing_edges_added": 0,
+      "additional_source_anchors": [
+        "budget, which removes funding for Flock Safety",
+        "process of removing the 30 cameras"
+      ]
     }
   ]
 }
