@@ -145,6 +145,24 @@ async function load(){
  verified=window.KatoptronAgencyOriginalHTML.validate(await resp.json());
  backlog=await back.json();
  waReceipts=await receiptResponse.json();
+ const originalPageResponse=await fetch('./data/wa-three-individual-flock-policy-page-source-findings-2026-10-27.json');
+ if(!originalPageResponse.ok)throw Error('State AG original-page review ledger unavailable');
+ const reviewedPages=window.KatoptronWAPolicyPages.validate(await originalPageResponse.json(),waReceipts);
+ const sourceCards=$('waPolicySourceCards');
+ for(const entry of reviewedPages.documents){
+  const article=el('article',undefined,'card');
+  article.append(el('h3',entry.submitted_agency+' · '+entry.state),
+   el('div',entry.agency_identity_issue?'AGENCY IDENTITY RECONCILIATION HELD':'ORIGINAL PDF PAGE-TEXT VERIFIED','kicker'),
+   el('p',entry.original_policy_finding),
+   el('p','Original SHA-256: '+entry.sha256+' · Publisher: '+entry.publisher_actor,'small'));
+  for(const page of entry.reviewed_pages){
+   const pageURL=new URL(entry.source_url);pageURL.hash='page='+page;
+   link(article,pageURL.href,'Original policy PDF · page '+page);
+  }
+  if(entry.agency_identity_issue)link(article,entry.identity_authority_source,'Original city law-enforcement services authority');
+  sourceCards.append(article);
+ }
+ $('waPolicySourceStatus').textContent='Two original department policy references verified by exact source-page text; one Sheriff/municipal identity ambiguity held. No additional deployed Flock devices or effective dates claimed.';
  if(waReceipts.schema_version!==1||waReceipts.previously_individually_page_reviewed!==11||
    waReceipts.new_pdf_original_acquisitions!==60||waReceipts.acquisition_holds!==26||
    waReceipts.new_verified_Flock_operator_agencies!==0||
