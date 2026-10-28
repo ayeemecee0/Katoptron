@@ -8,7 +8,10 @@ import hashlib,io,json,urllib.request
 
 SOURCES={
  "providence-ri-police-350-05-2026":{
-  "source_url":"https://ppd.providenceri.gov/350-05-automated-license-plate-readers-alpr-2/",
+  "source_url":"https://ppd.providenceri.gov/wp-content/uploads/2026/10/350.05-Automated-License-Plate-Readers-ALPR.pdf",
+  "publisher_index_url":"https://ppd.providenceri.gov/policies-and-procedures/",
+  "publisher_index_link":"https://ppd.providenceri.gov/350-05-automated-license-plate-readers-alpr-2/",
+  "publisher_index_redirect_qualified":"same_government_host_direct_pdf_2026_10",
   "agency":"Providence Police Department","state":"RI","page_count":10,
   "pages_to_render":[1,7,8,9]},
  "brookings-sd-police-13d1-2026":{
