@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-28",
+  "id": "apache-junction-resolution-26-43-signed-chapter-17",
+  "agency": "City of Apache Junction City Clerk / Council",
+  "state": "AZ",
+  "source_url": "https://www.apachejunctionaz.gov/DocumentCenter/View/33562/RES-26-43",
+  "original_sha256": "8173fcdc45105478522251a8a5d745ca4145767d438d4de91d4811e50907fc5a",
+  "original_bytes": 119905,
+  "original_pdf_pages": 5,
+  "verification": "SHA256_pinned_original_city_clerk_resolution_visual_review_all_five_pages",
+  "signed_resolution_pages": [
+    1,
+    2
+  ],
+  "chapter_17_attachment_pages": [
+    3,
+    4,
+    5
+  ],
+  "signed_resolution_adoption_date": "2026-10-06",
+  "city_clerk_notices_register_url": "https://www.apachejunctionaz.gov/999/Public-Notices",
+  "notices_table_resolution_date": "2026-10-08",
+  "notices_date_agrees_with_signed_resolution": false,
+  "legal_effective_date_verified": false,
+  "original_council_agenda_appendix_exact_match_verified": false,
+  "independent_operational_compliance_verified": false,
+  "exact_camera_points_added": 0,
+  "findings": [
+    {
+      "page": 1,
+      "category": "resolution_declares_public_code_record",
+      "statement": "Signed Resolution 26-43 states that an electronic copy of the amended Chapter 17 ALPR text is accessible on the city website and is declared a public record. The city-clerk PDF includes an appended copy."
+    },
+    {
+      "page": 2,
+      "category": "signed_resolution_adoption_and_clerk_attestation",
+      "statement": "The resolution's scanned signature page records passage and signing on October 6, 2026 with mayoral signature and clerk attestation. The city's separate public-notices table lists October 8 for Resolution 26-43; the date discrepancy requires clarification."
+    },
+    {
+      "page": 3,
+      "category": "official_signed_resolution_attachment_chapter_identity",
+      "statement": "The attached original page is headed Chapter 17: Automated License Plate Readers, identifies Article 17-1, and begins with purpose and definitions. This establishes the source of the printed chapter in the signed resolution attachment."
+    },
+    {
+      "page": 4,
+      "category": "chapter_written_access_and_retention",
+      "statement": "Attached Chapter 17 section 17-1-3 requires designated police access, credentials, incident/case numbers and named-supervisor authorization. Section 17-1-4 describes a 30-consecutive-calendar-day limit on specified ALPR data. These are written provisions, not a test of real settings."
+    },
+    {
+      "page": 5,
+      "category": "chapter_written_sharing_audits_and_penalties",
+      "statement": "The attached chapter addresses supervisor preapproval of sharing, monthly Police Department ALPR log/user audits, independent review of those audits by a city employee outside the department, and penalties for violating the chapter. No actual audit, sharing relationship or enforcement case is verified."
+    }
+  ],
+  "limitations": "This city-hosted five-page original is a signed and clerk-attested resolution bearing the Chapter 17 attachment. The attached text has not yet been independently matched in full against the earlier Council agenda version. The legal-effective date, current system configuration, camera coordinates, actual sharing permissions and completed auditing remain unverified."
+}
