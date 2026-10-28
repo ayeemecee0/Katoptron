@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "two_original_page_reviewed_department_published_policy_versions_not_telemetry_or_external_audits",
+  "method": "exact_government_original_sha256_plus_selected_page_render_sha256_visual_review",
+  "source_count": 2,
+  "documents": [
+    {
+      "id": "providence-ri-general-order-35005-sept2026",
+      "state": "RI",
+      "agency": "Providence Police Department",
+      "kind": "department_published_effective_general_order",
+      "source_url": "https://ppd.providenceri.gov/wp-content/uploads/2026/10/350.05-Automated-License-Plate-Readers-ALPR.pdf",
+      "official_policies_index": "https://ppd.providenceri.gov/policies-and-procedures/",
+      "official_index_status": "public_police_policy_index_describes_policies_as_in_effect",
+      "original_sha256": "74b04c3c5b3f7c6fba013ea205e23279213efd20247be9039acb8cd8e7716f46",
+      "original_bytes": 235578,
+      "page_count": 10,
+      "source_issue_date": "2026-09-04",
+      "source_effective_date": "2026-09-04",
+      "pages_visually_reviewed": [
+        1,
+        7,
+        8,
+        9
+      ],
+      "original_png_sha256": {
+        "1": "1a3debe282cdc8128c473c3cf3ab43c4303f7456cff7cc30d12d46032cf0ede7",
+        "7": "31a5a1342b59c5ce87686dce4bae0ee690511794517ccd0aef541e92c4f894c1",
+        "8": "05792cd61271a5f02f575d6793212cf950ac482bf55b7e5a1f88e4f41f658cae",
+        "9": "f1e3874b5acb4e8329c27f9204734498a256263958ce9443e815ea0f3e068687"
+      },
+      "findings": [
+        {
+          "page": 1,
+          "kind": "effective_published_department_general_order",
+          "statement": "Providence Police Department General Order 350.05 visibly lists an issue and effective date of September 4, 2026, after prior issued versions in 2025 and 2022. The department's public policies index lists this document among its current published policies; this proves an official policy version, not the technical enforcement of each procedure."
+        },
+        {
+          "page": 7,
+          "kind": "flock_named_department_data_retention_policy",
+          "statement": "The original Providence police order expressly identifies Flock Safety as an ALPR data hosting vendor and specifies no longer than 30 days of routine ALPR storage, with case-related retention exceptions. These are written agency policy requirements, not technical measurements of actual data deletion or proof of any specific camera locations."
+        },
+        {
+          "page": 7,
+          "kind": "prohibited_immigration_enforcement_policy",
+          "statement": "The Providence police order prohibits specified ALPR use to assist federal immigration enforcement absent a judicial warrant and separately restricts certain demographic-data collection. This is departmental policy language, not verified current access permissions across all state and federal systems."
+        },
+        {
+          "page": 8,
+          "kind": "required_transparency_and_quarterly_oversight",
+          "statement": "Providence's written order calls for a transparency portal showing retention, organizations with camera access, operational camera counts and aggregate 30-day read/search totals; it also calls for quarterly sampling audits of ALPR browsing inquiries. These are published requirements, not proof each audit has occurred or that the portal's listed recipients are current."
+        },
+        {
+          "page": 9,
+          "kind": "restricted_sharing_and_city_reporting_policy",
+          "statement": "The September 2026 Providence order states that ALPR data requests by other law enforcement or prosecutorial agencies require written identification and approval and prohibits sharing for federal immigration enforcement. It describes monthly City Council reporting followed by other reporting schedules, not evidence that every report or sharing decision has been completed."
+        }
+      ]
+    },
+    {
+      "id": "brookings-sd-policy-13d1-revised-sept2026",
+      "state": "SD",
+      "agency": "Brookings Police Department",
+      "kind": "department_published_chief_signed_policy_revision",
+      "source_url": "https://www.cityofbrookings-sd.gov/DocumentCenter/View/20501/Policy-13D1---Automated-License-Plate-Recognition-System",
+      "official_policies_index": "https://www.cityofbrookings-sd.gov/941/Automated-License-Plate-Readers-ALPRs",
+      "official_index_status": "city_publishes_signed_current_revision_and_self_reports_flock_partnership",
+      "original_sha256": "2c47881c232c5cb46dd110bf687770371982821798bcb47feebbcb5fc3553df2",
+      "original_bytes": 330030,
+      "page_count": 6,
+      "source_issue_date": "2024-04-24",
+      "source_effective_date": "2026-09-22",
+      "pages_visually_reviewed": [
+        1,
+        5,
+        6
+      ],
+      "original_png_sha256": {
+        "1": "3eea1e1369c28cb9418148e3bdd0fe8576062fbbfb9cea61145c0ab02ce0bf14",
+        "5": "1717481cdd2d3ea4fa678153a8f3a937a455c50db907ed5d1e195502862d1c30",
+        "6": "c07437fdc865a4f2299978ccb3c8698cf8d8cac2dd160aa8875003eb0b9fcbc5"
+      },
+      "findings": [
+        {
+          "page": 1,
+          "kind": "original_department_revised_policy_identification",
+          "statement": "Brookings Police Department's original six-page Policy 13D1 visibly lists an initial effective date of April 24, 2024 and a revised date of September 22, 2026. The document is hosted directly on the city's ALPR webpage and constitutes a department-published policy revision, not an independent audit of installed Flock devices."
+        },
+        {
+          "page": 5,
+          "kind": "written_retention_maximum_and_access_rules",
+          "statement": "Brookings Policy 13D1 states that ordinary ALPR reads and hits are kept for a maximum of 30 days unless retained for an ongoing investigation, with specified restrictions on release of data to non-law-enforcement recipients. These are written policy rules rather than live retention or sharing-system verification."
+        },
+        {
+          "page": 5,
+          "kind": "internal_30_day_oversight_requirements",
+          "statement": "Brookings Policy 13D1 directs an internal audit of ALPR database searching every 30 days, sampling use of records and local hot lists. An audit requirement in a signed policy does not prove that the audits were actually completed."
+        },
+        {
+          "page": 6,
+          "kind": "visually_verified_chief_of_police_signature",
+          "statement": "The final page of the city-hosted Brookings Police Policy 13D1 bears a visible Chief of Police signature. This supports source authenticity as a department-published signed revision, not a separate legal finding or proof of active camera coordinates."
+        }
+      ]
+    }
+  ],
+  "limits": "The Providence policy names Flock explicitly; the Brookings city source page independently describes its Flock partnership. Neither document independently verifies exact installed Flock camera coordinates, real-time retention compliance, sharing relationships or private plate reads. Policy requirements are not evidence of operational compliance."
+}

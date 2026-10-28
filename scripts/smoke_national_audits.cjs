@@ -13,6 +13,24 @@ const {chromium}=require('playwright');
     null,{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/^4 source-pinned/);
   assert.equal(await page.locator('#results article').count(),4);
+  await page.waitForFunction(()=>document.querySelector('#riSdPolicyStatus')?.textContent?.startsWith('2 independently original-page-reviewed'),
+   null,{timeout:15000});
+  assert.equal(await page.locator('#riSdPolicyResults article').count(),2);
+  const newPolicies=await page.locator('#riSdPolicyVersions').textContent();
+  assert.match(newPolicies,/Providence Police Department/);
+  assert.match(newPolicies,/Brookings Police Department/);
+  assert.match(newPolicies,/September 4 and Brookings revised September 22/);
+  assert.match(newPolicies,/Flock Safety as an ALPR data hosting vendor/);
+  assert.match(newPolicies,/maximum of 30 days/);
+  assert.match(newPolicies,/internal audit of ALPR database searching every 30 days/);
+  assert.match(newPolicies,/federal immigration enforcement/);
+  assert.match(newPolicies,/Chief of Police signature/);
+  assert.match(newPolicies,/not independently confirmed system configuration/);
+  const policyLinks=await page.locator('#riSdPolicyResults a').evaluateAll(as=>as.map(a=>a.href));
+  assert.ok(policyLinks.some(x=>x.includes('/2026/10/350.05-Automated-License-Plate-Readers-ALPR.pdf#page=7')));
+  assert.ok(policyLinks.some(x=>x.includes('/Policy-13D1---Automated-License-Plate-Recognition-System#page=5')));
+  assert.ok(policyLinks.every(x=>x.startsWith('https://ppd.providenceri.gov/')||x.startsWith('https://www.cityofbrookings-sd.gov/')));
+
   await page.waitForFunction(()=>document.querySelector('#okcOriginalStatus')?.textContent?.startsWith('4 source-pinned original'),
     null,{timeout:15000});
   assert.equal(await page.locator('#okcOriginalResults article').count(),5);

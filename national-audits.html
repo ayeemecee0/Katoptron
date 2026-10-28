@@ -54,6 +54,12 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <details id="nationalCoverageDetails"><summary>Browse all 51 jurisdictions and official publication sources</summary>
 <div id="nationalCoverageResults" class="list"></div></details>
 </section>
+<section id="riSdPolicyVersions" aria-labelledby="riSdPolicyHeading">
+<h2 id="riSdPolicyHeading">2026 original police ALPR policies · Rhode Island and South Dakota</h2>
+<p>Two government-hosted, dated police policy versions have verified original-PDF and visually reviewed page hashes. Providence's policy expressly identifies Flock as a hosting vendor. Brookings publicly describes a Flock partnership on its city website, while its scanned policy specifies ALPR procedures. <strong>Policy requirements are not independently confirmed system configuration, completed audit events or verified camera coordinates.</strong></p>
+<p id="riSdPolicyStatus" role="status" aria-live="polite">Loading original Providence and Brookings police policy evidence…</p>
+<div id="riSdPolicyResults" class="list"></div>
+</section>
 <section id="okcContractOriginals" aria-labelledby="okcOriginalsHeading">
 <h2 id="okcOriginalsHeading">Oklahoma City · Flock 2026 signed original agreement and council records</h2>
 <p>Four government-hosted PDFs have independently verified SHA-256 bytes and visually reviewed original pages. A signed amendment and approved renewal are distinct from the City Manager's staff recommendation and the officer's certified available funds. The city's public equipment, retention and partner figures are <strong>agency-reported</strong>, not independent camera telemetry or validated per-agency sharing edges.</p>
@@ -100,9 +106,9 @@ The official-source watch monitors publisher pages and PDF links as <em>unreview
 <p class="muted"><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/scan_national_government_audit_sources.yml" rel="noopener noreferrer" target="_blank">View national government source acquisition runs and source-review artifacts</a></p>
 </section>
 <p class="muted">How evidence is handled: exact publisher PDF URLs, pinned SHA-256 originals, numbered reviewed pages, bounded source statements, and a clear separation of agency-authored reports from external independent reviews. Sources may be incomplete, and historical documents do not establish current operation.</p>
-</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script src="./nebraska-original-aggregate.js"></script><script src="./okc-original-contracts.js"></script><script>
+</main><script src="./city-alpr-operational-statements.js"></script><script src="./national-primary-documents.js"></script><script src="./agency-published-audits.js"></script><script src="./national-government-sources.js"></script><script src="./nationwide-jurisdictions.js"></script><script src="./nebraska-original-aggregate.js"></script><script src="./okc-original-contracts.js"></script><script src="./ri-sd-original-policies.js"></script><script>
 'use strict';
-const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null,nebraskaAggregate:null,okcOriginal:null};
+const $=x=>document.getElementById(x),APP={rows:[],oversight:[],publishers:[],primary:[],primaryHeld:[],cityStatements:[],nationalCoverage:null,nationalSourceReceipts:null,nebraskaAggregate:null,okcOriginal:null,riSdOriginalPolicies:[]};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=String(text);if(cls)n.className=cls;return n;}
 function render(){
  const q=$('q').value.trim().toLowerCase(),st=$('state').value;
@@ -252,6 +258,34 @@ async function loadOversight(){
   const item=el('div');item.append(el('strong',num),el('span',name));$('oversightMetrics').append(item);
  }
  renderOversight();
+}
+function renderRISDPolicies(){
+ const rows=APP.riSdOriginalPolicies,area=$('riSdPolicyResults');area.replaceChildren();
+ $('riSdPolicyStatus').textContent=rows.length+' independently original-page-reviewed police policy version(s), Providence effective September 4 and Brookings revised September 22, 2026. No device-coordinate or compliance claims inferred.';
+ for(const x of rows){
+  const item=el('article'),meta=el('div',null,'meta');
+  meta.append(el('span',x.state,'tag'),
+   el('span',x.state==='RI'?'Published effective General Order':'Chief-signed revised policy','tag'));
+  item.append(meta,el('h3',x.agency+' · '+(x.state==='RI'?'General Order 350.05':'Policy 13D1')),
+   el('p','Original issue date: '+x.source_issue_date+' · published effective/revised date: '+x.source_effective_date+
+    ' · Reviewed original pages '+x.pages_visually_reviewed.join(', ')+' of '+x.page_count,'muted'));
+  const index=el('a','Department original publication index');
+  index.href=x.official_policies_index;index.target='_blank';index.rel='noopener noreferrer';item.append(index);
+  for(const f of x.findings){
+   const section=el('section',null,'finding');section.append(el('p',f.statement));
+   const a=el('a','Original government policy page '+f.page);
+   a.href=x.source_url+'#page='+f.page;a.target='_blank';a.rel='noopener noreferrer';section.append(a);
+   item.append(section);
+  }
+  item.append(el('p','Original policy language is not verified current Flock hardware inventory, complete sharing network, real data deletion, individual vehicle records or independent compliance assessment.','muted'));
+  area.append(item);
+ }
+}
+async function loadRISDPolicies(){
+ const response=await fetch('./data/verified-ri-sd-original-alpr-policies.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!response.ok)throw Error('Rhode Island and South Dakota government originals unavailable');
+ APP.riSdOriginalPolicies=window.KatoptronRISDOriginalPolicies.catalog(await response.json());
+ renderRISDPolicies();
 }
 function renderOKCOriginals(){
  const d=APP.okcOriginal;if(!d)return;
@@ -431,4 +465,5 @@ $('nationalCoverageSearch').addEventListener('input',()=>{renderNationalCoverage
 loadNationalCoverage().catch(e=>{$('nationalCoverageStatus').textContent=e.message+'; source coverage has not been inferred.';});
 loadNebraskaAggregate().catch(e=>{$('nebraskaAggregateStatus').textContent=e.message+'; no unsupported aggregate findings shown.';});
 loadOKCOriginals().catch(e=>{$('okcOriginalStatus').textContent=e.message+'; unverified contract and council findings withheld.';});
+loadRISDPolicies().catch(e=>{$('riSdPolicyStatus').textContent=e.message+'; original policy findings withheld.';});
 </script></body></html>
