@@ -8,6 +8,7 @@ sharing relationship or current agency operation. No plate records are acquired.
 """
 import argparse,concurrent.futures,datetime as dt,hashlib,io,json,re,urllib.parse,urllib.request
 from pathlib import Path
+from html.parser import HTMLParser
 from pypdf import PdfReader
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -75,12 +76,75 @@ def fetch(src):
  except urllib.error.HTTPError as exc:
   raise ValueError("http_error") from None
  return data
+
+class PolicyLinks(HTMLParser):
+ """Bounded original government href discovery, never source fact promotion."""
+ def __init__(self):
+  super().__init__(convert_charrefs=True)
+  self.href=None
+  self.buf=[]
+  self.links=[]
+ def handle_starttag(self,tag,attrs):
+  if tag=="a":
+   self.href=dict(attrs).get("href","")
+   self.buf=[]
+ def handle_data(self,data):
+  if self.href is not None and len(self.buf)<8:
+   self.buf.append(data)
+ def handle_endtag(self,tag):
+  if tag=="a" and self.href is not None:
+   self.links.append((self.href," ".join(" ".join(self.buf).split())[:170]))
+   self.href=None
+   self.buf=[]
+POLICY_ANCHOR=re.compile(
+ r"\b(?:flock|alpr|license[ -]?plate|plate[ -]?reader|"
+ r"(?:surveillance|camera).{0,25}(?:policy|ordinance)|"
+ r"(?:policy|ordinance).{0,25}(?:surveillance|camera))\b",re.I)
+POLICY_ROLE=re.compile(r"\b(?:policy|general\s+order|ordinance|"
+ r"(?:alpr|flock|lpr).{0,25}(?:document|report|audit|transparency))\b",re.I)
+SENSITIVE_PATH=re.compile(r"(?:plate[-_/]?(?:read|search)|"
+ r"vehicle[-_/]?(?:query|log|event)|"
+ r"(?:case|person)[-_/]?(?:record|detail)|"
+ r"raw[-_/]?(?:data|hit)|access[-_/]?log)",re.I)
+def policy_candidates(original,raw):
+ """Only same-host official government document-link candidates.
+
+ Explicitly NOT original content verification, adoption, Flock deployment,
+ legal effective date or an exhaustive agency directory. Search leads
+ remain a separate review layer; unsafe/cross-host redirects are excluded.
+ """
+ try:
+  base=urllib.parse.urlsplit(original)
+  if not exact(original) or not isinstance(raw,bytes) or len(raw)>MAX_BYTES_HTML:
+   return []
+  p=PolicyLinks();p.feed(raw.decode("utf8",errors="replace"))
+  found=[];seen=set()
+  for href,title in p.links:
+   if not title or not href or not POLICY_ANCHOR.search(title) or not POLICY_ROLE.search(title):
+    continue
+   url=urllib.parse.urljoin(original,href)
+   u=urllib.parse.urlsplit(url)
+   if u.hostname!=base.hostname or not exact(url) or SENSITIVE_PATH.search(u.path):
+    continue
+   if url==original or url in seen:continue
+   seen.add(url)
+   found.append({"candidate_url":url,"anchor_text":title,
+    "evidence_tier":"government_same_host_link_unverified_individual_document",
+    "individually_reviewed":False,"policy_adopted_verified":False,
+    "flock_vendor_verified":False,"camera_locations_verified":False,
+    "effective_date_verified":False})
+   if len(found)>=12:break
+  return found
+ except (ValueError,TypeError):
+  return []
+
 def inspect(src,fetcher=fetch):
  record={"source_id":src["id"],"state":src["state"],"publisher":src["publisher"],
   "source_url":src["source_url"],"kind":src["kind"],"status":None,
   "original_sha256":None,"original_bytes":None,"pdf_pages":None,
   "publisher_flock_keyword_seen":False,"published_facts_verified":False,
-  "device_status_verified":False,"camera_coordinates_published":False}
+  "device_status_verified":False,"camera_coordinates_published":False,
+  "unreviewed_same_host_policy_candidates":[]}
  try:raw=fetcher(src)
  except Exception as err:
   reason=str(err)
@@ -95,6 +159,7 @@ def inspect(src,fetcher=fetch):
    record["status"]="held_wrong_format";return record
   text=raw.decode("utf8",errors="replace").casefold()
   record["publisher_flock_keyword_seen"]="flock" in text
+  record["unreviewed_same_host_policy_candidates"]=policy_candidates(src["source_url"],raw)
   record["status"]="original_government_html_accessible"
  else:
   if not raw.startswith(b"%PDF-"):record["status"]="held_wrong_format";return record
@@ -131,13 +196,18 @@ def watch(obj,existing,fetcher=fetch,workers=5):
    "new_original_sources_held":sum(x["status"].startswith("held_") for x in r),
    "source_gap":"needs_authenticated_government_original" if code not in planned else
      "publisher_monitoring_started_not_statewide_evidence_complete",
-   "camera_coverage_claimed":False,"agency_inventory_complete":False})
+   "camera_coverage_claimed":False,"agency_inventory_complete":False,
+   "new_same_host_policy_link_candidates_unverified":sum(
+      len(x["unreviewed_same_host_policy_candidates"]) for x in r)})
  return {"schema_version":1,"created_on":dt.datetime.now(dt.timezone.utc).date().isoformat(),
   "scope":"all_51_state_discovery_queue_and_government_source_receipts_not_coverage_claims",
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"jurisdictions":by_state}
+  "seed_receipts":receipts,"jurisdictions":by_state,
+  "unreviewed_same_host_policy_link_candidates":sum(
+   len(x["unreviewed_same_host_policy_candidates"]) for x in receipts),
+  "verified_policy_adoptions_published":0}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
  p.add_argument("--out",type=Path,default=OUTPUT)
@@ -151,7 +221,9 @@ def main():
  n=sum(x["status"].startswith("original_") for x in result["seed_receipts"])
  print("NATIONWIDE_ORIGINAL_GOVERNMENT_SOURCE_WATCH",json.dumps({"jurisdictions":51,"states_with_seed_or_existing":result["states_with_existing_or_new_official_seed_sources"],
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,
-  "states_needing_original_government_seed":result["states_without_official_sources_seeded"]},sort_keys=True))
+  "states_needing_original_government_seed":result["states_without_official_sources_seeded"],
+  "new_same_host_policy_links_to_review":result["unreviewed_same_host_policy_link_candidates"],
+  "policy_adoptions_automatically_published":0},sort_keys=True))
  for row in result["seed_receipts"]:
   print("ORIGINAL_GOVERNMENT_STATE_SOURCE",json.dumps({k:row[k] for k in ["state","source_id","status","original_sha256","pdf_pages"]},sort_keys=True))
 if __name__=="__main__":main()
