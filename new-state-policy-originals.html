@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | New-state original ALPR policy and oversight documents</title><link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0b1620;color:#ebf3f7;font-family:system-ui,sans-serif}
+body{margin:0}*{box-sizing:border-box}a{color:#91d9ef}header{padding:1rem 4vw;background:#102635;border-bottom:1px solid #3a5867;display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem}
+nav{display:flex;gap:1rem;flex-wrap:wrap}main{max-width:1120px;margin:auto;padding:2rem 1rem 4rem}
+h1{font-size:clamp(1.7rem,4vw,2.4rem)}h2{font-size:1.35rem}h3{font-size:1.05rem}
+p{color:#c4d7e2;line-height:1.55}.note{border-left:4px solid #78cad7;padding:1rem;background:#153044;margin:1.2rem 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(325px,100%),1fr));gap:.9rem}
+.card{border:1px solid #426174;border-radius:9px;background:#132938;padding:1rem}
+.card h3{margin:0 0 .5rem}.tag{color:#f5d2a7;font-weight:650;font-size:.84rem}.small{font-size:.82rem;color:#bad0de}
+a:focus-visible{outline:3px solid #9fe2f4;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to government originals</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a><nav>
+<a href="./agency-xray.html">Agency X-Ray</a><a href="./agency-evidence-conversion.html">Source conversion</a>
+<a href="./nationwide-policy.html">Nationwide policy coverage</a></nav></header>
+<main id="main">
+<h1>New-state original ALPR governance documents</h1>
+<p>Two official public government PDFs, individually page-anchored and original SHA-256 checked: an Idaho Falls department Flock-specific procedure and Columbia's enacted general surveillance-oversight ordinance. These are fundamentally different policy authorities and should not be counted as two signed Flock contracts.</p>
+<div class="note"><strong>Source authority:</strong> Idaho Falls publishes a Flock Safety supplemental police procedure, not an independently established signed legal-effective date. Columbia's general ordinance expressly covers ALPRs among surveillance technologies, but the ordinance itself does not establish that a specific Flock contract was executed or every annual report was filed. No source below establishes individual GPS camera locations or active vendor sharing configurations.</div>
+<p id="status" role="status" aria-live="polite">Authenticating original PDF source receipts…</p>
+<div id="documents" class="cards"></div>
+<section aria-labelledby="gapsTitle"><h2 id="gapsTitle">Publication and verification boundaries</h2>
+<p>Read page-cited source text separately from the agencies' later original HTML disclosures. Current vendor retention settings, real-world compliance with policies, contract execution, exact camera coordinates and present interagency access have not been independently verified by these PDFs. The existing national page-reviewed policy-dossier baseline is unchanged until those original dossiers are deliberately reconciled to this separate source layer.</p></section>
+</main>
+<script src="./new-state-original-policy-pages.js"></script>
+<script>
+'use strict';
+function node(tag,value,cls){const x=document.createElement(tag);if(value!==undefined)x.textContent=String(value);if(cls)x.className=cls;return x;}
+function link(into,url,label){const a=node('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';into.append(a);}
+async function load(){
+ const resp=await fetch('./data/verified-idaho-columbia-government-policy-originals-2026-10-27.json',{cache:'no-store'});
+ if(!resp.ok)throw Error('Government original receipt unavailable');
+ const d=window.KatoptronNewStatePolicyOriginals.validate(await resp.json());
+ for(const doc of d.documents){
+  const section=node('section',undefined,'card');
+  section.append(node('h2',doc.agency+' · '+doc.state),
+   node('div',doc.kind.replaceAll('_',' '),'tag'),
+   node('p',doc.title),
+   node('p','Original '+doc.pages+' page PDF · SHA-256 '+doc.sha256,'small'));
+  link(section,doc.url,'Open entire official government original');
+  for(const f of doc.findings){
+   const item=node('article',undefined,'card');
+   item.append(node('h3','Page '+f.page+' · '+f.category.replaceAll('_',' ')),node('p',f.statement));
+   link(item,f.original_page,'Open exact original · page '+f.page);
+   section.append(item);
+  }
+  section.append(node('p',doc.source_limitations,'small'));
+  document.getElementById('documents').append(section);
+ }
+ document.getElementById('status').textContent=
+  'Two original, source-page-reviewed government PDFs in two newly represented states; zero additional current camera positions, sharing edges, executed vendor contracts or verified live ALPR settings.';
+}
+load().catch(e=>{
+ document.getElementById('documents').replaceChildren();
+ document.getElementById('status').textContent='Original government PDF evidence validation held: '+e.message;
+});
+</script></body></html>
