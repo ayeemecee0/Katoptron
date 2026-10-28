@@ -31,7 +31,7 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#queueStatus').textContent(),/97 of 97 entries/);
   await page.locator('#queueType').selectOption('pdf');
   assert.equal(await page.locator('#queue .queue-row').count(),2);
-  assert.equal(await page.locator('#governmentMaps article').count(),3);
+  assert.equal(await page.locator('section[aria-labelledby="governmentMaps"] article').count(),3);
   assert.deepEqual(errors,[]);
   console.log('M11 EVIDENCE CONVERSION UI PASS: 11 agencies, cessation statuses, 12 source holds, 97 WA registrations, 3 source-only geographic documents');
  }finally{await b.close();}
