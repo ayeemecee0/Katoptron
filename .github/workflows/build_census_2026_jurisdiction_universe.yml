@@ -1,0 +1,55 @@
+name: Build 2026 Census all-US county and local geography research universe
+on:
+  push:
+    paths:
+      - 'scripts/build_census_2026_jurisdiction_universe.py'
+      - 'scripts/test_build_census_2026_jurisdiction_universe.py'
+      - '.github/workflows/build_census_2026_jurisdiction_universe.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '21 19 1 * *'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-official-2026-census-us-locality-research
+  cancel-in-progress: true
+jobs:
+  census-original-geographies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify source safety and distinction between geographic areas and police agencies
+        run: |
+          python3 -m py_compile scripts/build_census_2026_jurisdiction_universe.py
+          python3 -m unittest discover -s scripts -p 'test_build_census_2026_jurisdiction_universe.py' -v
+      - name: Acquire exact government 2026 county, place and subdivision Gazetteer files
+        run: |
+          python3 scripts/build_census_2026_jurisdiction_universe.py
+      - name: Summarize every state without claiming every police department was reviewed
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          p=".katoptron-ci/2026-us-census-government-geography-research-universe.json"
+          d=json.load(open(p,encoding="utf8"))
+          print("## U.S. Census 2026 local geography universe")
+          print("Source: three official census.gov national Gazetteer ZIP archives. Geographies are **not** Flock/ALPR agencies or policy facts.\n")
+          print("Total geographic records: **"+str(d["total_geographic_entities"])+"**")
+          print("| State | Counties | Census places (including CDPs) | County subdivisions |")
+          print("|---|---:|---:|---:|")
+          for r in d["by_state"]:
+              print("| "+r["state"]+" | "+str(r["counties"])+" | "+str(r["places_including_unincorporated_cdps"])+" | "+str(r["county_subdivisions_not_all_governments"])+" |")
+          print("\n**Flock deployments, police agencies, policies and camera locations verified by this geographical source: 0.**")
+          PY
+      - name: Retain full 51-state geographic research universe with source hashes
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-2026-all-state-county-place-subdivision-geography-universe
+          path: .katoptron-ci/2026-us-census-government-geography-research-universe.json
+          retention-days: 21
+          if-no-files-found: error
