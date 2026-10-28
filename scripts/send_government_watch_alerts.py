@@ -26,6 +26,8 @@ def eligible(category, user):
       "vendor_count_changed": user.get("watch_vendor") is True,
       "retention_changed": user.get("watch_vendor") is True,
       "sharing_list_changed": user.get("watch_sharing") is True,
+      "policy_original_reviewed": user.get("watch_policies") is True,
+      "policy_draft_reviewed": user.get("watch_policies") is True,
     }.get(category,False)
 
 
@@ -111,6 +113,17 @@ def deliver(url,secret,settings,send=smtp_send):
         locality=sub.get("locality_key")
         if not locality or not sub.get("email"):continue
         since=iso_datetime(sub["subscribed_at"])
+        policy_rows=query(url,secret,"flock_watch_subscriptions",{
+          "select":"watch_policies,policy_opted_in_at",
+          "user_id":"eq."+str(sub["user_id"]),
+          "locality_key":"eq."+locality,"limit":"2"
+        })
+        if len(policy_rows)!=1:
+            raise RuntimeError("Policy opt-in subscription state missing or ambiguous")
+        policy_row=policy_rows[0]
+        policy_since=(iso_datetime(policy_row["policy_opted_in_at"])
+            if policy_row.get("watch_policies") is True and policy_row.get("policy_opted_in_at")
+            else None)
         events=query(url,secret,"flock_agency_watch_events",{
           "select":"event_key,kind,title,summary,source_url,source_date,evidence_tier,observed_at",
           "locality_key":"eq."+locality,
@@ -122,9 +135,20 @@ def deliver(url,secret,settings,send=smtp_send):
           "locality_key":"eq."+locality,"limit":"1000"
         })
         receipts={x["event_key"] for x in existing}
-        unsent=[x for x in events if x["event_key"] not in receipts and
-                 eligible(x["kind"],sub) and
-                 iso_datetime(x["observed_at"])>since][:8]
+        unsent=[]
+        for event in events:
+            observed=iso_datetime(event["observed_at"])
+            if event["event_key"] in receipts or observed<=since:
+                continue
+            policy=event["kind"] in ("policy_original_reviewed","policy_draft_reviewed")
+            if policy:
+                if policy_since is None or observed<=policy_since:
+                    continue
+                allowed=True
+            else:
+                allowed=eligible(event["kind"],sub)
+            if allowed:unsent.append(event)
+            if len(unsent)>=8:break
         if not unsent:continue
         message=make_email(sub["email"],locality,unsent,settings[4])
         send(message,settings)
