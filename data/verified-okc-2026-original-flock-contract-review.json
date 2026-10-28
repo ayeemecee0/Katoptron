@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "visually_reviewed_original_okc_flock_council_contract_documents_no_live_camera_or_sharing_verification",
+  "city": "Oklahoma City",
+  "state": "OK",
+  "city_original_program_page": "https://www.okc.gov/Services/Public-Safety/Police/Flock-Safety-license-plate-reader-LPR-usage-in-Oklahoma-City",
+  "original_visual_review_ci": "https://github.com/ayeemecee0/Katoptron/actions/runs/40606124157",
+  "document_evidence_limits": "Four government original PDFs visually checked on precisely listed pages. A Council staff memo is not a vote, a funding certificate is not a payment, a source contract is not active platform configuration, and source figures are not live camera or data sharing verification.",
+  "documents": [
+    {
+      "id": "okc-2026-signed-flock-amendment",
+      "status": "signed_city_and_vendor_amendment_original",
+      "source_url": "https://www.okc.gov/files/assets/city/v/1/police/documents/flock/flock-amendment-august-2026.pdf",
+      "source_sha256": "ed37e684252bec2c1938c3f927c777bf34ca67222c11ec86fccbd46da60f9ea0",
+      "source_bytes": 259241,
+      "pages": 2,
+      "pages_visually_reviewed": [
+        1,
+        2
+      ],
+      "png_sha256_by_page": {
+        "1": "56acb662b5a723fa42e231f882ff4dd88fe51ce5983018ad1c02d233fccab558",
+        "2": "aa3fa98c6f4d32528700484e8a48716dd0bc15853ac70749e598e8a2a8172e30"
+      },
+      "event_date": "2026-08-18",
+      "findings": [
+        {
+          "page": 1,
+          "kind": "executed_amendment_federal_access_restrictions",
+          "statement": "Amendment No. 1 to Oklahoma City's June 5, 2023 Flock master services agreement adds Section 4.4, which prohibits Flock from voluntarily making city data available to federal entities directly or through third-party sharing, search systems, hotlists and integrations. The written provision addresses Flock's access and disclosure; it does not prohibit the city itself from sharing data."
+        },
+        {
+          "page": 1,
+          "kind": "signed_amendment_compelled_process_exception",
+          "statement": "Section 4.4 preserves legally compelled disclosures under specified compulsory processes, with notice to Oklahoma City unless legally prohibited, cooperation in limiting or challenging demands, and minimum required disclosure. It is not an absolute federal-access ban or proof that the system's sharing controls were configured as written."
+        },
+        {
+          "page": 2,
+          "kind": "original_visually_verified_city_and_vendor_execution",
+          "statement": "The original amendment bears Oklahoma City Council approval and the mayor's signed approval dated August 18, 2026, with city clerk attestation. A Flock Group legal officer signed its counterpart with a July 24, 2026 date. This supports an executed written amendment, not technical verification of data-access settings."
+        }
+      ]
+    },
+    {
+      "id": "okc-2026-approved-flock-renewal",
+      "status": "city_approved_vendor_concurred_renewal_original",
+      "source_url": "https://www.okc.gov/files/assets/city/v/1/police/documents/flock/flock-renewal-letter-august-2026.pdf",
+      "source_sha256": "f2aa30d8b38fa8e35a88048d908f62162caaebf28bb12acc7291877ebe0d0ced",
+      "source_bytes": 4606970,
+      "pages": 21,
+      "pages_visually_reviewed": [
+        1
+      ],
+      "png_sha256_by_page": {
+        "1": "b7b545b579de545bcd26010c9c8fb6499a8db01f4a709f29ac34465f261ee032"
+      },
+      "event_date": "2026-08-18",
+      "findings": [
+        {
+          "page": 1,
+          "kind": "approved_city_vendor_annual_renewal",
+          "statement": "The published Oklahoma City Finance Department Renewal No. 3 for Flock master services contract C241032 shows Flock Group's signed concurrence and a city clerk approval stamp dated August 18, 2026. Its stated renewal period is July 1, 2026 through June 30, 2027; the approval is corroborated by the city's own program webpage. This does not prove that all contract payments were made."
+        }
+      ],
+      "unreviewed_attachment_pages": "Original PDF pages 2–21 are attachments, including insurance documents; they are not relied upon as signed contract terms or published factual findings."
+    },
+    {
+      "id": "okc-2026-council-staff-memo",
+      "status": "original_staff_recommendation_not_vote_record",
+      "source_url": "https://www.okc.gov/files/assets/city/v/1/police/documents/flock/flock-council-memo-august-2026.pdf",
+      "source_sha256": "fa6b7b8b81c1816ff5e09668af04d7160055a9385d1a8c844c74a2b174b4501e",
+      "source_bytes": 55040,
+      "pages": 2,
+      "pages_visually_reviewed": [
+        1,
+        2
+      ],
+      "png_sha256_by_page": {
+        "1": "d96756c761c0c0d9c5ea931d538d6b001714d02f4c2c68ef568ef42cdea4e385",
+        "2": "d53a2598bf5cc5b5255efa43f75dd9d4b1d09e8d414019817416e6889d051e46"
+      },
+      "event_date": "2026-08-18",
+      "findings": [
+        {
+          "page": 1,
+          "kind": "staff_requested_renewal_not_standalone_approval",
+          "statement": "The August 18, 2026 City Manager memorandum requests Council approval of Amendment No. 1 and Renewal No. 3 of Flock contract C241032, for $270,000 retroactive to July 1, 2026 through June 30, 2027. The memorandum describes a recommendation, not a final vote or signed agreement by itself."
+        },
+        {
+          "page": 1,
+          "kind": "historical_contract_renewal_sequence",
+          "statement": "The staff memorandum identifies the Flock master agreement as originating June 5, 2023, with Council approval in July 2023, renewals in July 2024 and July 2025, and the 2026–2027 period described as the third of four one-year renewal options. Historical staff characterizations are not themselves proof of every prior payment."
+        },
+        {
+          "page": 2,
+          "kind": "listed_renewal_amount_and_funding",
+          "statement": "The second page of the August 18 staff memorandum lists the proposed $270,000 renewal cost and identifies the Police Sales Tax Fund, Special Operations Support professional-services account as the proposed funding source. An allocation or approval amount is not verified expenditure."
+        }
+      ]
+    },
+    {
+      "id": "okc-2026-city-funds-certificate",
+      "status": "signed_availability_of_funds_certification_not_payment",
+      "source_url": "https://www.okc.gov/files/assets/city/v/1/police/documents/flock/availability-of-funds-certificate-august-2026.pdf",
+      "source_sha256": "1362ab7c9fe7e6902ed51657a616650ce0c6c8569fa553badacfb2be24c91b3c",
+      "source_bytes": 161357,
+      "pages": 1,
+      "pages_visually_reviewed": [
+        1
+      ],
+      "png_sha256_by_page": {
+        "1": "46616307a268cc99a92d83861efb859000cfb3909a29525e7a463052e7cd2866"
+      },
+      "event_date": "2026-08-18",
+      "findings": [
+        {
+          "page": 1,
+          "kind": "government_sufficient_funds_signed_certification",
+          "statement": "Oklahoma City's original availability-of-funds certificate bears an encumbering officer's visible signature and certifies that the Police Sales Tax Fund account has sufficient available balance for a $270,000 obligation. It supports financial authorization availability, not proof that $270,000 was spent, paid or disbursed."
+        }
+      ]
+    }
+  ],
+  "city_self_report": {
+    "source_kind": "city_authored_2026_program_webpage_not_external_independent_audit",
+    "city_2026_flock_readers_reported": 90,
+    "partner_agencies_reported_as_of_2026_08_18": 109,
+    "reported_default_data_retention_days": 7,
+    "reported_council_vote_date": "2026-08-18",
+    "reported_approved_annual_renewal_usd": 270000,
+    "reported_renewal_through": "2027-06-30",
+    "interpretation": "The city reports its own operating equipment, sharing partner count, retention rule and council vote; these are dated government statements, not independently measured hardware inventory, verified partner identities, active system settings or per-camera geographic coordinates."
+  },
+  "unreviewed_source_note": {
+    "url": "https://www.okc.gov/files/assets/city/v/1/police/documents/flock/okcpd-alpr-presentation-august-2026.pdf",
+    "sha256": "8393ed258b8d707d7a206d3434891cd7319bf4e5e45860da678e9fa97c952459",
+    "page_count": 9,
+    "evidence_status": "original_machine_inspected_presentation_not_independent_program_verification"
+  }
+}
