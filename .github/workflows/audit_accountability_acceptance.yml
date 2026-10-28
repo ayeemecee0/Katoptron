@@ -9,6 +9,9 @@ on:
       - 'agency-audit.html'
       - 'mn-alpr-audits.html'
       - 'national-audits.html'
+      - 'okc-original-contracts.js'
+      - 'data/verified-okc-2026-original-flock-contract-review.json'
+      - 'scripts/test_okc_original_contracts.cjs'
       - 'nebraska-original-aggregate.js'
       - 'data/verified-nebraska-original-aggregate-reports.json'
       - 'scripts/test_nebraska_original_aggregate.cjs'
@@ -93,6 +96,8 @@ jobs:
           node scripts/test_national_government_sources.cjs
           node --check nationwide-jurisdictions.js
           node scripts/test_nationwide_jurisdictions.cjs
+          node --check okc-original-contracts.js
+          node scripts/test_okc_original_contracts.cjs
           node --check nebraska-original-aggregate.js
           node scripts/test_nebraska_original_aggregate.cjs
           node --check city-alpr-operational-statements.js
