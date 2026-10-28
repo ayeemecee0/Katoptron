@@ -15,6 +15,11 @@ on:
       - 'scripts/test_agency_html_disclosures.cjs'
       - 'scripts/test_all_agency_source_backlog.cjs'
       - 'scripts/smoke_evidence_conversion.cjs'
+      - 'robbinsdale-independent-audit.js'
+      - 'robbinsdale-audit.html'
+      - 'data/verified-robbinsdale-2025-independent-flock-audit.json'
+      - 'scripts/test_robbinsdale_independent_audit.cjs'
+      - 'scripts/smoke_robbinsdale_independent_audit.cjs'
       - 'verified-agency-dossiers.js'
       - 'original-evidence-comparison.js'
       - 'agency-compare.html'
@@ -148,6 +153,7 @@ jobs:
           node --check nationwide-policy-coverage.js
           node scripts/test_nationwide_policy_coverage.cjs
           node scripts/test_agency_html_disclosures.cjs
+          node scripts/test_robbinsdale_independent_audit.cjs
           node scripts/test_all_agency_source_backlog.cjs
           node --check census-geography-coverage.js
           node scripts/test_census_geography_coverage.cjs
@@ -210,6 +216,7 @@ jobs:
           node scripts/smoke_policy_history.cjs
           node scripts/smoke_nationwide_policy_coverage.cjs
           node scripts/smoke_evidence_conversion.cjs
+          node scripts/smoke_robbinsdale_independent_audit.cjs
           node scripts/smoke_watch_email_preferences.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs
