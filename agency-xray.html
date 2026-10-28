@@ -12,7 +12,14 @@ main{max-width:1120px;margin:auto;padding:2.3rem 1.2rem 5rem}h1{font-size:clamp(
 .note{border-left:3px solid #74b4be;background:#102330;padding:.85rem 1rem;line-height:1.5;margin:1rem 0}
 .search{display:flex;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0}input,button{font:inherit;background:#172b3c;border:1px solid #658092;color:inherit;border-radius:8px;padding:.8rem}
 input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#24445b}button:disabled{opacity:.55}
-#list{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:.65rem}#list button{text-align:left;line-height:1.4}
+#list,#originalList{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:.65rem}
+#originalList button{text-align:left;line-height:1.4}
+#originalList small{display:block;color:#bfd0dd}
+#originalDossier[hidden]{display:none!important}
+.original-type{font-size:.76rem;color:#b7d2df;letter-spacing:.03em}
+.original-item{border-top:1px solid #345064;padding:.85rem 0}
+.original-item p{overflow-wrap:anywhere}
+.original-item a{display:inline-block;margin:.25rem .75rem .5rem 0}#list button{text-align:left;line-height:1.4}
 #list small{display:block;color:#bfd0dd}.pane{background:#101f2b;border:1px solid #385267;border-radius:12px;padding:1rem;margin:1rem 0}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin:1rem 0}.metric{padding:1rem;border-radius:10px;background:#172d3c}
 .metric strong{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums}.metric span{font-size:.75rem;color:#bfd0dd}
@@ -29,6 +36,22 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <main id="main-content"><h1>Agency X-Ray</h1>
 <p>One source-linked research profile for each locality in Katoptron's published evidence. Compare government maps, government decisions and separately sourced Flock vendor disclosures.</p>
 <div class="note"><strong>Evidence boundaries:</strong> A portal's camera count is <em>not</em> a count of confirmed individual map positions. Locality/name matching does not independently prove two agencies are the same operator. Absence of records is never evidence of no surveillance. This view never presents community OSM observations as agency-owned cameras.</div>
+<section class="pane" id="verifiedOriginals" aria-labelledby="verifiedOriginalsHeading">
+<h2 id="verifiedOriginalsHeading">Verified original-government agency dossiers</h2>
+<p>Search the separately source-page-reviewed agency library. Unlike locality groupings, each record has an explicitly identified government agency, original PDF hashes and page citations. <strong>A signed contract, published policy or draft is not live camera verification, a complete agency census or proof of actual database access.</strong></p>
+<div class="search"><label for="originalSearch">Find an agency with individually reviewed originals</label>
+<input id="originalSearch" type="search" maxlength="100" autocomplete="off" placeholder="Oklahoma City, Dakota County, Providence, Brookings, Kittitas, Moline">
+<button id="originalClear" type="button">Clear agency</button></div>
+<p class="status" id="originalStatus" role="status" aria-live="polite">Loading original-page-verified government agency records…</p>
+<div id="originalList" aria-label="Verified original government agency dossiers"></div>
+<section id="originalDossier" hidden aria-labelledby="originalTitle">
+<h3 id="originalTitle"></h3>
+<p id="originalSummary"></p>
+<div class="grid" id="originalMetrics"></div>
+<div id="originalDocuments"></div>
+<p class="muted" id="originalLimits"></p>
+</section>
+</section>
 <div class="search"><label for="query">Find a city, county or state</label>
 <input id="query" type="search" maxlength="120" autocomplete="off" placeholder="Try Folsom, Menifee, California or AZ">
 <button id="clear" type="button">Clear</button></div>
@@ -50,10 +73,27 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <h3>What this profile cannot establish</h3><p id="unknowns"></p>
 </section>
 <p class="status">Evidence sources: published Katoptron records, original government links, and separately source-dated Flock vendor reports. For sharing access, inspect the <a href="./sharing-explorer.html">documented access explorer</a>.</p>
-</main><script src="./config.js"></script><script src="./agency-intelligence.js"></script><script>
+</main><script src="./config.js"></script><script src="./agency-intelligence.js"></script>
+<script src="./okc-original-contracts.js"></script>
+<script src="./nebraska-original-aggregate.js"></script>
+<script src="./ri-sd-original-policies.js"></script>
+<script src="./wa-kittitas-draft-review.js"></script>
+<script src="./national-primary-documents.js"></script>
+<script src="./verified-agency-dossiers.js"></script>
+<script>
 'use strict';
 const API=window.KatoptronIntelligence,$=id=>document.getElementById(id);
-let groups=[],selected=null;
+let groups=[],selected=null,originalIndex=null,originalSelection=null;
+const ORIGINAL_SOURCE_PATHS={
+ okc:'./data/verified-okc-2026-original-flock-contract-review.json',
+ ne:'./data/verified-nebraska-original-aggregate-reports.json',
+ riSd:'./data/verified-ri-sd-original-alpr-policies.json',
+ kittitas:'./data/verified-wa-kittitas-scanned-draft-review.json',
+ waRegistry:'./data/wa-original-agency-alpr-registrations.json',
+ waHeld:'./data/wa-held-original-policy-diagnostics.json',
+ national:'./data/verified-national-government-documents.json'
+};
+const OriginalAPI=window.KatoptronVerifiedAgencyDossiers;
 function node(tag,value,cls){
  const e=document.createElement(tag);if(value!=null)e.textContent=String(value);
  if(cls)e.className=cls;return e;
@@ -75,6 +115,89 @@ function makeCard(parent,title,detail,date,href){
  source(c,href,'Inspect source evidence');
  parent.append(c);
 }
+function renderOriginalList(){
+ if(!originalIndex)return;
+ const term=$('originalSearch').value.trim().toLowerCase();
+ const rows=originalIndex.dossiers.filter(r=>(r.label+' '+r.agency+' '+r.state+' '+r.tier)
+  .toLowerCase().includes(term));
+ $('originalList').replaceChildren();
+ for(const r of rows){
+  const b=node('button',r.label+' · '+r.state);
+  b.type='button';
+  b.append(node('small',r.documents.length+' individually verified original document(s) · '+r.tier.replaceAll('_',' ')));
+  b.addEventListener('click',()=>selectOriginal(r));
+  $('originalList').append(b);
+ }
+ if(!rows.length)$('originalList').append(node('p','No individually reviewed original-government dossier indexed for this agency. Unknown is not zero cameras.'));
+ $('originalStatus').textContent=originalIndex.agencies+' source-identified agency dossiers, '+
+  originalIndex.original_documents+' original-page-reviewed documents; '+rows.length+
+  ' match(es). This is not a statewide or nationwide agency census.';
+}
+function selectOriginal(r){
+ originalSelection=r;$('originalDossier').hidden=false;
+ $('originalTitle').textContent=r.label+' · '+r.state;
+ $('originalSummary').textContent='Exactly identified source publisher: '+r.agency+
+  '. Evidence type: '+r.tier.replaceAll('_',' ')+
+  '. Original government document dates are historical, effective policy dates or reporting-period endpoints, not live device timestamps.';
+ const metrics=$('originalMetrics');metrics.replaceChildren();
+ for(const [label,value] of [
+  ['Source-page-verified original documents',r.documents.length],
+  ['Original page-specific findings',r.documents.reduce((n,x)=>n+x.findings.length,0)],
+  ['Distinct original publisher URLs',new Set(r.documents.map(x=>x.source_url)).size]
+ ]){
+  const m=node('div',null,'metric');m.append(node('strong',value),node('span',label));metrics.append(m);
+ }
+ const output=$('originalDocuments');output.replaceChildren();
+ for(const d of r.documents){
+  const card=node('article',null,'card');
+  card.append(node('strong',d.title),
+   node('small',d.date+' · '+d.date_basis.replaceAll('_',' ')+' · '+d.kind.replaceAll('_',' ')),
+   node('p','Original government source SHA-256: '+d.sha,'muted'));
+  for(const f of d.findings){
+   const section=node('section',null,'original-item');
+   section.append(node('p',f.category.replaceAll('_',' '),'original-type'),
+    node('p',f.statement));
+   source(section,d.source_url+'#page='+f.page,'Open government original · page '+f.page);
+   card.append(section);
+  }
+  card.append(node('p',d.limits,'muted'));
+  output.append(card);
+ }
+ for(const note of r.notes)output.append(node('p',note,'muted'));
+ $('originalLimits').textContent='This is a source-dated original agency document dossier, not a merged locality deployment record. Camera coordinates, actual Flock service uptime, unknown policies and partner-by-partner data access are not inferred. The complete 51-jurisdiction research queue remains separate.';
+ const url=new URL(location.href);url.searchParams.set('original',r.key);
+ history.replaceState(null,'',url);
+ $('originalDossier').scrollIntoView({block:'start',behavior:'smooth'});
+}
+async function loadOriginalDossiers(){
+ const keys=Object.keys(ORIGINAL_SOURCE_PATHS);
+ const responses=await Promise.all(keys.map(k=>fetch(ORIGINAL_SOURCE_PATHS[k],{cache:'no-store',referrerPolicy:'no-referrer'})));
+ if(!responses.every(r=>r.ok))throw Error('Original government agency manifest unavailable');
+ const data={};
+ for(let i=0;i<keys.length;i++)data[keys[i]]=await responses[i].json();
+ originalIndex=OriginalAPI.catalog(data,{
+  okc:window.KatoptronOKCOriginalContracts,
+  ne:window.KatoptronNebraskaOriginalAggregate,
+  riSd:window.KatoptronRISDOriginalPolicies,
+  kittitas:window.KatoptronKittitasDraftReview,
+  national:window.KatoptronNationalPrimaryDocuments
+ });
+ renderOriginalList();
+ const key=new URL(location.href).searchParams.get('original');
+ const target=OriginalAPI.byKey(originalIndex,key);
+ if(target)selectOriginal(target);
+}
+$('originalSearch').addEventListener('input',renderOriginalList);
+$('originalClear').addEventListener('click',()=>{
+ $('originalSearch').value='';$('originalDossier').hidden=true;
+ originalSelection=null;
+ const url=new URL(location.href);url.searchParams.delete('original');history.replaceState(null,'',url);
+ renderOriginalList();
+});
+loadOriginalDossiers().catch(err=>{
+ $('originalStatus').textContent='Individually reviewed original government agency records cannot be displayed: '+err.message+
+  '. No unsupported original evidence will be shown.';
+});
 function renderList(){
  const q=$('query').value.trim().toLowerCase();
  const result=groups.filter(g=>g.label.toLowerCase().includes(q)||
