@@ -10,6 +10,8 @@ on:
       - 'scripts/build_all_agency_source_backlog.cjs'
       - 'scripts/test_all_agency_source_backlog.cjs'
       - 'scripts/smoke_evidence_conversion.cjs'
+      - 'data/wa-ago-remaining-original-acquisition-2026-10-27.json'
+      - 'scripts/test_wa_original_pdf_acquisition_receipts.cjs'
       - '.github/workflows/m11_conversion_acceptance.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +33,7 @@ jobs:
         run: |
           node --check agency-html-disclosures.js
           node scripts/test_agency_html_disclosures.cjs
+          node scripts/test_wa_original_pdf_acquisition_receipts.cjs
           node scripts/test_all_agency_source_backlog.cjs
       - name: Start localhost website preview
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-m11-preview.log 2>&1 &
