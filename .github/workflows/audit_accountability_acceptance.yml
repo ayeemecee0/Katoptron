@@ -14,6 +14,9 @@ on:
       - 'policy-history.html'
       - 'policy-history.js'
       - 'nationwide-policy-coverage.js'
+      - 'census-geography-coverage.js'
+      - 'data/census-2026-state-geography-coverage.json'
+      - 'scripts/test_census_geography_coverage.cjs'
       - 'nationwide-policy.html'
       - 'scripts/test_nationwide_policy_coverage.cjs'
       - 'scripts/smoke_nationwide_policy_coverage.cjs'
@@ -134,6 +137,8 @@ jobs:
           node scripts/test_policy_history.cjs
           node --check nationwide-policy-coverage.js
           node scripts/test_nationwide_policy_coverage.cjs
+          node --check census-geography-coverage.js
+          node scripts/test_census_geography_coverage.cjs
           node --check policy-adoption-evidence.js
           node scripts/test_policy_adoption_evidence.cjs
           node --check apache-junction-original-chapter.js

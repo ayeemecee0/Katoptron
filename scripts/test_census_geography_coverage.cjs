@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict');
+const R=require('../census-geography-coverage.js');
+const raw=require('../data/census-2026-state-geography-coverage.json');
+const s=R.validate(raw);
+assert.equal(s.states,51);
+assert.equal(s.total,70657);
+assert.equal(s.counties,3144);
+assert.equal(s.places,32071);
+assert.equal(s.subdivisions,35442);
+assert.equal(s.complete_law_enforcement_agency_census,false);
+assert.equal(s.byState.size,51);
+assert.ok(s.byState.get('DC').counties>=1);
+assert.ok(s.byState.get('CA').places>100);
+assert.match(s.warning,/NOT counts of local government agencies/);
+assert.ok(s.source_workflow_run.startsWith('https://github.com/ayeemecee0/Katoptron/actions/runs/'));
+function breakIt(change,re){const x=structuredClone(raw);change(x);assert.throws(()=>R.validate(x),re);}
+breakIt(d=>d.sources[0].sha256='f'.repeat(64),/ZIP SHA/);
+breakIt(d=>d.sources[0].records=1,/ZIP SHA/);
+breakIt(d=>d.states.pop(),/scope|source/);
+breakIt(d=>d.states[0].state='CA',/Missing|fabricated|inconsistent/);
+breakIt(d=>d.states[0].police_agencies_verified=1,/Missing|fabricated/);
+breakIt(d=>d.counts.place=33000,/inconsistent/);
+breakIt(d=>d.flock_agencies_verified=999,/scope/);
+breakIt(d=>d.camera_locations_from_geography_added=50,/scope/);
+breakIt(d=>d.complete_law_enforcement_agency_census=true,/scope/);
+console.log('FEDERAL 2026 GEO RESEARCH PASS: 70,657 official geographic rows by 51 states, pinned source ZIPs, not police jurisdictions or camera points');
