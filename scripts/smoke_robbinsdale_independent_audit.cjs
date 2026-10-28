@@ -28,7 +28,7 @@ const {chromium}=require('playwright');
   assert.equal(await page.locator('a[href="./robbinsdale-audit.html"]').count(),1);
   const agency=await page.goto(new URL('agency-evidence-conversion.html',base).href,{waitUntil:'domcontentloaded'});
   assert.equal(agency.status(),200);
-  assert.equal(await page.locator('#auditedIndependent a[href="./robbinsdale-audit.html"]').count(),1);
+  assert.equal(await page.locator('section[aria-labelledby="auditedIndependent"] a[href="./robbinsdale-audit.html"]').count(),1);
   console.log('ROBBINSDALE SOURCE-ORIGINAL CHROMIUM PASS: five state-archived historical audit pages, separately attributed 2026 retention categories, no fake present camera claims');
  }finally{await b.close();}
 })().catch(e=>{console.error('ROBBINSDALE SOURCE ORIGINAL CHROMIUM FAIL',e);process.exit(1);});
