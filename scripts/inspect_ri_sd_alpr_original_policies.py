@@ -34,8 +34,8 @@ def fetch(key):
  if not 200<len(raw)<=6_000_000 or not raw.startswith(b"%PDF-"):raise ValueError("unbounded_or_non_pdf_original")
  return raw
 def inspect(key,b):
- import fitz  # Required only for original PDF visual run, not schema-only regressions.
  if key not in SOURCES or not isinstance(b,bytes) or not b.startswith(b"%PDF-"):raise ValueError("Original invalid")
+ import fitz  # Required only after source preflight, not for schema-only regressions.
  source=SOURCES[key]
  d=fitz.open(stream=b,filetype="pdf")
  if d.page_count!=source["page_count"] or d.is_encrypted:raise ValueError("Document page count drift")
