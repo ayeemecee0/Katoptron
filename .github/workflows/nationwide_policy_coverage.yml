@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - 'nationwide-policy-coverage.js'
+      - 'census-geography-coverage.js'
+      - 'data/census-2026-state-geography-coverage.json'
+      - 'scripts/test_census_geography_coverage.cjs'
       - 'nationwide-policy.html'
       - 'scripts/test_nationwide_policy_coverage.cjs'
       - 'scripts/smoke_nationwide_policy_coverage.cjs'
@@ -33,6 +36,8 @@ jobs:
         run: |
           node --check nationwide-policy-coverage.js
           node scripts/test_nationwide_policy_coverage.cjs
+          node --check census-geography-coverage.js
+          node scripts/test_census_geography_coverage.cjs
           node scripts/test_nationwide_jurisdictions.cjs
           node scripts/test_verified_agency_dossiers.cjs
           node scripts/test_wa_original_agency_dossiers.cjs
