@@ -40,9 +40,10 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <h2 id="verifiedOriginalsHeading">Verified original-government agency dossiers</h2>
 <p>Search the separately source-page-reviewed agency library. Unlike locality groupings, each record has an explicitly identified government agency, original PDF hashes and page citations. <strong>A signed contract, published policy or draft is not live camera verification, a complete agency census or proof of actual database access.</strong></p>
 <div class="search"><label for="originalSearch">Find an agency with individually reviewed originals</label>
-<input id="originalSearch" type="search" maxlength="100" autocomplete="off" placeholder="Oklahoma City, Dakota County, Providence, Brookings, Kittitas, Moline">
+<input id="originalSearch" type="search" maxlength="100" autocomplete="off" placeholder="Oklahoma City, Dakota County, Providence, Arlington, Federal Way, Moline">
 <button id="originalClear" type="button">Clear agency</button></div>
 <p class="status" id="originalStatus" role="status" aria-live="polite">Loading original-page-verified government agency records…</p>
+<p class="muted" id="waOriginalExtensionStatus" role="status" aria-live="polite">Checking individually reviewed Washington policy originals…</p>
 <div id="originalList" aria-label="Verified original government agency dossiers"></div>
 <section id="originalDossier" hidden aria-labelledby="originalTitle">
 <h3 id="originalTitle"></h3>
@@ -80,6 +81,9 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <script src="./wa-kittitas-draft-review.js"></script>
 <script src="./national-primary-documents.js"></script>
 <script src="./verified-agency-dossiers.js"></script>
+<script src="./wa-reviewed-flock-sources.js"></script>
+<script src="./wa-original-policies.js"></script>
+<script src="./wa-original-agency-dossiers.js"></script>
 <script>
 'use strict';
 const API=window.KatoptronIntelligence,$=id=>document.getElementById(id);
@@ -175,13 +179,34 @@ async function loadOriginalDossiers(){
  if(!responses.every(r=>r.ok))throw Error('Original government agency manifest unavailable');
  const data={};
  for(let i=0;i<keys.length;i++)data[keys[i]]=await responses[i].json();
- originalIndex=OriginalAPI.catalog(data,{
+ const baseIndex=OriginalAPI.catalog(data,{
   okc:window.KatoptronOKCOriginalContracts,
   ne:window.KatoptronNebraskaOriginalAggregate,
   riSd:window.KatoptronRISDOriginalPolicies,
   kittitas:window.KatoptronKittitasDraftReview,
   national:window.KatoptronNationalPrimaryDocuments
  });
+ originalIndex=baseIndex;
+ try{
+  const urls=['./data/verified-wa-flock-policy-originals.json',
+   './data/verified-wa-agency-policies.json',
+   './data/wa-ago-original-policy-source-inspection.json'];
+  const rs=await Promise.all(urls.map(url=>fetch(url,{cache:'no-store',referrerPolicy:'no-referrer'})));
+  if(!rs.every(r=>r.ok))throw Error('One or more source-versioned government original receipts unavailable');
+  const [flock,other,receipts]=await Promise.all(rs.map(r=>r.json()));
+  const wa=window.KatoptronWAOriginalAgencyDossiers.catalog({
+   flock,other,receipts,registry:data.waRegistry
+  },{
+   flock:window.KatoptronWAReviewedFlockSources,
+   other:window.KatoptronWashingtonOriginalPolicies
+  });
+  originalIndex=window.KatoptronWAOriginalAgencyDossiers.combine(baseIndex,wa);
+  $('waOriginalExtensionStatus').textContent=
+   '11 additional Washington agency-authored original policies/bulletins verified by exact published source and page. Sultan attribution mismatch remains held. No current camera installations inferred.';
+ }catch(err){
+  $('waOriginalExtensionStatus').textContent='Washington original-policy extension unavailable: '+
+   err.message+'. The six independently verified original dossiers remain available; no WA policy is inferred.';
+ }
  renderOriginalList();
  const key=new URL(location.href).searchParams.get('original');
  const target=OriginalAPI.byKey(originalIndex,key);
