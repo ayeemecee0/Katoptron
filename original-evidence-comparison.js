@@ -48,7 +48,9 @@
    const matching=[];
    for(const doc of row.documents){
     if(!doc||typeof doc.id!=='string'||typeof doc.title!=='string'||
-       !/^20\d\d-\d\d-\d\d$/.test(doc.date||'')||
+       !((/^20\d\d-\d\d-\d\d$/.test(doc.date||'')&&doc.date_basis!=='undated_original_not_verified_effective')||
+         (doc.date===null&&doc.date_basis==='undated_original_not_verified_effective'&&
+          typeof doc.date_note==='string'&&doc.date_note.length>=40))||
        typeof doc.date_basis!=='string'||typeof doc.limits!=='string'||
        doc.limits.length<40||!Array.isArray(doc.pages)||!doc.pages.length||
        !/^[0-9a-f]{64}$/.test(doc.sha||'')||!Array.isArray(doc.findings)||
@@ -66,7 +68,7 @@
      }
     }
     if(findings.length)matching.push({id:doc.id,title:doc.title,
-     kind:doc.kind,date:doc.date,date_basis:doc.date_basis,sha:doc.sha,
+     kind:doc.kind,date:doc.date,date_basis:doc.date_basis,date_note:doc.date_note||null,sha:doc.sha,
      source_url:doc.source_url,limits:doc.limits,findings});
    }
    return {key:row.key,label:row.label,state:row.state,tier:row.tier,
