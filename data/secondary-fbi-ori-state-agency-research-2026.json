@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "51_US_state_FBI_CDE_derived_ori_agency_research_entries_secondary_not_current_law_enforcement_authority",
+  "source_url": "https://iropo.org/data/agencies.csv",
+  "source_publisher": "IROPO secondary CC0 compilation of FBI Crime Data Explorer law enforcement agency directory, not independently retrieved government original",
+  "federal_source_reference": "FBI Crime Data Explorer /agency/byStateAbbr/{state}",
+  "original_csv_sha256": "66e2bbe4e78b92c929a615b8be0f713d3ea8d780c25be541c3ddadeb0ebc792a",
+  "source_run_url": "https://github.com/ayeemecee0/Katoptron/actions/runs/40626549258",
+  "state_counts": [
+    {
+      "count": 448,
+      "state": "AL"
+    },
+    {
+      "count": 37,
+      "state": "AK"
+    },
+    {
+      "count": 127,
+      "state": "AZ"
+    },
+    {
+      "count": 380,
+      "state": "AR"
+    },
+    {
+      "count": 867,
+      "state": "CA"
+    },
+    {
+      "count": 253,
+      "state": "CO"
+    },
+    {
+      "count": 108,
+      "state": "CT"
+    },
+    {
+      "count": 63,
+      "state": "DE"
+    },
+    {
+      "count": 834,
+      "state": "FL"
+    },
+    {
+      "count": 664,
+      "state": "GA"
+    },
+    {
+      "count": 13,
+      "state": "HI"
+    },
+    {
+      "count": 113,
+      "state": "ID"
+    },
+    {
+      "count": 925,
+      "state": "IL"
+    },
+    {
+      "count": 360,
+      "state": "IN"
+    },
+    {
+      "count": 284,
+      "state": "IA"
+    },
+    {
+      "count": 413,
+      "state": "KS"
+    },
+    {
+      "count": 465,
+      "state": "KY"
+    },
+    {
+      "count": 233,
+      "state": "LA"
+    },
+    {
+      "count": 129,
+      "state": "ME"
+    },
+    {
+      "count": 154,
+      "state": "MD"
+    },
+    {
+      "count": 423,
+      "state": "MA"
+    },
+    {
+      "count": 654,
+      "state": "MI"
+    },
+    {
+      "count": 400,
+      "state": "MN"
+    },
+    {
+      "count": 314,
+      "state": "MS"
+    },
+    {
+      "count": 604,
+      "state": "MO"
+    },
+    {
+      "count": 114,
+      "state": "MT"
+    },
+    {
+      "count": 286,
+      "state": "NE"
+    },
+    {
+      "count": 72,
+      "state": "NV"
+    },
+    {
+      "count": 211,
+      "state": "NH"
+    },
+    {
+      "count": 579,
+      "state": "NJ"
+    },
+    {
+      "count": 135,
+      "state": "NM"
+    },
+    {
+      "count": 537,
+      "state": "NY"
+    },
+    {
+      "count": 537,
+      "state": "NC"
+    },
+    {
+      "count": 107,
+      "state": "ND"
+    },
+    {
+      "count": 863,
+      "state": "OH"
+    },
+    {
+      "count": 481,
+      "state": "OK"
+    },
+    {
+      "count": 240,
+      "state": "OR"
+    },
+    {
+      "count": 1439,
+      "state": "PA"
+    },
+    {
+      "count": 49,
+      "state": "RI"
+    },
+    {
+      "count": 552,
+      "state": "SC"
+    },
+    {
+      "count": 141,
+      "state": "SD"
+    },
+    {
+      "count": 412,
+      "state": "TN"
+    },
+    {
+      "count": 1757,
+      "state": "TX"
+    },
+    {
+      "count": 144,
+      "state": "UT"
+    },
+    {
+      "count": 87,
+      "state": "VT"
+    },
+    {
+      "count": 412,
+      "state": "VA"
+    },
+    {
+      "count": 270,
+      "state": "WA"
+    },
+    {
+      "count": 410,
+      "state": "WV"
+    },
+    {
+      "count": 464,
+      "state": "WI"
+    },
+    {
+      "count": 69,
+      "state": "WY"
+    },
+    {
+      "count": 3,
+      "state": "DC"
+    }
+  ],
+  "research_agency_entries": 19636,
+  "statewide_agency_roster_currently_operating_verified": 0,
+  "original_FBI_agency_source_directly_reviewed": false,
+  "verified_flock_deployments_added": 0,
+  "current_ALPR_policies_added": 0,
+  "live_camera_coordinates_added": 0,
+  "limitations": "Secondary ORI agency directory is a historical/current-source hybrid FBI record index. Inclusion does not establish present agency operations, local jurisdiction, Flock deployment, ALPR policy, legal adoption or camera location. Counts cannot be joined to Census geographies by similar names."
+}

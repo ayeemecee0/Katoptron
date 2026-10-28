@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('node:assert/strict');
+const API=require('../ori-agency-coverage.js');
+const base=require('../data/secondary-fbi-ori-state-agency-research-2026.json');
+const x=API.validate(base);
+assert.equal(x.count,19636);
+assert.equal(x.states,51);
+assert.equal(x.byState.get('AL'),448);
+assert.equal(x.byState.get('AK'),37);
+assert.equal(x.byState.get('CA'),867);
+assert.equal(x.flock_deployments_verified,0);
+assert.equal(x.census_match_verified,false);
+assert.match(x.warning,/NOT Flock installations/);
+function bad(f){const x=structuredClone(base);f(x);assert.throws(()=>API.validate(x),/ORI|directory|count/i);}
+bad(x=>x.original_csv_sha256='0'.repeat(64));
+bad(x=>x.state_counts[0].count=450);
+bad(x=>x.state_counts[1].state='AL');
+bad(x=>x.state_counts.pop());
+bad(x=>x.research_agency_entries=19637);
+bad(x=>x.statewide_agency_roster_currently_operating_verified=1);
+bad(x=>x.verified_flock_deployments_added=1);
+bad(x=>x.live_camera_coordinates_added=1);
+bad(x=>x.original_FBI_agency_source_directly_reviewed=true);
+console.log('SECONDARY ORI 51 STATE PASS: 19,636 research agency identities, 0 verified Flock deployments or current agency operation assertions');

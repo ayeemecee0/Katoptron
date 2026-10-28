@@ -15,6 +15,9 @@ on:
       - 'policy-history.js'
       - 'nationwide-policy-coverage.js'
       - 'census-geography-coverage.js'
+      - 'ori-agency-coverage.js'
+      - 'data/secondary-fbi-ori-state-agency-research-2026.json'
+      - 'scripts/test_ori_agency_coverage.cjs'
       - 'data/census-2026-state-geography-coverage.json'
       - 'scripts/test_census_geography_coverage.cjs'
       - 'nationwide-policy.html'
@@ -139,6 +142,8 @@ jobs:
           node scripts/test_nationwide_policy_coverage.cjs
           node --check census-geography-coverage.js
           node scripts/test_census_geography_coverage.cjs
+          node --check ori-agency-coverage.js
+          node scripts/test_ori_agency_coverage.cjs
           node --check policy-adoption-evidence.js
           node scripts/test_policy_adoption_evidence.cjs
           node --check apache-junction-original-chapter.js
