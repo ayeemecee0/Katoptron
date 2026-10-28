@@ -111,6 +111,8 @@ class GovernmentWatchSafety(unittest.TestCase):
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":
                 return subscribers
+            if path.startswith("flock_watch_subscriptions?"):
+                return [{"watch_policies":False,"policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):
                 return records
             if path.startswith("flock_watch_deliveries?") and method=="GET":
@@ -137,6 +139,73 @@ class GovernmentWatchSafety(unittest.TestCase):
             self.assertEqual(M.deliver("https://example.supabase.co","protected",settings,send=fake_send),0)
         finally:
             M.api=original
+
+    def test_allowlisted_page_reviewed_originals_have_separate_event_kinds(self):
+        ledgers=S.load_policy_ledgers()
+        events=S.build_policy_events(ledgers)
+        self.assertEqual(len(events),5)
+        self.assertEqual(len({x["event_key"] for x in events}),5)
+        self.assertEqual(sum(x["kind"]=="policy_draft_reviewed" for x in events),2)
+        self.assertEqual(sum(x["kind"]=="policy_original_reviewed" for x in events),3)
+        self.assertTrue(all(x["evidence_tier"]=="original_government" for x in events))
+        self.assertTrue(all(x["source_url"].startswith("https://") for x in events))
+        self.assertTrue(all("not" in x["summary"].lower() for x in events))
+        green=[x for x in events if x["locality_key"]=="green bay|WI"]
+        self.assertEqual(len(green),2)
+        self.assertTrue(any(x["kind"]=="policy_draft_reviewed" and x["source_date"] is None for x in green))
+        tampered=__import__("copy").deepcopy(ledgers)
+        next(x for x in tampered["national"]["documents"]
+             if x["id"]=="green-bay-wi-policy-draft-sept-2026")["kind"]="published_department_policy"
+        with self.assertRaisesRegex(ValueError,"identity/status"):S.build_policy_events(tampered)
+        tampered=__import__("copy").deepcopy(ledgers)
+        next(x for x in tampered["riSd"]["documents"]
+             if x["id"]=="providence-ri-general-order-35005-sept2026")["original_sha256"]="f"*64
+        with self.assertRaisesRegex(ValueError,"drift"):S.build_policy_events(tampered)
+
+    def test_policy_category_does_not_email_unless_separately_opted_in(self):
+        self.assertFalse(M.eligible("policy_original_reviewed",{
+          "watch_government":True,"watch_policies":False}))
+        self.assertTrue(M.eligible("policy_draft_reviewed",{"watch_policies":True}))
+        original=M.api
+        events=[
+          {"event_key":"old-approved","kind":"policy_original_reviewed",
+           "title":"Historical policy indexed","summary":"Old reviewed source",
+           "source_url":"https://gov.example.org/policy","source_date":"2026-09-01",
+           "evidence_tier":"original_government","observed_at":"2026-10-25T19:00:00Z"},
+          {"event_key":"after-category-consent","kind":"policy_draft_reviewed",
+           "title":"Unadopted source reviewed","summary":"DRAFT only, no enactment",
+           "source_url":"https://gov.example.org/draft","source_date":None,
+           "evidence_tier":"original_government","observed_at":"2026-10-25T21:00:00Z"}]
+        subscribers=[{
+          "user_id":"uuid-test","email":"confirmed@example.org","locality_key":"green bay|WI",
+          "watch_government":True,"watch_vendor":False,"watch_sharing":False,
+          "watch_renewals":False,"subscribed_at":"2026-10-25T18:00:00Z"}]
+        receipts=set();sent=[]
+        policy_enabled=False
+        def fake_api(url,secret,path,method="GET",payload=None):
+            if path=="rpc/flock_watch_delivery_candidates":return subscribers
+            if path.startswith("flock_watch_subscriptions?"):
+                return [{"watch_policies":policy_enabled,
+                         "policy_opted_in_at":"2026-10-25T20:00:00Z" if policy_enabled else None}]
+            if path.startswith("flock_agency_watch_events?"):return events
+            if path.startswith("flock_watch_deliveries?") and method=="GET":
+                return [{"event_key":x} for x in receipts]
+            if path.startswith("flock_watch_deliveries?") and method=="POST":
+                receipts.update(x["event_key"] for x in payload);return None
+            raise AssertionError(path)
+        M.api=fake_api
+        try:
+            settings=("smtp.example.org",587,"user","secret","alerts@example.org")
+            def send(msg,settings):
+                sent.append(msg.get_content())
+            self.assertEqual(M.deliver("https://supabase.example.org","key",settings,send=send),0)
+            policy_enabled=True
+            self.assertEqual(M.deliver("https://supabase.example.org","key",settings,send=send),1)
+            self.assertNotIn("Historical policy indexed",sent[0])
+            self.assertIn("Unadopted source reviewed",sent[0])
+            self.assertEqual(receipts,{"after-category-consent"})
+            self.assertEqual(M.deliver("https://supabase.example.org","key",settings,send=send),0)
+        finally:M.api=original
 
     def test_missing_source_url_cannot_be_alert(self):
         self.assertEqual(S.build_events([{"event_key":"a",
