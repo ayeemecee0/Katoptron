@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Government original-source review lifecycle</title><link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0b1620;color:#edf3f7;font-family:system-ui,sans-serif}
+body{margin:0}*{box-sizing:border-box}a{color:#91ddef}header{padding:1rem 4vw;background:#102737;border-bottom:1px solid #355769;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between}
+nav{display:flex;gap:1rem;flex-wrap:wrap}main{max-width:1100px;margin:auto;padding:2rem 1rem 4rem}h1{font-size:clamp(1.7rem,4vw,2.4rem)}h2{font-size:1.3rem}
+p{color:#c7d8e2;line-height:1.55}.note{border-left:4px solid #82c4d7;padding:1rem;background:#143344;margin:1rem 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:.9rem}
+.card{border:1px solid #416276;background:#142b3b;border-radius:9px;padding:1rem}
+.card h3{margin:0 0 .4rem}.status{color:#f4cda3;font-size:.85rem;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin:1rem 0}
+.stat{border:1px solid #426273;padding:1rem;border-radius:8px}.stat strong{display:block;font-size:1.7rem}
+:focus-visible{outline:3px solid #a0e1f2;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to original source reviews</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a><nav><a href="./agency-evidence-conversion.html">Agency evidence</a><a href="./nationwide-policy.html">Nationwide policy</a><a href="./index.html">Map</a></nav></header>
+<main id="main">
+<h1>Held government original-source resolution</h1>
+<p>The first national source crawl held 12 official government URL records because of redirects, source errors or unsupported original formats. Those are historical observations, not a claim that the underlying agencies lack Flock. This subsequent source review distinguishes one obsolete agency-status lead from still-inaccessible publisher originals.</p>
+<div class="note"><strong>Recheck outcome:</strong> one Colorado program-status source was superseded by a separate, previously source-hash-verified city termination announcement. The old URL itself was not independently retrieved. Two other original government pages remained blocked from direct automated acquisition, despite public index visibility. Neither is promoted to a verified public claim by this check. No installed-camera locations or completed camera removal findings were added.</div>
+<p id="status" role="status" aria-live="polite">Checking exact official-source review receipts…</p>
+<div class="stats" id="stats"></div>
+<h2>Three reviewed source lifecycle cases</h2>
+<div class="cards" id="cases"></div>
+<h2>Still unresolved</h2>
+<p>Eleven of the twelve historically held government source records still need original acquisition or an independently verified superseding authority. The remaining nine older holds, besides Florida and North Carolina, remain available in the <a href="./agency-evidence-conversion.html">original agency source backlog</a>. This page does not claim those additional nine were revalidated.</p>
+</main>
+<script src="./government-source-hold-reviews.js"></script>
+<script>
+'use strict';
+function node(tag,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);if(cls)e.className=cls;return e;}
+function link(into,url,label){const a=node('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';into.append(a);}
+async function load(){
+ const r=await fetch('./data/held-government-source-resolution-2026-10-27.json',{cache:'no-store'});
+ if(!r.ok)throw Error('Government source review receipts unavailable');
+ const x=window.KatoptronGovSourceHolds.verify(await r.json());
+ for(const [title,value] of [['Historical original holds',x.old_source_holds],['Superseded source lead closed',x.closed_as_superseded],['Original holds still unresolved',x.remains_unresolved],['New original byte hashes verified',x.new_original_html_sources_hash_verified]]){
+  const c=node('div',undefined,'stat');c.append(node('strong',value),node('span',title));document.getElementById('stats').append(c);
+ }
+ for(const s of x.records){
+  const card=node('article',undefined,'card');
+  card.append(node('h3',s.agency+' · '+s.state),
+   node('p',s.current_disposition.replaceAll('_',' ').toUpperCase(),'status'),
+   node('p',s.review_action));
+  link(card,s.original_url,'Historical government source URL');
+  if(s.newer_verified_url)link(card,s.newer_verified_url,'Subsequent source-verified municipality announcement');
+  document.getElementById('cases').append(card);
+ }
+ document.getElementById('status').textContent='12 historical official-source holds; 1 superseded source lead closed, 11 unresolved. No new original HTML SHA verification, current camera locations or active sharing edges.';
+}
+load().catch(e=>{document.getElementById('status').textContent='Fail-closed original-source review: '+e.message;document.getElementById('stats').replaceChildren();document.getElementById('cases').replaceChildren();});
+</script></body></html>
