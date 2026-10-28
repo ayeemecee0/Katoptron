@@ -22,7 +22,7 @@ const b=Core.catalog(raw,{
  riSd:require('../ri-sd-original-policies.js'),kittitas:require('../wa-kittitas-draft-review.js'),
  national:require('../national-primary-documents.js')
 });
-const w=WA.catalog(raw,{flock:require('../wa-reviewed-flock-sources.js'),
+const w=WA.catalog({flock:raw.flock,other:raw.other,registry:raw.waRegistry,receipts:raw.receipts},{flock:require('../wa-reviewed-flock-sources.js'),
  other:require('../wa-original-policies.js')});
 const index=WA.combine(b,w);
 const investigation=Intel.build(index);
