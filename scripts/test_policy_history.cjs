@@ -53,7 +53,7 @@ assert.notEqual(pair.old.sha,pair.proposed.sha);
 assert.ok(!green.documents.some(x=>/vendor_order_form|monthly_aggregate/.test(x.kind)));
 assert.ok(!history.agencies.some(x=>x.key.includes('sultan')));
 const kittitas=history.agencies.find(x=>x.key==='kittitas-police-wa');
-assert.ok(kittitas?.documents.every(d=>d.status==='published_text_effective_status_unverified'));
+assert.ok(kittitas?.documents.every(d=>d.status==='draft_unadopted'));
 assert.equal(P.sourcePage('https://example.org/a.pdf?VersionId=abc',5),
  'https://example.org/a.pdf?VersionId=abc#page=5');
 assert.equal(P.sourcePage('http://example.org/a.pdf',1),null);
