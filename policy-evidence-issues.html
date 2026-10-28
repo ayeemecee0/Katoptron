@@ -57,7 +57,7 @@ small{color:#bbd2dc}
    const strong=document.createElement('strong');strong.textContent=String(n);
    const caption=document.createElement('small');caption.textContent=label;node.append(strong,caption);return node;}
   stats.append(stat(report.open_source_questions,'Unresolved evidence questions'),
-   stat(report.interpretive_cautions,'Interpretation cautions'),stat(0,'Verified live violations'));
+   stat(report.interpretive_cautions,'Interpretation cautions'),stat(0,'Live-system claims made'));
   for(const state of [...new Set(report.items.map(x=>x.state))].sort()){
    const opt=document.createElement('option');opt.value=state;opt.textContent=state;sf.append(opt);
   }
