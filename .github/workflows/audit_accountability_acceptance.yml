@@ -78,6 +78,13 @@ on:
       - 'scripts/test_mn_audit_candidates.cjs'
       - 'scripts/smoke_mn_alpr_audit_registry.cjs'
       - 'agency-intelligence.js'
+      - 'watch-email.js'
+      - 'scripts/sync_agency_watch_events.py'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'scripts/test_government_watch_alerts.py'
+      - 'scripts/test_agency_intelligence.cjs'
+      - 'scripts/smoke_watch_email_preferences.cjs'
+      - 'supabase/migrations/144_explicit_policy_original_watch_opt_in.sql'
       - 'agency-timeline.js'
       - 'scripts/test_agency_audit_engine.cjs'
       - 'scripts/smoke_agency_audit.cjs'
@@ -105,6 +112,8 @@ jobs:
           node --check agency-audit-engine.js
           node --check audit-history.js
           node scripts/test_agency_audit_engine.cjs
+          node scripts/test_agency_intelligence.cjs
+          python3 scripts/test_government_watch_alerts.py
           node --check verified-agency-dossiers.js
           node scripts/test_verified_agency_dossiers.cjs
           node --check original-evidence-comparison.js
@@ -161,6 +170,7 @@ jobs:
           node scripts/smoke_verified_agency_dossiers.cjs
           node scripts/smoke_original_evidence_comparison.cjs
           node scripts/smoke_policy_history.cjs
+          node scripts/smoke_watch_email_preferences.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs
           node scripts/smoke_wa_alpr_registrations.cjs

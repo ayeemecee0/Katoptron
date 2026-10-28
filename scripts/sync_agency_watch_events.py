@@ -13,6 +13,7 @@ import sys
 import urllib.parse
 import urllib.request
 from datetime import date, timedelta
+from pathlib import Path
 
 
 def source_key(label):
@@ -115,6 +116,87 @@ def build_events(government,portals,contracts,today=None):
     return clean
 
 
+
+# Exact-source allowlist: only documents already original-page-reviewed in
+# immutable public government evidence. New arbitrary web links do not create
+# subscriber mail. Updates to this map require source-specific code review.
+POLICY_SOURCE_IDS={
+ "green-bay-wi-policy-may-2026":(
+   "national","green bay|WI","published_department_policy",
+   "3811cad37739128bb7e711157853f588f24b9307289a5e033c7c40968d4200c0",
+   "2026-05-04","policy_original_reviewed"),
+ "green-bay-wi-policy-draft-sept-2026":(
+   "national","green bay|WI","draft_policy_unadopted",
+   "d11b9959c69f84d7e7ab06641ee8008afdab439129c2e30e62ebc4c300762b55",
+   None,"policy_draft_reviewed"),
+ "providence-ri-general-order-35005-sept2026":(
+   "riSd","providence|RI","department_published_effective_general_order",
+   "74b04c3c5b3f7c6fba013ea205e23279213efd20247be9039acb8cd8e7716f46",
+   "2026-09-04","policy_original_reviewed"),
+ "brookings-sd-policy-13d1-revised-sept2026":(
+   "riSd","brookings|SD","department_published_chief_signed_policy_revision",
+   "2c47881c232c5cb46dd110bf687770371982821798bcb47feebbcb5fc3553df2",
+   "2026-09-22","policy_original_reviewed"),
+ "kittitas-wa-original-four-page-scanned-draft-2026":(
+   "kittitas","kittitas|WA","draft_not_proven_adopted",
+   "8b6bb93e69589f7459cb4bc5adbd7991043e59687fa1b91180c149e5fc19368f",
+   "2026-06-30","policy_draft_reviewed")
+}
+POLICY_LEDGER_PATHS={
+ "national":"verified-national-government-documents.json",
+ "riSd":"verified-ri-sd-original-alpr-policies.json",
+ "kittitas":"verified-wa-kittitas-scanned-draft-review.json"
+}
+ROOT=Path(__file__).resolve().parents[1]
+def load_policy_ledgers():
+ return {label:json.loads((ROOT/"data"/path).read_text(encoding="utf-8"))
+         for label,path in POLICY_LEDGER_PATHS.items()}
+
+def build_policy_events(ledgers):
+ if not isinstance(ledgers,dict) or set(ledgers)!=set(POLICY_LEDGER_PATHS):
+  raise ValueError("Original government policy ledgers unavailable")
+ tables={}
+ for group,ledger in ledgers.items():
+  docs=([ledger] if group=="kittitas" else ledger.get("documents"))
+  if not isinstance(docs,list) or any(not isinstance(x,dict) for x in docs):
+   raise ValueError("Unusable reviewed source manifest")
+  tables[group]={x["id"]:x for x in docs}
+ out=[]
+ for ident,(group,place,kind,expected_sha,expected_date,event_kind) in POLICY_SOURCE_IDS.items():
+  doc=tables[group].get(ident)
+  if not doc or doc.get("kind",doc.get("document_lifecycle"))!=kind:
+   raise ValueError("Reviewed original policy identity/status changed: "+ident)
+  sha=doc.get("content_sha256",doc.get("original_sha256"))
+  url=doc.get("source_url")
+  pages=doc.get("pages_reviewed",doc.get("pages_visually_reviewed",doc.get("reviewed_pages")))
+  findings=doc.get("findings")
+  date_value=doc.get("source_date",doc.get("source_effective_date",
+      doc.get("manual_imprint_date")))
+  if (sha!=expected_sha or date_value!=expected_date or
+      not isinstance(url,str) or not url.startswith("https://") or
+      not isinstance(pages,list) or not pages or not isinstance(findings,list) or not findings or
+      any(not isinstance(f,dict) or f.get("page") not in pages
+          or len(f.get("statement",""))<50 for f in findings)):
+   raise ValueError("Source page/hash/date drift requires independent original review: "+ident)
+  if event_kind=="policy_draft_reviewed":
+   if group=="national" and "draft" not in str(doc.get("status","")).lower():
+    raise ValueError("Undated policy draft improperly promoted")
+   title="Reviewed UNADOPTED draft ALPR policy source"
+   summary=("Katoptron indexed an original-page-reviewed policy document expressly marked "
+            "DRAFT; it is not a verified adopted change or an implemented retention setting. "
+            "Its source date may be unverified or a manual imprint only.")
+  else:
+   title="Reviewed published ALPR policy original"
+   summary=("Katoptron indexed individually page-reviewed department policy language "
+            "and its original government source. This is not proof of current legal "
+            "effect, actual retention, live camera status, or compliance.")
+  event_key="policy_"+fingerprint(ident+"|"+sha+"|"+event_kind)
+  evt=as_event(event_key,event_kind,title,summary,url,date_value,
+               "original_government",place)
+  if not evt:raise ValueError("Reviewed original policy source URL unsafe")
+  out.append(evt)
+ return out
+
 def api(url,key,path,method="GET",body=None):
     req=urllib.request.Request(url.rstrip("/")+"/rest/v1/"+path,
      method=method,
@@ -155,9 +237,10 @@ def main():
     contracts=pages(url,token,"flock_public_signed_contract_end_dates",
        "contract_key,jurisdiction_label,ends_on,source_url")
     events=build_events(govt,vendor,contracts)
+    events.extend(build_policy_events(load_policy_ledgers()))
     synchronize(url,token,events)
     print("Public evidence source Watch event identities reconciled:",len(events),
-          "; no personal data or plate logs; no fabricated government decisions")
+          "; includes individually reviewed policy sources, never enacted-policy-change claims or plate logs")
 
 
 if __name__=="__main__":

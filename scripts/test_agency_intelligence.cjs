@@ -81,6 +81,24 @@ assert.equal(regionOnly.find(g=>g.key==='roseville|CA')?.originalIncoming.length
  'Exact original named recipient must get an evidence-limited dossier even without its own portal');
 assert.equal(regionOnly.find(g=>g.key==='roseville|CA')?.originalOutgoing.length,0,
  'No reverse relationship can be inferred by creating incoming recipient profile');
+const reviewedPolicy=[{
+ event_key:'policy_verified_government_sha_receipt_long_123',
+ locality_key:'green bay|WI',kind:'policy_draft_reviewed',
+ title:'Original draft policy, not adopted',evidence_tier:'original_government',
+ source_url:'https://greenbaywi.gov/DocumentCenter/View/19136',
+ source_date:null,observed_at:'2026-10-28T01:00:00Z'
+}];
+const policyGroups=A.build([],[],[],[],[],[],reviewedPolicy);
+const only=policyGroups.find(g=>g.key==='green bay|WI');
+assert.ok(only,'Original source-only policy publication can create a watched locality');
+assert.equal(only.cameras.length,0);
+assert.equal(only.watchEvents.length,1);
+const policyItem=A.updateItems(only)[0];
+assert.equal(policyItem.type,'Unadopted policy draft');
+assert.match(policyItem.confidence,/no evidence of an enacted change/);
+assert.equal(A.build([],[],[],[],[],[],[{...reviewedPolicy[0],
+ evidence_tier:'secondary_aggregated_portal_snapshot'}]).length,0,
+ 'Unattributed secondary source cannot become a verified original policy locality');
 assert.equal(A.safeUrl('http://example.org'),null);
 assert.equal(A.safeUrl('https://example.org/path'),'https://example.org/path');
 assert.equal(A.safeUrl('https://user:pass@example.org'),null);
