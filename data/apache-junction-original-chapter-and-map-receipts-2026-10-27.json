@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "verified_on": "2026-10-27",
-  "scope": "city_original_pdf_page_anchors_separate_from_clerk_scanned_unreviewed_and_publisher_claims",
+  "scope": "city_original_pdf_page_anchors_and_clerk_visually_reviewed_signed_ordinance_separate_from_source_claims",
   "source_page_reviewed": [
     {
       "id": "apache-junction-2026-alpr-chapter-17-legistar-attachment",
@@ -70,16 +70,6 @@
       "limitations": "This is the unsigned council agenda attachment and must not be mistaken for the separately published City Clerk adopted ordinance. Actual adoption is independently supported by the Clerk's official HTML register. Final signed text/effective date remain held pending visual source comparison."
     }
   ],
-  "source_review_held": [
-    {
-      "id": "apache-junction-clerk-ordinance-1579-scanned",
-      "source_url": "https://www.apachejunctionaz.gov/DocumentCenter/View/33565/ORD1579",
-      "original_sha256": "9d4f0ff58b906c65112abd3cf725b00d95e3418a843cd5df0c9e30e9ea9a7e93",
-      "page_count": 3,
-      "status": "original_city_clerk_pdf_retrieved_scanned_visual_page_review_pending",
-      "limitations": "A different city-clerk-published three-page PDF has been retrieved and content-hashed, but its text is not machine-extractable. No unseen signatures, edits, chapter inclusion, legal-effective date or enacted text are asserted. Visual comparison required."
-    }
-  ],
   "agency_self_disclosure": {
     "agency": "Apache Junction Police Department",
     "jurisdiction": "Apache Junction, AZ",
@@ -94,5 +84,39 @@
     "map_evidence": "municipal_diagnostic_map_legend_separates_directional_cameras_offline_devices_relocation_and_proposed_locations",
     "exact_gis_coordinate_count": 0,
     "limitations": "Government graphic is a dated schematic with directional markers, proposed points, relocation and offline symbols. These cannot be promoted to individually verified coordinate pins without geospatial source validation; published 30 devices is a departmental aggregate claim, not 30 verified operating devices."
+  },
+  "signed_original_visually_reviewed": {
+    "id": "apache-junction-clerk-ordinance-1579-scanned",
+    "source_url": "https://www.apachejunctionaz.gov/DocumentCenter/View/33565/ORD1579",
+    "original_sha256": "9d4f0ff58b906c65112abd3cf725b00d95e3418a843cd5df0c9e30e9ea9a7e93",
+    "page_count": 3,
+    "pages_reviewed": [
+      1,
+      2,
+      3
+    ],
+    "status": "signed_city_clerk_adopted_ordinance_visual_page_review_sha256_pinned",
+    "verification_method": "visual_page_review_sha256_pinned_scanned_pdf",
+    "adoption_date": "2026-10-06",
+    "legal_effective_date": null,
+    "ordinance_number": 1579,
+    "findings": [
+      {
+        "page": 1,
+        "category": "ordinance_scope",
+        "statement": "The separate three-page City Clerk original identifies Ordinance 1579 amending city code Volume I through a new Chapter 17 on automated license plate readers and penalties; the original scanned paper, not the unsigned Council agenda draft, was visually reviewed."
+      },
+      {
+        "page": 2,
+        "category": "chapter_17_adopted_by_reference",
+        "statement": "Section I of the signed City Clerk original adopts by reference the separately filed document titled '2026 Amendments to the Apache Junction City Code, Volume I, Chapter 17: Automated License Plate Readers,' made a public record by Resolution 26-43. The full final filed chapter must be separately authenticated before asserting that its text equals the earlier Council attachment."
+      },
+      {
+        "page": 3,
+        "category": "signed_adoption_and_misdemeanor_penalties",
+        "statement": "The City Clerk's visually inspected page 3 records passage and signing October 6, 2026, the mayoral signature and City Clerk's attestation, and Section IV's Class 1 misdemeanor penalty for violations of the adopted provisions. No legal-effective date is separately established."
+      }
+    ],
+    "limitations": "All three scanned City Clerk pages were visually examined against the pinned SHA-256 original. This verifies a signed, clerk-attested adopted ordinance, NOT a separately established legal-effective date, authenticated matching final Chapter 17 text, confirmed ALPR configuration or actual enforcement/compliance."
   }
 }
