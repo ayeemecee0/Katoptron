@@ -56,6 +56,16 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <h3 id="originalTitle"></h3>
 <p id="originalSummary"></p>
 <div class="grid" id="originalMetrics"></div>
+<section id="investigationSummary" aria-label="Unified source-backed agency intelligence" hidden>
+ <h3>Agency X-Ray 2.0 · One-page investigation</h3>
+ <p>The source-linked overview groups written decisions, contracts, policies, documented access, oversight and specific evidence gaps. An exact agency is never assumed to operate every camera in the surrounding locality.</p>
+ <p id="intelligenceStatus" class="status"></p>
+ <div class="actions"><a id="investigationExport" href="./agency-investigation.html">Print source-cited investigation with timeline and gaps</a>
+ <a id="investigationCompare" href="./agency-compare.html">Compare with another verified agency</a></div>
+ <div id="intelligenceTimeline"></div>
+ <h3>Evidence topics</h3><div id="intelligenceTopics"></div>
+ <h3>Outstanding original-source gaps</h3><div id="intelligenceGaps"></div>
+</section>
 <div id="originalDocuments"></div>
 <p class="muted" id="originalLimits"></p>
 </section>
@@ -91,6 +101,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <script src="./wa-reviewed-flock-sources.js"></script>
 <script src="./wa-original-policies.js"></script>
 <script src="./wa-original-agency-dossiers.js"></script>
+<script src="./agency-intelligence-v2.js"></script>
 <script>
 'use strict';
 const API=window.KatoptronIntelligence,$=id=>document.getElementById(id);
@@ -144,13 +155,49 @@ function renderOriginalList(){
   originalIndex.original_documents+' original-page-reviewed documents; '+rows.length+
   ' match(es). This is not a statewide or nationwide agency census.';
 }
+function renderInvestigation(r){
+ const output=$('investigationSummary');output.hidden=false;
+ for(const id of ['intelligenceTimeline','intelligenceTopics','intelligenceGaps'])$(id).replaceChildren();
+ let p;
+ try{p=window.KatoptronInvestigations.build(originalIndex).profile(r.key);}
+ catch(err){output.hidden=true;$('originalStatus').textContent='Source-specific investigation held: '+err.message;return;}
+ $('intelligenceStatus').textContent=p.documents+' original-reviewed documents · '+p.findings.length+
+ ' page-cited findings · '+p.transitions.length+' qualified change/proposal comparison(s). No live camera or compliance claim.';
+ $('investigationExport').href='./agency-investigation.html?original='+encodeURIComponent(r.key);
+ $('investigationCompare').href='./agency-compare.html?a='+encodeURIComponent(r.key);
+ for(const t of p.transitions){
+  const box=node('article',null,'card');
+  box.append(node('strong',t.title),node('small',(t.event_date||'Unadopted draft without an established action date')+' · '+t.status),
+   node('p',t.before),node('p',t.after));
+  for(const proof of t.sources)source(box,proof.url,proof.label);
+  $('intelligenceTimeline').append(box);
+ }
+ if(!p.transitions.length)$('intelligenceTimeline').append(node('p',
+   'No separately qualified before/after source transition for this agency. The dated original documents appear below; different document dates alone do not prove a policy change.'));
+ for(const [topic,title] of Object.entries(window.KatoptronInvestigations.TYPES)){
+  if(topic==='uncertainty')continue;
+  const facts=p.topics[topic]||[];
+  const section=node('article',null,'card');
+  section.append(node('strong',title+' · '+facts.length+' reviewed finding(s)'));
+  for(const fact of facts.slice(0,3)){
+   const item=node('p',fact.statement);
+   source(item,fact.url,'Original page');section.append(item);
+  }
+  if(!facts.length)section.append(node('p',
+   'No finding in this individually reviewed source catalog. This does not establish the absence of agency policy or activity.'));
+  if(facts.length>3)section.append(node('p',(facts.length-3)+' more source-page findings in original documents below.'));
+  $('intelligenceTopics').append(section);
+ }
+ for(const gap of p.gaps)$('intelligenceGaps').append(node('p',gap));
+}
 function selectOriginal(r){
  originalSelection=r;$('originalDossier').hidden=false;
  $('originalTitle').textContent=r.label+' · '+r.state;
  $('originalSummary').textContent='Exactly identified source publisher: '+r.agency+
   '. Evidence type: '+r.tier.replaceAll('_',' ')+
   '. Original government document dates are historical, effective policy dates or reporting-period endpoints, not live device timestamps.';
- const metrics=$('originalMetrics');metrics.replaceChildren();
+ renderInvestigation(r);
+  const metrics=$('originalMetrics');metrics.replaceChildren();
  for(const [label,value] of [
   ['Source-page-verified original documents',r.documents.length],
   ['Original page-specific findings',r.documents.reduce((n,x)=>n+x.findings.length,0)],
