@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+const WA=require('../wa-alpr-registrations.js');
+const T=require('../wa-policy-source-triage.js');
+const R=require('../wa-flock-source-review.js');
+const reg=WA.catalog(require('../data/wa-original-agency-alpr-registrations.json'));
+const source=require('../data/wa-ago-original-policy-source-inspection.json');
+const parsed=T.catalog(source,reg);
+const rows=R.build(parsed);
+assert.equal(rows.length,10);
+assert.equal(rows.every(r=>r.pages.length>0&&r.hash.length===64),true);
+assert.equal(rows.every(r=>r.status.includes('unverified')),true);
+const tampered=structuredClone(parsed);
+tampered.receipts.find(r=>r.potential_flock_term_pages.length).manufacturer_identity_assertion=true;
+assert.throws(()=>R.build(tampered));
+assert.throws(()=>R.build({...parsed,total:72}));
+console.log('WA Flock original-source review queue: ten hash-pinned page leads, no asserted deployment');
