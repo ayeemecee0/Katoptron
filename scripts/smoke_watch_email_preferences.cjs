@@ -54,6 +54,8 @@ const {chromium}=require('playwright');
     document.querySelector('#open')?.href.includes('folsom'),null,{timeout:45000});
   assert.equal(await page.locator('#watchSubscribe').isDisabled(),true,
    'Anonymous browser visitors must not email-subscribe');
+  assert.equal(await page.locator('#watchPolicies').isChecked(),false,
+   'Policy source email must be separate and OFF by default');
   await page.locator('#watchEmail').fill('test@example.org');
   await page.locator('#watchPassword').fill('correct-horse-battery-staple');
   await page.locator('#watchSignup').click();
@@ -70,12 +72,14 @@ const {chromium}=require('playwright');
    'Unconfirmed mailbox must not get enrolled');
   await page.evaluate(()=>window.__testWatch.confirm());
   await page.locator('#watchSharing').uncheck();
+  await page.locator('#watchPolicies').check();
   await page.locator('#watchSubscribe').click();
   await page.waitForFunction(()=>document.querySelector('#watchEmailStatus')?.textContent?.includes('opt-in saved'));
   const saved=await page.evaluate(()=>window.__testWatch.data.get('folsom|CA'));
   assert.ok(saved?.email_enabled);
   assert.equal(saved.watch_sharing,false,'Sharing preference was lost');
   assert.equal(saved.watch_government,true);
+  assert.equal(saved.watch_policies,true,'Explicit policy consent was not persisted');
   await page.locator('#watchUnsubscribe').click();
   await page.waitForFunction(()=>document.querySelector('#watchEmailStatus')?.textContent?.includes('disabled and deleted'));
   assert.equal(await page.evaluate(()=>window.__testWatch.data.size),0);
