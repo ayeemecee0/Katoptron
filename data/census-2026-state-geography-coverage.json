@@ -1,0 +1,550 @@
+{
+  "schema_version": 1,
+  "source_year": 2026,
+  "reviewed_on": "2026-10-27",
+  "scope": "2026_US_Census_50_states_DC_counties_places_county_subdivisions_not_law_enforcement_agencies",
+  "source_workflow_run": "https://github.com/ayeemecee0/Katoptron/actions/runs/40625767004",
+  "sources": [
+    {
+      "geo_type": "county",
+      "url": "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2026_Gazetteer/2026_Gaz_counties_national.zip",
+      "sha256": "6a99ca00efbc0be5112e225d4102704c51d5ce3b16e3afd6e4159460595fd12a",
+      "records": 3144
+    },
+    {
+      "geo_type": "place",
+      "url": "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2026_Gazetteer/2026_Gaz_place_national.zip",
+      "sha256": "af678e2d990827c89ee39b98c82de6e90b693c7361ff0e559ae3076670dd2863",
+      "records": 32071
+    },
+    {
+      "geo_type": "county_subdivision",
+      "url": "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2026_Gazetteer/2026_Gaz_cousubs_national.zip",
+      "sha256": "9d528b39b70a27075c863b1572f27eadaf24484d5435fac17fc3b4cdd36434c2",
+      "records": 35442
+    }
+  ],
+  "counts": {
+    "county": 3144,
+    "place": 32071,
+    "county_subdivision": 35442
+  },
+  "geographic_record_total": 70657,
+  "states": [
+    {
+      "counties": 67,
+      "county_subdivisions_not_all_governments": 390,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 595,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "AL"
+    },
+    {
+      "counties": 30,
+      "county_subdivisions_not_all_governments": 37,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 355,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "AK"
+    },
+    {
+      "counties": 15,
+      "county_subdivisions_not_all_governments": 80,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 467,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "AZ"
+    },
+    {
+      "counties": 75,
+      "county_subdivisions_not_all_governments": 1051,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 626,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "AR"
+    },
+    {
+      "counties": 58,
+      "county_subdivisions_not_all_governments": 404,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1622,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "CA"
+    },
+    {
+      "counties": 64,
+      "county_subdivisions_not_all_governments": 209,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 485,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "CO"
+    },
+    {
+      "counties": 9,
+      "county_subdivisions_not_all_governments": 174,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 215,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "CT"
+    },
+    {
+      "counties": 3,
+      "county_subdivisions_not_all_governments": 27,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 79,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "DE"
+    },
+    {
+      "counties": 67,
+      "county_subdivisions_not_all_governments": 316,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 958,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "FL"
+    },
+    {
+      "counties": 159,
+      "county_subdivisions_not_all_governments": 586,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 676,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "GA"
+    },
+    {
+      "counties": 5,
+      "county_subdivisions_not_all_governments": 44,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 163,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "HI"
+    },
+    {
+      "counties": 44,
+      "county_subdivisions_not_all_governments": 170,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 235,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "ID"
+    },
+    {
+      "counties": 102,
+      "county_subdivisions_not_all_governments": 1695,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1461,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "IL"
+    },
+    {
+      "counties": 92,
+      "county_subdivisions_not_all_governments": 1012,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 974,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "IN"
+    },
+    {
+      "counties": 99,
+      "county_subdivisions_not_all_governments": 1663,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1026,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "IA"
+    },
+    {
+      "counties": 105,
+      "county_subdivisions_not_all_governments": 1521,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 740,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "KS"
+    },
+    {
+      "counties": 120,
+      "county_subdivisions_not_all_governments": 493,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 553,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "KY"
+    },
+    {
+      "counties": 64,
+      "county_subdivisions_not_all_governments": 576,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 484,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "LA"
+    },
+    {
+      "counties": 16,
+      "county_subdivisions_not_all_governments": 529,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 155,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "ME"
+    },
+    {
+      "counties": 24,
+      "county_subdivisions_not_all_governments": 290,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 536,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MD"
+    },
+    {
+      "counties": 14,
+      "county_subdivisions_not_all_governments": 357,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 248,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MA"
+    },
+    {
+      "counties": 83,
+      "county_subdivisions_not_all_governments": 1581,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 745,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MI"
+    },
+    {
+      "counties": 87,
+      "county_subdivisions_not_all_governments": 2762,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 916,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MN"
+    },
+    {
+      "counties": 82,
+      "county_subdivisions_not_all_governments": 410,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 427,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MS"
+    },
+    {
+      "counties": 115,
+      "county_subdivisions_not_all_governments": 1394,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1081,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MO"
+    },
+    {
+      "counties": 56,
+      "county_subdivisions_not_all_governments": 194,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 497,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "MT"
+    },
+    {
+      "counties": 93,
+      "county_subdivisions_not_all_governments": 1182,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 593,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NE"
+    },
+    {
+      "counties": 17,
+      "county_subdivisions_not_all_governments": 71,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 138,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NV"
+    },
+    {
+      "counties": 10,
+      "county_subdivisions_not_all_governments": 260,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 100,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NH"
+    },
+    {
+      "counties": 21,
+      "county_subdivisions_not_all_governments": 569,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 701,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NJ"
+    },
+    {
+      "counties": 33,
+      "county_subdivisions_not_all_governments": 130,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 528,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NM"
+    },
+    {
+      "counties": 62,
+      "county_subdivisions_not_all_governments": 1023,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1293,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NY"
+    },
+    {
+      "counties": 100,
+      "county_subdivisions_not_all_governments": 1041,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 785,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "NC"
+    },
+    {
+      "counties": 53,
+      "county_subdivisions_not_all_governments": 1761,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 406,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "ND"
+    },
+    {
+      "counties": 88,
+      "county_subdivisions_not_all_governments": 1607,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1265,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "OH"
+    },
+    {
+      "counties": 77,
+      "county_subdivisions_not_all_governments": 305,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 846,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "OK"
+    },
+    {
+      "counties": 36,
+      "county_subdivisions_not_all_governments": 212,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 426,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "OR"
+    },
+    {
+      "counties": 67,
+      "county_subdivisions_not_all_governments": 2568,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 2002,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "PA"
+    },
+    {
+      "counties": 5,
+      "county_subdivisions_not_all_governments": 40,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 36,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "RI"
+    },
+    {
+      "counties": 46,
+      "county_subdivisions_not_all_governments": 299,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 475,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "SC"
+    },
+    {
+      "counties": 66,
+      "county_subdivisions_not_all_governments": 1327,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 485,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "SD"
+    },
+    {
+      "counties": 95,
+      "county_subdivisions_not_all_governments": 855,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 504,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "TN"
+    },
+    {
+      "counties": 254,
+      "county_subdivisions_not_all_governments": 862,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1864,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "TX"
+    },
+    {
+      "counties": 29,
+      "county_subdivisions_not_all_governments": 93,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 334,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "UT"
+    },
+    {
+      "counties": 14,
+      "county_subdivisions_not_all_governments": 256,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 180,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "VT"
+    },
+    {
+      "counties": 133,
+      "county_subdivisions_not_all_governments": 552,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 700,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "VA"
+    },
+    {
+      "counties": 39,
+      "county_subdivisions_not_all_governments": 242,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 639,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "WA"
+    },
+    {
+      "counties": 55,
+      "county_subdivisions_not_all_governments": 225,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 439,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "WV"
+    },
+    {
+      "counties": 72,
+      "county_subdivisions_not_all_governments": 1925,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 807,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "WI"
+    },
+    {
+      "counties": 23,
+      "county_subdivisions_not_all_governments": 71,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 205,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "WY"
+    },
+    {
+      "counties": 1,
+      "county_subdivisions_not_all_governments": 1,
+      "flock_programs_verified": 0,
+      "municipal_government_census_complete": false,
+      "places_including_unincorporated_cdps": 1,
+      "police_agencies_verified": 0,
+      "policy_adoptions_verified": 0,
+      "state": "DC"
+    }
+  ],
+  "complete_law_enforcement_agency_census": false,
+  "flock_agencies_verified": 0,
+  "policy_adoption_claims_added": 0,
+  "camera_locations_from_geography_added": 0,
+  "note": "The Gazetteer enumerates geographies not government agencies; incorporated municipalities, Census designated places, counties and subdivisions have varying legal character, may overlap, and do not establish local police authority, a Flock Safety deployment, adoption, or policies."
+}
