@@ -66,5 +66,5 @@ class TestOfficialCensusUniverse(unittest.TestCase):
    C.build(fetcher=lambda kind:demo[kind],strict_counts=True)
   demo["county"]=archive(rows(["AL"]),"county")
   with self.assertRaisesRegex(ValueError,"state"):
-   C.build(fetcher=lambda kind:demo[kind],strict_counts=False) if False else C.build(fetcher=lambda kind:demo[kind],strict_counts=True)
+   C.build(fetcher=lambda kind:demo[kind],strict_counts=False)
 if __name__=="__main__":unittest.main()
