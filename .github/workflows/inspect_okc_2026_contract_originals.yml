@@ -1,0 +1,24 @@
+name: Inspect Oklahoma City 2026 original Flock renewal source PDFs
+on:
+  push:
+    paths:
+      - 'scripts/inspect_okc_2026_contract_originals.py'
+      - 'scripts/test_inspect_okc_2026_contract_originals.py'
+      - '.github/workflows/inspect_okc_2026_contract_originals.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - run: python -m unittest discover -s scripts -p 'test_inspect_okc_2026_contract_originals.py' -v
+      - run: python scripts/inspect_okc_2026_contract_originals.py

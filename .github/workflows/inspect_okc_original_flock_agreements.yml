@@ -1,0 +1,24 @@
+name: Inspect Oklahoma City original Flock contract amendment and council record PDFs
+on:
+  push:
+    paths:
+      - 'scripts/inspect_okc_original_flock_agreements.py'
+      - '.github/workflows/inspect_okc_original_flock_agreements.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '54 19 * * 4'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - run: python scripts/inspect_okc_original_flock_agreements.py
