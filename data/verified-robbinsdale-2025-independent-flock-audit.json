@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "source_url": "https://www.lrl.mn.gov/docs/2025/mandated/251675.pdf",
+  "sha256": "5374d507c1853a37df377cfab5068a24f36df04935b0fd5d66c79a9e3740c010",
+  "page_count": 5,
+  "source_date": "2025-10-23",
+  "auditor": "Minnesota Security Consortium (MNSec)",
+  "agency": "Robbinsdale Police Department",
+  "state": "MN",
+  "source_tier": "independent_external_auditor_original_state_legislative_archived_PDF_page_text_verified",
+  "audit_period_start": "2023-11-01",
+  "audit_period_end": "2025-09-30",
+  "pages_reviewed": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "findings": [
+    {
+      "page": 2,
+      "category": "historical_independent_external_equipment_audit",
+      "statement": "The external auditor reported Robbinsdale had two stationary Flock ALPR units and no mobile units during its 2023–September 2025 audit scope. This corroborates a historical equipment class, not the equipment status in October 2026."
+    },
+    {
+      "page": 2,
+      "category": "historical_audited_retention_controls",
+      "statement": "The auditor examined Flock administrator settings, found retention settings limited to no more than 60 days and reported a default 30-day setting corroborated by the Flock Vehicle Reads report. This is the audit's 2025 finding for the inspected record type, not a current database measurement."
+    },
+    {
+      "page": 3,
+      "category": "documented_interagency_request_process_not_live_grants",
+      "statement": "The 2025 auditor describes interagency ALPR data requests documented with agency, requester and case number. It does not name currently active platform sharing grants or prove that any recipient made a search."
+    },
+    {
+      "page": 4,
+      "category": "audit_of_alpr_logs_and_policy_procedures",
+      "statement": "The 2025 external auditor states it sampled Flock user access logs and two monthly reports, evaluated police policy and ALPR notifications, and assessed compliance within its historical audit scope. This is the independent auditor's conclusion, not a present-day legal finding."
+    },
+    {
+      "page": 5,
+      "category": "external_auditor_conclusion_scope",
+      "statement": "The externally authored report concludes Robbinsdale's Flock ALPR security and administration followed Minnesota Statute 13.824 within the described audit scope; it cannot establish later platform settings or audits."
+    }
+  ],
+  "city_2026_source_url": "https://www.robbinsdalemn.gov/389/4240/Automated-License-Plate-Readers-ALPR",
+  "comparison_note": "A 2026 city FAQ separately describes license-plate photos retained two years and Flock/Hotlist hits 30 days, whereas the 2025 independent auditor described 30-day default vehicle-read retention; differing record types and observation dates prohibit automatically declaring a legal retention-policy contradiction.",
+  "legal_policy_current_effectiveness_verified": false,
+  "current_operating_equipment_verified": false,
+  "live_directed_sharing_edges_verified": 0,
+  "exact_camera_coordinates_added": 0
+}
