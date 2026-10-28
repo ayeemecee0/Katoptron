@@ -1,0 +1,54 @@
+name: Monitor original government ALPR policy publications
+on:
+  schedule:
+    - cron: '17 15 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/monitor_policy_adoption_originals.py'
+      - 'scripts/test_monitor_policy_adoption_originals.py'
+      - 'data/verified-policy-adoption-status-2026-10-27.json'
+      - '.github/workflows/monitor_policy_adoption_originals.yml'
+permissions:
+  contents: read
+concurrency:
+  group: m10-policy-adoption-publisher-snapshot
+  cancel-in-progress: true
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test immutable government-original classification and review-only source drift
+        run: python3 -m unittest discover -s scripts -p 'test_monitor_policy_adoption_originals.py' -v
+      - name: Recheck the original government publisher listings (read-only)
+        run: python3 scripts/monitor_policy_adoption_originals.py --output policy-adoption-monitor.json
+      - name: Publish recheck summary without automatic status promotion
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d=json.load(open("policy-adoption-monitor.json",encoding="utf8"))
+          print("### Original government policy publication and adoption-status receipts")
+          print("These are source freshness checks, not new policy/adoption decisions.\n")
+          print("| Jurisdiction | Result |")
+          print("|---|---|")
+          for s in d["sources"]:
+              print("| "+s["jurisdiction"]+" | "+s["source_status"]+" |")
+          print("\nReview needed: "+str(d["needs_review"]))
+          print("\nAutomatic policy/adoption publications: **0**.")
+          PY
+      - name: Preserve bounded evidence freshness receipt for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: government-policy-status-source-monitor
+          path: policy-adoption-monitor.json
+          if-no-files-found: error
+          retention-days: 14

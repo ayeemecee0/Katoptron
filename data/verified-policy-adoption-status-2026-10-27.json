@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "selectively_authenticated_government_html_publication_and_ordinance_adoption_status_not_pdf_page_review",
+  "records": [
+    {
+      "id": "apache-junction-az-ordinance-1579-adopted-2026-10-06",
+      "jurisdiction": "Apache Junction, AZ",
+      "state": "AZ",
+      "decision_type": "municipal_ordinance_adoption",
+      "status": "adopted_government_original_notice",
+      "event_date": "2026-10-06",
+      "event_date_basis": "city_clerk_adopted_by_council_entry",
+      "effective_date": null,
+      "title": "Ordinance 1579: Council adoption of ALPR safeguards",
+      "summary": "The Apache Junction City Clerk's adopted-ordinances register lists Ordinance 1579 as adopted by Council on October 6, 2026. The city's police technology page separately states the Council unanimously approved it and describes permitted access, data retention, training, audit and misuse provisions. The original enacted ordinance PDF was not individually page-reviewed for this record.",
+      "source_url": "https://www.apachejunctionaz.gov/999/Public-Notices",
+      "corroboration_url": "https://www.apachejunctionaz.gov/1241/Public-Safety-Technology",
+      "proof": "City Clerk 'Ordinances and Resolutions have been adopted' table: Ordinance No. 1579, Automated License Plate Readers, 10/06/2026; City Police Technology page: approved October 6, 2026.",
+      "limits": "Adoption is verified as a recorded municipal action. The official register leaves the effective-date cell blank. Do not infer effective-date, details of any uninspected ordinance section, vendor technical enforcement, camera deployment or actual compliance. The source is government HTML, not an individually SHA-pinned/page-reviewed enacted ordinance PDF."
+    },
+    {
+      "id": "green-bay-wi-policy-424-draft-still-listed-2026-10-27",
+      "jurisdiction": "Green Bay, WI",
+      "state": "WI",
+      "decision_type": "department_policy_publication",
+      "status": "draft_published_no_adoption_verified",
+      "event_date": null,
+      "event_date_basis": "source_listing_reviewed_on_only",
+      "effective_date": null,
+      "title": "Policy 424: revised September document remains labeled DRAFT",
+      "summary": "On the October 27, 2026 source review, the Green Bay Police Department's official policy manual index still separately listed the May 2026 Policy 424 and the September 2026 DRAFTED REVISION. This is proof of government-hosted draft publication, not of enacted seven-day retention or lack of a separate unpublished adoption action.",
+      "source_url": "https://www.greenbaywi.gov/1223/Policy-Manual",
+      "corroboration_url": "https://www.greenbaywi.gov/DocumentCenter/View/19136/DRAFTED-REVISION---Policy-424-Automated-License-Plate-Readers-ALPR-September-2026",
+      "proof": "The official policy index lists 'Policy 424 Automated License Plate Readers (ALPR) May 2026' and 'DRAFTED REVISION - Policy 424 Automated License Plate Readers (ALPR) September 2026' as distinct entries.",
+      "limits": "The department's website listing is not a comprehensive record of internal administrative approvals; an updated PDF might be posted later. No adopted policy, software retention setting, or implementation date can be established from this draft listing. The draft's seven days must not be presented as currently effective."
+    }
+  ]
+}

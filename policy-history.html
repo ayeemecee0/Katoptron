@@ -34,6 +34,12 @@ strong.state{color:#e9cf9e}.status{min-height:1.3rem}
 <h1>Original agency policy history</h1>
 <p>Inspect original-page-reviewed ALPR policies, their published dates or date limitations, and documented proposals. A draft is not an adopted change. The library is selective, not a complete catalog of policies or a live record of equipment behavior.</p>
 <div class="notice"><strong>Evidence standard:</strong> A newly indexed document is not automatically a new law, an effective policy, a verified software configuration, or proof of actual compliance. Only a source-reviewed before/after pair can support a narrowly described comparison. This page does not infer camera locations, live data sharing or current vendor access.</div>
+<section aria-labelledby="policyStatusHeading">
+<h2 id="policyStatusHeading">Government-recorded decisions vs published drafts</h2>
+<p>Independent government source checks show what was <strong>formally adopted</strong> and what remains labeled a <strong>draft</strong>. The city clerk's adoption notice is a different evidence tier from a page-reviewed original policy PDF. An ordinance's adoption date is not automatically its legal-effective date.</p>
+<p id="adoptionLoadStatus" role="status" aria-live="polite">Loading exact government adoption evidence…</p>
+<div id="adoptionRecords" aria-label="Source-qualified government adoption and draft evidence"></div>
+</section>
 <p id="loadStatus" role="status" aria-live="polite">Loading page-verified government source originals…</p>
 <div class="controls">
  <div><label for="agency">Agency with reviewed original policy documents</label>
@@ -65,6 +71,7 @@ strong.state{color:#e9cf9e}.status{min-height:1.3rem}
 <script src="./wa-reviewed-flock-sources.js"></script>
 <script src="./wa-original-policies.js"></script>
 <script src="./wa-original-agency-dossiers.js"></script>
+<script src="./policy-adoption-evidence.js"></script>
 <script src="./policy-history.js"></script>
 <script>
 'use strict';
@@ -166,6 +173,40 @@ $('untrack').addEventListener('click',()=>{
 $('review').addEventListener('click',()=>{
  if(selected&&writeState(Policy.markReviewed(localState,selected)))render();
 });
+async function loadAdoption(){
+ try{
+  const raw=await original('./data/verified-policy-adoption-status-2026-10-27.json');
+  const evidence=window.KatoptronPolicyAdoptionEvidence.validate(raw);
+  $('adoptionRecords').replaceChildren();
+  for(const row of evidence.records){
+   const article=element('article',undefined,'card');
+   article.append(element('h3',row.jurisdiction+' · '+row.title));
+   article.append(element('strong',row.status==='adopted_government_original_notice'?
+      'COUNCIL ADOPTION VERIFIED':'SEPARATE DRAFT PUBLISHED · ADOPTION NOT VERIFIED','state'));
+   article.append(element('p',
+     (row.event_date?'Council adoption recorded: '+row.event_date:
+      'Government listing reviewed: '+row.reviewed_on)+
+     ' · Legal-effective date not established','field'));
+   article.append(element('p',row.summary));
+   article.append(element('p',row.proof,'field'));
+   article.append(element('p','Evidence level: government HTML register/listing; no original ordinance PDF page verification.','field'));
+   const links=element('div',undefined,'controls');
+   link(links,row.source_url,'Read official government record');
+   link(links,row.corroboration_url,'Read corroborating source');
+   article.append(links,element('p',row.limits,'field'));
+   $('adoptionRecords').append(article);
+  }
+  $('adoptionLoadStatus').textContent=evidence.government_actions_adopted+
+   ' official council-adoption notice(s) and '+
+   evidence.published_unadopted_drafts+
+   ' separate draft-publication record(s). Checked '+raw.reviewed_on+
+   '. No current operational or legal-effective-date claims.';
+ }catch(err){
+  $('adoptionRecords').replaceChildren();
+  $('adoptionLoadStatus').textContent='Government adoption status held: '+
+    err.message+'. No uncertain record published.';
+ }
+}
 async function original(url){
  const response=await fetch(url,{cache:'no-store',referrerPolicy:'no-referrer'});
  if(!response.ok)throw Error('Original government source manifest unavailable');
@@ -212,6 +253,7 @@ async function load(){
  if(catalog.agencies.some(x=>x.key===preferred))$('agency').value=preferred;
  render();
 }
+loadAdoption();
 load().catch(error=>{
  $('loadStatus').textContent='Policy-history source validation failed: '+error.message+
   '. No unverified source versions will be displayed.';
