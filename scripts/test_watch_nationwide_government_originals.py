@@ -34,6 +34,35 @@ class StateSources(unittest.TestCase):
   self.assertIsNotNone(receipt["original_sha256"])
   for f in ("published_facts_verified","device_status_verified","camera_coordinates_published"):
    self.assertIs(receipt[f],False)
+ def test_same_host_policy_links_are_unverified_only_and_bounded(self):
+  html=b'''<!DOCTYPE html><html><body>
+<a href="/police/Flock-Safety-ALPR-Policy.pdf">Flock Safety ALPR policy</a>
+<a href="/DocumentCenter/View/1111">ALPR department audit report</a>
+<a href="https://othercity.gov/ordinance">Flock ALPR ordinance</a>
+<a href="https://www.example.gov.evil.example/policy">ALPR policy</a>
+<a href="/private/vehicle-search-logs">Flock ALPR policy search logs</a>
+<a href="/police/Flock-Safety-ALPR-Policy.pdf">Flock Safety ALPR policy</a>
+<a href="https://localhost/private">ALPR policy</a>
+<a href="/home">General news</a>
+</body></html>'''
+  src={"id":"mock","state":"AZ","publisher":"mock city government",
+    "source_url":"https://www.example.gov/public/flock","kind":"html"}
+  result=M.inspect(src,fetcher=lambda _:html+b" "*150)
+  self.assertEqual(result["status"],"original_government_html_accessible")
+  links=result["unreviewed_same_host_policy_candidates"]
+  self.assertEqual(len(links),2)
+  self.assertEqual(links[0]["candidate_url"],"https://www.example.gov/police/Flock-Safety-ALPR-Policy.pdf")
+  self.assertTrue(all(not x["policy_adopted_verified"] and
+   not x["flock_vendor_verified"] and not x["camera_locations_verified"]
+   for x in links))
+  missing=M.inspect(src,fetcher=lambda _:(_ for _ in ()).throw(ValueError("original_redirect")))
+  self.assertEqual(missing["unreviewed_same_host_policy_candidates"],[])
+ def test_51_state_outage_cannot_upgrade_link_leads(self):
+  result=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=6)
+  self.assertEqual(result["unreviewed_same_host_policy_link_candidates"],0)
+  self.assertEqual(result["verified_policy_adoptions_published"],0)
+  self.assertTrue(all(x["new_same_host_policy_link_candidates_unverified"]==0
+    for x in result["jurisdictions"]))
  def test_pdf_original_and_wrong_format(self):
   p=next(x for x in R["official_seed_sources"] if x["kind"]=="pdf")
   bad=M.inspect(p,fetcher=lambda _:b"<html><body>Flock</body></html>"*9)
