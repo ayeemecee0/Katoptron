@@ -26,6 +26,17 @@ const {chromium}=require('playwright');
   const official=await page.locator('#adoptionRecords a').evaluateAll(as=>as.map(a=>a.href));
   assert.ok(official.includes('https://www.apachejunctionaz.gov/999/Public-Notices'));
   assert.ok(official.includes('https://www.greenbaywi.gov/1223/Policy-Manual'));
+  await page.waitForFunction(()=>document.querySelector('#apacheLoadStatus')?.textContent?.includes('2 original page-cited Council attachments'),
+   null,{timeout:18000});
+  assert.equal(await page.locator('#apacheOriginals article').count(),4);
+  const apache=await page.locator('#apacheOriginals').textContent();
+  assert.match(apache,/30 consecutive calendar days/);
+  assert.match(apache,/UNSIGNED|Unsigned proposed Ordinance 1579/i);
+  assert.match(apache,/VISUAL COMPARISON PENDING/);
+  assert.match(apache,/No exact coordinates qualified/);
+  assert.match(apache,/department-reported/);
+  assert.ok((await page.locator('#apacheOriginals a[href$="#page=3"]').count())>=4);
+  assert.equal(await page.locator('#apacheOriginals a[href="https://apachejunctionaz.gov/DocumentCenter/View/33429"]').count(),1);
   assert.ok((await page.locator('#agency option').count())>=12);
   assert.equal(await page.locator('#agency').inputValue(),'green-bay-police-wi');
   assert.equal(await page.locator('#history article').count(),2);
