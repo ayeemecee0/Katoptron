@@ -1,0 +1,82 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Katoptron | Documented surveillance changes</title>
+<meta name="description" content="Actual signed agreement transitions, published-versus-proposed retention and government actions with original-page citations.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0b1922;color:#e6f0f6;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.55}a{color:#99dbea}
+header{background:#112b3b;border-bottom:1px solid #456879;display:flex;flex-wrap:wrap;gap:1rem;padding:1rem max(1rem,4vw)}
+main{max-width:1060px;margin:auto;padding:2rem 1rem 5rem}
+h1{font-size:clamp(1.6rem,4vw,2.5rem)}h2{font-size:1.2rem}
+p{color:#c8dae3}.note{padding:1rem;border-left:3px solid #6bb4c6;background:#172e3b}
+.controls{display:flex;gap:1rem;flex-wrap:wrap;margin:1.2rem 0}
+select{font:inherit;background:#172f3e;border:1px solid #7192a5;border-radius:6px;color:inherit;padding:.6rem;max-width:100%}
+label{display:block;font-weight:600}
+#events{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:1rem}
+article{padding:1rem;border:1px solid #4b6b7b;background:#122837;border-radius:10px;overflow-wrap:anywhere}
+article h2{margin:.2rem 0}.source{display:flex;gap:.8rem;flex-wrap:wrap;font-size:.86rem}
+small{color:#afc7d3}
+a:focus-visible,select:focus-visible{outline:3px solid #a8eafb;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to changes</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./agency-compare.html">Compare agencies</a><a href="./policy-evidence-issues.html">Unresolved source issues</a><a href="./government-watch.html">Government Watch</a></header>
+<main id="main"><h1>Surveillance change tracker</h1>
+<p>Compare original, dated government documents at the claim level. A signed pause is a documented contractual change but is not proof of deactivation. A retention proposal is not an adopted change. A signed chapter attachment is official source material but its effective date and differences from the agenda draft require their own verification.</p>
+<div class="note">Source-status changes do not imply any actual license-plate reads, live camera configurations, installed coordinates or current cross-agency grants. Missing original data means unknown, not unchanged.</div>
+<p id="status" role="status" aria-live="polite">Checking original page receipts…</p>
+<div class="controls">
+ <div><label for="kind">Evidence transition</label><select id="kind"><option value="all">All sourced transitions</option><option value="substantive">Signed / authenticated changes</option><option value="proposal">Proposals only</option></select></div>
+ <div><label for="state">State</label><select id="state"><option value="all">All states</option></select></div>
+</div>
+<div id="events"></div>
+<p>For alerts about newly published source evidence, <a href="./government-watch.html">use explicit confirmed-account opt-in</a>. Existing records are not replayed just because a user subscribes.</p>
+</main>
+<script src="./okc-original-contracts.js"></script><script src="./nebraska-original-aggregate.js"></script><script src="./ri-sd-original-policies.js"></script><script src="./wa-kittitas-draft-review.js"></script><script src="./national-primary-documents.js"></script><script src="./verified-agency-dossiers.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-original-agency-dossiers.js"></script>
+<script src="./agency-original-loader.js"></script><script src="./agency-intelligence-v2.js"></script><script src="./agency-change-tracker.js"></script>
+<script>
+'use strict';const $=id=>document.getElementById(id);let all=[];
+function el(tag,text){const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);return n;}
+function render(){
+ $('events').replaceChildren();
+ const subset=all.filter(x=>($('state').value==='all'||x.state===$('state').value)&&
+  ($('kind').value==='all'||(x.substantive&&$('kind').value==='substantive')||
+   (!x.substantive&&$('kind').value==='proposal')));
+ for(const x of subset){
+  const card=el('article');card.append(el('small',x.state||x.agency_key+' · '+(x.event_date||'Proposed, no established adoption date')),
+   el('h2',x.title),el('p','Source status: '+x.status),
+   el('p','Earlier evidence: '+x.before),el('p','Later evidence: '+x.after));
+  const refs=el('div');refs.className='source';
+  for(const source of x.sources){
+   const a=el('a',source.label);a.href=source.url;a.target='_blank';a.rel='noopener noreferrer';
+   refs.append(a);
+  }
+  card.append(refs);
+  if(x.agency_key&&!x.agency_key.startsWith('apache-')){
+   const a=el('a','Open source-cited agency investigation');
+   a.href='./agency-investigation.html?original='+encodeURIComponent(x.agency_key);
+   card.append(el('p')).append(a);
+  }
+  $('events').append(card);
+ }
+ $('status').textContent=subset.length+' original-source-supported change/proposal record(s) displayed. Signed changes and proposals remain distinct; no operational status inferred.';
+ if(!subset.length)$('events').append(el('p','No source-qualified changes for these filters.'));
+}
+(async()=>{
+ try{
+  const loader=window.KatoptronOriginalLoader;
+  const {index}=await loader.load(fetch,loader.browserModules(window));
+  const [adoption,apacheResolution]=await Promise.all(
+   ['./data/verified-policy-adoption-status-2026-10-27.json',
+    './data/apache-junction-adopted-resolution-chapter-2026-10-28.json'].map(async u=>{
+     const r=await fetch(u,{cache:'no-store',referrerPolicy:'no-referrer'});
+     if(!r.ok)throw Error('Original government status unavailable');
+     return r.json();
+    }));
+  all=window.KatoptronChangeTracker.events(window.KatoptronInvestigations.build(index),
+   {adoption,apacheResolution});
+  const states=[...new Set(all.map(x=>x.state||x.agency_key.split('-').pop().toUpperCase()))].sort();
+  for(const s of states){const o=el('option',s);o.value=s;$('state').append(o);}
+  render();
+ }catch(e){$('status').textContent='Change tracker withheld: '+e.message;$('events').replaceChildren();}
+})();
+$('kind').addEventListener('change',render);$('state').addEventListener('change',render);
+</script></body></html>
