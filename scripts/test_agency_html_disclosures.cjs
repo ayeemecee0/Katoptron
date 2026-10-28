@@ -13,7 +13,7 @@ assert.equal(r.records.filter(x=>x.publisher_statement_category!=='agency_report
 assert.ok(r.records.every(x=>x.claim_anchors.length>=2));
 function reject(fn){const c=structuredClone(d);fn(c);assert.throws(()=>api.validate(c));}
 reject(c=>c.source_disclosures[0].original_html_sha256='0'.repeat(64));
-reject(c=>c.source_disclosures[0].publisher_statement_category='agency_reports_flock_use');
+reject(c=>c.source_disclosures[0].publisher_statement_category='announced_not_renewing');
 reject(c=>c.source_disclosures[0].current_camera_operation_independently_verified=true);
 reject(c=>c.source_disclosures[0].device_coordinates_individually_verified=1);
 reject(c=>c.source_disclosures[0].policy_enactment_verified=true);
