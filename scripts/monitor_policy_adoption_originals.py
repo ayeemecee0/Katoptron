@@ -66,7 +66,7 @@ def review_apache_junction(source):
  # Bound the adopted-date evidence to Ordinance 1579's own row. A date
  # belonging to a following ordinance must not qualify its adoption.
  following=text[first+len("Ordinance No. 1579"):] if first>=0 else ""
- section=re.split(r"(?:Ordinance|Resolution)\\s+No\\.?\\s*\\d+",following,
+ section=re.split(r"(?:Ordinance|Resolution)\s+No\.?\s*\d+",following,
                   maxsplit=1,flags=re.I)[0][:450]
  approved=bool(adopted and first>adopted.start() and
   re.search(r"Automated\s+License\s+Plate\s+Readers",section,re.I)
