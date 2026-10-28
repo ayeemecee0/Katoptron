@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-27",
+  "scope": "historical_first_party_ny_flock_usage_termination_and_wv_legislative_hearing_not_live_surveillance",
+  "source_count": 4,
+  "original_pdf_visual_review_ci": "https://github.com/ayeemecee0/Katoptron/actions/runs/40608760979",
+  "records": [
+    {
+      "id": "ny-tompkins-sheriff-july2025-flock-disclosure",
+      "state": "NY",
+      "agency": "Tompkins County Sheriff's Office",
+      "publisher_role": "county_sheriff_department",
+      "kind": "agency_authored_historical_flock_use_and_sharing_policy_self_report",
+      "status": "2025_government_original_page_7_flock_use_no_live_status",
+      "source_date": "2025-07-31",
+      "source_date_note": "July 2025 monthly report, no exact report publication day established; 2025-07-31 denotes reporting-period end, not verified issue date.",
+      "source_url": "https://www.tompkinscountyny.gov/files/assets/county/v/1/sheriffs-office/documents/public-safety-meeting-reports/public-safety-meeting-report-july-2025.pdf",
+      "source_type": "pdf",
+      "content_sha256": "a44d7a11f61c62508936cbc43ff1233cad2849929e81afd482046e6f47f94988",
+      "original_bytes": 1162207,
+      "page_count": 8,
+      "visually_reviewed_page": 7,
+      "source_page_png_sha256": "c6ff5f1eb968dcad8ae4e602ec41b7229ad8074fba38030fd2ab2ff7718c8a2a",
+      "findings": [
+        {
+          "page": 7,
+          "kind": "historical_agency_reported_flock_alpr_use",
+          "statement": "In its July 2025 monthly report, Tompkins County Sheriff's Office publicly states that it used Flock Safety technology and license plate reader alerting to support investigations. The original is a department-authored historical activity report, not independently verified camera hardware or proof the system remained active after the county's 2026 termination decision."
+        },
+        {
+          "page": 7,
+          "kind": "historical_sharing_scope_self_report",
+          "statement": "The same original July 2025 sheriff report states that the office did not participate in Flock's National Search function and restricted system access to New York State county or municipal law-enforcement agencies that had an active Flock contract. This describes an agency-reported sharing restriction in July 2025, not proof of each partner's current technical permissions."
+        },
+        {
+          "page": 7,
+          "kind": "distinct_safety_products_not_alpr_camera_counts",
+          "statement": "The sheriff's July 2025 report also refers to Flock gunshot detection devices in Ithaca. These are different equipment from Flock ALPR readers and cannot be counted as license plate reader cameras or used to establish geographic camera points."
+        }
+      ]
+    },
+    {
+      "id": "ny-tompkins-county-april2026-termination-resolution",
+      "state": "NY",
+      "agency": "Tompkins County Legislature",
+      "publisher_role": "county_legislative_body",
+      "kind": "county_legislature_approved_flock_contract_termination_resolution",
+      "status": "approved_12_to_1_termination_decision_actual_deactivation_not_independently_proven",
+      "source_date": "2026-04-14",
+      "source_url": "https://www.tompkinscountyny.gov/News-articles/Highlights-of-the-4726-regular-and-41426-special-Tompkins-County-Legislature-meetings",
+      "source_type": "html",
+      "content_sha256": "ed1d19e3f788785ea3da740340e4309693aa0aced711b6f4ae79ef86d9c590e1",
+      "original_bytes": 139111,
+      "findings": [
+        {
+          "kind": "approved_twelve_to_one_contract_termination_resolution",
+          "statement": "Tompkins County's official April 7 and April 14 Legislature recap states that at the April 14, 2026 special meeting legislators approved a resolution by 12–1 to terminate the county's contract with Flock Group, Inc. before its May 28 auto-renewal. This is a county legislature-reported adopted decision, not merely a staff proposal."
+        },
+        {
+          "kind": "separate_preparatory_motion_and_final_resolution",
+          "statement": "The official county summary distinguishes the earlier April 7 motion directing the County Administrator and County Attorney to draft a termination resolution from the separate April 14 approval. It does not independently establish the vendor's actual notice receipt, precise equipment removal dates, final deletion of stored data or current ALPR platform settings."
+        },
+        {
+          "kind": "county_described_new_grant_without_flock",
+          "statement": "The April county publication states that the Sheriff's Office and Ithaca Police Chief submitted the next Gun Involved Violence Elimination grant application without Flock. This is an application/planning statement, not independent evidence the funding was awarded or that the county's deployed systems were fully removed."
+        }
+      ]
+    },
+    {
+      "id": "wv-joint-government-organization-flock-agenda-2026",
+      "state": "WV",
+      "agency": "West Virginia Legislature, Joint Standing Committee on Government Organization",
+      "publisher_role": "state_legislative_committee",
+      "kind": "official_proposed_public_hearing_agenda",
+      "status": "meeting_agenda_not_enacted_flock_regulation",
+      "source_date": "2026-08-09",
+      "source_url": "https://www.wvlegislature.gov/Committees/Interims/agenda.cfm?abb=GOVORG&recordid=5649",
+      "source_type": "html",
+      "content_sha256": "c013382be5fec14882c056e0316246fae5615519fd3983666b273cf9b2d5fec3",
+      "original_bytes": 30028,
+      "findings": [
+        {
+          "kind": "original_legislative_hearing_agenda_not_vote",
+          "statement": "The original West Virginia Legislature agenda scheduled an August 9, 2026 committee presentation on what local governments contract for when purchasing Flock cameras and automated license plate reader services, listing Institute for Justice counsel and a Flock Safety government affairs representative. An agenda is not a legislative vote or proof an ALPR regulation was adopted."
+        }
+      ]
+    },
+    {
+      "id": "wv-joint-government-organization-august2026-hearing-report",
+      "state": "WV",
+      "agency": "West Virginia Legislature, Joint Standing Committee on Government Organization",
+      "publisher_role": "state_legislature_official_publication",
+      "kind": "state_legislature_retrospective_public_hearing_report",
+      "status": "committee_discussion_reported_no_enacted_bill_or_deployment_inferred",
+      "source_date": "2026-08-10",
+      "source_url": "https://blog.wvlegislature.gov/headline/2026/08/10/interim-report-joint-committee-on-government-organization/",
+      "source_type": "html",
+      "content_sha256": "b95e81371586fe272ed4d77b1e99712a2210ed47533ce17f23d75959ddf88e57",
+      "original_bytes": 244510,
+      "findings": [
+        {
+          "kind": "original_legislature_confirmation_hearing_occurred",
+          "statement": "The West Virginia Legislature's August 10, 2026 publication reports that its Government Organization Committee heard a Flock camera and automated license plate reader briefing the previous day, featuring Flock Safety and Institute for Justice speakers. This confirms a government oversight discussion, not an enacted state requirement."
+        },
+        {
+          "kind": "opposing_views_and_potential_2027_legislation",
+          "statement": "The Legislature's account distinguishes the vendor's stated crime-investigation benefits from constitutional and privacy concerns raised by Institute for Justice counsel. Legislators discussed whether a warrant requirement would be appropriate and anticipated possible 2027 legislation; this is not proof of a passed bill, a court finding, or any particular West Virginia police deployment."
+        }
+      ]
+    }
+  ],
+  "limits": "NY Sheriff's Office 2025 Flock use predates NY County Legislature's April 2026 approved termination decision. Neither record proves the precise actual removal/deactivation or current sharing settings. WV state legislative hearing records are legislative discussion, not a current Flock operational inventory or a binding state statute. No new camera coordinates, raw plate reads or sharing network edges inferred."
+}
