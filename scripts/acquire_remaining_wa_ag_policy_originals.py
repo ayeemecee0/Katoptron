@@ -27,9 +27,9 @@ class DenyRedirect(urllib.request.HTTPRedirectHandler):
 def safe(url):
  try:
   p=urllib.parse.urlsplit(url)
-  if not isinstance(url,str) or len(url)>950 or p.scheme!="https" or p.hostname not in ALLOWED or
+  if (not isinstance(url,str) or len(url)>950 or p.scheme!="https" or p.hostname not in ALLOWED or
       p.netloc!=p.hostname or p.fragment or p.username or p.password or
-      re.search(r"%2e|\\|/\.\.?/",p.path,re.I):return False
+      re.search(r"%2e|\\|/\.\.?/",p.path,re.I)):return False
   if p.query:
    if p.hostname=="agportal-s3bucket.s3.us-west-2.amazonaws.com":
     return bool(re.fullmatch(r"VersionId=[A-Za-z0-9_.-]{1,100}",p.query))
