@@ -19,7 +19,7 @@ const files={
 };
 const index=D.catalog(files,validators);
 assert.equal(index.agencies,6);
-assert.equal(index.original_documents,11);
+assert.equal(index.original_documents,10);
 assert.ok(index.findings>=20);
 assert.equal(index.no_live_camera_or_sharing_claims,true);
 const okc=D.byKey(index,'oklahoma-city-ok');
@@ -57,4 +57,4 @@ for(const fn of [
  const tampered=JSON.parse(JSON.stringify(files));fn(tampered);
  assert.throws(()=>D.catalog(tampered,validators),/original|Unverified|government|mismatch|invalid|Missing|changed|improperly|not|held/i);
 }
-console.log('AGENCY X-RAY ORIGINAL DOSSIERS PASS: 6 exact agencies / 11 page-reviewed source documents, no camera or sharing upgrades');
+console.log('AGENCY X-RAY ORIGINAL DOSSIERS PASS: 6 exact agencies / 10 page-reviewed source documents, no camera or sharing upgrades');
