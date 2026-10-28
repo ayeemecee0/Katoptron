@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'scripts/verify_apache_resolution_chapter.py'
+      - 'data/apache-junction-adopted-resolution-chapter-2026-10-28.json'
       - 'scripts/test_verify_apache_resolution_chapter.py'
       - '.github/workflows/verify_apache_resolution_chapter.yml'
   schedule:
