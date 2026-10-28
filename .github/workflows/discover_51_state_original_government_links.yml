@@ -4,6 +4,8 @@ on:
     paths:
       - 'data/nationwide-government-jurisdiction-registry.json'
       - 'scripts/discover_51_state_original_government_links.py'
+      - 'nationwide-policy.html'
+      - 'nationwide-policy-coverage.js'
       - 'scripts/test_discover_51_state_original_government_links.py'
       - '.github/workflows/discover_51_state_original_government_links.yml'
   workflow_dispatch:

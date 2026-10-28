@@ -13,6 +13,10 @@ on:
       - 'agency-compare.html'
       - 'policy-history.html'
       - 'policy-history.js'
+      - 'nationwide-policy-coverage.js'
+      - 'nationwide-policy.html'
+      - 'scripts/test_nationwide_policy_coverage.cjs'
+      - 'scripts/smoke_nationwide_policy_coverage.cjs'
       - 'policy-adoption-evidence.js'
       - 'apache-junction-original-chapter.js'
       - 'data/apache-junction-original-chapter-and-map-receipts-2026-10-27.json'
@@ -128,6 +132,8 @@ jobs:
           node scripts/test_original_evidence_comparison.cjs
           node --check policy-history.js
           node scripts/test_policy_history.cjs
+          node --check nationwide-policy-coverage.js
+          node scripts/test_nationwide_policy_coverage.cjs
           node --check policy-adoption-evidence.js
           node scripts/test_policy_adoption_evidence.cjs
           node --check apache-junction-original-chapter.js
@@ -183,6 +189,7 @@ jobs:
           node scripts/smoke_verified_agency_dossiers.cjs
           node scripts/smoke_original_evidence_comparison.cjs
           node scripts/smoke_policy_history.cjs
+          node scripts/smoke_nationwide_policy_coverage.cjs
           node scripts/smoke_watch_email_preferences.cjs
           node scripts/smoke_mn_alpr_audit_registry.cjs
           node scripts/smoke_national_audits.cjs

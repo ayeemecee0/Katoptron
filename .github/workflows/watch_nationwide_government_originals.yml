@@ -5,6 +5,8 @@ on:
       - 'data/nationwide-government-jurisdiction-registry.json'
       - 'data/national-government-audit-source-portals.json'
       - 'scripts/watch_nationwide_government_originals.py'
+      - 'nationwide-policy.html'
+      - 'nationwide-policy-coverage.js'
       - 'scripts/test_watch_nationwide_government_originals.py'
       - '.github/workflows/watch_nationwide_government_originals.yml'
   workflow_dispatch:

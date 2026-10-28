@@ -1,0 +1,46 @@
+name: Nationwide original-government policy coverage and browser acceptance
+on:
+  push:
+    paths:
+      - 'nationwide-policy-coverage.js'
+      - 'nationwide-policy.html'
+      - 'scripts/test_nationwide_policy_coverage.cjs'
+      - 'scripts/smoke_nationwide_policy_coverage.cjs'
+      - 'data/nationwide-government-jurisdiction-registry.json'
+      - 'data/nationwide-original-government-source-receipts.json'
+      - 'data/wa-original-agency-alpr-registrations.json'
+      - 'verified-agency-dossiers.js'
+      - 'wa-original-agency-dossiers.js'
+      - 'data/verified-policy-adoption-status-2026-10-27.json'
+      - '.github/workflows/nationwide_policy_coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: nationwide-source-qualified-policy-coverage
+  cancel-in-progress: true
+jobs:
+  coverage:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact state sources and jurisdiction evidence tiers
+        run: |
+          node --check nationwide-policy-coverage.js
+          node scripts/test_nationwide_policy_coverage.cjs
+          node scripts/test_nationwide_jurisdictions.cjs
+          node scripts/test_verified_agency_dossiers.cjs
+          node scripts/test_wa_original_agency_dossiers.cjs
+      - name: Start localhost static release preview
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/nationwide-policy-preview.log 2>&1 &
+      - name: Install pinned Chromium API
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Verify nationwide research and verified-source distinction in mobile Chromium
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_nationwide_policy_coverage.cjs

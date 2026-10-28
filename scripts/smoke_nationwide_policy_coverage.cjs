@@ -1,0 +1,59 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+(async()=>{
+ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ try{
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
+  const res=await page.goto(new URL('nationwide-policy.html',base).href,
+    {waitUntil:'domcontentloaded',timeout:25000});
+  assert.equal(res.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#loadStatus')?.textContent?.includes('Validated 51/51'),
+     null,{timeout:20000});
+  const status=await page.locator('#loadStatus').textContent();
+  assert.match(status,/57 original government links/);
+  assert.match(status,/18 agency original-source dossiers/);
+  assert.match(status,/97 Washington self-certification/);
+  assert.match(status,/Statewide agency census completion: 0\/51/);
+  assert.equal(await page.locator('#matrix tr').count(),51);
+  assert.equal(await page.locator('#state option').count(),52);
+  assert.equal(await page.locator('#stats .stat').count(),7);
+  const cards=await page.locator('#stats .stat').allTextContents();
+  assert.ok(cards.some(t=>/Original government links57/.test(t)));
+  assert.ok(cards.some(t=>/States with complete agency census0/.test(t)));
+  assert.equal(await page.locator('#details article').count(),0,'No default mass render or misleading featured agency');
+  await page.locator('#state').selectOption('WA');
+  await page.locator('#tier').selectOption('registered');
+  assert.equal(await page.locator('#details article').count(),97);
+  assert.match(await page.locator('#details article').first().textContent(),/STATE SELF-CERTIFICATION ONLY/);
+  await page.locator('#query').fill('Aberdeen Police Department');
+  assert.equal(await page.locator('#details article').count(),1);
+  assert.match(await page.locator('#details').textContent(),/not proof of Flock equipment/);
+  await page.locator('#tier').selectOption('verified');
+  assert.equal(await page.locator('#details article').count(),0);
+  assert.match(await page.locator('#detailStatus').textContent(),/No exhaustive city/);
+  await page.locator('#query').fill('');
+  await page.locator('#tier').selectOption('verified');
+  assert.ok((await page.locator('#details article').count())>=11);
+  await page.locator('#state').selectOption('AZ');
+  await page.locator('#tier').selectOption('actions');
+  assert.equal(await page.locator('#details article').count(),1);
+  assert.match(await page.locator('#details').textContent(),/COUNCIL ADOPTION RECORDED/);
+  assert.match(await page.locator('#details').textContent(),/legal effective date not verified/);
+  await page.locator('#state').selectOption('WI');
+  assert.equal(await page.locator('#details article').count(),1);
+  assert.match(await page.locator('#details').textContent(),/DRAFT PUBLISHED · ADOPTION NOT VERIFIED/);
+  await page.locator('#state').selectOption('AL');
+  await page.locator('#tier').selectOption('verified');
+  assert.equal(await page.locator('#details article').count(),0);
+  await page.locator('#tier').selectOption('sources');
+  assert.equal(await page.locator('#details article').count(),1);
+  assert.match(await page.locator('#details').textContent(),/not a new verified policy or deployed camera/);
+  await page.locator('#state').selectOption('DC');
+  assert.equal(await page.locator('#details article').count(),1);
+  assert.deepEqual(errors,[]);
+  console.log('NATIONWIDE 51-STATE BROWSER PASS: state gap matrix, 97 unverified WA attestations, 18 original dossiers, adopted vs DRAFT source labels, accessible mobile interface');
+ }finally{await browser.close();}
+})().catch(e=>{console.error('NATIONWIDE POLICY COVERAGE BROWSER FAILURE',e);process.exit(1);});
