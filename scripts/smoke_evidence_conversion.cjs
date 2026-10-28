@@ -32,6 +32,11 @@ const {chromium}=require('playwright');
   await page.locator('#queueType').selectOption('pdf');
   assert.equal(await page.locator('#queue .queue-row').count(),2);
   assert.equal(await page.locator('section[aria-labelledby="governmentMaps"] article').count(),3);
+  const xray=await page.goto(new URL('agency-xray.html',process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/').href,{waitUntil:'domcontentloaded',timeout:20000});
+  assert.equal(xray.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#municipalSourceStatus')?.textContent?.includes('11 original-government'),null,{timeout:12000});
+  assert.equal(await page.locator('#municipalSourceCards article').count(),11);
+  assert.match(await page.locator('#municipalSourceCards').textContent(),/South Portland Police Department/);
   assert.deepEqual(errors,[]);
   console.log('M11 EVIDENCE CONVERSION UI PASS: 11 agencies, cessation statuses, 12 source holds, 97 WA registrations, 3 source-only geographic documents');
  }finally{await b.close();}
