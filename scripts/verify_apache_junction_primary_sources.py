@@ -30,7 +30,7 @@ HELD={
  "sha":"9d4f0ff58b906c65112abd3cf725b00d95e3418a843cd5df0c9e30e9ea9a7e93"
 }
 def validate_manifest(raw):
- if raw.get("schema_version")!=1 or raw.get("verified_on")!="2026-10-27" or len(raw.get("source_page_reviewed",[]))!=2 or len(raw.get("source_review_held",[]))!=1:
+ if raw.get("schema_version")!=1 or raw.get("verified_on")!="2026-10-27" or len(raw.get("source_page_reviewed",[]))!=2 or not isinstance(raw.get("signed_original_visually_reviewed"),dict):
   raise ValueError("Government original receipt record incomplete")
  for doc in raw["source_page_reviewed"]:
   x=EXPECTED.get(doc["id"])
@@ -38,9 +38,15 @@ def validate_manifest(raw):
    raise ValueError("Original city agenda attachment was altered")
   if "not_" not in doc["publication_status"] and "unsigned_" not in doc["publication_status"]:
    raise ValueError("No originally proposed government text may silently become final signed")
- h=raw["source_review_held"][0]
- if h["id"]!=HELD["id"] or h["source_url"]!=HELD["url"] or h["original_sha256"]!=HELD["sha"] or h["page_count"]!=3 or "visual_page_review_pending" not in h["status"]:
-  raise ValueError("City Clerk scanned adopted original still requires independent visual comparison")
+ h=raw["signed_original_visually_reviewed"]
+ if (h["id"]!=HELD["id"] or h["source_url"]!=HELD["url"] or
+     h["original_sha256"]!=HELD["sha"] or h["page_count"]!=3 or
+     h["pages_reviewed"]!=[1,2,3] or
+     h["verification_method"]!="visual_page_review_sha256_pinned_scanned_pdf" or
+     h["status"]!="signed_city_clerk_adopted_ordinance_visual_page_review_sha256_pinned" or
+     h["adoption_date"]!="2026-10-06" or h["legal_effective_date"] is not None or
+     len(h["findings"])!=3):
+  raise ValueError("Signed visually reviewed Clerk original identity or date changed")
  return raw
 def validate_pdf(doc,raw):
  x=EXPECTED[doc["id"]]
@@ -57,24 +63,29 @@ def validate_pdf(doc,raw):
  return len(pdf.pages)
 def verify(fetch=inspector.fetch):
  manifest=validate_manifest(json.loads(LEDGER.read_text(encoding="utf8")))
- result={"documents_verified":[], "held_city_clerk_visual_review":True,
+ result={"documents_verified":[], "signed_city_clerk_visual_review":True,
   "enacted_chapter_text_verified":False,"exact_camera_gis_points_added":0}
  for doc in manifest["source_page_reviewed"]:
   raw,_=fetch(doc["source_url"])
   count=validate_pdf(doc,raw)
   result["documents_verified"].append({"id":doc["id"],"pages":count,"original_sha256":doc["pdf_sha256"],
    "status":"page_verified_agenda_attachment_NOT_final_enacted_copy"})
- h=manifest["source_review_held"][0]
+ h=manifest["signed_original_visually_reviewed"]
  payload,_=fetch(h["source_url"])
- if hashlib.sha256(payload).hexdigest()!=HELD["sha"] or len(PdfReader(io.BytesIO(payload),strict=True).pages)!=3:
-  raise ValueError("City Clerk original SHA or page count changed; visual review still required")
+ original=PdfReader(io.BytesIO(payload),strict=True)
+ if (hashlib.sha256(payload).hexdigest()!=HELD["sha"] or
+     original.is_encrypted or len(original.pages)!=3 or
+     any(not page.images for page in original.pages)):
+  raise ValueError("Previously visually reviewed signed Clerk original SHA/scanned page drift")
+ result["clerk_adoption_date"]="2026-10-06"
+ result["clerk_signed_original_page"]=3
  return result
 def main():
  try:
   result=verify()
   for r in result["documents_verified"]:
    print("APACHE_ORIGINAL_PAGE_ANCHORS_PASS",r["id"],r["original_sha256"])
-  print("CITY_CLERK_SCANNED_ORIGINAL_HELD_FOR_VISUAL_REVIEW",result["held_city_clerk_visual_review"])
+  print("CITY_CLERK_SIGNED_ORIGINAL_VISUAL_PAGE_REVIEW_PASS",result["signed_city_clerk_visual_review"],"SIGNED_PAGE",result["clerk_signed_original_page"],"DATE",result["clerk_adoption_date"])
   print("ENACTED_CHAPTER_TEXT_VERIFIED",result["enacted_chapter_text_verified"])
   print("CAMERA_GIS_POINTS_ADDED",result["exact_camera_gis_points_added"])
  except Exception as exc:

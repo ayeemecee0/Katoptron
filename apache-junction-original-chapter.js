@@ -1,6 +1,6 @@
 /* Original Apache Junction legal/policy source receipts.
- * Official Council *agenda* PDFs do not prove enacted text. Scanned City
- * Clerk final is held until independent visual-page verification.
+ * Council agenda PDFs do not establish enacted chapter text. The distinct
+ * signed City Clerk original has been visually page-reviewed and SHA-pinned.
  * Official schematic never creates exact lat/long camera coordinates.
  */
 (function(root,factory){'use strict';const api=factory();
@@ -41,10 +41,10 @@
  }
  function verify(record){
   if(!record||record.schema_version!==1||record.verified_on!=='2026-10-27'||
-     record.scope!=='city_original_pdf_page_anchors_separate_from_clerk_scanned_unreviewed_and_publisher_claims'||
+     record.scope!=='city_original_pdf_page_anchors_and_clerk_visually_reviewed_signed_ordinance_separate_from_source_claims'||
      !Array.isArray(record.source_page_reviewed)||
      record.source_page_reviewed.length!==2||
-     !Array.isArray(record.source_review_held)||record.source_review_held.length!==1)
+     !record.signed_original_visually_reviewed||typeof record.signed_original_visually_reviewed!=='object')
     throw Error('Government original-source ledger incomplete');
   const docs=[];const found=new Set();
   for(const d of record.source_page_reviewed){
@@ -74,12 +74,26 @@
     throw Error('Unsigned ordinance template cannot appear executed');
    docs.push({...d,findings});
   }
-  const h=record.source_review_held[0];
+  const h=record.signed_original_visually_reviewed;
   if(h.id!==HELD.id||h.source_url!==HELD.url||
      h.original_sha256!==HELD.sha||h.page_count!==3||
-     h.status!=='original_city_clerk_pdf_retrieved_scanned_visual_page_review_pending'||
-     typeof h.limitations!=='string'||h.limitations.length<130)
-   throw Error('Scanned City Clerk original must remain held');
+     h.pages_reviewed?.join(',')!=='1,2,3'||
+     h.status!=='signed_city_clerk_adopted_ordinance_visual_page_review_sha256_pinned'||
+     h.verification_method!=='visual_page_review_sha256_pinned_scanned_pdf'||
+     h.adoption_date!=='2026-10-06'||h.legal_effective_date!==null||
+     h.ordinance_number!==1579||
+     !Array.isArray(h.findings)||h.findings.length!==3||
+     h.findings.some((f,i)=>f.page!==i+1||
+       typeof f.statement!=='string'||f.statement.length<170||
+       !pdfPage(h.source_url,f.page))||
+     h.findings[1].category!=='chapter_17_adopted_by_reference'||
+     !/Resolution 26-43/.test(h.findings[1].statement)||
+     h.findings[2].category!=='signed_adoption_and_misdemeanor_penalties'||
+     !/mayoral signature and City Clerk's attestation/.test(h.findings[2].statement)||
+     typeof h.limitations!=='string'||h.limitations.length<150)
+   throw Error('Independently visually verified signed City Clerk original identity/date/limitations altered');
+  const signed={...h,findings:h.findings.map(f=>({...f,
+   original_page:pdfPage(h.source_url,f.page)}))};
   const p=record.agency_self_disclosure;
   if(!p||p.agency!=='Apache Junction Police Department'||
      p.jurisdiction!=='Apache Junction, AZ'||
@@ -95,11 +109,11 @@
     throw Error('Source-provided camera diagram improperly upgraded to exact coordinates or live truth');
   return Object.freeze({
    original_agenda_documents:docs,
-   held_city_clerk_original:h,
+   signed_city_clerk_original:signed,
    agency_self_disclosure:p,
    individually_verified_exact_camera_coordinates:0,
-   city_clerk_adopted_copy_visually_reviewed:false,
-   scope_note:'Page-linked Council agenda attachments do not prove final executed text; the City Clerk source is a distinct scanned original held for visual review. City schematic map symbols cannot become GIS coordinate pins.'
+   city_clerk_adopted_copy_visually_reviewed:true,
+   scope_note:'Unsigned Council agenda attachments do not prove final enacted chapter text. The separate visually verified, signed City Clerk Ordinance 1579 adopts Chapter 17 by reference, but the final filed chapter has not been authenticated against the agenda attachment. City schematic map symbols cannot become GIS coordinate pins.'
   });
  }
  return Object.freeze({verify,pdfPage,KNOWN,HELD});

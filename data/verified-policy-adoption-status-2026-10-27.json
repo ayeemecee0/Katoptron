@@ -13,11 +13,11 @@
       "event_date_basis": "city_clerk_adopted_by_council_entry",
       "effective_date": null,
       "title": "Ordinance 1579: Council adoption of ALPR safeguards",
-      "summary": "The Apache Junction City Clerk's adopted-ordinances register lists Ordinance 1579 as adopted by Council on October 6, 2026. The city's police technology page separately states the Council unanimously approved it and describes permitted access, data retention, training, audit and misuse provisions. The original enacted ordinance PDF was not individually page-reviewed for this record.",
+      "summary": "The Apache Junction City Clerk's adopted-ordinances register lists Ordinance 1579 as adopted by Council on October 6, 2026. The city's police page separately confirms unanimous Council approval. A separate, three-page signed Clerk ordinance PDF was subsequently retrieved, SHA-256-pinned and visually reviewed, confirming handwritten adoption/signature date, mayor signature, clerk attestation and adoption by reference of a Chapter 17 document. The enacted Chapter 17's separately filed text has not been independently compared to the council agenda attachment.",
       "source_url": "https://www.apachejunctionaz.gov/999/Public-Notices",
       "corroboration_url": "https://www.apachejunctionaz.gov/1241/Public-Safety-Technology",
       "proof": "City Clerk 'Ordinances and Resolutions have been adopted' table: Ordinance No. 1579, Automated License Plate Readers, 10/06/2026; City Police Technology page: approved October 6, 2026.",
-      "limits": "Adoption is verified as a recorded municipal action. The official register leaves the effective-date cell blank. Do not infer effective-date, details of any uninspected ordinance section, vendor technical enforcement, camera deployment or actual compliance. The source is government HTML, not an individually SHA-pinned/page-reviewed enacted ordinance PDF."
+      "limits": "Adoption is now independently supported by the visually reviewed signed City Clerk original as well as the Clerk's government register; the register's effective-date cell blank remains, and the signed ordinance itself does not establish a separate effective date. The signed ordinance adopts by reference a distinct Chapter 17 text whose final filed version has not been independently authenticated. This status does not verify live ALPR retention, sharing access, camera positions or compliance."
     },
     {
       "id": "green-bay-wi-policy-424-draft-still-listed-2026-10-27",

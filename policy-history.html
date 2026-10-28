@@ -42,7 +42,7 @@ strong.state{color:#e9cf9e}.status{min-height:1.3rem}
 </section>
 <section aria-labelledby="apache-originals-heading">
 <h2 id="apache-originals-heading">Apache Junction · Primary government ordinance attachments and Flock source map</h2>
-<p>City Council original attachments have page citations but are pre-meeting versions, not authenticated final enacted text. The City Clerk's separately scanned adopted ordinance remains held for visual comparison. Agency-published Flock camera totals and the city's schematic map are distinct from independently verified GPS points.</p>
+<p>City Council original attachments have page citations but are pre-meeting versions, not authenticated final enacted text. The City Clerk's separate scanned signed ordinance has been visually page-reviewed; the final filed Chapter 17 text still requires independent authentication. Agency-published Flock camera totals and the city's schematic map are distinct from independently verified GPS points.</p>
 <p id="apacheLoadStatus" role="status" aria-live="polite">Checking original source and map limitations…</p>
 <div id="apacheOriginals"></div>
 </section>
@@ -213,16 +213,21 @@ async function loadApacheOriginals(){
    article.append(element('p',doc.limitations,'field'));
    out.append(article);
   }
-  const held=evidence.held_city_clerk_original;
+  const signed=evidence.signed_city_clerk_original;
   const card=element('article',undefined,'card');
-  card.append(element('h3','City Clerk adopted Ordinance 1579 · original scanned PDF'),
-   element('strong','RETRIEVED · VISUAL COMPARISON PENDING','state'),
-   element('p',held.page_count+' scanned pages · Original SHA-256: '+
-      held.original_sha256,'field'),
-   element('p',held.limitations,'field'));
-  link(card,held.source_url,'Open distinct City Clerk original');
+  card.append(element('h3','City Clerk signed Ordinance 1579 · original scanned PDF'),
+   element('strong','COUNCIL ADOPTION AND SIGNATURES VISUALLY VERIFIED','state'),
+   element('p',signed.page_count+' scanned, visually reviewed pages · Adopted '+
+      signed.adoption_date+' · Original SHA-256: '+signed.original_sha256,'field'));
+  for(const f of signed.findings){
+   const item=element('div',undefined,'finding');
+   item.append(element('p',f.statement));
+   link(item,f.original_page,'Read signed City Clerk original · page '+f.page);
+   card.append(item);
+  }
+  card.append(element('p',signed.limitations,'field'));
   out.append(card);
-  $('apacheLoadStatus').textContent='2 original page-cited Council attachments; 1 distinct scanned Clerk original held for visual review; 1 government Flock source map. Zero exact camera GIS points added.';
+  $('apacheLoadStatus').textContent='2 original page-cited Council attachments; 1 signed City Clerk ordinance visually verified; 1 government Flock source map. Final adopted Chapter 17 text remains to be independently authenticated. Zero exact GIS points added.';
  }catch(err){
   $('apacheOriginals').replaceChildren();
   $('apacheLoadStatus').textContent='Apache Junction original receipt validation held: '+err.message;
