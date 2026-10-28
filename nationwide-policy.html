@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Katoptron | Nationwide jurisdiction policy evidence</title>
+<meta name="description" content="Flock Safety government evidence coverage across the 50 U.S. states and D.C.; verified original policies are separated from registered agency attestations and source leads.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#0b151e;color:#ecf3f6;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0}header{padding:1.1rem max(1rem,4vw);border-bottom:1px solid #354c60;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;background:#10222f}
+header nav{display:flex;flex-wrap:wrap;gap:1rem}a{color:#99ddec}header a{color:inherit}
+main{max-width:1240px;margin:auto;padding:2rem 1rem 5rem}h1{font-size:clamp(1.7rem,4vw,2.5rem)}
+h2{font-size:1.35rem}p{line-height:1.55;color:#c2d6e3}
+.notice{border-left:4px solid #83c9dc;background:#132b3a;padding:1rem;margin:1.3rem 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin:1rem 0}
+.stat,.card{border:1px solid #476070;background:#10232f;padding:1rem;border-radius:10px}
+.stat strong{font-size:1.8rem;display:block;margin:.2rem 0}.stat span,.fine{font-size:.85rem;color:#a9c2d1}
+.controls{display:flex;gap:1rem;flex-wrap:wrap;align-items:end;margin:1.5rem 0}
+.controls label{font-weight:650;display:block;margin-bottom:.35rem}
+input,select{font:inherit;color:inherit;background:#183545;border:1px solid #8ba9b8;border-radius:7px;padding:.7rem;min-width:min(260px,100%);max-width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #95ddf0;outline-offset:3px}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{text-align:left;padding:.7rem .6rem;border-bottom:1px solid #345267}th{color:#c8e8f5;background:#142d3e;position:sticky;top:0}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+button{font:inherit;border:1px solid #729aac;border-radius:6px;padding:.5rem .75rem;background:#19465d;color:#fff;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:1rem;margin:1rem 0}
+.card h3{font-size:1.05rem;margin:.2rem 0 .5rem}.card p{margin:.5rem 0}.card a{display:inline-block;margin:.35rem .5rem .2rem 0;overflow-wrap:anywhere}
+.status{color:#eacba1;font-size:.87rem;font-weight:650}
+.empty{padding:1rem;border:1px dashed #7c99aa;border-radius:7px}
+[hidden]{display:none!important}
+</style></head><body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header><a href="./index.html"><strong>KATOPTRON</strong></a>
+<nav aria-label="Primary"><a href="./agency-xray.html">AGENCY X-RAY</a><a href="./policy-history.html">POLICY HISTORY</a><a href="./government-watch.html">GOVERNMENT WATCH</a></nav>
+</header>
+<main id="main-content">
+<h1>Nationwide government policy evidence</h1>
+<p>Research coverage for every U.S. state and Washington, D.C. This is a national <strong>research and evidence gap index</strong>, not a directory of every local agency or a census of installed Flock Safety cameras. Inspect original-source evidence by state without treating a government page or a registration as proof of adoption.</p>
+<div class="notice"><strong>51 state-level research queues ≠ all jurisdictions verified.</strong> Local cities, counties, departments and agencies are not exhaustively enumerated here. A state can have an accessible policy website while zero agency policies are individually reviewed. Washington Attorney General registrations are self-reported ALPR listings, not confirmed Flock users. Original-page-reviewed dossiers provide historical document evidence, not present compliance, camera locations or active sharing.</div>
+<p id="loadStatus" role="status" aria-live="polite">Validating nationwide original-source registries…</p>
+<div id="stats" class="stats" aria-label="National source evidence totals"></div>
+<section aria-labelledby="matrixHeading">
+<h2 id="matrixHeading">All 50 states and D.C. · evidence gap matrix</h2>
+<p>Government source links include original-source leads and legacy registries; the response status of 43 independently observed newer seeds is shown separately. Verified dossier counts are exact agency identities with page-reviewed original evidence.</p>
+<div class="scroll">
+<table><thead><tr><th scope="col">State</th><th scope="col">Original-source links</th><th scope="col">Reachable new seeds</th><th scope="col">Held new seeds</th><th scope="col">Reviewed agency dossiers</th><th scope="col">State registrations</th><th scope="col">Open</th></tr></thead>
+<tbody id="matrix"></tbody></table>
+</div>
+</section>
+<section aria-labelledby="detailHeading">
+<h2 id="detailHeading">Original sources and agency-level evidence</h2>
+<div class="controls">
+<div><label for="state">Choose state</label><select id="state"><option value="">Select state</option></select></div>
+<div><label for="tier">Evidence tier</label><select id="tier">
+<option value="ALL">All types</option><option value="verified">Original-page-reviewed agencies</option>
+<option value="actions">Government adoption/draft notices</option>
+<option value="registered">Washington AGO registrations (unverified)</option>
+<option value="sources">Government source links (unreviewed)</option></select></div>
+<div><label for="query">Find agency or original</label><input id="query" type="search" placeholder="Agency name or document title"></div>
+</div>
+<p id="detailStatus" role="status" aria-live="polite">Select a state to inspect its original evidence.</p>
+<div id="details" class="cards"></div>
+</section>
+<p><a href="./policy-history.html">Review individually verified policy text and adoption-status exceptions</a></p>
+</main>
+<script src="./nationwide-jurisdictions.js"></script>
+<script src="./wa-alpr-registrations.js"></script>
+<script src="./policy-adoption-evidence.js"></script>
+<script src="./okc-original-contracts.js"></script>
+<script src="./nebraska-original-aggregate.js"></script>
+<script src="./ri-sd-original-policies.js"></script>
+<script src="./wa-kittitas-draft-review.js"></script>
+<script src="./national-primary-documents.js"></script>
+<script src="./verified-agency-dossiers.js"></script>
+<script src="./wa-reviewed-flock-sources.js"></script>
+<script src="./wa-original-policies.js"></script>
+<script src="./wa-original-agency-dossiers.js"></script>
+<script src="./nationwide-policy-coverage.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let index=null;
+function node(tag,value,className){
+ const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);
+ if(className)e.className=className;return e;
+}
+function link(el,url,text){const a=node('a',text);a.href=url;a.target='_blank';a.rel='noopener noreferrer';el.append(a);}
+function fact(label,count){
+ const x=node('div',undefined,'stat');x.append(node('span',label),node('strong',count));return x;
+}
+function item(title,status,description,urls=[]){
+ const a=node('article',undefined,'card');
+ a.append(node('h3',title),node('div',status,'status'),node('p',description));
+ for(const pair of urls)if(pair[1])link(a,pair[1],pair[0]);
+ return a;
+}
+async function json(url){
+ const r=await fetch(url,{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!r.ok)throw Error('Required original source manifest unavailable: '+url);
+ return r.json();
+}
+function matrix(){
+ $('matrix').replaceChildren();
+ for(const s of index.states){
+  const row=node('tr');
+  const fields=[s.name+' · '+s.state,s.original_source_urls,s.source_reachable,
+   s.source_held,s.reviewed.length,s.registered.length];
+  for(let i=0;i<fields.length;i++){
+   const td=node('td',fields[i],i===0?'':'num');
+   row.append(td);
+  }
+  const td=node('td');
+  const b=node('button','Inspect '+s.state);b.type='button';
+  b.addEventListener('click',()=>{
+    $('state').value=s.state;
+    render();
+    $('detailHeading').scrollIntoView({block:'start',behavior:'smooth'});
+  });
+  td.append(b);row.append(td);$('matrix').append(row);
+ }
+}
+function render(){
+ $('details').replaceChildren();
+ if(!index)return;
+ const state=$('state').value,term=$('query').value,tier=$('tier').value;
+ if(!state){$('detailStatus').textContent='Select one state. Every state remains an open agency census, regardless of listed documents.';return;}
+ const rows=window.KatoptronNationwidePolicyCoverage.filter(index,state,term,tier);
+ let found=0;
+ for(const s of rows){
+  for(const d of s.reviewed){
+   const links=[['Agency X-Ray originals','./agency-xray.html']];
+   for(const doc of d.documents.slice(0,8))
+    links.push([doc.title+' · original PDF',doc.url+'#page='+doc.pages[0]]);
+   $('details').append(item(d.agency,'INDIVIDUALLY SOURCE-PAGE REVIEWED',
+     d.documents.length+' original document(s). Historical public source text only; no inferred current policy adoption or equipment status.',links));found++;
+  }
+  for(const a of s.decisions){
+   $('details').append(item(a.jurisdiction+' · '+a.title,
+     a.status==='adopted_government_original_notice'?'COUNCIL ADOPTION RECORDED':'DRAFT PUBLISHED · ADOPTION NOT VERIFIED',
+     'Recorded date '+(a.date||'not established')+
+     '; legal effective date not verified. '+a.note,
+     [['Official government action',a.source_url],['Government corroboration',a.corroboration_url]]));found++;
+  }
+  for(const r of s.registered){
+   const links=[['Attorney General official registry','https://www.atg.wa.gov/ALPR']];
+   for(const url of r.policy_urls)links.push(['State-linked agency policy (not individually verified)',url]);
+   $('details').append(item(r.agency,'STATE SELF-CERTIFICATION ONLY',
+     'Submitted '+(r.registered_on||'date unverified')+
+     '. ALPR registration is not proof of Flock equipment, operational status or independently authenticated policy adoption.',links));found++;
+  }
+  for(const a of s.sources){
+   $('details').append(item(a.publisher,'GOVERNMENT SOURCE · '+a.observed_status.replaceAll('_',' '),
+     a.detail+'. Publisher role: '+a.role+'. This is not a new verified policy or deployed camera.',
+     [['Original government source',a.url]]));found++;
+  }
+ }
+ $('detailStatus').textContent=found+' source or agency evidence entries for '+state+
+  '. No exhaustive city/county agency census or statewide policy completion is established.';
+ if(!found)$('details').append(node('p','No entries match that search. This does not establish that an ALPR program is absent.','empty'));
+}
+async function load(){
+ const paths={
+  registry:'./data/nationwide-government-jurisdiction-registry.json',
+  legacy:'./data/national-government-audit-source-portals.json',
+  receipts:'./data/nationwide-original-government-source-receipts.json',
+  wa:'./data/wa-original-agency-alpr-registrations.json',
+  adoption:'./data/verified-policy-adoption-status-2026-10-27.json',
+  okc:'./data/verified-okc-2026-original-flock-contract-review.json',
+  ne:'./data/verified-nebraska-original-aggregate-reports.json',
+  riSd:'./data/verified-ri-sd-original-alpr-policies.json',
+  kittitas:'./data/verified-wa-kittitas-scanned-draft-review.json',
+  waHeld:'./data/wa-held-original-policy-diagnostics.json',
+  waFlock:'./data/verified-wa-flock-policy-originals.json',
+  waOther:'./data/verified-wa-agency-policies.json',
+  waReceipts:'./data/wa-ago-original-policy-source-inspection.json',
+  national:'./data/verified-national-government-documents.json'
+ };
+ const keys=Object.keys(paths);
+ const vals=await Promise.all(keys.map(x=>json(paths[x])));
+ const data={};keys.forEach((k,i)=>data[k]=vals[i]);
+ const base=window.KatoptronVerifiedAgencyDossiers.catalog({
+  okc:data.okc,ne:data.ne,riSd:data.riSd,kittitas:data.kittitas,
+  waRegistry:data.wa,waHeld:data.waHeld,national:data.national
+ },{
+  okc:window.KatoptronOKCOriginalContracts,
+  ne:window.KatoptronNebraskaOriginalAggregate,
+  riSd:window.KatoptronRISDOriginalPolicies,
+  kittitas:window.KatoptronKittitasDraftReview,
+  national:window.KatoptronNationalPrimaryDocuments
+ });
+ const wa=window.KatoptronWAOriginalAgencyDossiers.catalog({
+  flock:data.waFlock,other:data.waOther,
+  registry:data.wa,receipts:data.waReceipts
+ },{
+  flock:window.KatoptronWAReviewedFlockSources,
+  other:window.KatoptronWashingtonOriginalPolicies
+ });
+ const dossiers=window.KatoptronWAOriginalAgencyDossiers.combine(base,wa);
+ index=window.KatoptronNationwidePolicyCoverage.build({...data,dossiers},{
+  jurisdictions:window.KatoptronNationwideJurisdictions,
+  wa:window.KatoptronWashingtonALPR,
+  adoption:window.KatoptronPolicyAdoptionEvidence
+ });
+ const c=index.counts;
+ const cards=[
+  ['State and D.C. research queues',c.states_enrolled],
+  ['Original government links',c.original_source_links],
+  ['Newer sources accessible',c.new_seed_accessible],
+  ['Newer sources held',c.new_seed_held],
+  ['Original-reviewed agencies',c.individually_source_reviewed_dossier_agencies],
+  ['Self-reported WA agencies',c.state_ago_registered_agencies],
+  ['States with complete agency census',c.states_with_complete_agency_policy_census]
+ ];
+ for(const x of cards)$('stats').append(fact(x[0],x[1]));
+ for(const s of index.states){
+  const option=node('option',s.name+' · '+s.state);option.value=s.state;
+  $('state').append(option);
+ }
+ matrix();
+ $('loadStatus').textContent='Validated 51/51 state-level research entries, '+
+  c.original_source_links+' original government links, '+
+  c.individually_source_reviewed_dossier_agencies+' agency original-source dossiers and '+
+  c.state_ago_registered_agencies+' Washington self-certification entries. Statewide agency census completion: 0/51; verified current camera locations from these sources: 0.';
+ const requested=new URL(location.href).searchParams.get('state');
+ if(index.states.some(x=>x.state===requested))$('state').value=requested;
+ render();
+}
+$('state').addEventListener('change',()=>{
+ if(index){const u=new URL(location.href);u.searchParams.set('state',$('state').value);
+  history.replaceState(null,'',u);}
+ render();
+});
+$('tier').addEventListener('change',render);
+$('query').addEventListener('input',render);
+load().catch(e=>{
+ $('loadStatus').textContent='Fail-closed nationwide evidence load: '+e.message+
+ '. No unverified agency counts, adoption statuses or original documents are displayed.';
+ $('details').replaceChildren();
+});
+</script></body></html>
