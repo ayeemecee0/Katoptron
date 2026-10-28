@@ -17,7 +17,8 @@ begin
  if new.watch_policies is true then
   if tg_op='INSERT' then
    new.policy_opted_in_at=transaction_timestamp();
-  elsif old.watch_policies is distinct from true then
+  elsif old.watch_policies is distinct from true or
+        (new.email_enabled is true and old.email_enabled is distinct from true) then
    new.policy_opted_in_at=transaction_timestamp();
   else
    new.policy_opted_in_at=old.policy_opted_in_at;
