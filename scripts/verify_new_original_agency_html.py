@@ -32,7 +32,8 @@ ANCHORS={
  "mill-valley-ca-flock-alpr-disabled-government-statement-2026":"Both the ALPR and live-feed cameras have been disabled since September 9, 2026.",
  "richmond-va-flock-nonrenewal-mayor-announcement-2026":"the City will not move forward with the Flock ALPR contract when it’s up for renewal.",
  "panama-city-beach-fl-police-flock-suspension-2026":"suspending its use of the Flock Automated License Plate Reader system effective immediately",
- "fort-wayne-in-flock-discontinuation-chief-statement-2026":"the decision was made to discontinue the Fort Wayne Police Department’s use of Flock."
+ "fort-wayne-in-flock-discontinuation-chief-statement-2026":"the decision was made to discontinue the Fort Wayne Police Department’s use of Flock.",
+ "lynchburg-va-flock-alpr-pause-police-original-2026":"temporarily pause the operation of its fifteen fixed Flock"
 }
 
 def valid(url):
@@ -84,7 +85,7 @@ def review(row,fetcher=fetch):
 
 def run(doc,fetcher=fetch):
  rows=[r for r in doc["sources"] if r["id"] in ANCHORS]
- if len(rows)!=14 or len({r["id"] for r in rows})!=14 or len({r["locality_key"] for r in rows})!=14:
+ if len(rows)!=15 or len({r["id"] for r in rows})!=15 or len({r["locality_key"] for r in rows})!=15:
   raise ValueError("Missing/duplicate new government agencies")
  if len({r["state"] for r in rows})<5:raise ValueError("Insufficient new publisher states")
  result=[review(row,fetcher) for row in rows]
