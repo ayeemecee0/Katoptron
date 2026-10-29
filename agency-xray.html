@@ -319,6 +319,11 @@ loadOriginalDossiers().catch(err=>{
  $('originalStatus').textContent='Individually reviewed original government agency records cannot be displayed: '+err.message+
   '. No unsupported original evidence will be shown.';
 });
+function agencyBriefLink(card,r){
+ const a=node('a','Open source-cited agency investigation and editable records request');
+ a.href='./agency-government-brief.html?id='+encodeURIComponent(r.id);
+ card.append(a);
+}
 function renderExactGovSources(locality){
  const output=$('newExactGovSources');
  if(!output)return;
@@ -331,7 +336,7 @@ function renderExactGovSources(locality){
   if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
   card.append(node('p','Official-source status: '+r.proof));
   for(const question of r.open_questions)card.append(node('p','Unresolved: '+question));
-  source(card,r.source_url,'Inspect government original record');output.append(card);
+  source(card,r.source_url,'Inspect government original record');agencyBriefLink(card,r);output.append(card);
  }
 }
 function renderGovernmentDocket(){
@@ -345,6 +350,7 @@ function renderGovernmentDocket(){
   if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
   for(const question of r.open_questions)card.append(node('p','Open question: '+question));
   source(card,r.source_url,'Open original government record');
+  agencyBriefLink(card,r);
   output.append(card);
  }
  $('governmentDocketStatus').textContent=rows.length+' exact government record(s) matched · '+governmentDocket.agencies.length+' locality/agency identities in '+governmentDocket.states.length+' states. Supplemental sources do not increase page-verified PDF counts or verify camera operation.';
