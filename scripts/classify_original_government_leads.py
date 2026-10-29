@@ -72,8 +72,12 @@ def main():
     leads=page_all(url,key,"flock_original_document_leads",
       "document_url,link_label,document_class,review_status")
     receipts=page_all(url,key,"flock_original_document_pdf_receipts","document_url")
-    reviews=page_all(url,key,"flock_original_document_content_review_receipts","document_url")
-    classified=classify_all(leads,receipts,reviews)
+    # Editorial content-review receipts deliberately deny service_role SELECT.
+    # Use only the independently editorial-guarded status already on each
+    # source lead; never widen read privileges on owner-reviewed material.
+    reviewed=[{"document_url":row["document_url"]} for row in leads
+              if row.get("review_status")=="document_content_verified"]
+    classified=classify_all(leads,receipts,reviewed)
     for i in range(0,len(classified),100):
         rest(url,key,"flock_original_lead_dispositions",method="POST",
           params={"on_conflict":"document_url"},body=classified[i:i+100],
