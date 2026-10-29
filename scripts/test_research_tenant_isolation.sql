@@ -12,6 +12,7 @@ grant usage on schema public,auth,storage to authenticated,anon,service_role;
 create table storage.buckets(id text primary key,name text not null,public boolean,
  file_size_limit integer,allowed_mime_types text[]);
 create table storage.objects(bucket_id text,name text,primary key(bucket_id,name));
+alter table storage.objects enable row level security;
 grant select,insert,delete on storage.objects to authenticated;
 \i supabase/migrations/150_research_workspace_cases_and_private_files.sql
 \i supabase/migrations/151_research_workspace_rls_policies.sql
