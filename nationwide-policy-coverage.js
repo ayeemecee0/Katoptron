@@ -22,9 +22,9 @@
   const wa=apis.wa.catalog(input.wa);
   const decisions=apis.adoption.validate(input.adoption);
   const dossier=input.dossiers;
-  if(baseline.total!==51||baseline.seeded!==51||baseline.seedUrls!==43||
+  if(baseline.total!==51||baseline.seeded!==51||baseline.seedUrls!==45||
      baseline.legacyUrls!==14||baseline.reviewedInstallationsClaimed!==0||
-     checked.receipts.size!==43||wa.length!==97||
+     checked.receipts.size!==45||wa.length!==97||
      dossier.agencies!==18||dossier.original_documents!==25||
      dossier.no_live_camera_or_sharing_claims!==true||
      decisions.government_actions_adopted!==1||
@@ -51,7 +51,8 @@
       'government_source_reachable_unreviewed':'government_source_held',
      detail:reachable?'Government original link retrieved; individual statements NOT verified':
        'Government original retrieval held: '+rec.status,
-     observed_status:rec.status,document_hash:reachable?rec.sha256_at_observation:null,
+     observed_status:rec.status,pending_unobserved:rec.pending_unobserved===true,
+     document_hash:reachable?rec.sha256_at_observation:null,
      policy_adopted:false,flock_installed_verified:false,
      source_page_reviewed:false
     });
@@ -151,8 +152,8 @@
    verified_current_data_sharing_edges_added:0
   };
   if(counts.states_enrolled!==51||counts.state_original_source_seeded!==51||
-     counts.original_source_links!==57||
-     counts.new_seed_accessible+counts.new_seed_held!==43||
+     counts.original_source_links!==59||
+     counts.new_seed_accessible+counts.new_seed_held!==45||
      rows.some(s=>s.complete_agency_census||s.complete_policy_inventory||
        s.flock_cameras_individually_verified_from_sources!==0))
     throw Error('Nationwide source coverage incorrectly implied complete factual census');
