@@ -8,7 +8,7 @@ assert.equal(result.rows.length,14);
 assert.equal(result.states.length,6);
 assert.equal(result.issuers.length,11);
 assert.equal(result.agencies.length,10);
-assert.equal(result.byLocality('sacramento county|CA').length,2);
+assert.equal(result.byLocality('sacramento county|CA').length,3);
 const da=result.get('sacramento-ca-district-attorney-alpr-access-policy-2026');
 assert.equal(da.flock_specific,false);
 assert.equal(da.kind,'published_policy');
