@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Katoptron | Research plans and professional pilot</title><meta name="referrer" content="no-referrer">
+<meta name="description" content="Compare proposed Katoptron professional research features and opt in to a non-billing pilot."/>
+<link rel="stylesheet" href="./a11y.css"><style>
+:root{font-family:system-ui,Arial,sans-serif;color:#e7f0f5;background:#0c1823}*{box-sizing:border-box}body{margin:0;line-height:1.6}
+header{display:flex;flex-wrap:wrap;gap:1.1rem;padding:1rem max(1rem,4vw);background:#152a38}a{color:#9ad8ed}main{max-width:1020px;margin:1.5rem auto;padding:1rem}
+h1{font-size:clamp(1.7rem,4vw,2.5rem)}h2{font-size:1.25rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(270px,100%),1fr));gap:.8rem}
+.card,.panel{padding:1rem;border:1px solid #426072;background:#152c3c;border-radius:9px;margin:.5rem 0}
+label{display:block;margin:.65rem 0}select,input,button{font:inherit;background:#203b50;color:inherit;border:1px solid #7b9cae;padding:.65rem;border-radius:7px;max-width:100%}
+button{cursor:pointer}.note{border-left:4px solid #94c5d7;padding:.85rem;background:#1b3341}small{color:#b9cad4}
+[hidden]{display:none!important}
+</style></head><body><a class="skip-link" href="#main">Skip to pilot plans</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-intelligence-hub.html">Public source intelligence</a><a href="./research-workspace.html">Research workspace</a><a href="./government-watch.html">Government Watch</a></header>
+<main id="main"><h1>Professional research pilot</h1>
+<p>Katoptron's public government evidence remains free. The potential paid product is time-saving professional research automation. These offerings and prices are <strong>product-validation hypotheses</strong>, not purchasable subscriptions or contractual commitments.</p>
+<p class="note">No billing, credit-card collection, paywall, premium entitlements or paid monitoring is activated. Every current workspace feature remains available without payment while the pilot is evaluated.</p>
+<div class="grid">
+<article class="card"><h2>Public Access</h2><p><strong>Free, available now</strong></p><p>Public government records, original source links, agency timelines, evidence comparisons, and standard locality Watch.</p></article>
+<article class="card"><h2>Research Pro</h2><p><strong>Price hypothesis: $29 per researcher/month</strong></p><p>Proposed value: priority change analysis, tailored saved monitoring, automated evidence digests, expanded research exports and request workflow automation.</p><small>Pro features are proposals; not enabled as paid entitlements.</small></article>
+<article class="card"><h2>Research Teams</h2><p><strong>Price hypothesis: $149 per team/month</strong></p><p>Proposed value: coordinated seats and team roles, shared investigations, administrative controls, change history, advanced coverage and bulk organization reporting.</p><small>Existing collaboration and exports are currently available free. No team billing exists.</small></article>
+</div>
+<section class="panel" id="pilot"><h2>Opt in to product research</h2>
+<p>A confirmed Katoptron account may save or withdraw one voluntary product-interest response. Information is private to the account and product administrators. This is not a purchase or promise of follow-up.</p>
+<p id="pilotStatus" role="status" aria-live="polite">Checking account access…</p>
+<form id="interest" hidden>
+<label for="pilotRole">Professional use
+<select id="pilotRole" required><option value="journalist">Journalism</option><option value="nonprofit">Nonprofit / advocacy research</option><option value="legal_researcher">Legal or compliance research</option><option value="academic">Academic research</option><option value="other">Other</option></select></label>
+<label for="pilotSeats">Researchers or seats needed
+<select id="pilotSeats"><option value="1">One</option><option value="2-5">2–5</option><option value="6-20">6–20</option><option value="21+">21 or more</option></select></label>
+<label for="pilotValue">Hypothetical monthly willingness to pay
+<select id="pilotValue"><option value="not_sure">Not sure</option><option value="free_only">Free only</option><option value="under_50">Under $50</option><option value="50_to_149">$50–149</option><option value="150_plus">$150+</option></select></label>
+<label for="pilotPriority">Which capability would save most time?
+<select id="pilotPriority"><option value="alerts">Verified source-change alerts</option><option value="contract_diffs">Contract and policy version differences</option><option value="collaboration">Shared investigation teams</option><option value="bulk_exports">Bulk source-backed reporting</option><option value="records_requests">Public-records request management</option></select></label>
+<label for="pilotOrg">Organization label (optional, avoid personal details)
+<input id="pilotOrg" type="text" maxlength="180" placeholder="Newsroom, nonprofit or research practice"></label>
+<div><button type="submit">Save voluntary pilot interest</button> <button type="button" id="withdrawInterest">Withdraw and erase my response</button></div>
+</form>
+<p><a href="./research-workspace.html">Open the research workspace to sign in or confirm an account.</a></p>
+</section></main>
+<script src="./config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="./research-pilot.js"></script>
+</body></html>
