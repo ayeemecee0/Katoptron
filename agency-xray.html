@@ -300,6 +300,7 @@ function renderExactGovSources(locality){
   card.append(node('strong',r.title),node('small',r.source_date+' · '+r.agency+' · '+r.status.replaceAll('_',' ')),node('p',r.summary));
   if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
   card.append(node('p','Official-source status: '+r.proof));
+  for(const question of r.open_questions)card.append(node('p','Unresolved: '+question));
   source(card,r.source_url,'Inspect government original record');output.append(card);
  }
 }
@@ -312,6 +313,7 @@ function renderGovernmentDocket(){
   const card=node('article',null,'card');
   card.append(node('strong',r.agency+' · '+r.state),node('small',r.source_date+' · '+r.status.replaceAll('_',' ')),node('p',r.title),node('p',r.summary));
   if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
+  for(const question of r.open_questions)card.append(node('p','Open question: '+question));
   source(card,r.source_url,'Open original government record');
   output.append(card);
  }
