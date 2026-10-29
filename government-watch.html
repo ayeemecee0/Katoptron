@@ -16,7 +16,7 @@ button{cursor:pointer}button:hover{background:#24475d}input{min-width:200px;flex
 .entry p{margin:.3rem 0}.entry strong{display:block}.actions{display:flex;gap:.5rem;flex-wrap:wrap}
 :focus-visible{outline:3px solid #a1e2ec;outline-offset:3px}@media(max-width:700px){.wrap{grid-template-columns:1fr}}
 </style></head><body><a class="skip-link" href="#main-content">Skip to content</a>
-<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Main navigation"><a href="./agency-xray.html">AGENCY X-RAY</a><a href="./sharing-explorer.html">SHARING EXPLORER</a><a href="./accountability.html">GOVERNMENT RECORDS</a></nav></header>
+<header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Main navigation"><a href="./agency-xray.html">AGENCY X-RAY</a><a href="./agency-intelligence-hub.html">AGENCY INTELLIGENCE</a><a href="./research-workspace.html">RESEARCH WORKSPACE</a><a href="./sharing-explorer.html">SHARING EXPLORER</a><a href="./accountability.html">GOVERNMENT RECORDS</a></nav></header>
 <main id="main-content"><h1>Local Government Watch</h1>
 <p>Follow a city and check the latest published government events and Flock vendor disclosures against what you've already viewed. Each item opens its underlying source. For individually reviewed agency policy versions, drafts and on-device version watches, open <a href="./policy-history.html">Original Policy History</a> and <a href="./nationwide-policy.html">Nationwide Policy Evidence</a>.</p>
 <div class="note"><strong>Local watch and optional email alerts:</strong> Browser-only follows still work without an account. A signed-in user can separately opt in to source-dated email alerts with a confirmed account mailbox. Email delivery depends on an encrypted SMTP sender configuration. No addresses, plates or travel routes are gathered. Existing historical source records are not replayed to new subscribers.</div>
@@ -55,7 +55,7 @@ button{cursor:pointer}button:hover{background:#24475d}input{min-width:200px;flex
 </section>
 <div class="wrap">
 <section class="panel" aria-labelledby="following"><h2 id="following">Followed localities</h2><div id="cities"></div></section>
-<section class="panel" aria-labelledby="activity"><h2 id="activity">Documented activity</h2><p id="hint">Choose a followed locality to review its dated evidence.</p><div id="updates"></div><div class="actions"><button type="button" id="review" disabled>Mark current records reviewed</button><a id="open" href="./agency-xray.html">Open Agency X-Ray</a></div></section>
+<section class="panel" aria-labelledby="activity"><h2 id="activity">Documented activity</h2><p id="hint">Choose a followed locality to review its dated evidence.</p><div id="updates"></div><div class="actions"><a id="research" href="./research-workspace.html">Create research case</a><button type="button" id="review" disabled>Mark current records reviewed</button><a id="open" href="./agency-xray.html">Open Agency X-Ray</a></div></section>
 </div><p>Unobserved contracts, city votes, sharing changes or website updates cannot be inferred. <a href="./sharing-explorer.html">Read about the access-and-sharing evidence</a> or <a href="./agency-xray.html">inspect a city profile</a>.</p>
 </main><script src="./config.js"></script><script src="./agency-intelligence.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
@@ -75,6 +75,7 @@ function select(g){
  selected=g;$('updates').replaceChildren();$('review').disabled=false;
  if(window.KatoptronWatchMail)window.KatoptronWatchMail.select(g);
  $('open').href='./agency-xray.html?place='+encodeURIComponent(g.key);
+ $('research').href='./research-workspace.html?agency='+encodeURIComponent(g.key)+'&title='+encodeURIComponent(g.label+' source investigation');
  const s=I.safeRead(),changed=new Set(I.changes(g,s).map(x=>x.id));
  const list=I.updateItems(g);
  $('hint').textContent=g.label+' · '+changed.size+' not yet reviewed record(s), '+list.length+
@@ -82,7 +83,7 @@ function select(g){
  for(const x of list){
   const item=el('article');item.className='entry';
   const title=el('strong',(changed.has(x.id)?'NEW · ':'')+x.title);
-  item.append(title,el('div',x.date+' · '+x.type+' · '+x.confidence));
+  item.append(title,el('div',x.date+' · '+x.type+' · '+x.confidence),el('p','Why this deserves review: a source-dated record may affect oversight, but does not independently establish current camera operation or a new effective policy. Compare the original with earlier versions first.'));
   const safe=I.safeUrl(x.source_url);
   if(safe){
    const a=el('a','Inspect original document or vendor disclosure');
