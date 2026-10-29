@@ -1,0 +1,56 @@
+name: Government Watch and Agency X-Ray safety acceptance
+on:
+  push:
+    branches: [main, feature/watch-alert-idempotency-xray-nationwide]
+    paths:
+      - 'watch-email.js'
+      - 'agency-xray.html'
+      - 'government-source-docket.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'data/nationwide-government-jurisdiction-registry.json'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'scripts/test_government_watch_alerts.py'
+      - 'scripts/watch_sacramento_county_original_sources.py'
+      - 'scripts/test_watch_sacramento_county_original_sources.py'
+      - 'scripts/test_watch_nationwide_government_originals.py'
+      - 'scripts/test_government_source_docket.cjs'
+      - '.github/workflows/government_watch_xray_acceptance.yml'
+  pull_request:
+    paths:
+      - 'watch-email.js'
+      - 'agency-xray.html'
+      - 'government-source-docket.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'data/nationwide-government-jurisdiction-registry.json'
+      - 'scripts/**watch**'
+      - '.github/workflows/government_watch_xray_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: python -m pip install 'pypdf>=5,<7'
+      - name: Verify at-most-once alert delivery, receipt failure and consent
+        run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+      - name: Verify Sacramento original publisher discovery boundaries
+        run: python -m unittest discover -s scripts -p 'test_watch_sacramento_county_original_sources.py' -v
+      - name: Verify expanded nationwide official origin and 51-state queue
+        run: python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
+      - name: Verify source-specific docket without automatic email promotion
+        run: node scripts/test_government_source_docket.cjs
+      - name: Verify exact agency investigation source boundaries
+        run: node scripts/test_agency_intelligence.cjs
+      - name: Verify Watch authentication and unsubscribe states
+        run: node scripts/test_watch_auth_ui.cjs
