@@ -44,12 +44,15 @@ def api(url,secret,path,method="GET",payload=None):
              "Content-Type":"application/json","Accept":"application/json"}
     if method=="POST" and path.startswith("flock_watch_deliveries"):
         headers["Prefer"]="resolution=ignore-duplicates,return=minimal"
+    if method=="POST" and path.startswith("flock_watch_send_claims"):
+        headers["Prefer"]="resolution=ignore-duplicates,return=representation"
     req=urllib.request.Request(url.rstrip("/")+"/rest/v1/"+path,
        method=method,
        data=json.dumps(payload).encode("utf8") if payload is not None else None,
        headers=headers)
     with urllib.request.urlopen(req,timeout=35) as response:
-        return json.load(response) if method=="GET" or path.startswith("rpc/") else None
+        return json.load(response) if (method=="GET" or path.startswith("rpc/") or
+               (method=="POST" and path.startswith("flock_watch_send_claims"))) else None
 
 
 def query(url,secret,table,criteria):
@@ -114,13 +117,15 @@ def deliver(url,secret,settings,send=smtp_send):
         if not locality or not sub.get("email"):continue
         since=iso_datetime(sub["subscribed_at"])
         policy_rows=query(url,secret,"flock_watch_subscriptions",{
-          "select":"watch_policies,policy_opted_in_at",
+          "select":"email_enabled,watch_policies,policy_opted_in_at",
           "user_id":"eq."+str(sub["user_id"]),
           "locality_key":"eq."+locality,"limit":"2"
         })
         if len(policy_rows)!=1:
             raise RuntimeError("Policy opt-in subscription state missing or ambiguous")
         policy_row=policy_rows[0]
+        if policy_row.get("email_enabled") is not True:
+            continue  # Subscription was revoked after the protected recipient enumeration.
         policy_since=(iso_datetime(policy_row["policy_opted_in_at"])
             if policy_row.get("watch_policies") is True and policy_row.get("policy_opted_in_at")
             else None)
@@ -150,12 +155,36 @@ def deliver(url,secret,settings,send=smtp_send):
             if allowed:unsent.append(event)
             if len(unsent)>=8:break
         if not unsent:continue
-        message=make_email(sub["email"],locality,unsent,settings[4])
+        # Reserve each event BEFORE SMTP. Unique keys guard against repeated
+        # email if SMTP succeeds but recording the receipt subsequently fails.
+        # An uncertain attempt requires manual review; never auto-retry it.
+        claimed=[]
+        for event in unsent:
+            row={"user_id":sub["user_id"],"locality_key":locality,
+                 "event_key":event["event_key"]}
+            accepted=api(url,secret,
+                "flock_watch_send_claims?on_conflict=user_id,locality_key,event_key",
+                "POST",[row])
+            if not isinstance(accepted,list) or len(accepted)>1:
+                raise RuntimeError("Protected delivery claim response invalid")
+            if len(accepted)==1:
+                claimed.append(event)
+        if not claimed:continue
+        # Re-read consent immediately before submission to SMTP.
+        current=query(url,secret,"flock_watch_subscriptions",{
+            "select":"email_enabled,watch_government,watch_vendor,watch_sharing,watch_renewals,watch_policies",
+            "user_id":"eq."+str(sub["user_id"]),
+            "locality_key":"eq."+locality,"limit":"2"})
+        if len(current)!=1 or current[0].get("email_enabled") is not True:
+            continue
+        enabled=[e for e in claimed if eligible(e["kind"],current[0])]
+        if not enabled:continue
+        message=make_email(sub["email"],locality,enabled,settings[4])
         send(message,settings)
         receipts_to_add=[{"user_id":sub["user_id"],"locality_key":locality,
-                          "event_key":x["event_key"]} for x in unsent]
+                           "event_key":x["event_key"]} for x in enabled]
         api(url,secret,"flock_watch_deliveries?on_conflict=user_id,locality_key,event_key",
-          "POST",receipts_to_add)
+           "POST",receipts_to_add)
         delivered+=1
     return delivered
 
@@ -236,7 +265,7 @@ def main():
               count,"; mailbox arrival must be confirmed separately. No public source events or delivery receipts created.")
         return
     count=deliver(url,key,settings)
-    print("Source-qualified opt-in email digests delivered:",count,
+    print("Source-qualified SMTP submissions with recorded receipts:",count,
           "(no email addresses or subscriber identities logged)")
 
 

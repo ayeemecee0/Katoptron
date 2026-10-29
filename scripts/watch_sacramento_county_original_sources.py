@@ -69,9 +69,15 @@ def find_links(base,html):
     if parser.count>MAX_ANCHORS:raise ValueError("Too many government-page links")
     rows={}
     for href,label in parser.items:
-        if not MATCH.search(label):continue
         url=urllib.parse.urljoin(base,href)
         if not approved(url) or url==base:continue
+        # A PDF titled "Agenda packet" can still have an explicitly named
+        # Flock/ALPR file path. Match only visible labels or the exact
+        # government URL path, never query tokens or surrounding page text.
+        named_label=bool(MATCH.search(label))
+        named_path=bool(MATCH.search(urllib.parse.unquote(
+            urllib.parse.urlsplit(url).path).replace("-","_").replace("_"," ")))
+        if not (named_label or named_path):continue
         # Query strings can contain sensitive tokens; these public publisher
         # pages use no account-bearing links for reviewed source documents.
         if re.search(r"(?:token|access_key|session|auth|password)=",url,re.I):

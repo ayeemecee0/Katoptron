@@ -945,6 +945,26 @@
       "source_url": "https://www.state.wv.us/admin/purchase/Awards/Documents/2026/Q2/A_0926_CPO_PSC2600000003.pdf",
       "origin_role": "government_authored_publication_not_independently_page_reviewed",
       "evidence_limit": "Metadata-only government original source; no unverified contract status, operational cameras, sharing permissions or legal compliance may be published."
+    },
+    {
+      "id": "ma-groton-municipal-contract-termination-2026",
+      "state": "MA",
+      "publisher": "Town of Groton Police Department",
+      "publisher_role": "municipal_contract_termination_statement",
+      "kind": "html",
+      "source_url": "https://www.grotonma.gov/2026/08/31/town-of-groton-to-terminate-flock-safety-camera-contract-commit-to-developing-permanent-solution-for-spring-2027-town-meeting/",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only original government publisher receipt; no unverified contract implementation, current operational cameras, policy compliance, sharing permissions or live status may be published."
+    },
+    {
+      "id": "oh-shaker-heights-data-contract-policy-2026",
+      "state": "OH",
+      "publisher": "Shaker Heights Police Department",
+      "publisher_role": "municipal_contract_and_access_policy_statement",
+      "kind": "html",
+      "source_url": "https://shakerheightsoh.gov/m/newsflash/Home/Detail/790",
+      "origin_role": "government_authored_publication_not_independently_page_reviewed",
+      "evidence_limit": "Metadata-only original government publisher receipt; no unverified contract implementation, current operational cameras, policy compliance, sharing permissions or live status may be published."
     }
   ]
 }

@@ -82,6 +82,7 @@ class GovernmentWatchSafety(unittest.TestCase):
         # tests real delivery orchestration without sending actual messages.
         original=M.api
         receipts=set()
+        claims=set()
         sent=[]
         subscribers=[{
           "user_id":"test-user-uuid","email":"verified@example.org",
@@ -112,9 +113,16 @@ class GovernmentWatchSafety(unittest.TestCase):
             if path=="rpc/flock_watch_delivery_candidates":
                 return subscribers
             if path.startswith("flock_watch_subscriptions?"):
-                return [{"watch_policies":False,"policy_opted_in_at":None}]
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,
+                         "watch_renewals":False,"watch_policies":False,
+                         "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):
                 return records
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                event=payload[0]["event_key"]
+                if event in claims:return []
+                claims.add(event);return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":x} for x in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
@@ -139,6 +147,56 @@ class GovernmentWatchSafety(unittest.TestCase):
             self.assertEqual(M.deliver("https://example.supabase.co","protected",settings,send=fake_send),0)
         finally:
             M.api=original
+
+    def test_pre_smtp_claim_prevents_resend_when_receipt_write_fails(self):
+        # At-most-once SMTP submission, even if the delivery receipt cannot
+        # be written afterwards. The uncertain outcome is held, not replayed.
+        original=M.api
+        claims=set()
+        messages=[]
+        now="2026-10-29T21:00:00Z"
+        user={"user_id":"confirmed-user","email":"confirmed@example.org",
+              "locality_key":"sacramento county|CA",
+              "watch_government":True,"watch_vendor":False,
+              "watch_sharing":False,"watch_renewals":False,
+              "subscribed_at":"2026-10-29T19:50:00Z"}
+        event={"event_key":"new-verified-government-event",
+               "kind":"government_decision",
+               "title":"Newly reviewed government decision",
+               "summary":"Official source described a qualifying decision.",
+               "source_url":"https://agency.example.gov/council/2026",
+               "source_date":"2026-10-29",
+               "evidence_tier":"original_government","observed_at":now}
+        def fake_api(url,secret,path,method="GET",payload=None):
+            if path=="rpc/flock_watch_delivery_candidates":return [user]
+            if path.startswith("flock_watch_subscriptions?"):
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,
+                         "watch_renewals":False,"watch_policies":False,
+                         "policy_opted_in_at":None}]
+            if path.startswith("flock_agency_watch_events?"):return [event]
+            if path.startswith("flock_watch_deliveries?") and method=="GET":return []
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                key=payload[0]["event_key"]
+                if key in claims:return []
+                claims.add(key);return payload
+            if path.startswith("flock_watch_deliveries?") and method=="POST":
+                raise RuntimeError("Receipt store unavailable after SMTP handoff")
+            raise AssertionError("Unexpected request "+path)
+        M.api=fake_api
+        settings=("smtp.example.org",587,"user","secret","alerts@example.org")
+        try:
+            with self.assertRaisesRegex(RuntimeError,"Receipt store unavailable"):
+                M.deliver("https://example.supabase.co","key",settings,
+                          send=lambda message,_:messages.append(message))
+            self.assertEqual(len(messages),1)
+            self.assertIn("https://agency.example.gov/council/2026",
+                          messages[0].get_content())
+            self.assertEqual(M.deliver("https://example.supabase.co","key",settings,
+                          send=lambda message,_:messages.append(message)),0)
+            self.assertEqual(len(messages),1,"Uncertain submission must not duplicate")
+            self.assertEqual(claims,{"new-verified-government-event"})
+        finally:M.api=original
 
     def test_allowlisted_page_reviewed_originals_have_separate_event_kinds(self):
         ledgers=S.load_policy_ledgers()
@@ -180,14 +238,20 @@ class GovernmentWatchSafety(unittest.TestCase):
           "user_id":"uuid-test","email":"confirmed@example.org","locality_key":"green bay|WI",
           "watch_government":True,"watch_vendor":False,"watch_sharing":False,
           "watch_renewals":False,"subscribed_at":"2026-10-25T18:00:00Z"}]
-        receipts=set();sent=[]
+        receipts=set();claims=set();sent=[]
         policy_enabled=False
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":return subscribers
             if path.startswith("flock_watch_subscriptions?"):
-                return [{"watch_policies":policy_enabled,
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,"watch_renewals":False,
+                         "watch_policies":policy_enabled,
                          "policy_opted_in_at":"2026-10-25T20:00:00Z" if policy_enabled else None}]
             if path.startswith("flock_agency_watch_events?"):return events
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                event=payload[0]["event_key"]
+                if event in claims:return []
+                claims.add(event);return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":x} for x in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
@@ -315,12 +379,19 @@ class GovernmentWatchSafety(unittest.TestCase):
             "locality_key":"apache junction|AZ","watch_government":True,
             "watch_vendor":False,"watch_sharing":False,"watch_renewals":False,
             "subscribed_at":"2026-10-29T21:00:00Z"}]
-        receipts=set();messages=[];orig=M.api
+        receipts=set();claims=set();messages=[];orig=M.api
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":return subscriber
             if path.startswith("flock_watch_subscriptions?"):
-                return [{"watch_policies":False,"policy_opted_in_at":None}]
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,
+                         "watch_renewals":False,"watch_policies":False,
+                         "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):return [event]
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                key=payload[0]["event_key"]
+                if key in claims:return []
+                claims.add(key);return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":key} for key in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":

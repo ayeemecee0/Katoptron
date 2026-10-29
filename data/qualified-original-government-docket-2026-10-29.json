@@ -432,6 +432,121 @@
         "Was Ordinance 2756 finally adopted and did the city actually expend the proposed Flock expansion funds?",
         "Which source-dated contracts, invoices, vendor receipts and camera positions corroborate any subsequently implemented expenditure?"
       ]
+    },
+    {
+      "id": "groton-ma-official-flock-contract-termination-2026",
+      "agency": "Town of Groton Police Department",
+      "locality_key": "groton|MA",
+      "state": "MA",
+      "source_date": "2026-08-31",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_contract_termination",
+      "title": "Groton officials announce termination of Flock contract",
+      "summary": "The Town Manager and Police Chief officially announced their decision to terminate the current Flock license-plate reader contract effective immediately. This municipal statement is primary evidence of the announcement, not independent confirmation that equipment was removed or all retained data deleted.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.grotonma.gov/2026/08/31/town-of-groton-to-terminate-flock-safety-camera-contract-commit-to-developing-permanent-solution-for-spring-2027-town-meeting/",
+      "provider": "Town of Groton official news",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Town of Groton public statement dated August 31, 2026; termination announced",
+      "flock_specific": true,
+      "open_questions": [
+        "What written termination acknowledgment and final effective date are recorded by Flock?",
+        "Were all cameras removed and historical data deleted, and on what dates?"
+      ]
+    },
+    {
+      "id": "shaker-heights-oh-flock-signed-amendment-announcement-2026",
+      "agency": "Shaker Heights Police Department",
+      "locality_key": "shaker heights|OH",
+      "state": "OH",
+      "source_date": "2026-06-19",
+      "kind": "government_decision",
+      "status": "government_publisher_reports_signed_contract_amendment",
+      "title": "Shaker Heights reports signed Flock data-access contract amendment",
+      "summary": "The City publicly states the mayor signed an amended Flock agreement and adopted stricter access and internal-use rules. The publisher describes limits on vendor disclosure and partner access. This is a government statement of an executed amendment, not a separately page-reviewed signed contract or a technical audit of live permissions.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://shakerheightsoh.gov/m/newsflash/Home/Detail/790",
+      "provider": "City of Shaker Heights official city news",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Municipal announcement posted June 19, 2026; signed amendment reported by city",
+      "flock_specific": true,
+      "open_questions": [
+        "Can the signed amendment and exact effective clauses be independently page-reviewed?",
+        "Do periodic technical audits corroborate the actual sharing settings described by the City?"
+      ]
+    },
+    {
+      "id": "la-crosse-wi-police-flock-end-contract-statement-2026",
+      "agency": "La Crosse Police Department",
+      "locality_key": "la crosse|WI",
+      "state": "WI",
+      "source_date": "2026-10-23",
+      "kind": "government_decision",
+      "status": "government_publisher_reports_contract_ending_steps",
+      "title": "La Crosse Police report steps to end Flock agreement",
+      "summary": "The La Crosse Police Department's October 23 official statement says it has taken steps to end its Flock relationship after reviewing nationwide access-control concerns. The statement does not publish the executed termination instrument, full deactivation timeline, or evidence that all physical devices were removed.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.cityoflacrosse.org/News-articles/Police-News/Statement-on-Flock-Safety-Program",
+      "provider": "City of La Crosse Police official news",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "La Crosse Police official statement published October 23, 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "What was the contractual termination date and was it acknowledged by Flock?",
+        "When did access end, and are equipment removal and data-deletion receipts available?"
+      ]
+    },
+    {
+      "id": "sun-prairie-wi-flock-nonrenewal-city-statement-2026",
+      "agency": "Sun Prairie Police Department",
+      "locality_key": "sun prairie|WI",
+      "state": "WI",
+      "source_date": "2026-09-16",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_future_nonrenewal",
+      "title": "Sun Prairie announces future nonrenewal of Flock contracts",
+      "summary": "The City announced it will not renew its Flock contracts, with six camera subscriptions scheduled to expire December 31, 2026 and three others on March 31, 2027. These are stated future expiry dates, not proof of immediate shutdown, current hardware removal, or completed transition to another vendor.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://rec.cityofsunprairie.com/m/newsflash/Home/Detail/620",
+      "provider": "City of Sun Prairie official press release",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "City release dated September 16, 2026 and posted September 25, 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Have any of the nine subscriptions been extended or modified since the announcement?",
+        "What provider transition approvals and subsequent removal records are public?"
+      ]
+    },
+    {
+      "id": "methuen-ma-city-flock-removal-pending-statement-2026",
+      "agency": "Methuen Police Department",
+      "locality_key": "methuen|MA",
+      "state": "MA",
+      "source_date": "2026-09-23",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_ending_program_removal_pending",
+      "title": "Methuen announces end of Flock use, camera removal pending",
+      "summary": "The City of Methuen states it is ending use of Flock, covering installed plate-reader cameras while arranging removal, following an internal review of access and sharing controls. This establishes the City's announcement and described interim measure, not a third-party audit of full deactivation or completed physical removal.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://cityofmethuen.net/m/newsflash/Home/Detail/303",
+      "provider": "City of Methuen Mayor and Police official announcement",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Joint city-police statement posted September 23, 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "What dated vendor acknowledgment and final termination terms are available?",
+        "When were covered cameras physically removed and data fully deleted?"
+      ]
     }
   ]
 }

@@ -83,10 +83,17 @@ def extract(source,raw):
 def scan(originals,baseline,fetcher=gov.fetch,workers=5):
  j,seeds,prior=gov.catalog(originals,json.loads((ROOT/"data"/"national-government-audit-source-portals.json").read_text(encoding="utf8")))
  by_id={r["source_id"]:r for r in baseline.get("receipts",[])}
- if len(by_id)!=len(seeds):raise ValueError("Exact original source baseline missing")
+ if (len(by_id)!=len(baseline.get("receipts",[])) or
+     not set(by_id).issubset({s["id"] for s in seeds})):
+  raise ValueError("Original government baseline has duplicate or removed sources")
  def check(src):
   b=by_id.get(src["id"])
-  if not b or b["source_url"]!=src["source_url"] or b["state"]!=src["state"]:
+  if not b:
+   # A newly registered publisher is never automatically trusted merely
+   # because its URL is .gov. First collect a prior public-source receipt.
+   return {"source_id":src["id"],"state":src["state"],
+     "status":"new_publisher_original_receipt_required","links":[]}
+  if b["source_url"]!=src["source_url"] or b["state"]!=src["state"]:
    raise ValueError("Original government provenance mismatch")
   if src["kind"]!="html":
    return {"source_id":src["id"],"state":src["state"],"status":"original_is_pdf_no_link_extraction","links":[]}

@@ -4,11 +4,22 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const V=require('../government-source-docket.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const result=V.build(raw);
-assert.equal(result.rows.length,18);
-assert.equal(result.states.length,7);
-assert.equal(result.issuers.length,13);
-assert.equal(result.agencies.length,12);
+assert.equal(result.rows.length,23);
+assert.equal(result.states.length,9);
+assert.equal(result.issuers.length,18);
+assert.equal(result.agencies.length,17);
 assert.equal(result.byLocality('sacramento county|CA').length,3);
+for(const key of ['groton-ma-official-flock-contract-termination-2026',
+ 'shaker-heights-oh-flock-signed-amendment-announcement-2026',
+ 'la-crosse-wi-police-flock-end-contract-statement-2026',
+ 'sun-prairie-wi-flock-nonrenewal-city-statement-2026',
+ 'methuen-ma-city-flock-removal-pending-statement-2026']){
+ const evidence=result.get(key);
+ assert.ok(evidence,'New exact government original absent: '+key);
+ assert.equal(evidence.watch_category,'historical_research_only');
+ assert.equal(evidence.source_type,'government_hosted_primary_html');
+ assert.equal(evidence.amount_usd,null);
+}
 const commerceBudget=result.get('commerce-city-co-flock-budget-ord-2756-first-reading-2026');
 assert.equal(commerceBudget.amount_usd,608900);
 assert.match(commerceBudget.amount_basis,/not a paid invoice/);
@@ -68,4 +79,4 @@ assert.match(html,/government-source-docket\.js/);
 assert.match(html,/renderExactGovSources\(group\.key\)/);
 const page=fs.readFileSync(path.join(__dirname,'../government-evidence.html'),'utf8');
 assert.match(page,/qualified-original-government-docket-2026-10-29\.json/);
-console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 18 issuer-verified records, 12 exact locality profiles, 7 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
+console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 23 original issuer records, 17 exact locality profiles, 9 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
