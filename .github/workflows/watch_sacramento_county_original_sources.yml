@@ -1,0 +1,50 @@
+name: Watch original Sacramento County government publisher links
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 18 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/watch_sacramento_county_original_sources.py'
+      - 'scripts/test_watch_sacramento_county_original_sources.py'
+      - '.github/workflows/watch_sacramento_county_original_sources.yml'
+  pull_request:
+    paths:
+      - 'scripts/watch_sacramento_county_original_sources.py'
+      - 'scripts/test_watch_sacramento_county_original_sources.py'
+      - '.github/workflows/watch_sacramento_county_original_sources.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-sacramento-original-publisher-link-monitor
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify source identity, candidate privacy and fail-closed discovery
+        run: python -m unittest discover -s scripts -p 'test_watch_sacramento_county_original_sources.py' -v
+      - name: Require confidential review queue credentials
+        if: github.event_name != 'pull_request'
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Discover new original government links without publishing unverified claims
+        if: github.event_name != 'pull_request'
+        run: python scripts/watch_sacramento_county_original_sources.py
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event_name != 'pull_request'
+        with:
+          name: sacramento-county-publisher-source-discovery
+          path: .katoptron-ci/sacramento-county-official-source-watch.json
+          retention-days: 21
+          if-no-files-found: warn
