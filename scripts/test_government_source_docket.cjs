@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const V=require('../government-source-docket.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const result=V.build(raw);
-assert.equal(result.rows.length,11);
+assert.equal(result.rows.length,13);
 assert.equal(result.states.length,6);
 assert.equal(result.agencies.length,10);
 assert.equal(result.byLocality('sacramento county|CA').length,2);
@@ -18,6 +18,9 @@ assert.match(filing.status,/not_operational_verification/);
 const allentown=result.get('allentown-pa-ipvm-15-8653');
 assert.equal(allentown.amount_usd,10000);
 assert.match(allentown.amount_basis,/NOT a Flock vendor agreement/);
+const grand=result.get('south-san-francisco-ca-grand-jury-response-26-2219');
+assert.match(grand.summary,/audit data were not archived/);
+assert.match(grand.status,/not_final_adoption_verified/);
 const elpaso=result.get('el-paso-tx-item-26-1092');
 assert.match(elpaso.status,/header_discrepancy/);
 for(const r of result.rows){
@@ -45,4 +48,4 @@ assert.match(html,/government-source-docket\.js/);
 assert.match(html,/renderExactGovSources\(group\.key\)/);
 const page=fs.readFileSync(path.join(__dirname,'../government-evidence.html'),'utf8');
 assert.match(page,/qualified-original-government-docket-2026-10-29\.json/);
-console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 11 issuer-verified records, 10 exact locality profiles, 6 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
+console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 13 issuer-verified records, 10 exact locality profiles, 6 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
