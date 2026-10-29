@@ -34,6 +34,7 @@ ul{padding-left:1.35rem}li{margin:.4rem 0}
  <div><label for="agency">Agency</label><select id="agency"><option value="">Choose verified agency</option></select></div>
  <div><label for="compare">Compare with (optional)</label><select id="compare"><option value="">None</option></select></div>
  <button id="print" type="button" disabled>Print / Save as PDF</button>
+ <button id="prepareRequest" type="button" disabled>Prepare editable records request</button>
 </div>
 <p id="status" role="status" aria-live="polite">Loading verified source records…</p>
 <section id="report" hidden>
@@ -45,6 +46,11 @@ ul{padding-left:1.35rem}li{margin:.4rem 0}
 <div id="comparison"></div></section>
 <h2>Evidence gaps and unresolved questions</h2><ul id="gaps"></ul>
 <h2>Original document inventory / verification fingerprints</h2><div id="sources"></div>
+<section id="records-request">
+<h2>Public-records investigation package</h2>
+<p class="muted">An editable draft based exclusively on outstanding source gaps in the selected exact-agency dossier. It is not automatically sent. Request official agreements, spending, current public policies, decision records and aggregate audit documentation, not individual vehicle searches, license plates or routes. Verify the appropriate records custodian and jurisdictional law before sending.</p>
+<label for="requestText">Editable public-records request</label><textarea id="requestText" rows="16" style="display:block;width:100%;font:inherit;padding:.7rem" aria-label="Editable source-backed records request"></textarea>
+<div class="controls no-print"><button id="copyRequest" type="button">Copy draft</button><span id="requestStatus" role="status"></span></div></section>
 <h2>Source scope and methodology</h2>
 <p>Agency identity is taken from the individually page-reviewed catalog, not a locality centroid or approximate city match. Each original includes its SHA-256 fingerprint and independently reviewed citation pages. Written access rights are not searches; signed orders do not establish payment or installation; unadopted proposals do not establish effective policy.</p>
 <p>Related methods: <a href="./methodology.html">Evidence qualification methodology</a>, <a href="./policy-evidence-issues.html">unresolved source issues</a>, <a href="./agency-compare.html">multi-agency evidence comparison</a>.</p>
@@ -72,7 +78,7 @@ function cited(parent,url,label){
 }
 function render(){
  for(const id of ['summary','timeline','findings','comparison','gaps','sources'])$(id).replaceChildren();
- $('report').hidden=true;$('print').disabled=true;
+ $('report').hidden=true;$('print').disabled=true;$('prepareRequest').disabled=true;
  if(!intelligence)return;
  const key=$('agency').value;
  if(!key){$('status').textContent='Choose an exact-agency original-source dossier.';return;}
@@ -137,7 +143,7 @@ function render(){
  if(other)url.searchParams.set('compare',other);else url.searchParams.delete('compare');
  history.replaceState(null,'',url);
  $('status').textContent='Original-page citations and source fingerprints verified; printable report ready.';
- $('report').hidden=false;$('print').disabled=false;
+ $('report').hidden=false;$('print').disabled=false;$('prepareRequest').disabled=false;
  }catch(e){$('status').textContent='Investigation held: '+e.message;}
 }
 (async()=>{
@@ -156,6 +162,28 @@ function render(){
  render();
  }catch(e){$('status').textContent='Original source validation unavailable: '+e.message;}
 })();
+
+$('prepareRequest').addEventListener('click',()=>{
+ if(!intelligence||!$('agency').value)return;
+ const p=intelligence.profile($('agency').value);
+ const sources=[...new Set(p.findings.map(f=>f.url?.split('#')[0]).filter(u=>typeof u==='string'&&u.startsWith('https://')))].slice(0,12);
+ const requests=p.gaps.filter(g=>typeof g==='string'&&g.length>15).slice(0,10);
+ const lines=['To: Public Records Officer, '+p.label+', '+p.state,'',
+ 'Subject: Request for publicly releasable records about ALPR / Flock Safety governance','',
+ 'I request electronic copies of existing public records, where held by your agency, concerning:',
+ ...requests.map((g,i)=>String(i+1)+'. Records sufficient to clarify: '+g),
+ '','Please also provide any existing signed Flock agreements and amendments, contract pricing and payments, current ALPR retention and sharing policy versions, and publicly releasable council actions relating to this program, to the extent not covered above.',
+ '','This request excludes individual license-plate searches, vehicle movement histories, driver identifiers, private user accounts, and raw law-enforcement hotlists.',
+ '','Sources used to frame these questions:', ...sources,
+ '','Please provide responsive records electronically and advise of any fees before incurring them. Thank you.'];
+ $('requestText').value=lines.join('\n');
+ $('requestStatus').textContent='Draft prepared from '+requests.length+' unresolved source gaps; review before sending.';
+ $('records-request').scrollIntoView({block:'start'});
+});
+$('copyRequest').addEventListener('click',async()=>{
+ try{await navigator.clipboard.writeText($('requestText').value);$('requestStatus').textContent='Draft copied.';}
+ catch{$('requestText').focus();$('requestText').select();$('requestStatus').textContent='Select text and copy manually.';}
+});
 $('agency').addEventListener('change',render);$('compare').addEventListener('change',render);
 $('print').addEventListener('click',()=>window.print());
 </script></body></html>
