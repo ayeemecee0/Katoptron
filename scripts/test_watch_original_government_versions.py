@@ -44,13 +44,13 @@ class OriginalVersionSafety(unittest.TestCase):
   V.scan([self.row],lambda _:self.original("Additional revised city context."),self.api)
   self.assertEqual(len(self.reviews),1)
  def test_disappeared_anchor_or_wrong_publisher_is_held(self):
-  self.assertEqual(V.scan([self.row],lambda _:b"<html>No city decision</html>",self.api)[self.row["id"]],"held_ValueError")
+  self.assertEqual(V.scan([self.row],lambda _:b"<html>No city decision</html>",self.api)[self.row["id"]],"held_original_claim_anchor_or_identity_changed")
   self.assertEqual(len(self.receipts),0)
   bad=dict(self.row,source_url="https://frankfort.ky.gov.evil.invalid/injected")
-  self.assertEqual(V.scan([bad],lambda _:self.original(),self.api)[self.row["id"]],"held_ValueError")
+  self.assertEqual(V.scan([bad],lambda _:self.original(),self.api)[self.row["id"]],"held_original_claim_anchor_or_identity_changed")
  def test_external_unauthorized_source_or_duplicate_rejected(self):
   with self.assertRaisesRegex(ValueError,"Duplicate"):
    V.scan([self.row,self.row],lambda _:self.original(),self.api)
   bad=dict(self.row,watch_category="new_public_event")
-  self.assertEqual(V.scan([bad],lambda _:self.original(),self.api)[self.row["id"]],"held_ValueError")
+  self.assertEqual(V.scan([bad],lambda _:self.original(),self.api)[self.row["id"]],"held_unqualified_event")
 if __name__=="__main__":unittest.main()
