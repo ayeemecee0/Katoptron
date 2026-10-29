@@ -35,7 +35,7 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <form id="createWorkspace" class="row no-print"><label>New workspace title<input id="workspaceTitle" maxlength="120" minlength="3" placeholder="Flock contract research" required></label><button type="submit">Create workspace</button></form>
 <label for="workspaceSelect">Current workspace</label><select id="workspaceSelect"></select>
 <div class="row no-print" id="collaboration"><label>Invite role<select id="inviteRole"><option value="editor">Editor</option><option value="viewer">Viewer</option></select></label><button id="shareInvite" type="button">Create 7-day one-use invite link</button></div>
-<p id="inviteResult" class="muted" role="status"></p>
+<p id="inviteResult" class="muted" role="status"></p><div id="members" class="no-print" aria-label="Workspace collaborators"></div>
 </section>
 <section class="panel"><h2>Case files</h2>
 <form id="createCase" class="row no-print">
