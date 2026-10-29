@@ -82,7 +82,7 @@ jobs:
       - name: Classify all current original government leads into actionable private states
         run: python scripts/classify_original_government_leads.py
   first_party_html_checks:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     needs: acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 18
