@@ -24,6 +24,8 @@ for(const r of result.rows){
  assert.equal(r.watch_category,'historical_research_only');
  assert.equal(V.validUrl(r.source_url),true);
  assert.ok(r.proof&&r.summary.length>90);
+ assert.ok(r.open_questions.length>=1);
+ assert.ok(r.open_questions.every(q=>q.length>20));
  assert.ok(!Object.hasOwn(r,'latitude')&&!Object.hasOwn(r,'longitude'));
 }
 const mutate=(fn)=>{const clone=JSON.parse(JSON.stringify(raw));fn(clone.sources);return clone};
