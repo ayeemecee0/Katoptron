@@ -86,7 +86,7 @@ async function start(win,U){
    for(const key of quickstartKeys){
     const records=docket.byLocality(key);
     if(!records.length)continue;
-    pilotDossiers.set(key,records[0]);
+    pilotDossiers.set(key,records.find(row=>row.flock_specific && /Sheriff/i.test(row.agency))||records.find(row=>row.flock_specific)||records[0]);
    }
    select.replaceChildren(new Option('Choose a researched jurisdiction',''));
    for(const [key,record] of pilotDossiers)select.append(new Option(record.agency+' · '+record.state+' ('+docket.byLocality(key).length+' sourced item(s))',key));
