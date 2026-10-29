@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Live first-party HTML receipt and anchor verification for ten new civic dossiers.
+"""Live first-party HTML receipt and anchor verification for new civic dossiers.
 
 Receipts prove original publisher text, NOT live camera operation, signed
 termination or executed contracts. Fail closed on drift and untrusted redirect.
@@ -28,7 +28,12 @@ ANCHORS={
  "liberty-hill-tx-flock-removal-city-statement-2026":"were removed by City staff",
  "elgin-tx-flock-program-pause-2026":"pause its use of the FLOCK Safety ALPR system",
  "redmond-wa-flock-contract-termination-vote-2026":"voted 7-0 in favor of terminating",
- "tukwila-wa-revised-flock-contract-adoption-2026":"adopted the revised contract on 5/18/26"
+ "tukwila-wa-revised-flock-contract-adoption-2026":"adopted the revised contract on 5/18/26",
+ "mill-valley-ca-flock-alpr-disabled-government-statement-2026":"Both the ALPR and live-feed cameras have been disabled since September 9, 2026.",
+ "richmond-va-flock-nonrenewal-mayor-announcement-2026":"the City will not move forward with the Flock ALPR contract when it’s up for renewal.",
+ "panama-city-beach-fl-police-flock-suspension-2026":"suspending its use of the Flock Automated License Plate Reader system effective immediately",
+ "fort-wayne-in-flock-discontinuation-chief-statement-2026":"the decision was made to discontinue the Fort Wayne Police Department’s use of Flock.",
+ "lynchburg-va-flock-alpr-pause-police-original-2026":"temporarily pause the operation of its fifteen fixed Flock"
 }
 
 def valid(url):
@@ -80,7 +85,7 @@ def review(row,fetcher=fetch):
 
 def run(doc,fetcher=fetch):
  rows=[r for r in doc["sources"] if r["id"] in ANCHORS]
- if len(rows)!=10 or len({r["id"] for r in rows})!=10 or len({r["locality_key"] for r in rows})!=10:
+ if len(rows)!=15 or len({r["id"] for r in rows})!=15 or len({r["locality_key"] for r in rows})!=15:
   raise ValueError("Missing/duplicate new government agencies")
  if len({r["state"] for r in rows})<5:raise ValueError("Insufficient new publisher states")
  result=[review(row,fetcher) for row in rows]
@@ -91,7 +96,10 @@ def run(doc,fetcher=fetch):
       "current_access_permissions","signed_agreement_not_in_original"],
   "records":result}
 def main():
- ap=argparse.ArgumentParser();ap.add_argument("--out",type=Path,default=OUT);args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument("--out",type=Path,default=OUT)
+ ap.add_argument("--min-verified",type=int,default=0)
+ ap.add_argument("--min-verified-states",type=int,default=0)
+ args=ap.parse_args()
  result=run(json.loads(CATALOG.read_text()))
  out=args.out.resolve()
  if not out.is_relative_to(ROOT):raise ValueError("Verification output outside repo")
@@ -102,4 +110,7 @@ def main():
   "checked":result["new_agencies_checked"],"states":result["states"]}))
  for row in result["records"]:
   print("GOV_ORIGINAL_CHECK",json.dumps({k:row[k] for k in ("id","status","sha256")}))
+ verified_states={r["state"] for r in result["records"] if r["source_statement_verified"]}
+ if result["verified_original_html_statements"]<args.min_verified or len(verified_states)<args.min_verified_states:
+  raise RuntimeError("Insufficient independently fingerprinted original government issuers/states; held records are not verified")
 if __name__=="__main__":main()

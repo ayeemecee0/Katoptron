@@ -82,20 +82,19 @@ jobs:
       - name: Classify all current original government leads into actionable private states
         run: python scripts/classify_original_government_leads.py
   first_party_html_checks:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     needs: acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Re-fetch and independently fingerprint ten original government agency pages
-        run: python scripts/verify_new_original_agency_html.py
+        run: python scripts/verify_new_original_agency_html.py --min-verified 10 --min-verified-states 5
       - uses: actions/upload-artifact@v4
         with:
           name: extended-original-government-evidence-receipts

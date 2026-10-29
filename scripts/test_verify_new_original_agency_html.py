@@ -7,9 +7,9 @@ class NewOriginals(unittest.TestCase):
  def test_all_ten_distinct_source_candidates_in_seven_states(self):
   doc=json.loads(M.CATALOG.read_text(encoding="utf8"))
   rows=[r for r in doc["sources"] if r["id"] in M.ANCHORS]
-  self.assertEqual(len(rows),10)
-  self.assertEqual(len({x["locality_key"] for x in rows}),10)
-  self.assertEqual(len({x["state"] for x in rows}),7)
+  self.assertEqual(len(rows),15)
+  self.assertEqual(len({x["locality_key"] for x in rows}),15)
+  self.assertEqual(len({x["state"] for x in rows}),9)
   self.assertTrue(all(M.valid(r["source_url"]) for r in rows))
   self.assertTrue(all(r["watch_category"]=="historical_research_only" for r in rows))
  def test_only_original_html_anchor_can_verify_source_statement(self):
