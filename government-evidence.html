@@ -20,6 +20,7 @@ function render(){
  card.append(make('p',r.summary));
  if(r.amount_usd!==null){card.append(make('p','Source-stated figure: $'+r.amount_usd.toLocaleString('en-US',{maximumFractionDigits:2})+' · '+r.amount_basis));}
  card.append(make('p','Original record check: '+r.proof));
+ for(const q of r.open_questions)card.append(make('p','Unresolved: '+q));
  const a=make('a','View original government source');a.href=r.source_url;a.target='_blank';a.rel='noopener noreferrer';card.append(a);
  $('results').append(card);}
  $('status').textContent=rows.length+' exact source records. No unsupported current deployment or status inferred.';
