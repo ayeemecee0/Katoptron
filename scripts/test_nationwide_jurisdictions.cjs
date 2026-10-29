@@ -6,7 +6,6 @@ const old=require('../data/national-government-audit-source-portals.json');
 const receiptData=require('../data/nationwide-original-government-source-receipts.json');
 const check=API.sourceReceipts(receiptData,sources);
 assert.equal(check.counts.accessible,31);
-assert.equal(check.counts.held,12);
 assert.equal(check.receipts.size,45);
 assert.equal(check.counts.held,14);
 for(const id of ['ma-groton-municipal-contract-termination-2026','oh-shaker-heights-data-contract-policy-2026']){
