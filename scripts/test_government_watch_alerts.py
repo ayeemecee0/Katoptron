@@ -379,12 +379,19 @@ class GovernmentWatchSafety(unittest.TestCase):
             "locality_key":"apache junction|AZ","watch_government":True,
             "watch_vendor":False,"watch_sharing":False,"watch_renewals":False,
             "subscribed_at":"2026-10-29T21:00:00Z"}]
-        receipts=set();messages=[];orig=M.api
+        receipts=set();claims=set();messages=[];orig=M.api
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":return subscriber
             if path.startswith("flock_watch_subscriptions?"):
-                return [{"watch_policies":False,"policy_opted_in_at":None}]
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,
+                         "watch_renewals":False,"watch_policies":False,
+                         "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):return [event]
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                key=payload[0]["event_key"]
+                if key in claims:return []
+                claims.add(key);return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":key} for key in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
