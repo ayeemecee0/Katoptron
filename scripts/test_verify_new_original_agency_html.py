@@ -9,7 +9,7 @@ class NewOriginals(unittest.TestCase):
   rows=[r for r in doc["sources"] if r["id"] in M.ANCHORS]
   self.assertEqual(len(rows),21)
   self.assertEqual(len({x["locality_key"] for x in rows}),21)
-  self.assertEqual(len({x["state"] for x in rows}),13)
+  self.assertEqual(len({x["state"] for x in rows}),15)
   self.assertTrue(all(M.valid(r["source_url"]) for r in rows))
   self.assertTrue(all(r["watch_category"]=="historical_research_only" for r in rows))
  def test_only_original_html_anchor_can_verify_source_statement(self):
