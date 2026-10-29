@@ -64,7 +64,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <section id="originalDossier" hidden aria-labelledby="originalTitle">
 <h3 id="originalTitle"></h3>
 <p id="originalSummary"></p>
-<div class="grid" id="originalMetrics"></div>
+<div class="grid" id="originalMetrics"></div><h3>Agency decision brief: evidence and unknowns</h3><div class="grid" id="originalQuickScan"></div>
 <section id="investigationSummary" aria-label="Unified source-backed agency intelligence" hidden>
  <h3>Agency X-Ray 2.0 · One-page investigation</h3>
  <p>The source-linked overview groups written decisions, contracts, policies, documented access, oversight and specific evidence gaps. An exact agency is never assumed to operate every camera in the surrounding locality.</p>
@@ -87,7 +87,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <section id="profile" hidden aria-label="Selected locality source dossier">
 <h2 id="profileTitle"></h2>
 <p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a><a id="audit" href="./agency-audit.html">Generate accountability audit</a><a id="timelineLink" href="./agency-timeline.html">View dated accountability timeline</a></div>
-<div class="grid" id="metrics"></div>
+<section class="pane" aria-label="Source-linked investigation overview"><h3>Decision brief: spending, contracts, policies, changes, questions</h3><p>Figures summarize sourced locality records, not necessarily one agency. Contract proposals are not paid expenditure.</p><div class="grid" id="profileQuickScan"></div></section><div class="grid" id="metrics"></div>
 <h3>Exact government-source research for this locality</h3><div id="newExactGovSources"></div>
 <p class="muted">Newly indexed historical government records are not automatic government change alerts. Supplemental docket entries are separate from individually page-reviewed agency dossiers.</p>
 <h3>Government program disclosures</h3><div id="programs"></div>
@@ -167,13 +167,42 @@ function renderOriginalList(){
   originalIndex.original_documents+' original-page-reviewed documents; '+rows.length+
   ' match(es). This is not a statewide or nationwide agency census.';
 }
+function overviewItem(container,title,value,detail,href){
+ const card=node('article',null,'card');
+ card.append(node('strong',title),node('p',value),node('small',detail));
+ if(href)source(card,href,'Inspect original');
+ container.append(card);
+}
+function renderLocalityOverview(group){
+ const el=$('profileQuickScan');el.replaceChildren();
+ const docket=governmentDocket?governmentDocket.byLocality(group.key):[];
+ const signed=group.events.filter(e=>e.event_type==='executed_contract');
+ const policies=docket.filter(r=>['published_policy','historic_policy'].includes(r.kind));
+ const proposals=docket.filter(r=>r.kind==='contract_proposal');
+ const amounts=signed.filter(e=>e.amount_usd!=null);
+ overviewItem(el,'Spending',amounts.length+' signed source-amount record(s)','Amounts may overlap; payments not independently established.',amounts[0]?.source_url);
+ overviewItem(el,'Contracts',signed.length+' executed item(s), '+proposals.length+' proposal(s)','An authorization or proposal is not a signed agreement.',signed[0]?.source_url||proposals[0]?.source_url);
+ overviewItem(el,'Surveillance policies',policies.length+' original record(s)','Historical records are not assumed current.',policies[0]?.source_url);
+ overviewItem(el,'Documented changes',group.events.length+' government item(s), '+group.portals.length+' vendor snapshot(s)','Counts do not independently establish before/after changes.',group.events[0]?.source_url||group.portals[0]?.portal_url);
+ const questions=docket.flatMap(r=>r.open_questions);
+ overviewItem(el,'Unanswered questions',questions[0]||'Current operations, policies and permissions are unverified.','Original docket unresolved questions: '+questions.length+'.',docket[0]?.source_url);
+}
+function renderOriginalOverview(p){
+ const el=$('originalQuickScan');el.replaceChildren();
+ const contracts=p.topics.contract||[],policies=p.topics.policy||[];
+ overviewItem(el,'Spending','Audited spending unknown','Source-reported contract amounts are not verified payments.',contracts[0]?.url);
+ overviewItem(el,'Contracts',contracts.length+' page-specific finding(s)','Not a complete signed-contract inventory.',contracts[0]?.url);
+ overviewItem(el,'Surveillance policies',policies.length+' page-specific finding(s)','Drafts are not adopted policies.',policies[0]?.url);
+ overviewItem(el,'Documented changes',p.transitions.length+' verified source comparison(s)','Document dates alone do not establish actual change.',p.transitions[0]?.sources?.[0]?.url);
+ overviewItem(el,'Unanswered questions',p.gaps.length+' unresolved source gap(s)',p.gaps[0]||'Current status not verified.',null);
+}
 function renderInvestigation(r){
  const output=$('investigationSummary');output.hidden=false;
  for(const id of ['intelligenceTimeline','intelligenceTopics','intelligenceGaps'])$(id).replaceChildren();
  let p;
  try{p=window.KatoptronInvestigations.build(originalIndex).profile(r.key);}
  catch(err){output.hidden=true;$('originalStatus').textContent='Source-specific investigation held: '+err.message;return;}
- $('intelligenceStatus').textContent=p.documents+' original-reviewed documents · '+p.findings.length+
+ renderOriginalOverview(p);$('intelligenceStatus').textContent=p.documents+' original-reviewed documents · '+p.findings.length+
  ' page-cited findings · '+p.transitions.length+' qualified change/proposal comparison(s). No live camera or compliance claim.';
  $('investigationExport').href='./agency-investigation.html?original='+encodeURIComponent(r.key);
  $('investigationCompare').href='./agency-compare.html?a='+encodeURIComponent(r.key);
@@ -323,7 +352,7 @@ function renderGovernmentDocket(){
 $('governmentDocketSearch').addEventListener('input',renderGovernmentDocket);
 fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('government source docket unavailable');return r.json()}).then(json=>{
  governmentDocket=window.KatoptronGovernmentDocket.build(json);
- renderGovernmentDocket();if(selected)renderExactGovSources(selected.key);
+ renderGovernmentDocket();if(selected){renderExactGovSources(selected.key);renderLocalityOverview(selected);}
 }).catch(e=>{$('governmentDocketStatus').textContent='Government source docket held: '+e.message;});
 
 function renderList(){
@@ -345,7 +374,7 @@ function renderList(){
 }
 function select(group){
  selected=group;$('profile').hidden=false;
- renderExactGovSources(group.key);
+ renderExactGovSources(group.key);renderLocalityOverview(group);
  $('profileTitle').textContent=group.label;
  $('profileDetail').textContent='Published source evidence grouped by locality name. One place can have multiple agencies; this grouping does not establish record ownership or an active deployment.';
  const url=new URL(location.href);url.searchParams.set('place',group.key);
