@@ -71,7 +71,8 @@
       "open_questions": [
         "Was a signed license or maintenance agreement later executed?",
         "What amount was actually spent and what were its sharing terms?"
-      ]
+      ],
+      "file_number": "683-2026"
     },
     {
       "id": "el-paso-tx-item-26-1092",
@@ -94,7 +95,8 @@
       "open_questions": [
         "Does the signed resolution or final City Council minutes reconcile the status-header discrepancy?",
         "Did any existing vendor agreement actually terminate?"
-      ]
+      ],
+      "file_number": "26-1092"
     },
     {
       "id": "saint-paul-mn-res-26-1421",
@@ -117,7 +119,8 @@
       "open_questions": [
         "Did the city administration terminate any agreements after the resolution?",
         "Was the requested 60-day implementation report delivered?"
-      ]
+      ],
+      "file_number": "RES 26-1421"
     },
     {
       "id": "allentown-pa-ipvm-15-8653",
@@ -140,7 +143,8 @@
       "open_questions": [
         "Did the independent review produce a publicly released assessment?",
         "What agreements or camera systems were later approved, if any?"
-      ]
+      ],
+      "file_number": "15-8653"
     },
     {
       "id": "carrollton-tx-item-7749",
@@ -163,7 +167,8 @@
       "open_questions": [
         "Was a final agreement signed and what was paid?",
         "Which of the described IP cameras are actually ALPR readers?"
-      ]
+      ],
+      "file_number": "7749"
     },
     {
       "id": "rockford-il-res-26-00160",
@@ -186,7 +191,8 @@
       "open_questions": [
         "Was the approved vendor contract signed and what equipment was delivered?",
         "Were any of the three one-year options exercised?"
-      ]
+      ],
+      "file_number": "26-00160"
     },
     {
       "id": "monterey-ca-agenda-a-26-368",
@@ -209,7 +215,8 @@
       "open_questions": [
         "Did the Board ultimately approve or execute the proposed agreement?",
         "How does the 63-camera proposal reconcile with the separately proposed 103-camera item?"
-      ]
+      ],
+      "file_number": "A 26-368"
     },
     {
       "id": "manteca-ca-agenda-26-399",
@@ -232,7 +239,8 @@
       "open_questions": [
         "Did City Council adopt the amendment?",
         "Were the Condor devices installed, and are any of them ALPR readers?"
-      ]
+      ],
+      "file_number": "26-399"
     },
     {
       "id": "south-san-francisco-ca-26-2370",
@@ -255,7 +263,8 @@
       "open_questions": [
         "Did Council authorize a vendor RFP?",
         "What vendor, if any, did a later evaluation select?"
-      ]
+      ],
+      "file_number": "26-2370"
     },
     {
       "id": "south-san-francisco-ca-grand-jury-response-26-2219",
@@ -278,7 +287,8 @@
       "open_questions": [
         "Were the draft grand jury responses formally approved and transmitted by the city?",
         "Have raw operator audit exports and explanatory memos actually been preserved since the response?"
-      ]
+      ],
+      "file_number": "26-2219"
     },
     {
       "id": "south-san-francisco-ca-grand-jury-resolution-26-2220",
@@ -301,7 +311,8 @@
       "open_questions": [
         "Has the City Clerk posted a finalized adopted resolution and certified voting record?",
         "Which specific audit, access and sharing safeguards have been implemented rather than promised?"
-      ]
+      ],
+      "file_number": "26-2220"
     },
     {
       "id": "sacramento-ca-district-attorney-alpr-access-policy-2026",
