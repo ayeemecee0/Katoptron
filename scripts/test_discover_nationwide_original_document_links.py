@@ -34,7 +34,9 @@ class AllStatesOriginalLinkTests(unittest.TestCase):
  def test_51_jurisdiction_link_scanner_only_unverified_metadata(self):
   rows=M.scan(R,B,fetcher=lambda s:HTML,workers=3)
   self.assertEqual(rows["jurisdictions_enrolled"],51)
-  self.assertEqual(rows["original_government_seeds_checked"],43)
+  self.assertEqual(rows["original_government_seeds_checked"],45)
+  self.assertEqual(sum(x["status"]=="new_publisher_original_receipt_required"
+    for x in rows["source_checks"]),2)
   self.assertGreaterEqual(rows["html_originals_link_scanned"],25)
   self.assertTrue(all(x["flock_installed"] is False and x["policy_adopted"] is False and x["original_document_fetched"] is False for x in rows["candidate_links"]))
  def test_original_upstream_unavailable_does_not_infer_no_flock(self):
