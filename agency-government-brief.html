@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Katoptron | Original government agency investigation</title>
+<meta name="description" content="Research an identified government agency's source-dated Flock actions, written policies, contract questions and original records.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font-family:system-ui,Arial,sans-serif;background:#0c1620;color:#e6eef4}*{box-sizing:border-box}body{margin:0;line-height:1.55}
+a{color:#91d6ed;overflow-wrap:anywhere}header{padding:1rem max(1rem,4vw);background:#142635;display:flex;gap:1.2rem;flex-wrap:wrap}
+main{max-width:980px;margin:1.4rem auto;padding:1.25rem}h1{font-size:clamp(1.6rem,4vw,2.4rem)}
+h2{font-size:1.2rem;margin-top:2rem}.note,.panel{background:#142736;border:1px solid #3a5262;border-radius:10px;padding:1rem;margin:.75rem 0}
+.note{border-left:4px solid #79bed0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:.75rem}
+.card{padding:1rem;background:#142736;border:1px solid #405a6b;border-radius:10px;overflow-wrap:anywhere}
+.card h3{margin:.1rem 0 .45rem;font-size:1rem}.card p{margin:.2rem 0}
+small,.muted{color:#b3c4d1}button{font:inherit;background:#223f51;color:#fff;padding:.65rem 1rem;border:1px solid #789db1;border-radius:7px;cursor:pointer}
+textarea{display:block;width:100%;min-height:330px;background:#fcfcfd;color:#172a37;padding:1rem;font:inherit;border-radius:8px}
+li{margin:.55rem 0}.actions{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+@media print{header,.actions,.no-print{display:none}body,main,.card,.panel{background:white;color:#111;box-shadow:none}a{color:#123f66}a:after{content:' (' attr(href) ')';font-size:8pt}}
+</style></head>
+<body><a href="#main" class="skip-link">Skip to agency investigation</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-evidence.html">Original government records</a><a href="./government-watch.html">Government Watch</a></header>
+<main id="main"><h1 id="heading">Source-backed government agency investigation</h1>
+<p id="date" class="muted"></p>
+<p class="note">Evidence is limited to original government-published statements about the named agency, as of their source dates. A proposal is not a signed contract. A published suspension or removal statement is not independent equipment inspection. Missing records mean unknown, not no surveillance.</p>
+<p id="status" role="status" aria-live="polite">Loading original government evidence…</p>
+<section id="report" hidden>
+<h2>What we can establish and what remains open</h2><div class="cards" id="answers"></div>
+<h2>Original-source evidence timeline</h2><div id="evidence"></div>
+<h2>Questions requiring additional original documents</h2><ul id="questions"></ul>
+<h2 id="records-request">Editable public-records investigation</h2>
+<p>Draft generated from the unresolved questions above. This is not sent. Identify the correct custodian and applicable records law before filing; no plate-search data or private movement histories are requested.</p>
+<label for="requestText">Source-backed request draft</label>
+<textarea id="requestText" aria-label="Editable public-records request"></textarea>
+<div class="actions no-print"><button type="button" id="regenerate">Regenerate draft</button><button type="button" id="copy">Copy request</button><button type="button" id="print">Print / Save as PDF</button><span id="copyStatus" role="status"></span></div>
+<p class="muted">This report is a dated research brief, not an official audit, vendor verification or legal compliance assessment. Original statements may change. Source documents and uncertainties are shown separately.</p>
+</section></main>
+<script src="./government-source-docket.js"></script>
+<script src="./government-agency-brief.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const elt=(tag,value)=>{const x=document.createElement(tag);if(value!=null)x.textContent=String(value);return x;};
+function card(title,body){
+ const div=elt('article');div.className='card';div.append(elt('h3',title),elt('p',body));$('answers').append(div);
+}
+function url(parent,src,label){
+ if(!window.KatoptronGovernmentDocket.validUrl(src))return;
+ const a=elt('a',label);a.href=src;a.target='_blank';a.rel='noopener noreferrer';parent.append(a);
+}
+let item=null;
+function render(p){
+ item=p;
+ $('heading').textContent='Agency investigation: '+p.agency+' · '+p.state;
+ $('date').textContent='Generated '+new Date().toISOString().slice(0,10)+' UTC · '+p.dated_records+
+  ' original government record(s) · '+p.source_count+' original source URL(s)';
+ $('answers').replaceChildren();$('evidence').replaceChildren();$('questions').replaceChildren();
+ const kinds=p.rows.map(r=>r.kind);
+ card('What is the agency doing?',p.rows[0].summary);
+ card('What was authorized?',p.rows.map(r=>r.status.replaceAll('_',' ')).join('; ')+
+  '. Source wording governs; proposed actions are not signed contracts.');
+ card('What does it cost?',p.documented_amounts.length?
+  p.documented_amounts.map(r=>'$'+r.amount_usd.toLocaleString()+' · '+r.amount_basis).join('; '):
+  'No original source-backed cost amount in this dossier. Unknown is not $0.');
+ card('What changed?',p.rows.length+' dated government publication(s) indexed. A new page date alone does not prove an operational change.');
+ card('What remains unknown?',p.issues.length+' specific source questions require additional verification.');
+ for(const r of p.rows){
+  const box=elt('article');box.className='panel';
+  box.append(elt('h3',r.title),elt('p',r.source_date+' · '+r.status.replaceAll('_',' ')+' · '+r.kind.replaceAll('_',' ')),
+    elt('p',r.summary),elt('p','Original government evidence: '+r.proof));
+  if(r.amount_usd!=null)box.append(elt('p','Source-stated amount: $'+r.amount_usd.toLocaleString()+' · '+r.amount_basis));
+  url(box,r.source_url,' Open original government document');
+  $('evidence').append(box);
+ }
+ for(const q of p.issues)$('questions').append(elt('li',q));
+ $('requestText').value=window.KatoptronGovernmentAgencyBrief.request(p);
+ $('report').hidden=false;
+ $('status').textContent='Source-backed original government investigation ready. Verify all unresolved questions before reuse.';
+}
+(async()=>{
+ try{
+  const id=new URL(location.href).searchParams.get('id');
+  if(!id)throw Error('Select a specific original government record from Agency X-Ray.');
+  const response=await fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'});
+  if(!response.ok)throw Error('Government original catalog unavailable');
+  const docket=window.KatoptronGovernmentDocket.build(await response.json());
+  render(window.KatoptronGovernmentAgencyBrief.profile(docket,id));
+ }catch(err){$('status').textContent='Investigation held: '+err.message;}
+})();
+$('regenerate').addEventListener('click',()=>{if(item)$('requestText').value=window.KatoptronGovernmentAgencyBrief.request(item);});
+$('copy').addEventListener('click',async()=>{
+ try{await navigator.clipboard.writeText($('requestText').value);$('copyStatus').textContent='Copied.';}
+ catch{$('requestText').focus();$('requestText').select();$('copyStatus').textContent='Select text and copy manually.';}
+});
+$('print').addEventListener('click',()=>window.print());
+</script></body></html>

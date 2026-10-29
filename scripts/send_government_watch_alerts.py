@@ -44,7 +44,7 @@ def api(url,secret,path,method="GET",payload=None):
              "Content-Type":"application/json","Accept":"application/json"}
     if method=="POST" and path.startswith("flock_watch_deliveries"):
         headers["Prefer"]="resolution=ignore-duplicates,return=minimal"
-    if method=="POST" and path.startswith("flock_watch_send_claims"):
+    if method in ("POST","PATCH") and path.startswith("flock_watch_send_claims"):
         headers["Prefer"]="resolution=ignore-duplicates,return=representation"
     req=urllib.request.Request(url.rstrip("/")+"/rest/v1/"+path,
        method=method,
@@ -52,7 +52,7 @@ def api(url,secret,path,method="GET",payload=None):
        headers=headers)
     with urllib.request.urlopen(req,timeout=35) as response:
         return json.load(response) if (method=="GET" or path.startswith("rpc/") or
-               (method=="POST" and path.startswith("flock_watch_send_claims"))) else None
+               (method in ("POST","PATCH") and path.startswith("flock_watch_send_claims"))) else None
 
 
 def query(url,secret,table,criteria):
@@ -108,6 +108,21 @@ def smtp_send(msg,settings):
     else:raise ValueError("Only encrypted SMTP ports 465 or 587 supported")
 
 
+def update_claim(url,secret,user_id,locality,event_key,previous,new,reason=None):
+    """Conditional transition with exactly one row updated, no customer PII logged."""
+    criteria=urllib.parse.urlencode({
+      "user_id":"eq."+str(user_id),"locality_key":"eq."+locality,
+      "event_key":"eq."+event_key,"status":"eq."+previous})
+    body={"status":new,"status_changed_at":datetime.now(timezone.utc).isoformat()}
+    if new=="smtp_submitted":
+        body["smtp_accepted_at"]=datetime.now(timezone.utc).isoformat()
+    if reason:body["failure_code"]=reason
+    result=api(url,secret,"flock_watch_send_claims?"+criteria,"PATCH",body)
+    if not isinstance(result,list) or len(result)!=1 or result[0].get("status")!=new:
+        raise RuntimeError("Watch outbox conditional transition failed")
+    return result[0]
+
+
 def deliver(url,secret,settings,send=smtp_send):
     subscribers=api(url,secret,"rpc/flock_watch_delivery_candidates","POST",{})
     if not isinstance(subscribers,list):raise RuntimeError("Protected Watch recipients unavailable")
@@ -124,8 +139,7 @@ def deliver(url,secret,settings,send=smtp_send):
         if len(policy_rows)!=1:
             raise RuntimeError("Policy opt-in subscription state missing or ambiguous")
         policy_row=policy_rows[0]
-        if policy_row.get("email_enabled") is not True:
-            continue  # Subscription was revoked after the protected recipient enumeration.
+        if policy_row.get("email_enabled") is not True:continue
         policy_since=(iso_datetime(policy_row["policy_opted_in_at"])
             if policy_row.get("watch_policies") is True and policy_row.get("policy_opted_in_at")
             else None)
@@ -133,56 +147,104 @@ def deliver(url,secret,settings,send=smtp_send):
           "select":"event_key,kind,title,summary,source_url,source_date,evidence_tier,observed_at",
           "locality_key":"eq."+locality,
           "observed_at":"gt."+since.isoformat(),
-          "order":"observed_at.asc","limit":"30"
+          "order":"observed_at.asc","limit":"100"
         })
         existing=query(url,secret,"flock_watch_deliveries",{
           "select":"event_key","user_id":"eq."+sub["user_id"],
           "locality_key":"eq."+locality,"limit":"1000"
         })
         receipts={x["event_key"] for x in existing}
+        claim_rows=query(url,secret,"flock_watch_send_claims",{
+          "select":"event_key,status,status_changed_at",
+          "user_id":"eq."+sub["user_id"],
+          "locality_key":"eq."+locality,"limit":"1000"
+        })
+        claims={r["event_key"]:r for r in claim_rows}
+        # A completed SMTP handoff with a failed receipt write can be safely
+        # reconciled WITHOUT another outbound email.
+        confirmed=[{"user_id":sub["user_id"],"locality_key":locality,
+                    "event_key":key} for key,r in claims.items()
+            if r.get("status")=="smtp_submitted" and key not in receipts]
+        if confirmed:
+            api(url,secret,"flock_watch_deliveries?on_conflict=user_id,locality_key,event_key",
+                "POST",confirmed)
+            receipts.update(r["event_key"] for r in confirmed)
+        # An old claimed attempt might have reached SMTP before a crash.
+        # Never requeue it; mark the outcome as uncertain for operator review.
+        for key,r in claims.items():
+            if r.get("status")!="claimed" or key in receipts:continue
+            stamp=r.get("status_changed_at")
+            if not stamp:continue
+            if (datetime.now(timezone.utc)-iso_datetime(stamp)).total_seconds()>600:
+                update_claim(url,secret,sub["user_id"],locality,key,"claimed","uncertain",
+                    "stale_claim_smtp_outcome_unknown")
         unsent=[]
         for event in events:
             observed=iso_datetime(event["observed_at"])
-            if event["event_key"] in receipts or observed<=since:
-                continue
+            if event["event_key"] in receipts or observed<=since:continue
+            previous=claims.get(event["event_key"])
+            # Revisit only a queued event. Claimed, uncertain and terminal
+            # events may have reached the mail server and cannot auto-resend.
+            if previous and previous.get("status")!="queued":continue
             policy=event["kind"] in ("policy_original_reviewed","policy_draft_reviewed")
             if policy:
-                if policy_since is None or observed<=policy_since:
-                    continue
+                if policy_since is None or observed<=policy_since:continue
                 allowed=True
-            else:
-                allowed=eligible(event["kind"],sub)
+            else:allowed=eligible(event["kind"],sub)
             if allowed:unsent.append(event)
             if len(unsent)>=8:break
         if not unsent:continue
-        # Reserve each event BEFORE SMTP. Unique keys guard against repeated
-        # email if SMTP succeeds but recording the receipt subsequently fails.
-        # An uncertain attempt requires manual review; never auto-retry it.
-        claimed=[]
+        queued=[]
         for event in unsent:
-            row={"user_id":sub["user_id"],"locality_key":locality,
-                 "event_key":event["event_key"]}
-            accepted=api(url,secret,
-                "flock_watch_send_claims?on_conflict=user_id,locality_key,event_key",
-                "POST",[row])
-            if not isinstance(accepted,list) or len(accepted)>1:
-                raise RuntimeError("Protected delivery claim response invalid")
-            if len(accepted)==1:
-                claimed.append(event)
-        if not claimed:continue
-        # Re-read consent immediately before submission to SMTP.
+            key=event["event_key"]
+            if key not in claims:
+                row={"user_id":sub["user_id"],"locality_key":locality,
+                     "event_key":key,"status":"queued"}
+                accepted=api(url,secret,
+                    "flock_watch_send_claims?on_conflict=user_id,locality_key,event_key",
+                    "POST",[row])
+                if not isinstance(accepted,list) or len(accepted)>1:
+                    raise RuntimeError("Protected outbox queue response invalid")
+                if len(accepted)!=1:continue
+            queued.append(event)
+        if not queued:continue
+        # Consent must be checked again immediately before claiming. A
+        # queued row is not an SMTP attempt and is safe to cancel explicitly.
         current=query(url,secret,"flock_watch_subscriptions",{
             "select":"email_enabled,watch_government,watch_vendor,watch_sharing,watch_renewals,watch_policies",
             "user_id":"eq."+str(sub["user_id"]),
             "locality_key":"eq."+locality,"limit":"2"})
-        if len(current)!=1 or current[0].get("email_enabled") is not True:
-            continue
-        enabled=[e for e in claimed if eligible(e["kind"],current[0])]
+        state=current[0] if len(current)==1 else {}
+        enabled=[]
+        for e in queued:
+            if state.get("email_enabled") is True and eligible(e["kind"],state):
+                enabled.append(e)
+            else:
+                update_claim(url,secret,sub["user_id"],locality,e["event_key"],
+                             "queued","canceled","consent_not_current")
         if not enabled:continue
-        message=make_email(sub["email"],locality,enabled,settings[4])
-        send(message,settings)
+        # Atomically move safe queued rows into a non-retryable claimed state
+        # BEFORE attempting SMTP. Fail closed on any transition mismatch.
+        claimed=[]
+        for e in enabled:
+            update_claim(url,secret,sub["user_id"],locality,e["event_key"],
+                         "queued","claimed")
+            claimed.append(e)
+        message=make_email(sub["email"],locality,claimed,settings[4])
+        try:
+            send(message,settings)
+        except Exception:
+            for e in claimed:
+                update_claim(url,secret,sub["user_id"],locality,e["event_key"],
+                             "claimed","uncertain","smtp_outcome_unknown")
+            raise
+        # SMTP submission accepted, NOT guaranteed final mailbox arrival.
+        # A crash before this transition leaves a non-retryable claimed row.
+        for e in claimed:
+            update_claim(url,secret,sub["user_id"],locality,e["event_key"],
+                         "claimed","smtp_submitted")
         receipts_to_add=[{"user_id":sub["user_id"],"locality_key":locality,
-                           "event_key":x["event_key"]} for x in enabled]
+                           "event_key":x["event_key"]} for x in claimed]
         api(url,secret,"flock_watch_deliveries?on_conflict=user_id,locality_key,event_key",
            "POST",receipts_to_add)
         delivered+=1

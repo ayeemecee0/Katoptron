@@ -547,6 +547,226 @@
         "What dated vendor acknowledgment and final termination terms are available?",
         "When were covered cameras physically removed and data fully deleted?"
       ]
+    },
+    {
+      "id": "lakewood-ca-council-rejects-flock-2026",
+      "agency": "Lakewood City Council",
+      "locality_key": "lakewood|CA",
+      "state": "CA",
+      "source_date": "2026-03-25",
+      "kind": "government_decision",
+      "status": "government_reported_proposed_agreement_rejected",
+      "title": "Lakewood council declines continued Flock pilot agreement",
+      "summary": "The city's March 25 recap says its council voted 3–2 on March 24 not to proceed with the proposed one-year continuation after a Flock ALPR and camera pilot. This is a government-published rejection of a proposal, not proof of a signed cancellation or hardware removal.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.lakewoodca.gov/News/Council-Recap-and-related-news/Council-Recap-for-March-24",
+      "provider": "City of Lakewood California",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "City council recap published March 25 2026 describing March 24 vote",
+      "flock_specific": true,
+      "open_questions": [
+        "Was the pilot equipment subsequently removed?"
+      ]
+    },
+    {
+      "id": "sheboygan-wi-flock-termination-request-2026",
+      "agency": "Sheboygan Police Department",
+      "locality_key": "sheboygan|WI",
+      "state": "WI",
+      "source_date": "2026-08-25",
+      "kind": "government_decision",
+      "status": "agency_requests_termination_not_council_adoption",
+      "title": "Sheboygan police request Flock contract termination",
+      "summary": "The City of Sheboygan published the police chief and administrator's intention to request termination of the Flock contract at the September 8 council meeting. The August 25 announcement is a request, not proof that the council subsequently approved termination.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.sheboyganwi.gov/m/newsflash/Home/Detail/94",
+      "provider": "City of Sheboygan Wisconsin",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Police department city news published August 25 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Did the September 8 Common Council vote approve termination?"
+      ]
+    },
+    {
+      "id": "grand-rapids-mi-flock-oversight-order-proposed-2026",
+      "agency": "Grand Rapids City Manager",
+      "locality_key": "grand rapids|MI",
+      "state": "MI",
+      "source_date": "2026-08-28",
+      "kind": "policy_proposal",
+      "status": "government_publisher_announces_proposed_policy_order_not_verified_issued",
+      "title": "Grand Rapids announces planned ALPR surveillance oversight order",
+      "summary": "On August 28 the City Manager announced a future administrative order to place the Police Department's ALPR system under the city surveillance technology policy and require review for renewals or expansion. The original announcement alone does not prove the administrative order was subsequently issued.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.grandrapidsmi.gov/city-news/posts/city-brings-automated-license-plate-reader-technology-under-surveillance-policy-to-boost-transparency/",
+      "provider": "City of Grand Rapids Michigan",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "City Manager city news announcement dated August 28 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Was the announced administrative order formally issued and published?"
+      ]
+    },
+    {
+      "id": "henrico-va-flock-contract-termination-announced-2026",
+      "agency": "Henrico County Police Division",
+      "locality_key": "henrico county|VA",
+      "state": "VA",
+      "source_date": "2026-10-06",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_contract_termination",
+      "title": "Henrico County police announce Flock contract termination",
+      "summary": "The county's October 6 announcement states that its Police Division intends to terminate its Flock Safety contract over privacy concerns within seven days. The publication documents an agency decision and timeline, but is not an independent signed termination receipt or physical equipment-removal verification.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://henrico.gov/news/2026/10/henrico-police-to-eliminate-flock-cameras/",
+      "provider": "Henrico County Virginia",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "County news announcement dated October 6 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Can the county produce the signed termination notice and final service-end date?"
+      ]
+    },
+    {
+      "id": "fridley-mn-flock-access-restrictions-2026",
+      "agency": "Fridley Public Safety Department",
+      "locality_key": "fridley|MN",
+      "state": "MN",
+      "source_date": "2026-08-19",
+      "kind": "published_policy",
+      "status": "police_department_published_flock_program_statement_not_independent_audit",
+      "title": "Fridley reports new restrictions on Flock network access",
+      "summary": "Fridley's public-safety director reports restricting data access to Minnesota agencies in February 2026, excluding agencies with 287(g) agreements in July, and retaining the Flock program with added controls. These are city-reported controls, not independently inspected technical configurations or actual partner query logs.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.fridleymn.gov/News-articles/2026-News/A-Statement-from-Public-Safety-Director-Regarding-ALPR-Program",
+      "provider": "City of Fridley Minnesota",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Public Safety Director statement published August 19 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Are the stated network restrictions documented by independent configuration receipts?"
+      ]
+    },
+    {
+      "id": "richland-wa-flock-suspension-announced-2026",
+      "agency": "Richland Police Department",
+      "locality_key": "richland|WA",
+      "state": "WA",
+      "source_date": "2026-04-01",
+      "kind": "government_decision",
+      "status": "agency_reports_alpr_suspension_intent",
+      "title": "Richland announces temporary Flock and Axon ALPR suspension",
+      "summary": "The City of Richland's April 1 news release says its Police Department will temporarily suspend Flock Safety and Axon ALPR systems while evaluating Washington's new requirements. This is an announced suspension, not independent proof of switch-off or a later restart.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.richlandwa.gov/Home/Components/News/News/2173/",
+      "provider": "City of Richland Washington",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Official police statement dated April 1 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "When were Flock accounts actually deactivated and were systems later restarted?"
+      ]
+    },
+    {
+      "id": "liberty-hill-tx-flock-removal-city-statement-2026",
+      "agency": "Liberty Hill City Council",
+      "locality_key": "liberty hill|TX",
+      "state": "TX",
+      "source_date": "2026-09-17",
+      "kind": "government_decision",
+      "status": "government_publisher_reports_contract_terminated_and_cameras_removed",
+      "title": "Liberty Hill reports vote to terminate Flock and camera removal",
+      "summary": "The city's September 17 statement reports a unanimous September 9 vote ending Flock use and says city personnel physically removed its cameras September 15. It is a dated city-authored completion statement, not an independent inspection or proof about cameras controlled by other entities.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.libertyhilltx.gov/m/newsflash/Home/Detail/395",
+      "provider": "City of Liberty Hill Texas",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Official September 17 2026 announcement recounts a 7–0 council vote and removal",
+      "flock_specific": true,
+      "open_questions": [
+        "Is the final termination document and equipment-removal inventory publicly available?"
+      ]
+    },
+    {
+      "id": "elgin-tx-flock-program-pause-2026",
+      "agency": "Elgin Police Department",
+      "locality_key": "elgin|TX",
+      "state": "TX",
+      "source_date": "2026-09-02",
+      "kind": "government_decision",
+      "status": "agency_reports_alpr_program_paused",
+      "title": "Elgin police announce pause to Flock ALPR operations",
+      "summary": "In a September 2 letter published by the city, the Elgin police chief reported instructing staff to pause Flock ALPR use pending direction from elected officials. The account distinguishes 13 city-funded cameras from 12 grant-funded cameras and a trailer; it does not establish cancellation of the contract.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.elgintexas.gov/m/newsflash/Home/Detail/1824",
+      "provider": "City of Elgin Texas",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Original police chief letter dated September 2 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Did the city later cancel the agreements or authorize renewed operations?"
+      ]
+    },
+    {
+      "id": "redmond-wa-flock-contract-termination-vote-2026",
+      "agency": "Redmond City Council",
+      "locality_key": "redmond|WA",
+      "state": "WA",
+      "source_date": "2026-07-21",
+      "kind": "government_decision",
+      "status": "council_approved_termination_not_confirmed_cameras_removed",
+      "title": "Redmond council votes to end Flock program",
+      "summary": "Redmond's official ALPR program timeline reports that the City Council voted 7–0 on July 21, 2026, to terminate its Flock Safety contract and end the program. It reports the city began removal, not that all devices were subsequently physically removed.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.redmond.gov/2400/Automated-License-Plate-Reader-Program",
+      "provider": "City of Redmond Washington",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Original government status timeline includes July 21 2026 council action",
+      "flock_specific": true,
+      "open_questions": [
+        "Is the termination agreement executed and have all city cameras been removed?"
+      ]
+    },
+    {
+      "id": "tukwila-wa-revised-flock-contract-adoption-2026",
+      "agency": "Tukwila City Council",
+      "locality_key": "tukwila|WA",
+      "state": "WA",
+      "source_date": "2026-05-18",
+      "kind": "government_decision",
+      "status": "government_reports_amended_contract_approval_not_independent_executed_doc",
+      "title": "Tukwila reports council adoption of amended Flock terms",
+      "summary": "The city's ALPR information page reports that the council adopted a revised Flock Safety contract on May 18, 2026, following a privacy review. The revised contract PDF is listed as coming soon, so the announcement does not independently establish the executed agreement wording, signatures or original amounts.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.tukwilawa.gov/departments/mayors-office/about-automated-license-plate-readers-alpr-in-tukwila/",
+      "provider": "City of Tukwila Washington",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "Municipal ALPR webpage reports May 18 2026 contract adoption",
+      "flock_specific": true,
+      "open_questions": [
+        "Where is the executed amended Flock agreement including signatures, dates and pricing?"
+      ]
     }
   ]
 }
