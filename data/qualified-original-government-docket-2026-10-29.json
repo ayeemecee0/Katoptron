@@ -256,6 +256,52 @@
         "Did Council authorize a vendor RFP?",
         "What vendor, if any, did a later evaluation select?"
       ]
+    },
+    {
+      "id": "south-san-francisco-ca-grand-jury-response-26-2219",
+      "agency": "South San Francisco Police Department",
+      "locality_key": "south san francisco|CA",
+      "state": "CA",
+      "source_date": "2026-10-28",
+      "kind": "government_decision",
+      "status": "city_staff_proposed_response_not_final_adoption_verified",
+      "title": "South San Francisco staff responses to county grand jury ALPR audit findings",
+      "summary": "Original City staff report proposes responding to the San Mateo County Civil Grand Jury Flock ALPR report. City staff agrees that past ALPR operator audit data were not archived and promises to archive future audits and associated memoranda. Legistar shows this item on the October 28 Consent Calendar with no final action recorded; do not infer implementation, executed vendor protections or council adoption.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://ci-ssf-ca.legistar.com/LegislationDetail.aspx?GUID=8073E178-B98A-4726-BDB9-116CAB352AD9&ID=8299236",
+      "provider": "South San Francisco City Council",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "proof": "File 26-2219, city staff report and grand jury responses, October 28 2026 Council agenda; action row not recorded in Legistar",
+      "flock_specific": true,
+      "open_questions": [
+        "Were the draft grand jury responses formally approved and transmitted by the city?",
+        "Have raw operator audit exports and explanatory memos actually been preserved since the response?"
+      ]
+    },
+    {
+      "id": "south-san-francisco-ca-grand-jury-resolution-26-2220",
+      "agency": "South San Francisco Police Department",
+      "locality_key": "south san francisco|CA",
+      "state": "CA",
+      "source_date": "2026-10-28",
+      "kind": "policy_proposal",
+      "status": "proposed_grand_jury_response_resolution_not_legistar_finalized",
+      "title": "Proposed South San Francisco resolution approving Flock audit grand jury responses",
+      "summary": "Official city Legistar resolution 26-2220 would approve the city's response to the county grand jury findings about Flock ALPR oversight, auditing and governance. The resolution was listed October 28; public Legistar final-action field remains blank. A city meeting transcript indicates a council vote, but a final signed adopted resolution or updated Legistar action was not independently obtained; no implementation or contract amendment is inferred.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://ci-ssf-ca.legistar.com/LegislationDetail.aspx?GUID=3B773137-65D5-4035-898E-3E427A5162D9&ID=8299237",
+      "provider": "South San Francisco City Council",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "proof": "File 26-2220, proposed resolution, October 28 2026 meeting; Legistar lists Consent Calendar with no final action",
+      "flock_specific": true,
+      "open_questions": [
+        "Has the City Clerk posted a finalized adopted resolution and certified voting record?",
+        "Which specific audit, access and sharing safeguards have been implemented rather than promised?"
+      ]
     }
   ]
 }
