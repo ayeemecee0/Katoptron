@@ -360,6 +360,30 @@
         "Does an independent audit corroborate the police department's claimed monthly ALPR query reviews?",
         "What current camera inventory and Flock sharing settings have been documented by the city, rather than merely described in an agenda memo?"
       ]
+    },
+    {
+      "id": "toledo-oh-resolution-r-435-26",
+      "agency": "Toledo City Council",
+      "locality_key": "toledo|OH",
+      "state": "OH",
+      "source_date": "2026-10-20",
+      "kind": "policy_proposal",
+      "status": "resolution_held_in_council_not_adopted",
+      "title": "Toledo council resolution requests Flock contract termination and non-renewal",
+      "summary": "The Toledo City Council official Legistar entry R-435-26 reports a resolution requesting termination and non-renewal of City agreements with Flock Group, deactivation or removal of equipment, and legally compliant data deletion. The measure was held in Council as of its October 20, 2026 history and lists a future November 4 agenda. Neither termination nor approval, actual removal, data deletion or changed operational status is verified.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://toledo.legistar.com/LegislationDetail.aspx?FullText=1&GUID=93EC513B-9963-4453-AEE9-90FFE04946DA&ID=8284105",
+      "provider": "Toledo City Council Legistar official record",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "proof": "Legistar R-435-26, created October 9, 2026; October 20 record status Held in Council, future November 4 agenda, no final adopted action",
+      "flock_specific": true,
+      "file_number": "R-435-26",
+      "open_questions": [
+        "Will Toledo City Council adopt, amend or reject R-435-26 at a subsequent meeting?",
+        "What original signed city-vendor agreements, termination notices and audited removal confirmations actually exist?"
+      ]
     }
   ]
 }

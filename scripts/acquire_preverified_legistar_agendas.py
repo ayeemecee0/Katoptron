@@ -28,6 +28,7 @@ TENANTS={
  "monterey":("Monterey County Sheriff's Office","CA"),
  "manteca-ca":("Manteca Police Department","CA"),
  "ci-ssf-ca":("South San Francisco Police Department","CA"),
+ "toledo":("Toledo City Council","OH"),
 }
 # A source page is a seed for discovery ONLY if it was examined and remains
 # exactly tied to the above tenant and issuer. Do not accept arbitrary YAML.
@@ -41,6 +42,7 @@ EXACT_SEEDS={
  "monterey":"monterey-ca-agenda-a-26-368",
  "manteca-ca":"manteca-ca-agenda-26-399",
  "ci-ssf-ca":"south-san-francisco-ca-26-2370",
+ "toledo":"toledo-oh-resolution-r-435-26",
 }
 def verified_seed_registry(path=CATALOG):
     obj=json.loads(Path(path).read_text(encoding="utf8"))
@@ -79,7 +81,12 @@ def indexed_matters(path=CATALOG):
         if u.scheme!="https" or not host.endswith(".legistar.com"):
             continue
         tenant=host[:-len(".legistar.com")]
-        if tenant not in TENANTS or row.get("agency")!=TENANTS[tenant][0]:
+        # Other explicitly authenticated government publishers may appear in
+        # the public X-Ray docket without becoming scan seeds. Never treat
+        # their Matter IDs as entries for one of our pinned scan tenants.
+        if tenant not in TENANTS:
+            continue
+        if row.get("agency")!=TENANTS[tenant][0]:
             raise ValueError("Government docket publisher binding drift")
         guid=parse_qs(u.query).get("GUID",[None])[0]
         if not GUID_RE.fullmatch(guid or ""):
