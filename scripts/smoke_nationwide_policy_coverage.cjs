@@ -13,7 +13,7 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#loadStatus')?.textContent?.includes('Validated 51/51'),
      null,{timeout:20000});
   const status=await page.locator('#loadStatus').textContent();
-  assert.match(status,/57 original government links/);
+  assert.match(status,/59 original government links/);
   assert.match(status,/18 agency original-source dossiers/);
   assert.match(status,/97 Washington self-certification/);
   assert.match(status,/Statewide agency census completion: 0\/51/);
@@ -25,7 +25,7 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#censusStatus').textContent(),/70,657 geographic records/);
   assert.match(await page.locator('#censusStatus').textContent(),/NOT police agencies/);
   const cards=await page.locator('#stats .stat').allTextContents();
-  assert.ok(cards.some(t=>/Original government links57/.test(t)));
+  assert.ok(cards.some(t=>/Original government links59/.test(t)));
   assert.ok(cards.some(t=>/FBI-derived ORI agency research leads19,636|FBI-derived ORI agency research leads19636/.test(t)));
   assert.ok(cards.some(t=>/2026 Census counties3,144|2026 Census counties3144/.test(t)));
   assert.ok(cards.some(t=>/2026 Census places incl. CDPs32,071|2026 Census places incl. CDPs32071/.test(t)));
