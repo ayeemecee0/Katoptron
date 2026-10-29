@@ -265,7 +265,7 @@ def main():
               count,"; mailbox arrival must be confirmed separately. No public source events or delivery receipts created.")
         return
     count=deliver(url,key,settings)
-    print("Source-qualified opt-in email digests delivered:",count,
+    print("Source-qualified SMTP submissions with recorded receipts:",count,
           "(no email addresses or subscriber identities logged)")
 
 
