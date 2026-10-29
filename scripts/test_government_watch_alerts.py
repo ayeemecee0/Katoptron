@@ -300,6 +300,52 @@ class GovernmentWatchSafety(unittest.TestCase):
         finally:
             M.api=original
 
+    def test_new_source_event_from_real_government_original_is_sent_once_only_to_opt_in(self):
+        # End-to-end sender rehearsal with an authenticated original-source
+        # document, isolated database stub and stubbed encrypted SMTP. No
+        # fabricated production event, recipient, receipt or email is created.
+        national,okc,apache,adoption=S.load_landmark_sources()
+        originals=S.build_landmark_change_events(national,okc,apache,adoption)
+        actual=next(x for x in originals if x["locality_key"]=="apache junction|AZ")
+        self.assertEqual(actual["kind"],"government_decision")
+        self.assertEqual(actual["evidence_tier"],"original_government")
+        self.assertEqual(actual["source_date"],"2026-10-06")
+        event=dict(actual,observed_at="2026-10-29T21:01:00Z")
+        subscriber=[{"user_id":"test-confirmed-user","email":"test-confirmed@example.org",
+            "locality_key":"apache junction|AZ","watch_government":True,
+            "watch_vendor":False,"watch_sharing":False,"watch_renewals":False,
+            "subscribed_at":"2026-10-29T21:00:00Z"}]
+        receipts=set();messages=[];orig=M.api
+        def fake_api(url,secret,path,method="GET",payload=None):
+            if path=="rpc/flock_watch_delivery_candidates":return subscriber
+            if path.startswith("flock_watch_subscriptions?"):
+                return [{"watch_policies":False,"policy_opted_in_at":None}]
+            if path.startswith("flock_agency_watch_events?"):return [event]
+            if path.startswith("flock_watch_deliveries?") and method=="GET":
+                return [{"event_key":key} for key in receipts]
+            if path.startswith("flock_watch_deliveries?") and method=="POST":
+                receipts.update(x["event_key"] for x in payload);return None
+            raise AssertionError("Unexpected protected API: "+path)
+        M.api=fake_api
+        settings=("smtp.example.org",465,"sender","secret","alerts@example.org")
+        try:
+            def send(msg,config):
+                self.assertEqual(config,settings)
+                self.assertIn("Apache Junction",msg.get_content())
+                self.assertIn(event["source_url"],msg.get_content())
+                self.assertNotIn("TEST EMAIL",msg["Subject"])
+                messages.append(msg)
+            self.assertEqual(M.deliver("https://example.supabase.co",
+                         "protected",settings,send=send),1)
+            self.assertEqual(receipts,{event["event_key"]})
+            self.assertEqual(M.deliver("https://example.supabase.co",
+                         "protected",settings,send=send),0)
+            subscriber.clear()  # actual unsubscribe excludes account from recipient RPC
+            self.assertEqual(M.deliver("https://example.supabase.co",
+                         "protected",settings,send=send),0)
+            self.assertEqual(len(messages),1)
+        finally:M.api=orig
+
     def test_missing_source_url_cannot_be_alert(self):
         self.assertEqual(S.build_events([{"event_key":"a",
           "event_type":"recorded_legislative_decision",

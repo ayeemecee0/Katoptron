@@ -13,11 +13,19 @@
   const {data,error}=await client.auth.getUser();
   user=error?null:data?.user;
   $('watchSignout').hidden=!user;
-  $('watchSubscribe').disabled=!(user&&locality);
+  const confirmed=Boolean(user?.email_confirmed_at);
+  $('watchSubscribe').disabled=!(confirmed&&locality);
   $('watchUnsubscribe').disabled=!(user&&locality);
   $('watchAuthStatus').textContent=user?
-   'Authenticated as '+user.email+'. Your address must be confirmed to send messages.':
+   'Authenticated as '+user.email+'. '+(confirmed?
+    'Email confirmed. You can manage locality alerts below.':
+    'Email not confirmed. Confirm it before enabling alerts; existing subscriptions can be disabled.'):
    'Sign in to opt in to confirmed-account email notices.';
+  $('watchSelectionStatus').textContent=locality?
+   'Selected locality: '+locality.label+'. '+(user?
+    'You may now manage this locality\'s email alerts.':
+    'Sign in to manage email alerts.'):
+   'No locality selected. Choose a city under Followed localities to enable or disable its email alerts.';
   if(user&&locality)await refresh();
  }
  async function refresh(){
@@ -51,8 +59,29 @@
   const {error}=await client.auth.signUp({
    email:$('watchEmail').value.trim(),password:$('watchPassword').value,
    options:{emailRedirectTo:location.origin+location.pathname}});
-  $('watchAuthStatus').textContent=error?'Registration failed: '+error.message:
-    'Check your mailbox and confirm your account. No alert subscription has been enabled.';
+  $('watchAuthStatus').textContent=error?
+    'Registration could not be completed: '+error.message:
+    'If this address is new, check your inbox to confirm it. If you already have an account, sign in or use Forgot password. No alert subscription has been enabled.';
+ });
+ $('watchForgot').addEventListener('click',async()=>{
+  if(!$('watchEmail').reportValidity())return;
+  const {error}=await client.auth.resetPasswordForEmail(
+   $('watchEmail').value.trim(),{redirectTo:location.origin+location.pathname});
+  $('watchAuthStatus').textContent=error?
+   'Password reset could not be requested: '+error.message:
+   'If this email belongs to an eligible account, a reset link may arrive. Check Inbox and Spam. Auth email delivery requires Supabase SMTP.';
+ });
+ $('watchResetForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!$('watchNewPassword').reportValidity())return;
+  const {error}=await client.auth.updateUser({password:$('watchNewPassword').value});
+  $('watchAuthStatus').textContent=error?
+   'Password update failed: '+error.message:
+   'Password updated. You can now sign in.';
+  if(!error){
+   $('watchResetForm').hidden=true;
+   $('watchNewPassword').value='';
+  }
  });
  $('watchSignout').addEventListener('click',async()=>{
   await client.auth.signOut();await sync();
@@ -82,10 +111,17 @@
   if(!locality||!user)return;
   const {error}=await client.from('flock_watch_subscriptions').delete()
    .eq('user_id',user.id).eq('locality_key',locality.key);
-  report(error?'Unable to disable subscription: '+error.message:
-   'Email preference disabled and deleted for '+locality.label+'.');
+  if(error){report('Unable to disable subscription: '+error.message);return}
+  await refresh();
+  report('Email preference disabled and deleted for '+locality.label+'.');
  });
- client.auth.onAuthStateChange(()=>queueMicrotask(sync));
+ client.auth.onAuthStateChange(event=>{
+  if(event==='PASSWORD_RECOVERY'){
+   $('watchResetForm').hidden=false;
+   $('watchAuthStatus').textContent='Password recovery link verified. Enter a new password below.';
+  }
+  queueMicrotask(sync);
+ });
  window.KatoptronWatchMail={select(place){locality=place;void sync()}};
  void sync();
 })();
