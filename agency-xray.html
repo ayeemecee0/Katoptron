@@ -44,12 +44,12 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 </section>
 <section class="pane" id="governmentDocket" aria-labelledby="governmentDocketHeading">
 <h2 id="governmentDocketHeading">New original-government research dossiers · exact agencies</h2>
-<p>Source-publisher-backed contract amounts, council decisions, historical policy text and outstanding questions. <strong>A proposal is not an enacted contract; a historical Sheriff's policy is not current Flock policy.</strong> These 11 independent government records are separate from the 25 individually page-reviewed original PDFs and do not create new camera points.</p>
-<p><a href="./government-evidence.html">Open searchable nationwide original-government evidence and status comparison</a>.</p>
-<div class="search"><label for="governmentDocketSearch">Find the exact agency, source or government subject</label>
+<p>Official government records covering source-stated contract amounts, council decisions, historical policy text and outstanding questions. <strong>A proposal is not an enacted contract; a historical Sheriff's policy is not current Flock policy.</strong> These 11 independent records are separate from 25 individually page-reviewed original PDFs and add no camera locations.</p>
+<p><a href="./government-evidence.html">Open searchable government evidence and original-source status comparison</a>.</p>
+<div class="search"><label for="governmentDocketSearch">Find government source evidence</label>
 <input id="governmentDocketSearch" type="search" maxlength="140" placeholder="Sacramento, spending, El Paso, policy, Cleveland"></div>
 <p id="governmentDocketStatus" class="status" role="status">Loading government original source docket…</p>
-<div id="governmentDocketCards" class="grid" aria-label="Source-linked new government evidence"></div>
+<div id="governmentDocketCards" class="grid" aria-label="Source-linked government research evidence"></div>
 </section>
 <section class="pane" id="verifiedOriginals" aria-labelledby="verifiedOriginalsHeading">
 <h2 id="verifiedOriginalsHeading">Verified original-government agency dossiers</h2>
@@ -89,7 +89,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a><a id="audit" href="./agency-audit.html">Generate accountability audit</a><a id="timelineLink" href="./agency-timeline.html">View dated accountability timeline</a></div>
 <div class="grid" id="metrics"></div>
 <h3>Exact government-source research for this locality</h3><div id="newExactGovSources"></div>
-<p class="muted">Newly indexed historical source records are not automatic government change alerts. Exact-source docket entries are separate from the independently original-page-reviewed dossiers.</p>
+<p class="muted">Newly indexed historical government records are not automatic government change alerts. Supplemental docket entries are separate from individually page-reviewed agency dossiers.</p>
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
 <h3>Direct Flock portal disclosures and retention history</h3><div id="portals"></div>
@@ -294,209 +294,13 @@ function renderExactGovSources(locality){
  if(!output)return;
  output.replaceChildren();
  const rows=governmentDocket?governmentDocket.byLocality(locality):[];
- if(!rows.length){output.append(node('p','No exact-publisher original-government docket in the supplemental catalog for this locality; missing research is not proof of no contracts or cameras.'));return;}
+ if(!rows.length){output.append(node('p','No exact-publisher original source docket found for this locality. Unknown is not zero cameras or contracts.'));return;}
  for(const r of rows){
   const card=node('article',null,'card');
   card.append(node('strong',r.title),node('small',r.source_date+' · '+r.agency+' · '+r.status.replaceAll('_',' ')),node('p',r.summary));
-  if(r.amount_usd!==null)card.append(node('p','Source-stated amount: 
- const q=$('query').value.trim().toLowerCase();
- const result=groups.filter(g=>g.label.toLowerCase().includes(q)||
-     [...g.matchedLabels].some(s=>s.toLowerCase().includes(q))).slice(0,80);
- $('list').replaceChildren();
- for(const g of result){
-  const button=node('button',g.label);button.type='button';
-  button.append(node('small',g.events.length+' published government records · '+
-     g.portals.length+' vendor snapshot(s) · '+
-     g.cameras.length+' source-mapped positions'));
-  button.addEventListener('click',()=>select(g));
-  $('list').append(button);
- }
- $('status').textContent=groups.length+' source-backed localities indexed; '+
-   result.length+' shown'+(groups.length>80&&!q?' (enter a city to narrow the list)':'')+
-   '. All categories are separate evidence, not additive installed cameras.';
-}
-function select(group){
- selected=group;$('profile').hidden=false;
- renderExactGovSources(group.key);
- $('profileTitle').textContent=group.label;
- $('profileDetail').textContent='Published source evidence grouped by locality name. One place can have multiple agencies; this grouping does not establish record ownership or an active deployment.';
- const url=new URL(location.href);url.searchParams.set('place',group.key);
- $('permalink').href=url.toString();
- $('brief').href='./agency-brief.html?place='+encodeURIComponent(group.key);
- $('audit').href='./agency-audit.html?place='+encodeURIComponent(group.key);
- $('timelineLink').href='./agency-timeline.html?place='+encodeURIComponent(group.key);
- $('follow').textContent=API.safeRead().follows.includes(group.key)?'Following in Government Watch':'Follow in Government Watch';
- $('metrics').replaceChildren(metric('Government source-mapped positions',group.cameras.length),
- metric('Government records',group.events.length),
- metric('Flock vendor snapshots',group.portals.length),
- metric('Government program disclosures',group.programs.length),
- metric('Secondary portal identities',group.secondary.length),
- metric('Original vendor portal ID matches',group.identityMatches.length));
- $('programs').replaceChildren();
- for(const p of group.programs){
-  makeCard($('programs'),'Program: '+p.program_status,
-    'This original government record is source-dated, not proof a camera is active.',
-    p.source_date,p.official_evidence_url);
-  if(p.official_camera_map_url){
-   const el=node('p');source(el,p.official_camera_map_url,'Government-linked camera map (individual device evidence separately required)');$('programs').append(el);
-  }
- }
- if(!group.programs.length)$('programs').append(node('p','No reviewed government program record currently indexed.'));
- $('events').replaceChildren();
- for(const e of group.events.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''))){
-  makeCard($('events'),e.title,e.summary+
-   (e.amount_usd==null?'':(e.amount_basis==='government_estimate_not_executed_contract'?' · Government cost estimate, NOT an executed contract: $':' · Source-documented amount: $')+Number(e.amount_usd).toLocaleString('en-US')),
-    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
- }
- if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
- $('portals').replaceChildren();
- for(const p of [...group.portals].sort((a,b)=>b.source_date.localeCompare(a.source_date))){
-  makeCard($('portals'),p.agency_label,
-    'Vendor-reported cameras (LPR and potentially other devices): '+
-       (p.reported_total_cameras==null?'not published':p.reported_total_cameras)+
-    '; retention: '+(p.retention_days==null?'not published':p.retention_days+' days')+
-    '; prior-window searches: '+(p.reported_search_sessions_30d==null?'not published':p.reported_search_sessions_30d)+
-    '. These are vendor-reported figures, not verified GIS points.',
-    'Vendor snapshot '+p.source_date,p.portal_url);
- }
- if(!group.portals.length)$('portals').append(node('p','No direct Flock vendor snapshot indexed. That does not mean no portal exists.'));
- const retention=[...group.portals].filter(p=>p.retention_days!=null)
-   .sort((a,b)=>a.source_date.localeCompare(b.source_date));
- if(retention.length)$('portals').append(node('p',
-   'Original vendor source retention history: '+retention.map(p=>p.source_date+': '+p.retention_days+' days').join(' → ')+'. These source-dated reports do not prove current settings.'));
- $('originalSharing').replaceChildren();
- const original=[...group.originalOutgoing];
- for(const r of original.slice(0,140)){
-   const card=node('article',null,'card');
-   card.append(node('strong',r.publisher_name+' → '+r.recipient_label));
-   card.append(node('small',(r.source_kind==='original_government'?'Original government disclosure':'Original Flock transparency portal')+
-      ' · observed '+r.recipient_observed_on+' · '+r.identity_basis));
-   card.append(node('p','Named outbound access as published by the original source; not confirmation of a plate query, current active permission, or reciprocal sharing. Captured list scope: '+r.captured_scope+'.'));
-   source(card,r.source_url,'Original publisher evidence');$('originalSharing').append(card);
- }
- if(original.length>140)$('originalSharing').append(node('p',(original.length-140)+' further named entries: inspect Sharing Explorer for the complete source layer.'));
- const inbound=group.originalIncoming.length;
- if(inbound)$('originalSharing').append(node('p',inbound+' original publisher list(s) name this exact agency ID as a potential recipient; inspect the sharing explorer to see their original source links.'));
- if(!original.length&&!inbound)$('originalSharing').append(node('p','No independently publisher-named directional sharing relationship is currently indexed for this locality. Absence of evidence is NOT proof that sharing is disabled.'));
- $('identityMatches').replaceChildren();
- for(const m of group.identityMatches){
-   const card=node('article',null,'card');
-   card.append(node('strong',m.first_party_agency_label+' ↔ '+m.secondary_agency_name));
-   card.append(node('p','Exact original Flock transparency portal URL identifier matches the licensed EyesOnFlock-derived network agency ID. This corroborates portal identity only, NOT physical camera locations, operational status, or actual database searches.'));
-   source(card,m.first_party_portal_url,'Original Flock vendor transparency portal');
-   const link=node('a','See dated sharing relationships');
-   link.href='./sharing-explorer.html?agency='+encodeURIComponent(m.source_agency_id);
-   card.append(link);$('identityMatches').append(card);
- }
- if(!group.identityMatches.length)$('identityMatches').append(node('p',
-   'No exact original Flock portal URL identity match currently recorded. Any secondary same-city listing is not a verified operator identity.'));
- $('secondary').replaceChildren();
- for(const p of group.secondary){
-  const card=node('article',null,'card');
-  card.append(node('strong',p.agency_name),
-    node('small','Licensed EyesOnFlock-derived SECONDARY source · '+String(p.source_snapshot_at).slice(0,10)));
-  card.append(node('p','Source-reported mixed camera count: '+
-      (p.source_reported_mixed_cameras==null?'not published':p.source_reported_mixed_cameras)+
-      '. Number of inbound/outbound sharing neighbors, NOT recorded searches: '+
-      (p.source_reported_network_links==null?'unknown':p.source_reported_network_links)+
-      '. Agency town points never become individual camera coordinates.'));
-  const a=node('a','Inspect source-dated directional sharing network');
-  a.href='./sharing-explorer.html?agency='+encodeURIComponent(p.source_agency_id);
-  card.append(a);
-  const recorded=group.secondaryRetention.filter(x=>x.source_agency_id===p.source_agency_id)
-    .sort((a,b)=>a.observed_on.localeCompare(b.observed_on));
-  if(recorded.length){
-    const history=node('p','Secondary EyesOnFlock retention observations: '+
-      recorded.map(x=>x.observed_on+': '+(x.retention_days==null?'not reported':x.retention_days+' days')).join(' → ')+
-      '. These aggregator snapshots are not independently authenticated current Flock policies.');
-    card.append(history);
-    for(const row of recorded.slice(-2)){
-      const href=API.safeUrl(row.source_url);
-      if(href){const source=node('a','Source retention observation '+row.observed_on);source.href=href;
-        source.target='_blank';source.rel='noopener noreferrer';card.append(source);}
-    }
-  }
-  $('secondary').append(card);
- }
- if(!group.secondary.length)$('secondary').append(node('p',
-    'No matching secondary portal in the licensed directory. Unknown, not zero.'));
- $('spending').replaceChildren();
- const amounts=group.events.filter(e=>e.event_type==='executed_contract'&&e.amount_usd!=null);
- if(amounts.length){
-  $('spending').append(node('p','Sum of currently documented reviewed signed Flock agreements: $'+
-    amounts.reduce((total,e)=>total+Number(e.amount_usd),0).toLocaleString('en-US')+
-    '. These amounts may overlap or cover different contract terms; not a claim of annual spending.'));
-  for(const e of amounts)makeCard($('spending'),e.title,
-     'Source-confirmed signed agreement: $'+Number(e.amount_usd).toLocaleString('en-US'),
-     e.event_date,e.source_url);
- }else $('spending').append(node('p','No reviewed signed Flock contract amount indexed. Actual spending is UNKNOWN, not $0.'));
- $('gaps').replaceChildren();
- const gaps=[];
- if(!group.cameras.length)gaps.push('No independently authenticated first-party point inventory published for this locality.');
- if(!group.portals.length)gaps.push('No first-party Flock portal snapshot; retention and operations metrics unknown.');
- if(!group.events.some(e=>e.event_type==='executed_contract'))gaps.push('No independently reviewed executed Flock contract in the public index.');
- if(!group.events.some(e=>e.event_type==='recorded_legislative_decision'))gaps.push('No original governing-body action recorded in this index.');
- if(retention.length<2)gaps.push('Insufficient historical Flock retention snapshots to establish a change.');
- gaps.push('Agency links reported by an aggregator are not proof that a named agency performed a search.');
- for(const gap of gaps)$('gaps').append(node('p',gap));
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script><script src="./agency-html-disclosures.js"></script>
-<script>
-(async()=>{
- const target=document.getElementById('municipalSourceCards'),status=document.getElementById('municipalSourceStatus');
- try{
-  const res=await fetch('./data/verified-agency-html-source-disclosures-2026-10-27.json',{cache:'no-store'});
-  if(!res.ok)throw Error('government-source original unavailable');
-  const x=window.KatoptronAgencyOriginalHTML.validate(await res.json());
-  const names={agency_reports_flock_use:'Publisher describes Flock use',
-   announced_not_renewing:'Nonrenewal announced, removal not established',
-   agency_reports_removed:'City reports cameras removed',
-   announced_termination_process:'Termination and removal steps announced'};
-  for(const row of x.records){
-   const card=document.createElement('article');card.className='card';
-   const heading=document.createElement('strong');heading.textContent=row.agency+' · '+row.state;
-   const kind=document.createElement('small');kind.textContent=names[row.publisher_statement_category]||'Unclassified publisher statement';
-   const body=document.createElement('p');body.textContent=row.summary;
-   const date=document.createElement('small');date.textContent='Government statement date/context: '+row.source_date+
-    ' · Verified original HTML hash: '+row.original_html_sha256.slice(0,16)+'…';
-   const link=document.createElement('a');link.href=row.source_url;link.target='_blank';link.rel='noopener noreferrer';
-   link.textContent='Inspect official source';
-   card.append(heading,kind,body,date,document.createElement('p'),link);target.append(card);
-  }
-  status.textContent='11 original-government Flock disclosures across 11 states. This adds no individually confirmed camera GPS points, legal policy-effective dates or live sharing edges.';
- }catch(e){target.replaceChildren();status.textContent='Source-qualification hold: '+e.message;}
-})();
-</script>
-</body></html>+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
-  card.append(node('p','Evidence status: '+r.proof));
-  source(card,r.source_url,'Inspect original government record');output.append(card);
+  if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
+  card.append(node('p','Official-source status: '+r.proof));
+  source(card,r.source_url,'Inspect government original record');output.append(card);
  }
 }
 function renderGovernmentDocket(){
@@ -507,211 +311,15 @@ function renderGovernmentDocket(){
  for(const r of rows){
   const card=node('article',null,'card');
   card.append(node('strong',r.agency+' · '+r.state),node('small',r.source_date+' · '+r.status.replaceAll('_',' ')),node('p',r.title),node('p',r.summary));
-  if(r.amount_usd!==null)card.append(node('p','Source-stated amount: 
- const q=$('query').value.trim().toLowerCase();
- const result=groups.filter(g=>g.label.toLowerCase().includes(q)||
-     [...g.matchedLabels].some(s=>s.toLowerCase().includes(q))).slice(0,80);
- $('list').replaceChildren();
- for(const g of result){
-  const button=node('button',g.label);button.type='button';
-  button.append(node('small',g.events.length+' published government records · '+
-     g.portals.length+' vendor snapshot(s) · '+
-     g.cameras.length+' source-mapped positions'));
-  button.addEventListener('click',()=>select(g));
-  $('list').append(button);
- }
- $('status').textContent=groups.length+' source-backed localities indexed; '+
-   result.length+' shown'+(groups.length>80&&!q?' (enter a city to narrow the list)':'')+
-   '. All categories are separate evidence, not additive installed cameras.';
-}
-function select(group){
- selected=group;$('profile').hidden=false;
- renderExactGovSources(group.key);
- $('profileTitle').textContent=group.label;
- $('profileDetail').textContent='Published source evidence grouped by locality name. One place can have multiple agencies; this grouping does not establish record ownership or an active deployment.';
- const url=new URL(location.href);url.searchParams.set('place',group.key);
- $('permalink').href=url.toString();
- $('brief').href='./agency-brief.html?place='+encodeURIComponent(group.key);
- $('audit').href='./agency-audit.html?place='+encodeURIComponent(group.key);
- $('timelineLink').href='./agency-timeline.html?place='+encodeURIComponent(group.key);
- $('follow').textContent=API.safeRead().follows.includes(group.key)?'Following in Government Watch':'Follow in Government Watch';
- $('metrics').replaceChildren(metric('Government source-mapped positions',group.cameras.length),
- metric('Government records',group.events.length),
- metric('Flock vendor snapshots',group.portals.length),
- metric('Government program disclosures',group.programs.length),
- metric('Secondary portal identities',group.secondary.length),
- metric('Original vendor portal ID matches',group.identityMatches.length));
- $('programs').replaceChildren();
- for(const p of group.programs){
-  makeCard($('programs'),'Program: '+p.program_status,
-    'This original government record is source-dated, not proof a camera is active.',
-    p.source_date,p.official_evidence_url);
-  if(p.official_camera_map_url){
-   const el=node('p');source(el,p.official_camera_map_url,'Government-linked camera map (individual device evidence separately required)');$('programs').append(el);
-  }
- }
- if(!group.programs.length)$('programs').append(node('p','No reviewed government program record currently indexed.'));
- $('events').replaceChildren();
- for(const e of group.events.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''))){
-  makeCard($('events'),e.title,e.summary+
-   (e.amount_usd==null?'':(e.amount_basis==='government_estimate_not_executed_contract'?' · Government cost estimate, NOT an executed contract: $':' · Source-documented amount: $')+Number(e.amount_usd).toLocaleString('en-US')),
-    (e.event_date||'Undated')+' · '+e.event_type,e.source_url);
- }
- if(!group.events.length)$('events').append(node('p','No published government decision or source-dated event indexed.'));
- $('portals').replaceChildren();
- for(const p of [...group.portals].sort((a,b)=>b.source_date.localeCompare(a.source_date))){
-  makeCard($('portals'),p.agency_label,
-    'Vendor-reported cameras (LPR and potentially other devices): '+
-       (p.reported_total_cameras==null?'not published':p.reported_total_cameras)+
-    '; retention: '+(p.retention_days==null?'not published':p.retention_days+' days')+
-    '; prior-window searches: '+(p.reported_search_sessions_30d==null?'not published':p.reported_search_sessions_30d)+
-    '. These are vendor-reported figures, not verified GIS points.',
-    'Vendor snapshot '+p.source_date,p.portal_url);
- }
- if(!group.portals.length)$('portals').append(node('p','No direct Flock vendor snapshot indexed. That does not mean no portal exists.'));
- const retention=[...group.portals].filter(p=>p.retention_days!=null)
-   .sort((a,b)=>a.source_date.localeCompare(b.source_date));
- if(retention.length)$('portals').append(node('p',
-   'Original vendor source retention history: '+retention.map(p=>p.source_date+': '+p.retention_days+' days').join(' → ')+'. These source-dated reports do not prove current settings.'));
- $('originalSharing').replaceChildren();
- const original=[...group.originalOutgoing];
- for(const r of original.slice(0,140)){
-   const card=node('article',null,'card');
-   card.append(node('strong',r.publisher_name+' → '+r.recipient_label));
-   card.append(node('small',(r.source_kind==='original_government'?'Original government disclosure':'Original Flock transparency portal')+
-      ' · observed '+r.recipient_observed_on+' · '+r.identity_basis));
-   card.append(node('p','Named outbound access as published by the original source; not confirmation of a plate query, current active permission, or reciprocal sharing. Captured list scope: '+r.captured_scope+'.'));
-   source(card,r.source_url,'Original publisher evidence');$('originalSharing').append(card);
- }
- if(original.length>140)$('originalSharing').append(node('p',(original.length-140)+' further named entries: inspect Sharing Explorer for the complete source layer.'));
- const inbound=group.originalIncoming.length;
- if(inbound)$('originalSharing').append(node('p',inbound+' original publisher list(s) name this exact agency ID as a potential recipient; inspect the sharing explorer to see their original source links.'));
- if(!original.length&&!inbound)$('originalSharing').append(node('p','No independently publisher-named directional sharing relationship is currently indexed for this locality. Absence of evidence is NOT proof that sharing is disabled.'));
- $('identityMatches').replaceChildren();
- for(const m of group.identityMatches){
-   const card=node('article',null,'card');
-   card.append(node('strong',m.first_party_agency_label+' ↔ '+m.secondary_agency_name));
-   card.append(node('p','Exact original Flock transparency portal URL identifier matches the licensed EyesOnFlock-derived network agency ID. This corroborates portal identity only, NOT physical camera locations, operational status, or actual database searches.'));
-   source(card,m.first_party_portal_url,'Original Flock vendor transparency portal');
-   const link=node('a','See dated sharing relationships');
-   link.href='./sharing-explorer.html?agency='+encodeURIComponent(m.source_agency_id);
-   card.append(link);$('identityMatches').append(card);
- }
- if(!group.identityMatches.length)$('identityMatches').append(node('p',
-   'No exact original Flock portal URL identity match currently recorded. Any secondary same-city listing is not a verified operator identity.'));
- $('secondary').replaceChildren();
- for(const p of group.secondary){
-  const card=node('article',null,'card');
-  card.append(node('strong',p.agency_name),
-    node('small','Licensed EyesOnFlock-derived SECONDARY source · '+String(p.source_snapshot_at).slice(0,10)));
-  card.append(node('p','Source-reported mixed camera count: '+
-      (p.source_reported_mixed_cameras==null?'not published':p.source_reported_mixed_cameras)+
-      '. Number of inbound/outbound sharing neighbors, NOT recorded searches: '+
-      (p.source_reported_network_links==null?'unknown':p.source_reported_network_links)+
-      '. Agency town points never become individual camera coordinates.'));
-  const a=node('a','Inspect source-dated directional sharing network');
-  a.href='./sharing-explorer.html?agency='+encodeURIComponent(p.source_agency_id);
-  card.append(a);
-  const recorded=group.secondaryRetention.filter(x=>x.source_agency_id===p.source_agency_id)
-    .sort((a,b)=>a.observed_on.localeCompare(b.observed_on));
-  if(recorded.length){
-    const history=node('p','Secondary EyesOnFlock retention observations: '+
-      recorded.map(x=>x.observed_on+': '+(x.retention_days==null?'not reported':x.retention_days+' days')).join(' → ')+
-      '. These aggregator snapshots are not independently authenticated current Flock policies.');
-    card.append(history);
-    for(const row of recorded.slice(-2)){
-      const href=API.safeUrl(row.source_url);
-      if(href){const source=node('a','Source retention observation '+row.observed_on);source.href=href;
-        source.target='_blank';source.rel='noopener noreferrer';card.append(source);}
-    }
-  }
-  $('secondary').append(card);
- }
- if(!group.secondary.length)$('secondary').append(node('p',
-    'No matching secondary portal in the licensed directory. Unknown, not zero.'));
- $('spending').replaceChildren();
- const amounts=group.events.filter(e=>e.event_type==='executed_contract'&&e.amount_usd!=null);
- if(amounts.length){
-  $('spending').append(node('p','Sum of currently documented reviewed signed Flock agreements: $'+
-    amounts.reduce((total,e)=>total+Number(e.amount_usd),0).toLocaleString('en-US')+
-    '. These amounts may overlap or cover different contract terms; not a claim of annual spending.'));
-  for(const e of amounts)makeCard($('spending'),e.title,
-     'Source-confirmed signed agreement: $'+Number(e.amount_usd).toLocaleString('en-US'),
-     e.event_date,e.source_url);
- }else $('spending').append(node('p','No reviewed signed Flock contract amount indexed. Actual spending is UNKNOWN, not $0.'));
- $('gaps').replaceChildren();
- const gaps=[];
- if(!group.cameras.length)gaps.push('No independently authenticated first-party point inventory published for this locality.');
- if(!group.portals.length)gaps.push('No first-party Flock portal snapshot; retention and operations metrics unknown.');
- if(!group.events.some(e=>e.event_type==='executed_contract'))gaps.push('No independently reviewed executed Flock contract in the public index.');
- if(!group.events.some(e=>e.event_type==='recorded_legislative_decision'))gaps.push('No original governing-body action recorded in this index.');
- if(retention.length<2)gaps.push('Insufficient historical Flock retention snapshots to establish a change.');
- gaps.push('Agency links reported by an aggregator are not proof that a named agency performed a search.');
- for(const gap of gaps)$('gaps').append(node('p',gap));
- $('mapEvidence').replaceChildren();
- if(group.cameras.length){
-  const byUrl=new Map();for(const c of group.cameras){
-   const key=c.source_url||'unknown';byUrl.set(key,(byUrl.get(key)||0)+1);
-  }
-  for(const [url,count] of byUrl){
-   makeCard($('mapEvidence'),count+' exact government source-mapped position(s)',
-     'Municipal geographic evidence. Per-device manufacturer, present uptime and installation status must be checked at the source.',
-     'Current source-mapped records',url);
-  }
- }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
- $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
- history.replaceState(null,'',url);
- $('profile').scrollIntoView({block:'start',behavior:'smooth'});
-}
-$('follow').addEventListener('click',()=>{
- if(!selected)return;
- if(API.follow(selected.key)){
-  $('follow').textContent='Following in Government Watch';
-  location.href='./government-watch.html?place='+encodeURIComponent(selected.key);
- }else $('status').textContent='Browser storage is unavailable; cannot save local watch.';
-});
-$('query').addEventListener('input',renderList);
-$('clear').addEventListener('click',()=>{$('query').value='';renderList();});
-API.load().then(data=>{
- groups=data;renderList();const place=new URL(location.href).searchParams.get('place');
- if(place){const g=groups.find(x=>x.key===place);if(g)select(g);}
-}).catch(e=>{$('status').textContent='Source data unavailable: '+e.message;});
-</script><script src="./agency-html-disclosures.js"></script>
-<script>
-(async()=>{
- const target=document.getElementById('municipalSourceCards'),status=document.getElementById('municipalSourceStatus');
- try{
-  const res=await fetch('./data/verified-agency-html-source-disclosures-2026-10-27.json',{cache:'no-store'});
-  if(!res.ok)throw Error('government-source original unavailable');
-  const x=window.KatoptronAgencyOriginalHTML.validate(await res.json());
-  const names={agency_reports_flock_use:'Publisher describes Flock use',
-   announced_not_renewing:'Nonrenewal announced, removal not established',
-   agency_reports_removed:'City reports cameras removed',
-   announced_termination_process:'Termination and removal steps announced'};
-  for(const row of x.records){
-   const card=document.createElement('article');card.className='card';
-   const heading=document.createElement('strong');heading.textContent=row.agency+' · '+row.state;
-   const kind=document.createElement('small');kind.textContent=names[row.publisher_statement_category]||'Unclassified publisher statement';
-   const body=document.createElement('p');body.textContent=row.summary;
-   const date=document.createElement('small');date.textContent='Government statement date/context: '+row.source_date+
-    ' · Verified original HTML hash: '+row.original_html_sha256.slice(0,16)+'…';
-   const link=document.createElement('a');link.href=row.source_url;link.target='_blank';link.rel='noopener noreferrer';
-   link.textContent='Inspect official source';
-   card.append(heading,kind,body,date,document.createElement('p'),link);target.append(card);
-  }
-  status.textContent='11 original-government Flock disclosures across 11 states. This adds no individually confirmed camera GPS points, legal policy-effective dates or live sharing edges.';
- }catch(e){target.replaceChildren();status.textContent='Source-qualification hold: '+e.message;}
-})();
-</script>
-</body></html>+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
-  source(card,r.source_url,'Open original government source');
+  if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
+  source(card,r.source_url,'Open original government record');
   output.append(card);
  }
- $('governmentDocketStatus').textContent=rows.length+' exact government records matched · '+governmentDocket.agencies.length+' separately identified locality/publishers across '+governmentDocket.states.length+' states. These do not increase individually page-verified dossier counts or prove camera operation.';
- if(!rows.length)output.append(node('p','No source-docket match. Absence from this catalog is not proof of missing government contracts.'));
+ $('governmentDocketStatus').textContent=rows.length+' exact government record(s) matched · '+governmentDocket.agencies.length+' locality/agency identities in '+governmentDocket.states.length+' states. Supplemental sources do not increase page-verified PDF counts or verify camera operation.';
+ if(!rows.length)output.append(node('p','No matching government record. This does not prove there are no contracts or cameras.'));
 }
 $('governmentDocketSearch').addEventListener('input',renderGovernmentDocket);
-fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('docket source unavailable');return r.json()}).then(json=>{
+fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('government source docket unavailable');return r.json()}).then(json=>{
  governmentDocket=window.KatoptronGovernmentDocket.build(json);
  renderGovernmentDocket();if(selected)renderExactGovSources(selected.key);
 }).catch(e=>{$('governmentDocketStatus').textContent='Government source docket held: '+e.message;});
