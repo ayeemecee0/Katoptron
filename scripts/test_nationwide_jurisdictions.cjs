@@ -7,7 +7,14 @@ const receiptData=require('../data/nationwide-original-government-source-receipt
 const check=API.sourceReceipts(receiptData,sources);
 assert.equal(check.counts.accessible,31);
 assert.equal(check.counts.held,12);
-assert.equal(check.receipts.size,43);
+assert.equal(check.receipts.size,45);
+assert.equal(check.counts.held,14);
+for(const id of ['ma-groton-municipal-contract-termination-2026','oh-shaker-heights-data-contract-policy-2026']){
+ const r=check.receipts.get(id);
+ assert.equal(r.pending_unobserved,true);
+ assert.equal(r.sha256_at_observation,null);
+ assert.equal(r.flock_equipment_verified,false);
+}
 assert.equal(check.receipts.get('dc-independent-government-policy-recommendation').page_count_at_observation,6);
 assert.equal(check.receipts.get('ny-state-model-policy-not-agency-adoption').status,'held_redirect');
 function rejectReceipt(mut){
@@ -23,7 +30,7 @@ const result=API.catalog(sources,old);
 assert.equal(result.total,51);
 assert.equal(result.seeded,51);
 assert.equal(result.without,0);
-assert.equal(result.seedUrls,43);
+assert.equal(result.seedUrls,45);
 assert.equal(result.legacyUrls,14);
 assert.equal(result.reviewedInstallationsClaimed,0);
 assert.equal(result.states.length,51);
