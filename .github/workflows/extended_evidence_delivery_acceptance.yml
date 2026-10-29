@@ -1,0 +1,92 @@
+name: Extended original government evidence and safe Watch outbox
+on:
+  pull_request:
+    paths:
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'government-source-docket.js'
+      - 'agency-xray.html'
+      - 'agency-investigation.html'
+      - 'agency-audit.html'
+      - 'scripts/classify_original_government_leads.py'
+      - 'scripts/test_classify_original_government_leads.py'
+      - 'scripts/verify_new_original_agency_html.py'
+      - 'scripts/test_verify_new_original_agency_html.py'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'scripts/test_government_watch_alerts.py'
+      - 'supabase/migrations/147_private_original_lead_dispositions.sql'
+      - 'supabase/migrations/148_watch_explicit_outbox_states.sql'
+      - '.github/workflows/extended_evidence_delivery_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/classify_original_government_leads.py'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+  schedule:
+    - cron: '31 11 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify ten source-specific agency original identities and no historic Watch replay
+        run: python -m unittest discover -s scripts -p 'test_verify_new_original_agency_html.py' -v
+      - name: Verify private government link review dispositions
+        run: python -m unittest discover -s scripts -p 'test_classify_original_government_leads.py' -v
+      - name: Verify at-most-once Watch transitions and opt-in boundaries
+        run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+      - name: Verify sourced docket and no unsupported operations
+        run: node scripts/test_government_source_docket.cjs
+      - name: Check browser script syntax
+        run: |
+          node --check government-source-docket.js
+          node -e "const fs=require('fs');for(const p of ['agency-xray.html','agency-investigation.html','agency-audit.html']){const s=fs.readFileSync(p,'utf8');const parts=[...s.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)];for(const part of parts)new Function(part[1]);}console.log('Inline browser scripts syntax OK');"
+  qualified_review_classification:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Classify all current original government leads into actionable private states
+        run: python scripts/classify_original_government_leads.py
+  first_party_html_checks:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Re-fetch and independently fingerprint ten original government agency pages
+        run: python scripts/verify_new_original_agency_html.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extended-original-government-evidence-receipts
+          path: .katoptron-ci/extended-civic-original-html-receipts.json
+          retention-days: 14
