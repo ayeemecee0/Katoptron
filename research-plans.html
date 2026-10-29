@@ -36,6 +36,18 @@ button{cursor:pointer}.note{border-left:4px solid #94c5d7;padding:.85rem;backgro
 <div><button type="submit">Save voluntary pilot interest</button> <button type="button" id="withdrawInterest">Withdraw and erase my response</button></div>
 </form>
 <p><a href="./research-workspace.html">Open the research workspace to sign in or confirm an account.</a></p>
+</section>
+<section class="panel" id="pilotMeasurements"><h2>Optional: measure a real research task</h2>
+<p>Report time spent on one real investigation task. Your manual comparison is your estimate, not an experimentally verified time saving. Katoptron stores only coarse task type, minutes and completion. No case title, evidence, URLs, travel or plate data is collected; nothing is measured automatically.</p>
+<p id="measurementStatus" role="status" aria-live="polite">Sign in with a confirmed account to choose whether to participate.</p>
+<form id="measurementForm" hidden>
+<label for="taskKind">Task<select id="taskKind" required><option value="source_check">Verify primary source</option><option value="contract_review">Review contracts</option><option value="policy_comparison">Compare policies</option><option value="records_request">Prepare records request</option><option value="other">Other research</option></select></label>
+<label for="manualMinutes">Estimated manual research time (minutes)<input id="manualMinutes" type="number" min="1" max="1440" required></label>
+<label for="softwareMinutes">Time spent using Katoptron (minutes)<input id="softwareMinutes" type="number" min="1" max="1440" required></label>
+<label for="taskCompleted">Result<select id="taskCompleted"><option value="true">Task completed</option><option value="false">Not completed</option></select></label>
+<label><input id="measurementConsent" type="checkbox" required> I voluntarily choose to store these self-reported task results. I can delete them at any time.</label>
+<button type="submit">Save opted-in task measurement</button> <button type="button" id="eraseMeasurements">Erase all my task measurements</button>
+</form>
 </section></main>
 <script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
