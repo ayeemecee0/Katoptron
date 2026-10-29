@@ -9,6 +9,7 @@ on:
       - 'scripts/watch_original_government_versions.py'
       - 'scripts/test_watch_original_government_versions.py'
       - 'supabase/migrations/155_original_government_version_review_queue.sql'
+      - 'supabase/migrations/160_fix_original_source_url_check.sql'
 permissions:
   contents: read
 concurrency:
