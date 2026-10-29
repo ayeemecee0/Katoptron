@@ -42,9 +42,9 @@ const apis={jurisdictions:J,wa:WA,adoption:AP};
 const x=C.build(input,apis);
 assert.equal(x.counts.states_enrolled,51);
 assert.equal(x.counts.state_original_source_seeded,51);
-assert.equal(x.counts.original_source_links,57);
+assert.equal(x.counts.original_source_links,59);
 assert.equal(x.counts.new_seed_accessible,31);
-assert.equal(x.counts.new_seed_held,12);
+assert.equal(x.counts.new_seed_held,14);
 assert.equal(x.counts.state_ago_registered_agencies,97);
 assert.equal(x.counts.individually_source_reviewed_dossier_agencies,18);
 assert.equal(x.counts.individually_source_reviewed_original_documents,25);
@@ -73,10 +73,17 @@ assert.equal(wi.decisions[0].status,'draft_published_no_adoption_verified');
 assert.equal(wi.decisions[0].date,null);
 assert.ok(wi.reviewed.some(a=>a.agency==='Green Bay Police Department'));
 const held=x.states.flatMap(s=>s.sources).filter(s=>s.evidence==='government_source_held');
-assert.equal(held.length,12);
+assert.equal(held.length,14);
 assert.ok(held.every(s=>s.document_hash===null&&s.source_page_reviewed===false));
+const pending=held.filter(s=>s.pending_unobserved===true);
+assert.deepEqual(pending.map(s=>s.id).sort(),[
+ 'ma-groton-municipal-contract-termination-2026',
+ 'oh-shaker-heights-data-contract-policy-2026'
+]);
+assert.ok(pending.every(s=>s.observed_status==='held_new_source_pending_receipt'
+ && s.document_hash===null && s.policy_adopted===false && s.flock_installed_verified===false));
 const sourceOnly=x.states.flatMap(s=>s.sources);
-assert.equal(sourceOnly.length,57);
+assert.equal(sourceOnly.length,59);
 assert.ok(sourceOnly.every(s=>s.flock_installed_verified===false&&s.policy_adopted===false));
 const o=C.filter(x,'WA','Aberdeen','registered');
 assert.equal(o.length,1);
@@ -99,4 +106,4 @@ fail(d=>d.wa.registrations[0].registry_status='flock_verified',/Unverified/);
 fail(d=>d.dossiers.dossiers[0].documents[0].sha='0',/verification/);
 fail(d=>d.receipts.receipts[0].camera_coordinates_verified=true,/attribution/);
 fail(d=>d.adoption.records[1].effective_date='2026-09-01',/status|source/);
-console.log('NATIONWIDE POLICY COVERAGE PASS: all 51 state source queues, 57 public links, 31 reachable/12 held, 18 original-page agency dossiers, 97 unverified WA registrations, zero statewide completion or new camera claims');
+console.log('NATIONWIDE POLICY COVERAGE PASS: all 51 state source queues, 59 public links, 31 previously accessible/14 held or pending, 18 original-page agency dossiers, 97 unverified WA registrations, zero statewide completion or new camera claims');
