@@ -64,7 +64,7 @@
  function sourceReceipts(data,registry){
   if(!data||data.schema_version!==1||data.inspected_on!=='2026-10-27'||
    data.scope!=='read_only_original_government_source_metadata_not_individual_flock_evidence'||
-   !Array.isArray(data.receipts)||data.receipts.length!==registry.official_seed_sources.length||
+   !Array.isArray(data.receipts)||data.receipts.length>registry.official_seed_sources.length||
    typeof data.limitations!=='string'||!data.limitations.includes('not policy adoption'))
    throw Error('Nationwide source receipt metadata invalid');
   const known=new Map(registry.official_seed_sources.map(x=>[x.id,x]));
@@ -94,8 +94,27 @@
    }
    receipts.set(r.source_id,r);
   }
-  if(seen.size!==registry.official_seed_sources.length)
-   throw Error('Nationwide official seed source receipts incomplete');
+  // Two newly admitted government publisher URLs have not yet produced
+  // authenticated retrieval receipts in the pinned 2026-10-27 baseline.
+  // Expose them as *pending/unobserved*, never as accessed or verified sources.
+  const expectedNew=new Set([
+   'ma-groton-municipal-contract-termination-2026',
+   'oh-shaker-heights-data-contract-policy-2026'
+  ]);
+  for(const src of registry.official_seed_sources){
+   if(seen.has(src.id))continue;
+   if(!expectedNew.has(src.id))
+    throw Error('Nationwide official seed source receipts incomplete');
+   receipts.set(src.id,{
+    source_id:src.id,state:src.state,source_url:src.source_url,kind:src.kind,
+    status:'held_new_source_pending_receipt',
+    sha256_at_observation:null,page_count_at_observation:null,
+    authoritatively_verified_document_claims:false,
+    flock_equipment_verified:false,camera_coordinates_verified:false,
+    pending_unobserved:true
+   });
+   counts.held++;
+  }
   return {receipts,counts};
  }
  return {catalog,safe,sourceReceipts};
