@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "scope": "fixed_trusted_sacramento_original_source_urls_for_revision_review_only",
+  "sources": [
+    {
+      "id": "sacramento-da-alpr-access-policy",
+      "label": "Sacramento County District Attorney published ALPR access directive",
+      "url": "https://www.sacda.org/policies/alpr/",
+      "mode": "html",
+      "start_anchor": "I. Policy Statement",
+      "end_anchor": "Sacramento District Attorney's Office",
+      "required_phrase": "Automated License Plate Reader"
+    },
+    {
+      "id": "sacramento-sheriff-historic-alpr-pdf",
+      "label": "Sacramento County Sheriff's historical ALPR General Order (2016)",
+      "url": "https://www.sacsheriff.com/documents/Auto%20License%20Plate%20Reader%20Program.pdf",
+      "mode": "pdf",
+      "start_anchor": null,
+      "end_anchor": null,
+      "required_phrase": null
+    },
+    {
+      "id": "sacramento-flock-ceqa-notice",
+      "label": "California CEQAnet Sacramento County Flock installation filing",
+      "url": "https://ceqanet.lci.ca.gov/2025051277",
+      "mode": "html",
+      "start_anchor": "Document Description",
+      "end_anchor": "Contact Information",
+      "required_phrase": "Flock Safety"
+    }
+  ]
+}
