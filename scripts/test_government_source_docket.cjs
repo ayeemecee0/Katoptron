@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const V=require('../government-source-docket.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const result=V.build(raw);
-assert.equal(result.rows.length,14);
+assert.equal(result.rows.length,15);
 assert.equal(result.states.length,6);
 assert.equal(result.issuers.length,11);
 assert.equal(result.agencies.length,10);
@@ -26,6 +26,9 @@ assert.match(allentown.amount_basis,/NOT a Flock vendor agreement/);
 const grand=result.get('south-san-francisco-ca-grand-jury-response-26-2219');
 assert.match(grand.summary,/audit data were not archived/);
 assert.match(grand.status,/not_final_adoption_verified/);
+const mantecaReport=result.get('manteca-ca-flock-program-presentation-26-448');
+assert.equal(mantecaReport.file_number,'26-448');
+assert.match(mantecaReport.summary,/not an independent audit/);
 const elpaso=result.get('el-paso-tx-item-26-1092');
 assert.match(elpaso.status,/header_discrepancy/);
 for(const r of result.rows){
@@ -53,4 +56,4 @@ assert.match(html,/government-source-docket\.js/);
 assert.match(html,/renderExactGovSources\(group\.key\)/);
 const page=fs.readFileSync(path.join(__dirname,'../government-evidence.html'),'utf8');
 assert.match(page,/qualified-original-government-docket-2026-10-29\.json/);
-console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 14 issuer-verified records, 10 exact locality profiles, 6 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
+console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 15 issuer-verified records, 10 exact locality profiles, 6 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
