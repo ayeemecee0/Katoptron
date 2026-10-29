@@ -36,7 +36,7 @@ class SacramentoOfficialWatch(unittest.TestCase):
         html='<a href="/Flock-contract.pdf">Flock contract</a>'
         report=M.discover(fetch=lambda _:html)
         self.assertEqual(report["source_pages_held"],0)
-        self.assertEqual(report["unreviewed_explicit_source_links"],1)
+        self.assertEqual(report["unreviewed_explicit_source_links"],2)  # same relative path on two distinct official publisher hosts
         self.assertEqual(report["public_alert_events_created"],0)
         self.assertEqual(report["new_contracts_verified"],0)
         self.assertEqual(report["camera_locations_published"],0)
