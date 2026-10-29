@@ -11,6 +11,8 @@ on:
       - 'agency-investigation.html'
       - 'surveillance-changes.html'
       - 'government-watch.html'
+      - 'watch-email.js'
+      - 'scripts/test_watch_auth_ui.cjs'
       - 'policy-history.html'
       - 'scripts/test_investigations.cjs'
       - 'scripts/smoke_investigations.cjs'
@@ -38,6 +40,10 @@ jobs:
           node --check agency-original-loader.js
           node --check agency-change-tracker.js
           node scripts/test_investigations.cjs
+      - name: Verify Watch email account UI and locality controls
+        run: |
+          node --check watch-email.js
+          node scripts/test_watch_auth_ui.cjs
       - name: Validate source-qualified opt-in Watch notifications
         run: python3 -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
       - name: Start read-only original-source site
