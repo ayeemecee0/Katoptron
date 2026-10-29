@@ -10,6 +10,9 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
         seeded=A.verified_seed_registry()
         self.assertEqual(set(seeded),set(A.TENANTS))
         self.assertGreaterEqual(len({state for _,state in A.TENANTS.values()}),5)
+        known=A.indexed_matters()
+        self.assertEqual(set(known),set(A.TENANTS))
+        self.assertTrue(all(known[k] for k in known))
 
     def test_alias_or_source_host_tamper_fails_closed(self):
         source=json.loads(A.CATALOG.read_text())
@@ -39,13 +42,53 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
         def queue(lead):
             calls.append(lead)
             return len(calls)==1
-        a=A.acquire(seed,collector=collect,enqueue=queue,workers=1)
-        b=A.acquire(seed,collector=collect,enqueue=queue,workers=1)
+        guid="5C72F308-9FAC-49FA-A468-F0FF71E2A4A1"
+        def detail(_):
+            return {"MatterId":123,"MatterGuid":guid,"MatterRestrictViewViaWeb":False}
+        known={"elpasotexas":set()}
+        a=A.acquire(seed,collector=collect,enqueue=queue,workers=1,
+                    known_guids=known,detail_fetch=detail)
+        b=A.acquire(seed,collector=collect,enqueue=queue,workers=1,
+                    known_guids=known,detail_fetch=detail)
         self.assertEqual(a["new_review_queue_leads"],1)
         self.assertEqual(b["new_review_queue_leads"],0)
         self.assertEqual(len(calls),2)
         self.assertEqual(a["alert_events_created"],0)
         self.assertEqual(a["agencies_with_verified_new_contracts"],0)
+
+    def test_already_page_reviewed_guid_is_excluded_even_with_different_id_url(self):
+        known=A.indexed_matters()
+        reviewed=next(iter(known["elpasotexas"]))
+        seed={"elpasotexas":"El Paso City Council"}
+        original=[{"url":"https://webapi.legistar.com/v1/elpasotexas/matters/16407",
+          "headline":"Council motion on ALPR contracting","publisher":"El Paso City Council",
+          "status":"unreviewed"}]
+        result=A.acquire(seed,collector=lambda *_:original,
+                         enqueue=lambda _: self.fail("Reviewed GUID must never be requeued"),
+                         workers=1,known_guids=known,
+                         detail_fetch=lambda _:{"MatterId":16407,"MatterGuid":reviewed})
+        self.assertEqual(result["candidate_matches"],1)
+        self.assertEqual(result["already_in_source_catalog"],1)
+        self.assertEqual(result["new_uncatalogued_matches"],0)
+        self.assertEqual(result["new_review_queue_leads"],0)
+        self.assertEqual(result["alert_events_created"],0)
+
+    def test_missing_or_disagreeing_matter_guid_is_held_not_assumed_novel(self):
+        seed={"stpaul":"Saint Paul City Council"}
+        lead={"url":"https://webapi.legistar.com/v1/stpaul/matters/345",
+              "publisher":"Saint Paul City Council","status":"unreviewed"}
+        for payload in [
+            {"MatterId":345},
+            {"MatterId":100,"MatterGuid":"C3E85809-F081-4898-8CE1-B1DB7B412C78"},
+            {"MatterId":345,"MatterGuid":"not-a-guid"},
+            {"MatterId":345,"MatterGuid":"C3E85809-F081-4898-8CE1-B1DB7B412C78",
+             "MatterRestrictViewViaWeb":True}
+        ]:
+            result=A.acquire(seed,collector=lambda *_:[lead],known_guids={"stpaul":set()},
+                         detail_fetch=lambda _:payload,workers=1,
+                         enqueue=lambda _:self.fail("Unverifiable GUID must never queue"))
+            self.assertEqual(result["unreconciled_guid_hold"],1)
+            self.assertEqual(result["new_review_queue_leads"],0)
 
     def test_injected_nonlegistar_sources_never_queue(self):
         good={"url":"https://webapi.legistar.com/v1/stpaul/matters/123",
@@ -59,7 +102,8 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 A.acquire({"stpaul":"Saint Paul City Council"},
                           collector=lambda *args:[unsafe],
-                          enqueue=lambda _:self.fail("Unsafe source queued"),workers=1)
+                          enqueue=lambda _:self.fail("Unsafe source queued"),workers=1,
+                          known_guids={"stpaul":set()},detail_fetch=lambda *_: self.fail("Unsafe detail queried"))
 
 if __name__=="__main__":
     unittest.main()

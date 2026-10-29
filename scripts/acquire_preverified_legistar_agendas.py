@@ -11,7 +11,7 @@ import concurrent.futures
 import json
 import re
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
 
 import discover_government_records as scanner
 
@@ -60,7 +60,51 @@ def verified_seed_registry(path=CATALOG):
         seeds[tenant]=label
     return seeds
 
-def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4):
+GUID_RE=re.compile(r"^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$")
+
+def indexed_matters(path=CATALOG):
+    """Canonical browser GUIDs explicitly reviewed in the government docket.
+
+    Legistar's public MatterId and its browser detail ID are distinct;
+    the shared MatterGuid, not the URL, provides safe reconciliation.
+    """
+    obj=json.loads(Path(path).read_text(encoding="utf8"))
+    if obj.get("scope")!="historical_original_government_records_not_new_source_changes":
+        raise ValueError("Government source catalog unavailable")
+    known={}
+    for row in obj.get("sources",[]):
+        u=urlsplit(row.get("source_url",""))
+        host=(u.hostname or "").lower()
+        if u.scheme!="https" or not host.endswith(".legistar.com"):
+            continue
+        tenant=host[:-len(".legistar.com")]
+        if tenant not in TENANTS or row.get("agency")!=TENANTS[tenant][0]:
+            raise ValueError("Government docket publisher binding drift")
+        guid=parse_qs(u.query).get("GUID",[None])[0]
+        if not GUID_RE.fullmatch(guid or ""):
+            raise ValueError("Government docket GUID absent/invalid")
+        known.setdefault(tenant,set()).add(guid.upper())
+    if set(known)!=set(TENANTS):
+        raise ValueError("Incomplete exact Legistar GUID catalog")
+    return known
+
+def official_matter_guid(tenant,lead,fetcher=scanner.get_json):
+    """Verify the stable WebAPI matter UUID before treating a lead as novel."""
+    url=urlsplit(lead["url"])
+    if (url.scheme!="https" or url.hostname!="webapi.legistar.com" or
+        not re.fullmatch("/v1/"+re.escape(tenant)+r"/matters/\d+",url.path) or
+        url.query or url.fragment or url.username or url.password):
+        raise ValueError("Unapproved detail URL")
+    item=fetcher(lead["url"])
+    match=re.fullmatch("/v1/"+re.escape(tenant)+r"/matters/(\d+)",url.path)
+    if (not isinstance(item,dict) or str(item.get("MatterId"))!=match.group(1)
+        or item.get("MatterRestrictViewViaWeb") is True or
+        not GUID_RE.fullmatch(str(item.get("MatterGuid") or ""))):
+        raise ValueError("Official matter GUID unavailable or inconsistent")
+    return item["MatterGuid"].upper()
+
+def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4,
+            detail_fetch=scanner.get_json,known_guids=None):
     # Existing scanner has bounded pages, sanitized query terms, and only
     # public matters. Limit bootstrap scan breadth independently so it
     # cannot burn through hundreds of tenant API requests per scheduled job.
@@ -82,10 +126,13 @@ def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4):
                     outcomes.append((tenant,[],type(exc).__name__))
     finally:
         scanner.PAGE_SIZE,scanner.MAX_PAGES_PER_TENANT,scanner.MAX_MATCHES_PER_TENANT=previous
-    found=0;created=0;failed=0;all_rows=[]
+    catalog=indexed_matters() if known_guids is None else known_guids
+    if not isinstance(catalog,dict) or not set(seeds)<=set(catalog):
+        raise ValueError("Publisher-specific reviewed matter GUID registry missing")
+    found=0;created=0;failed=0;already_indexed=0;held=0;uncatalogued=0;all_rows=[]
     for tenant,leads,error in sorted(outcomes):
         row={"tenant":tenant,"publisher":seeds[tenant],"discovery_status":"source_unavailable" if error else "public_agenda_scan_complete",
-             "error_type":error,"matched_agenda_leads":len(leads),"new_to_review_queue":0,"queue_failures":0}
+             "error_type":error,"matched_agenda_leads":len(leads),"new_to_review_queue":0,"queue_failures":0,"already_in_source_catalog":0,"unreconciled_guid_hold":0,"new_uncatalogued_matches":0}
         for lead in leads:
             # Never insert externally supplied website/tenant links. The
             # scanner's MatterId API endpoint is stable, but not the browser ID.
@@ -97,6 +144,15 @@ def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4):
                 raise ValueError("Unverified discovery lead held")
             found+=1
             try:
+                guid=official_matter_guid(tenant,lead,detail_fetch)
+            except Exception:
+                held+=1;row["unreconciled_guid_hold"]+=1
+                continue
+            if guid in catalog[tenant]:
+                already_indexed+=1;row["already_in_source_catalog"]+=1
+                continue
+            uncatalogued+=1;row["new_uncatalogued_matches"]+=1
+            try:
                 if enqueue(lead):
                     created+=1;row["new_to_review_queue"]+=1
             except Exception:
@@ -104,7 +160,9 @@ def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4):
         all_rows.append(row)
     return {"schema_version":1,"new_agencies_discovered":0,
             "source_tenants_checked":len(outcomes),"candidate_matches":found,
-            "new_review_queue_leads":created,"queue_write_failures":failed,
+            "new_review_queue_leads":created,"already_in_source_catalog":already_indexed,
+            "new_uncatalogued_matches":uncatalogued,"unreconciled_guid_hold":held,
+            "queue_write_failures":failed,
             "alert_events_created":0,"agencies_with_verified_new_contracts":0,
             "coverage_note":"Candidates are unreviewed Legistar agenda matters. Not new source-qualified Watch alerts, signed contracts or camera positions.",
             "tenant_outcomes":all_rows}
@@ -125,6 +183,7 @@ def main():
     out.write_text(json.dumps(result,indent=2)+"\n",encoding="utf8")
     print("P0 government acquisition:",json.dumps({
       k:result[k] for k in ("source_tenants_checked","candidate_matches",
+       "new_uncatalogued_matches","already_in_source_catalog","unreconciled_guid_hold",
        "new_review_queue_leads","queue_write_failures","alert_events_created")}))
     if result["queue_write_failures"]:
         raise RuntimeError("Some reviewed source candidates could not be queued; artifact retained")
