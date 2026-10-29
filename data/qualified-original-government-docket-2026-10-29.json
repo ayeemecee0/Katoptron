@@ -855,6 +855,28 @@
       "open_questions": [
         "What are the exact Flock service shutoff date, grant closeout document and removal records?"
       ]
+    },
+    {
+      "id": "lynchburg-va-flock-alpr-pause-police-original-2026",
+      "agency": "Lynchburg Police Department",
+      "locality_key": "lynchburg|VA",
+      "state": "VA",
+      "source_date": "2026-08-19",
+      "kind": "government_decision",
+      "status": "agency_reports_alpr_program_paused",
+      "title": "Lynchburg police announce immediate pause of 15 fixed Flock ALPR cameras",
+      "summary": "The Lynchburg Police Department's official August 19 announcement says the department will temporarily pause the operation of its fifteen fixed Flock ALPR cameras in city rights-of-way. It also announces an independent review of policy and practices, not an already completed audit, contract termination or physical equipment removal.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.lynchburgvapolice.gov/news-updates/lynchburg-police-department-announces-temporary-pause-of-flock-alpr-cameras/",
+      "provider": "City of Lynchburg Police Department",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary",
+      "proof": "City Police Department original announcement dated August 19, 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Did the promised independent third-party review occur, and what records document continued ALPR account suspension?"
+      ]
     }
   ]
 }
