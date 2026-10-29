@@ -14,6 +14,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from email.message import EmailMessage
+from watch_alert_actionability import insights
 
 
 def eligible(category, user):
@@ -74,12 +75,17 @@ def make_email(recipient,locality,events,from_address):
       "",
     ]
     for event in events:
+        explanation=insights(event,locality)
         lines.extend([
           str(event.get("title","New public document"))[:280],
           "Evidence: "+str(event.get("evidence_tier","not specified")),
           "Source date: "+str(event.get("source_date") or "date not established"),
-          str(event.get("summary",""))[:500],
+          "What the source documents: "+str(event.get("summary",""))[:500],
+          "Why this may matter: "+explanation["why"],
+          "What to investigate next: "+explanation["next"],
           "Original source: "+str(event.get("source_url","")),
+          "Open agency evidence: "+explanation["agency_url"],
+          "Save a research case: "+explanation["case_url"],
           "",
         ])
     lines.extend([
