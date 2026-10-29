@@ -52,6 +52,12 @@ button{cursor:pointer}button:hover{background:#24475d}input{min-width:200px;flex
 <button id="watchUnsubscribe" type="button" disabled>Disable email for selected locality</button>
 </div>
 <p id="watchEmailStatus" role="status" aria-live="polite">No email preference selected. Notifications are not sent unless a sender is configured.</p>
+<section aria-labelledby="receiptHeading" id="watchDigestHistory" hidden>
+<h3 id="receiptHeading">My recent digest submission receipts</h3>
+<p>These records show events claimed by the outbound mail worker, or accepted by the SMTP server. <strong>They do not prove mailbox delivery.</strong> Uncertain claims are never silently retried.</p>
+<button type="button" id="refreshDigestReceipts">Refresh submission status</button>
+<p id="receiptStatus" role="status"></p><div id="receiptItems"></div>
+</section>
 </section>
 <div class="wrap">
 <section class="panel" aria-labelledby="following"><h2 id="following">Followed localities</h2><div id="cities"></div></section>
