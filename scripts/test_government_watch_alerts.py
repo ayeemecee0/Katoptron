@@ -82,6 +82,7 @@ class GovernmentWatchSafety(unittest.TestCase):
         # tests real delivery orchestration without sending actual messages.
         original=M.api
         receipts=set()
+        claims=set()
         sent=[]
         subscribers=[{
           "user_id":"test-user-uuid","email":"verified@example.org",
@@ -112,9 +113,16 @@ class GovernmentWatchSafety(unittest.TestCase):
             if path=="rpc/flock_watch_delivery_candidates":
                 return subscribers
             if path.startswith("flock_watch_subscriptions?"):
-                return [{"watch_policies":False,"policy_opted_in_at":None}]
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,
+                         "watch_renewals":False,"watch_policies":False,
+                         "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):
                 return records
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                event=payload[0]["event_key"]
+                if event in claims:return []
+                claims.add(event);return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":x} for x in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
@@ -180,14 +188,20 @@ class GovernmentWatchSafety(unittest.TestCase):
           "user_id":"uuid-test","email":"confirmed@example.org","locality_key":"green bay|WI",
           "watch_government":True,"watch_vendor":False,"watch_sharing":False,
           "watch_renewals":False,"subscribed_at":"2026-10-25T18:00:00Z"}]
-        receipts=set();sent=[]
+        receipts=set();claims=set();sent=[]
         policy_enabled=False
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":return subscribers
             if path.startswith("flock_watch_subscriptions?"):
-                return [{"watch_policies":policy_enabled,
+                return [{"email_enabled":True,"watch_government":True,
+                         "watch_vendor":False,"watch_sharing":False,"watch_renewals":False,
+                         "watch_policies":policy_enabled,
                          "policy_opted_in_at":"2026-10-25T20:00:00Z" if policy_enabled else None}]
             if path.startswith("flock_agency_watch_events?"):return events
+            if path.startswith("flock_watch_send_claims?") and method=="POST":
+                event=payload[0]["event_key"]
+                if event in claims:return []
+                claims.add(event);return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":x} for x in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
