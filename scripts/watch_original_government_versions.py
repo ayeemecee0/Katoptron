@@ -10,6 +10,7 @@ import json
 import os
 import urllib.parse
 import urllib.request
+import urllib.error
 from pathlib import Path
 from convert_official_flock_disclosures import PlainText, normalize
 from verify_new_original_agency_html import ANCHORS, fetch, valid
@@ -80,20 +81,46 @@ def scan(rows,fetcher,api):
     outcomes={}
     for row in rows:
         if row["id"] not in ANCHORS:continue
+        if row["watch_category"]!="historical_research_only":
+            outcomes[row["id"]]="held_unqualified_event"
+            continue
         try:
-            if row["watch_category"]!="historical_research_only":raise ValueError("New-event replay prohibited")
-            fact=fingerprint(row,fetcher(row["source_url"]))
-            outcomes[row["id"]]=record(fact,api)
-        except Exception as e:
-            # Never silently label a source as reviewed after a timeout,
-            # redirect, removed anchor, invalid publisher, or API failure.
-            outcomes[row["id"]]="held_"+type(e).__name__
+            raw=fetcher(row["source_url"])
+        except urllib.error.HTTPError as e:
+            outcomes[row["id"]]="held_original_http_"+str(e.code)
+            continue
+        except (urllib.error.URLError,TimeoutError):
+            outcomes[row["id"]]="held_original_network"
+            continue
+        except Exception:
+            outcomes[row["id"]]="held_original_fetch_error"
+            continue
+        try:fact=fingerprint(row,raw)
+        except ValueError:
+            outcomes[row["id"]]="held_original_claim_anchor_or_identity_changed"
+            continue
+        except Exception:
+            outcomes[row["id"]]="held_original_parse"
+            continue
+        try:outcomes[row["id"]]=record(fact,api)
+        except urllib.error.HTTPError as e:
+            outcomes[row["id"]]="held_private_api_http_"+str(e.code)
+        except (urllib.error.URLError,TimeoutError):
+            outcomes[row["id"]]="held_private_api_network"
+        except Exception:
+            outcomes[row["id"]]="held_private_api_error"
     return outcomes
 
 def main():
     base=os.environ.get("SUPABASE_URL")
     secret=os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
     if not base or not secret:raise RuntimeError("Protected service credentials absent")
+    # Fail immediately on unavailable private Data API rather than mistaking
+    # 21 authentication/schema errors for 21 unreachable official publishers.
+    try:
+        rest(base,secret,"flock_original_page_versions?select=source_id&limit=1")
+    except urllib.error.HTTPError as e:
+        raise RuntimeError("Private version receipt API HTTP "+str(e.code)+"; check schema cache and service grants") from None
     data=json.loads(CATALOG.read_text(encoding="utf8"))
     outcomes=scan(data["sources"],fetch,lambda path,method="GET",body=None:
         rest(base,secret,path,method,body))
