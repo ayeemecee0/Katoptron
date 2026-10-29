@@ -10,9 +10,11 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
         seeded=A.verified_seed_registry()
         self.assertEqual(set(seeded),set(A.TENANTS))
         self.assertGreaterEqual(len({state for _,state in A.TENANTS.values()}),5)
-        known=A.indexed_matters()
+        known,files=A.indexed_matters()
         self.assertEqual(set(known),set(A.TENANTS))
         self.assertTrue(all(known[k] for k in known))
+        self.assertEqual(set(files),set(A.TENANTS))
+        self.assertTrue(all(files[k] for k in files))
 
     def test_alias_or_source_host_tamper_fails_closed(self):
         source=json.loads(A.CATALOG.read_text())
@@ -44,12 +46,12 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
             return len(calls)==1
         guid="5C72F308-9FAC-49FA-A468-F0FF71E2A4A1"
         def detail(_):
-            return {"MatterId":123,"MatterGuid":guid,"MatterRestrictViewViaWeb":False}
+            return {"MatterId":123,"MatterGuid":guid,"MatterFile":"ZZ-123","MatterRestrictViewViaWeb":False}
         known={"elpasotexas":set()}
         a=A.acquire(seed,collector=collect,enqueue=queue,workers=1,
-                    known_guids=known,detail_fetch=detail)
+                    known_guids=known,known_file_ids={"elpasotexas":set()},detail_fetch=detail)
         b=A.acquire(seed,collector=collect,enqueue=queue,workers=1,
-                    known_guids=known,detail_fetch=detail)
+                    known_guids=known,known_file_ids={"elpasotexas":set()},detail_fetch=detail)
         self.assertEqual(a["new_review_queue_leads"],1)
         self.assertEqual(b["new_review_queue_leads"],0)
         self.assertEqual(len(calls),2)
@@ -57,7 +59,7 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
         self.assertEqual(a["agencies_with_verified_new_contracts"],0)
 
     def test_already_page_reviewed_guid_is_excluded_even_with_different_id_url(self):
-        known=A.indexed_matters()
+        known,files=A.indexed_matters()
         reviewed=next(iter(known["elpasotexas"]))
         seed={"elpasotexas":"El Paso City Council"}
         original=[{"url":"https://webapi.legistar.com/v1/elpasotexas/matters/16407",
@@ -65,13 +67,30 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
           "status":"unreviewed"}]
         result=A.acquire(seed,collector=lambda *_:original,
                          enqueue=lambda _: self.fail("Reviewed GUID must never be requeued"),
-                         workers=1,known_guids=known,
-                         detail_fetch=lambda _:{"MatterId":16407,"MatterGuid":reviewed})
+                         workers=1,known_guids=known,known_file_ids=files,
+                         detail_fetch=lambda _:{"MatterId":16407,"MatterGuid":reviewed,
+                          "MatterFile":"ZZ-16407"})
         self.assertEqual(result["candidate_matches"],1)
         self.assertEqual(result["already_in_source_catalog"],1)
         self.assertEqual(result["new_uncatalogued_matches"],0)
         self.assertEqual(result["new_review_queue_leads"],0)
         self.assertEqual(result["alert_events_created"],0)
+
+    def test_mismatched_api_guid_but_identical_official_file_number_is_not_new(self):
+        known,files=A.indexed_matters()
+        seed={"elpasotexas":"El Paso City Council"}
+        lead=[{"url":"https://webapi.legistar.com/v1/elpasotexas/matters/16407",
+          "publisher":"El Paso City Council","status":"unreviewed"}]
+        result=A.acquire(seed,collector=lambda *_:lead,known_guids=known,
+             known_file_ids=files,
+             detail_fetch=lambda _:{"MatterId":16407,
+                 "MatterGuid":"D912B783-56A8-4549-8586-42EC6CE50246",
+                 "MatterFile":"26-1092"},
+             enqueue=lambda _:self.fail("Already indexed File # must be held"),
+             workers=1)
+        self.assertEqual(result["already_in_source_catalog"],1)
+        self.assertEqual(result["new_uncatalogued_matches"],0)
+        self.assertEqual(result["new_review_queue_leads"],0)
 
     def test_missing_or_disagreeing_matter_guid_is_held_not_assumed_novel(self):
         seed={"stpaul":"Saint Paul City Council"}
@@ -86,6 +105,7 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
         ]:
             result=A.acquire(seed,collector=lambda *_:[lead],known_guids={"stpaul":set()},
                          detail_fetch=lambda _:payload,workers=1,
+                         known_file_ids={"stpaul":set()},
                          enqueue=lambda _:self.fail("Unverifiable GUID must never queue"))
             self.assertEqual(result["unreconciled_guid_hold"],1)
             self.assertEqual(result["new_review_queue_leads"],0)
@@ -103,7 +123,8 @@ class OriginalGovernmentAcquisitionTests(unittest.TestCase):
                 A.acquire({"stpaul":"Saint Paul City Council"},
                           collector=lambda *args:[unsafe],
                           enqueue=lambda _:self.fail("Unsafe source queued"),workers=1,
-                          known_guids={"stpaul":set()},detail_fetch=lambda *_: self.fail("Unsafe detail queried"))
+                          known_guids={"stpaul":set()},known_file_ids={"stpaul":set()},
+                          detail_fetch=lambda *_: self.fail("Unsafe detail queried"))
 
 if __name__=="__main__":
     unittest.main()
