@@ -42,6 +42,15 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <p id="municipalSourceStatus" role="status" aria-live="polite">Checking 11 municipal government source receipts…</p>
 <div id="municipalSourceCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:.75rem"></div>
 </section>
+<section class="pane" id="governmentDocket" aria-labelledby="governmentDocketHeading">
+<h2 id="governmentDocketHeading">New original-government research dossiers · exact agencies</h2>
+<p>Official government records covering source-stated contract amounts, council decisions, historical policy text and outstanding questions. <strong>A proposal is not an enacted contract; a historical Sheriff's policy is not current Flock policy.</strong> These 11 independent records are separate from 25 individually page-reviewed original PDFs and add no camera locations.</p>
+<p><a href="./government-evidence.html">Open searchable government evidence and original-source status comparison</a>.</p>
+<div class="search"><label for="governmentDocketSearch">Find government source evidence</label>
+<input id="governmentDocketSearch" type="search" maxlength="140" placeholder="Sacramento, spending, El Paso, policy, Cleveland"></div>
+<p id="governmentDocketStatus" class="status" role="status">Loading government original source docket…</p>
+<div id="governmentDocketCards" class="grid" aria-label="Source-linked government research evidence"></div>
+</section>
 <section class="pane" id="verifiedOriginals" aria-labelledby="verifiedOriginalsHeading">
 <h2 id="verifiedOriginalsHeading">Verified original-government agency dossiers</h2>
 <p>Search the separately source-page-reviewed agency library. Unlike locality groupings, each record has an explicitly identified government agency, original PDF hashes and page citations. <strong>A signed contract, published policy or draft is not live camera verification, a complete agency census or proof of actual database access.</strong></p>
@@ -79,6 +88,8 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <h2 id="profileTitle"></h2>
 <p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a><a id="audit" href="./agency-audit.html">Generate accountability audit</a><a id="timelineLink" href="./agency-timeline.html">View dated accountability timeline</a></div>
 <div class="grid" id="metrics"></div>
+<h3>Exact government-source research for this locality</h3><div id="newExactGovSources"></div>
+<p class="muted">Newly indexed historical government records are not automatic government change alerts. Supplemental docket entries are separate from individually page-reviewed agency dossiers.</p>
 <h3>Government program disclosures</h3><div id="programs"></div>
 <h3>Government actions and documented decisions</h3><div id="events"></div>
 <h3>Direct Flock portal disclosures and retention history</h3><div id="portals"></div>
@@ -102,10 +113,11 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <script src="./wa-original-policies.js"></script>
 <script src="./wa-original-agency-dossiers.js"></script>
 <script src="./agency-intelligence-v2.js"></script>
+<script src="./government-source-docket.js"></script>
 <script>
 'use strict';
 const API=window.KatoptronIntelligence,$=id=>document.getElementById(id);
-let groups=[],selected=null,originalIndex=null,originalSelection=null;
+let groups=[],selected=null,originalIndex=null,originalSelection=null,governmentDocket=null;
 const ORIGINAL_SOURCE_PATHS={
  okc:'./data/verified-okc-2026-original-flock-contract-review.json',
  ne:'./data/verified-nebraska-original-aggregate-reports.json',
@@ -277,6 +289,43 @@ loadOriginalDossiers().catch(err=>{
  $('originalStatus').textContent='Individually reviewed original government agency records cannot be displayed: '+err.message+
   '. No unsupported original evidence will be shown.';
 });
+function renderExactGovSources(locality){
+ const output=$('newExactGovSources');
+ if(!output)return;
+ output.replaceChildren();
+ const rows=governmentDocket?governmentDocket.byLocality(locality):[];
+ if(!rows.length){output.append(node('p','No exact-publisher original source docket found for this locality. Unknown is not zero cameras or contracts.'));return;}
+ for(const r of rows){
+  const card=node('article',null,'card');
+  card.append(node('strong',r.title),node('small',r.source_date+' · '+r.agency+' · '+r.status.replaceAll('_',' ')),node('p',r.summary));
+  if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
+  card.append(node('p','Official-source status: '+r.proof));
+  for(const question of r.open_questions)card.append(node('p','Unresolved: '+question));
+  source(card,r.source_url,'Inspect government original record');output.append(card);
+ }
+}
+function renderGovernmentDocket(){
+ const output=$('governmentDocketCards');output.replaceChildren();
+ if(!governmentDocket)return;
+ const term=$('governmentDocketSearch').value.toLowerCase().trim();
+ const rows=governmentDocket.rows.filter(r=>(r.agency+' '+r.title+' '+r.summary+' '+r.kind+' '+r.status).toLowerCase().includes(term));
+ for(const r of rows){
+  const card=node('article',null,'card');
+  card.append(node('strong',r.agency+' · '+r.state),node('small',r.source_date+' · '+r.status.replaceAll('_',' ')),node('p',r.title),node('p',r.summary));
+  if(r.amount_usd!==null)card.append(node('p','Source-stated amount: $'+r.amount_usd.toLocaleString('en-US')+' · '+r.amount_basis));
+  for(const question of r.open_questions)card.append(node('p','Open question: '+question));
+  source(card,r.source_url,'Open original government record');
+  output.append(card);
+ }
+ $('governmentDocketStatus').textContent=rows.length+' exact government record(s) matched · '+governmentDocket.agencies.length+' locality/agency identities in '+governmentDocket.states.length+' states. Supplemental sources do not increase page-verified PDF counts or verify camera operation.';
+ if(!rows.length)output.append(node('p','No matching government record. This does not prove there are no contracts or cameras.'));
+}
+$('governmentDocketSearch').addEventListener('input',renderGovernmentDocket);
+fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('government source docket unavailable');return r.json()}).then(json=>{
+ governmentDocket=window.KatoptronGovernmentDocket.build(json);
+ renderGovernmentDocket();if(selected)renderExactGovSources(selected.key);
+}).catch(e=>{$('governmentDocketStatus').textContent='Government source docket held: '+e.message;});
+
 function renderList(){
  const q=$('query').value.trim().toLowerCase();
  const result=groups.filter(g=>g.label.toLowerCase().includes(q)||
@@ -296,6 +345,7 @@ function renderList(){
 }
 function select(group){
  selected=group;$('profile').hidden=false;
+ renderExactGovSources(group.key);
  $('profileTitle').textContent=group.label;
  $('profileDetail').textContent='Published source evidence grouped by locality name. One place can have multiple agencies; this grouping does not establish record ownership or an active deployment.';
  const url=new URL(location.href);url.searchParams.set('place',group.key);
