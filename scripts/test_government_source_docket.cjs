@@ -4,11 +4,20 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const V=require('../government-source-docket.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const result=V.build(raw);
-assert.equal(result.rows.length,44);
+assert.equal(result.rows.length,48);
 assert.equal(result.states.length,18);
-assert.equal(result.issuers.length,39);
-assert.equal(result.agencies.length,38);
+assert.equal(result.issuers.length,43);
+assert.equal(result.agencies.length,42);
 assert.equal(result.byLocality('sacramento county|CA').length,3);
+for(const id of ['woodland-ca-police-alpr-faq-2026','san-diego-ca-sdpd-annual-alpr-audit-report-2025','houston-tx-flock-contract-agenda-2022','pasadena-ca-council-flock-report-directive-2026']){
+ const record=result.get(id);assert.ok(record,'Pilot original missing: '+id);
+ assert.equal(record.watch_category,'historical_research_only');
+ assert.ok(record.open_questions.length>=2);
+ assert.ok(!('latitude' in record)&&!('longitude' in record));
+}
+assert.equal(result.get('houston-tx-flock-contract-agenda-2022').amount_usd,6390000);
+assert.match(result.get('houston-tx-flock-contract-agenda-2022').amount_basis,/NOT verified actual expenditure/);
+assert.match(result.get('san-diego-ca-sdpd-annual-alpr-audit-report-2025').status,/not_independent_audit/);
 for(const key of ['groton-ma-official-flock-contract-termination-2026',
  'shaker-heights-oh-flock-signed-amendment-announcement-2026',
  'la-crosse-wi-police-flock-end-contract-statement-2026',
@@ -89,4 +98,4 @@ assert.match(html,/government-source-docket\.js/);
 assert.match(html,/renderExactGovSources\(group\.key\)/);
 const page=fs.readFileSync(path.join(__dirname,'../government-evidence.html'),'utf8');
 assert.match(page,/qualified-original-government-docket-2026-10-29\.json/);
-console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 44 original issuer records, 38 exact locality profiles, 18 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
+console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 48 original issuer records, 42 exact locality profiles, 18 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
