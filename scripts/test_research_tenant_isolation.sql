@@ -22,6 +22,16 @@ grant select,insert,delete on storage.objects to authenticated;
 \i supabase/migrations/157_research_collaborator_roles.sql
 \i supabase/migrations/158_research_request_audit_lifecycle.sql
 \i supabase/migrations/159_prevent_research_orphan_storage.sql
+\i supabase/migrations/155_original_government_version_review_queue.sql
+\i supabase/migrations/160_fix_original_source_url_check.sql
+insert into public.flock_original_page_versions(source_id,source_url,locality_key,source_date,text_sha256,anchor_context_sha256)
+ values('official-frankfort-version-test',
+ 'https://www.frankfort.ky.gov/m/NewsFlash/Home/Detail/274',
+ 'frankfort|KY','2026-10-13',repeat('a',64),repeat('b',64));
+select 1/(case when (select count(*) from public.flock_original_page_versions)=1 then 1 else 0 end) as valid_original_receipt;
+select 1/(case when ('https://gov.example.gov/public bad' ~ '^https://[^[:space:]]+$')=false then 1 else 0 end) as unsafe_url_rejected;
+
+
 
 insert into auth.users values
  ('11111111-1111-1111-1111-111111111111'),

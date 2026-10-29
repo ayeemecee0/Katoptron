@@ -15,10 +15,12 @@ on:
       - 'government-watch.html'
       - 'scripts/send_government_watch_alerts.py'
       - 'supabase/migrations/155_original_government_version_review_queue.sql'
+      - 'supabase/migrations/160_fix_original_source_url_check.sql'
       - 'supabase/migrations/156_pilot_interest_and_watch_my_receipts.sql'
       - 'supabase/migrations/157_research_collaborator_roles.sql'
       - 'supabase/migrations/158_research_request_audit_lifecycle.sql'
       - 'supabase/migrations/159_prevent_research_orphan_storage.sql'
+      - 'supabase/migrations/160_fix_original_source_url_check.sql'
       - '.github/workflows/professional_research_acceptance.yml'
   push:
     branches: [main]
