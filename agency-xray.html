@@ -30,11 +30,11 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 </style></head><body>
 <a href="#main-content" class="skip-link">Skip to content</a>
 <header><a class="brand" href="./index.html">KATOPTRON</a><nav aria-label="Primary">
-<a href="./index.html">CAMERA MAP</a><a href="./accountability.html">ACCOUNTABILITY</a>
+<a href="./index.html">CAMERA MAP</a><a href="./accountability.html">ACCOUNTABILITY</a> <a href="./agency-intelligence-hub.html">AGENCY INTELLIGENCE</a> <a href="./research-workspace.html">RESEARCH WORKSPACE</a>
 <a href="./government-watch.html">GOVERNMENT WATCH</a><a href="./agency-audit.html">ACCOUNTABILITY AUDIT</a><a href="./mn-alpr-audits.html">STATE AUDIT LIBRARY</a><a href="./original-acquisition.html">SOURCE COVERAGE</a><a href="./sharing-explorer.html">SHARING EXPLORER</a>
 </nav></header>
 <main id="main-content"><h1>Agency X-Ray</h1>
-<p>One source-linked research profile for each locality in Katoptron's published evidence. Compare government maps, government decisions and separately sourced Flock vendor disclosures.</p>
+<p><a href="./agency-intelligence-hub.html">Explore nationwide government agency intelligence</a> · <a href="./research-workspace.html">Open private research workspace</a>.</p><p>One source-linked research profile for each locality in Katoptron's published evidence. Compare government maps, government decisions and separately sourced Flock vendor disclosures.</p>
 <div class="note"><strong>Evidence boundaries:</strong> A portal's camera count is <em>not</em> a count of confirmed individual map positions. Locality/name matching does not independently prove two agencies are the same operator. Absence of records is never evidence of no surveillance. This view never presents community OSM observations as agency-owned cameras.</div>
 <section class="pane" aria-labelledby="agencyHTMLHeading">
 <h2 id="agencyHTMLHeading">Additional original municipal agency statements · 11 states</h2>
@@ -86,7 +86,7 @@ input{min-width:240px;flex:1}button{cursor:pointer}button:hover{background:#2444
 <div id="list" aria-label="Localities with published evidence"></div>
 <section id="profile" hidden aria-label="Selected locality source dossier">
 <h2 id="profileTitle"></h2>
-<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a><a id="audit" href="./agency-audit.html">Generate editable public-records investigation</a><a id="timelineLink" href="./agency-timeline.html">View dated accountability timeline</a></div>
+<p id="profileDetail"></p><div class="actions"><button type="button" id="follow">Follow in Government Watch</button><a id="permalink" href="#">Copyable profile link</a><a id="brief" href="./agency-brief.html">Create printable evidence brief</a><a id="audit" href="./agency-audit.html">Generate editable public-records investigation</a><a id="saveCase" href="./research-workspace.html">Save private research case</a><a id="timelineLink" href="./agency-timeline.html">View dated accountability timeline</a></div>
 <section class="pane" aria-label="Source-linked investigation overview"><h3>Decision brief: spending, contracts, policies, changes, questions</h3><p>Figures summarize sourced locality records, not necessarily one agency. Contract proposals are not paid expenditure.</p><div class="grid" id="profileQuickScan"></div></section><div class="grid" id="metrics"></div>
 <h3>Exact government-source research for this locality</h3><div id="newExactGovSources"></div>
 <p class="muted">Newly indexed historical government records are not automatic government change alerts. Supplemental docket entries are separate from individually page-reviewed agency dossiers.</p>
@@ -516,6 +516,7 @@ function select(group){
  }else $('mapEvidence').append(node('p','No exact government-source positions currently published for this locality. This does NOT mean zero cameras.'));
  $('unknowns').textContent='Current equipment operation, undocumented inter-agency access, missing records, future installation, and the identity of equipment described only as generic LPR remain unknown unless independently sourced. Source dates are not live status.';
  history.replaceState(null,'',url);
+ $('saveCase').href='./research-workspace.html?agency='+encodeURIComponent(group.key)+'&title='+encodeURIComponent(group.label+' accountability research');
  $('profile').scrollIntoView({block:'start',behavior:'smooth'});
 }
 $('follow').addEventListener('click',()=>{
