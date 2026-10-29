@@ -215,8 +215,9 @@ class GovernmentWatchSafety(unittest.TestCase):
             self.assertEqual(len(messages),1)
             self.assertIn("https://agency.example.gov/council/2026",
                           messages[0].get_content())
-            self.assertEqual(M.deliver("https://example.supabase.co","key",settings,
-                          send=lambda message,_:messages.append(message)),0)
+            with self.assertRaisesRegex(RuntimeError,"Receipt store unavailable"):
+                M.deliver("https://example.supabase.co","key",settings,
+                          send=lambda message,_:messages.append(message))
             self.assertEqual(len(messages),1,"Uncertain submission must not duplicate")
             self.assertEqual(claims,{"new-verified-government-event"})
         finally:M.api=original
