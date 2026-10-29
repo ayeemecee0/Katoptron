@@ -1,0 +1,46 @@
+name: Monitor official Sacramento ALPR source revisions
+on:
+  schedule:
+    - cron: '24 13 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'data/sacramento-original-watch-source-registry.json'
+      - 'scripts/monitor_sacramento_original_source_revisions.py'
+      - 'scripts/test_monitor_sacramento_original_source_revisions.py'
+      - '.github/workflows/monitor_sacramento_original_sources.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/sacramento-original-watch-source-registry.json'
+      - 'scripts/monitor_sacramento_original_source_revisions.py'
+      - 'scripts/test_monitor_sacramento_original_source_revisions.py'
+      - '.github/workflows/monitor_sacramento_original_sources.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-sacramento-original-review-monitor
+  cancel-in-progress: false
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify exact source allowlist, content hashing, and review-only issuance
+        run: python -m unittest discover -s scripts -p 'test_monitor_sacramento_original_source_revisions.py' -v
+      - name: Observe Sacramento original publisher revisions without source-status promotion
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_REPOSITORY: ayeemecee0/Katoptron
+        run: python scripts/monitor_sacramento_original_source_revisions.py
