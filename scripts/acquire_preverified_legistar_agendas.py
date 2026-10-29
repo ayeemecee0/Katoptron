@@ -28,6 +28,7 @@ TENANTS={
  "monterey":("Monterey County Sheriff's Office","CA"),
  "manteca-ca":("Manteca Police Department","CA"),
  "ci-ssf-ca":("South San Francisco Police Department","CA"),
+ "toledo":("Toledo City Council","OH"),
 }
 # A source page is a seed for discovery ONLY if it was examined and remains
 # exactly tied to the above tenant and issuer. Do not accept arbitrary YAML.
@@ -41,6 +42,7 @@ EXACT_SEEDS={
  "monterey":"monterey-ca-agenda-a-26-368",
  "manteca-ca":"manteca-ca-agenda-26-399",
  "ci-ssf-ca":"south-san-francisco-ca-26-2370",
+ "toledo":"toledo-oh-resolution-r-435-26",
 }
 def verified_seed_registry(path=CATALOG):
     obj=json.loads(Path(path).read_text(encoding="utf8"))
