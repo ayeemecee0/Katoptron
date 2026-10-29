@@ -69,13 +69,16 @@ class GovernmentWatchSafety(unittest.TestCase):
 
     def test_confirmed_sender_compose_never_mentions_plates_or_tracks_route(self):
         mail=M.make_email("confirmed@example.org","folsom|CA",[
-          {"title":"City source record","summary":"Original council decision.",
+          {"kind":"government_decision","title":"City source record","summary":"Original council decision.",
             "evidence_tier":"original_government",
             "source_date":"2026-10-20","source_url":"https://gov.example.org/a"}],
           "alerts@katoptron.example.org")
         self.assertEqual(mail["To"],"confirmed@example.org")
         self.assertIn("Manage or disable",mail.get_content())
         self.assertIn("not a travel route",mail.get_content())
+        self.assertIn("Why this may matter:",mail.get_content())
+        self.assertIn("What to investigate next:",mail.get_content())
+        self.assertIn("Save a research case:",mail.get_content())
         with self.assertRaisesRegex(ValueError,"Timezone"):
             M.iso_datetime("2026-10-25T10:00:00")
     def test_sender_does_not_replay_prior_events_or_duplicate_delivery(self):
