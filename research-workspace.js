@@ -162,7 +162,13 @@ async function start(win,U){
    sb.from('research_case_requests').select('*').eq('case_id',selectedC.id).order('created_at',{ascending:false}).limit(100),
    sb.from('research_case_notes').select('*').eq('case_id',selectedC.id).order('created_at',{ascending:false}).limit(100),
    sb.from('research_case_files').select('*').eq('case_id',selectedC.id).order('created_at',{ascending:false}).limit(100)]);
-  detail={requests:unwrap(r),notes:unwrap(n),files:unwrap(f)};
+  detail={requests:unwrap(r),notes:unwrap(n),files:unwrap(f),history:[]};
+  if(detail.requests.length){
+   const ids=detail.requests.map(x=>x.id);
+   detail.history=unwrap(await sb.from('research_request_activity')
+    .select('request_id,previous_status,new_status,previous_due_on,new_due_on,action_at')
+    .in('request_id',ids).order('action_at',{ascending:false}).limit(150));
+  }
   renderDetails();
  }
  function renderDetails(){
@@ -185,7 +191,13 @@ async function start(win,U){
     due.textContent=distance<0?'User-entered follow-up date overdue by '+Math.abs(distance)+' day(s).':
       'User-entered follow-up in '+distance+' day(s). No statutory deadline inferred.';
    }
-   const content=[due,subject,recipient,el('label','Request body'),body,el('label','Status'),statusSel,...dates.map(x=>x[1])];
+   const history=el('div');
+   const audit=(detail.history||[]).filter(h=>h.request_id===req.id).slice(0,10);
+   for(const h of audit)history.append(el('small',
+    'Recorded '+String(h.action_at).slice(0,16)+' UTC: '+h.previous_status+' → '+h.new_status+
+    (h.new_due_on?' · follow-up '+h.new_due_on:'')+'\n'));
+   if(!audit.length)history.append(el('small','No status or date edits recorded yet.'));
+   const content=[due,history,subject,recipient,el('label','Request body'),body,el('label','Status'),statusSel,...dates.map(x=>x[1])];
    if(writable())content.push(button('Save request and dates',async()=>{
     unwrap(await sb.from('research_case_requests').update({recipient:rinput.value,subject:sinput.value,body:body.value,status:statusSel.value,
       sent_on:dates[0][2].value||null,response_due_on:dates[1][2].value||null,response_received_on:dates[2][2].value||null,
