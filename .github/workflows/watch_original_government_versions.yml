@@ -1,0 +1,37 @@
+name: Review source-version differences privately
+on:
+  schedule:
+    - cron: '17 13 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/watch_original_government_versions.py'
+      - 'scripts/test_watch_original_government_versions.py'
+      - 'supabase/migrations/155_original_government_version_review_queue.sql'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-original-government-version-review
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 19
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test first-scan baseline, original claim anchors, and nonpublication
+        run: python -m unittest discover -s scripts -p 'test_watch_original_government_versions.py' -v
+      - name: Require private credentials
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Compare original government HTML versions and stage only editorial review
+        run: python scripts/watch_original_government_versions.py
