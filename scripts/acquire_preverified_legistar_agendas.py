@@ -79,7 +79,12 @@ def indexed_matters(path=CATALOG):
         if u.scheme!="https" or not host.endswith(".legistar.com"):
             continue
         tenant=host[:-len(".legistar.com")]
-        if tenant not in TENANTS or row.get("agency")!=TENANTS[tenant][0]:
+        # Other explicitly authenticated government publishers may appear in
+        # the public X-Ray docket without becoming scan seeds. Never treat
+        # their Matter IDs as entries for one of our pinned scan tenants.
+        if tenant not in TENANTS:
+            continue
+        if row.get("agency")!=TENANTS[tenant][0]:
             raise ValueError("Government docket publisher binding drift")
         guid=parse_qs(u.query).get("GUID",[None])[0]
         if not GUID_RE.fullmatch(guid or ""):
