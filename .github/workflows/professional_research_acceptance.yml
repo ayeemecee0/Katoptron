@@ -11,6 +11,7 @@ on:
       - 'research-workspace.html'
       - 'research-plans.html'
       - 'research-pilot.js'
+      - 'supabase/migrations/161_research_pilot_task_measurements.sql'
       - 'watch-email.js'
       - 'government-watch.html'
       - 'scripts/send_government_watch_alerts.py'

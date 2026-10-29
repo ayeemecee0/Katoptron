@@ -24,6 +24,7 @@ grant select,insert,delete on storage.objects to authenticated;
 \i supabase/migrations/159_prevent_research_orphan_storage.sql
 \i supabase/migrations/155_original_government_version_review_queue.sql
 \i supabase/migrations/160_fix_original_source_url_check.sql
+\i supabase/migrations/161_research_pilot_task_measurements.sql
 insert into public.flock_original_page_versions(source_id,source_url,locality_key,source_date,text_sha256,anchor_context_sha256)
  values('official-frankfort-version-test',
  'https://www.frankfort.ky.gov/m/NewsFlash/Home/Detail/274',
@@ -144,3 +145,29 @@ begin
 end $$;
 reset role;
 select 'RESEARCH_AUTH_TENANT_LIFECYCLE_PASS' as result;
+
+-- Opt-in task durations are owner-only; unrelated accounts cannot read, erase, or forge another user's record.
+set role authenticated;
+set request.jwt.claim.sub='11111111-1111-1111-1111-111111111111';
+insert into public.research_pilot_task_measurements(user_id,task_kind,manual_estimate_minutes,software_minutes,task_completed)
+values('11111111-1111-1111-1111-111111111111','source_check',45,12,true);
+select 1/(case when (select count(*) from public.research_pilot_task_measurements)=1 then 1 else 0 end) as pilot_measurement_owner_can_read;
+set request.jwt.claim.sub='33333333-3333-3333-3333-333333333333';
+select 1/(case when (select count(*) from public.research_pilot_task_measurements)=0 then 1 else 0 end) as outsider_cannot_read_metrics;
+delete from public.research_pilot_task_measurements;
+do $$
+begin
+ begin
+  insert into public.research_pilot_task_measurements(user_id,task_kind,manual_estimate_minutes,software_minutes,task_completed)
+   values('11111111-1111-1111-1111-111111111111','source_check',45,12,true);
+  raise exception 'Outsider was able to impersonate pilot';
+ exception when others then
+  if sqlerrm='Outsider was able to impersonate pilot' then raise;end if;
+ end;
+end $$;
+set request.jwt.claim.sub='11111111-1111-1111-1111-111111111111';
+select 1/(case when (select count(*) from public.research_pilot_task_measurements)=1 then 1 else 0 end) as outsider_cannot_delete_metrics;
+delete from public.research_pilot_task_measurements;
+select 1/(case when (select count(*) from public.research_pilot_task_measurements)=0 then 1 else 0 end) as owner_can_withdraw_metrics;
+reset role;
+select 'RESEARCH_PILOT_OPT_IN_RLS_PASS' as result;

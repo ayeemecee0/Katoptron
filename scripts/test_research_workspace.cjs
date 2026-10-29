@@ -13,8 +13,19 @@ const record=U.exportData({id:'w',title:'Test'},{id:'c',agency_key:'folsom|CA',t
 assert.equal(record.attachments_metadata_only.length,1);
 assert.ok(!JSON.stringify(record).includes('service_role'));
 assert.ok(record.warning.includes('NOT included'));
+const cited=U.htmlBrief({id:'w',title:'Test'},{id:'c',agency_key:'folsom|CA',title:'Research <unsafe>',status:'open'},[],[
+ {note:'Fact <img src=x onerror=alert(1)>',source_url:'https://city.gov/records?a=1&b=2',created_at:'2026-10-29'},
+ {note:'No verified citation',source_url:'javascript:alert(1)',created_at:'2026-10-29'}
+],[]);
+assert.match(cited,/Research &lt;unsafe&gt;/);
+assert.match(cited,/Fact &lt;img/);
+assert.doesNotMatch(cited,/<img/);
+assert.doesNotMatch(cited,/href="javascript/);
+assert.match(cited,/city.gov\/records\?a=1&amp;b=2/);
+assert.match(cited,/NOT independently verified/);
+assert.doesNotMatch(cited,/<script/);
 const html=fs.readFileSync(path.join(__dirname,'../research-workspace.html'),'utf8');
-for(const key of ['research-workspace.js','createRequest','uploadFile','inviteRole','exportCase','caseStatus','requestBody'])
+for(const key of ['research-workspace.js','createRequest','uploadFile','inviteRole','exportCase','exportBrief','pilotStart','pilotAgency','caseStatus','requestBody'])
  assert.ok(html.includes(key));
 const schema=fs.readFileSync(path.join(__dirname,'../supabase/migrations/151_research_workspace_rls_policies.sql'),'utf8');
 assert.match(schema,/research_case_read/);assert.match(schema,/research_request_update/);

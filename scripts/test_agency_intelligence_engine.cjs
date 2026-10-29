@@ -6,7 +6,7 @@ const rows=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-ori
 const docket=D.build(rows),data=E.build(docket);
 assert.equal(data.total_original_documents,docket.rows.length);
 assert.equal(data.states.length,18);
-assert.equal(data.localities.length,38);
+assert.equal(data.localities.length,42);
 assert.ok(data.agency_count>=30);
 for(const a of data.agencies){
  assert.equal(a.historical_only,true);

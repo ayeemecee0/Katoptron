@@ -1009,6 +1009,98 @@
       "amount_basis": null,
       "watch_category": "historical_research_only",
       "source_type": "government_hosted_primary"
+    },
+    {
+      "id": "woodland-ca-police-alpr-faq-2026",
+      "agency": "Woodland Police Department",
+      "locality_key": "woodland|CA",
+      "state": "CA",
+      "source_date": "2026-10-06",
+      "kind": "published_policy",
+      "status": "city_published_alpr_faq_not_independent_audit",
+      "title": "Woodland police publishes Flock ALPR program, Policy 441 and retention FAQ",
+      "summary": "The City of Woodland's public ALPR FAQ states that its police department contracts with Flock and reports 38 Flock cameras plus one different-vendor camera; it describes 30-day retention and Policy 441 restrictions. These are city-published program statements, not independently audited hardware locations, current configuration, or legal compliance.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://cityofwoodland.gov/1704/Automated-License-Plate-Readers-ALPR",
+      "provider": "City of Woodland Police Department",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "City of Woodland official ALPR FAQ, camera count and retention sections, marked updated October 6, 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "What signed contract and amendments document current prices and renewal dates?",
+        "What independent audit verifies the city-stated sharing practices and device inventory?"
+      ]
+    },
+    {
+      "id": "san-diego-ca-sdpd-annual-alpr-audit-report-2025",
+      "agency": "San Diego Police Department",
+      "locality_key": "san diego|CA",
+      "state": "CA",
+      "source_date": "2026-02",
+      "kind": "published_policy",
+      "status": "department_published_alpr_audit_not_independent_audit",
+      "title": "SDPD 2025 surveillance annual report records ALPR audit exceptions",
+      "summary": "San Diego Police Department's 2025 surveillance report states that weekly ALPR audits found four suspected use-policy violations, three involving invalid search reasons and one concerning sharing with an Arizona police department. This is a department-reported audit disclosure, not an independent final finding or verification of a Flock Nova contract.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.sandiego.gov/sites/default/files/2026-02/sdpd-annual-surveillance-report-2025.pdf",
+      "provider": "San Diego Police Department",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_pdf",
+      "proof": "Original SDPD 2025 Annual Surveillance Report, PDF pages 70-71 (zero-based pages 69-70), ALPR audits/investigations section",
+      "flock_specific": true,
+      "open_questions": [
+        "What are the final dispositions of the four suspected policy violations?",
+        "What separate original contracts and amendments govern any Flock Nova pilot?"
+      ]
+    },
+    {
+      "id": "houston-tx-flock-contract-agenda-2022",
+      "agency": "Houston City Council",
+      "locality_key": "houston|TX",
+      "state": "TX",
+      "source_date": "2022-08-17",
+      "kind": "government_decision",
+      "status": "council_agenda_lists_flock_contract_ceiling_not_paid",
+      "title": "Houston council agenda item 23 lists Flock ALPR contract ordinance",
+      "summary": "The City of Houston's original August 17, 2022 council agenda lists Ordinance 2022-0629, describing an Flock ALPR-services contract with a stated maximum amount of $6,390,000 over an initial year and four optional renewal years. Agenda wording and ceiling alone do not independently establish actual payments, executed amendments, or current service terms.",
+      "amount_usd": 6390000,
+      "amount_basis": "Maximum ceiling specified in City Council agenda item 23; NOT verified actual expenditure, invoice, or currently effective contract",
+      "source_url": "https://www.houstontx.gov/citysec/agenda/2022/Aug1622.pdf",
+      "provider": "City of Houston City Secretary",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_pdf",
+      "proof": "Original Houston August 17, 2022 agenda with action annotations, PDF page 5, item 23, Ordinance 2022-0629",
+      "flock_specific": true,
+      "open_questions": [
+        "Which original executed agreement and amendments establish current pricing and renewal status?",
+        "What auditable records confirm amounts actually paid and sharing restrictions?"
+      ]
+    },
+    {
+      "id": "pasadena-ca-council-flock-report-directive-2026",
+      "agency": "Pasadena City Council",
+      "locality_key": "pasadena|CA",
+      "state": "CA",
+      "source_date": "2026-02-23",
+      "kind": "government_decision",
+      "status": "council_requests_future_flock_report_not_contract_action",
+      "title": "Pasadena Council directs police to report on Flock contracts",
+      "summary": "Pasadena's official February 23, 2026 action recap records council approval of a direction for the police department to report back on Flock contracts at a future Public Safety Committee meeting. This establishes a council oversight request, not approval or termination of a Flock contract, proof of contract terms, or verified device locations.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://ww2.cityofpasadena.net/2026%20Agendas/Feb_23_26/Agendarecap.asp",
+      "provider": "City of Pasadena City Clerk",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Official Pasadena City Council February 23, 2026 agenda action recap, approved directive to report back on Flock contracts",
+      "flock_specific": true,
+      "open_questions": [
+        "What Flock contract documents and amendments were presented to the Public Safety Committee?",
+        "Did subsequent council or committee action actually change contract scope or policy?"
+      ]
     }
   ]
 }
