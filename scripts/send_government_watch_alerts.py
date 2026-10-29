@@ -67,11 +67,13 @@ def make_email(recipient,locality,events,from_address):
     msg=EmailMessage()
     msg["From"]=from_address
     msg["To"]=recipient
-    msg["Subject"]="Katoptron Government Watch: "+locality.replace("|",", ")
+    msg["Subject"]="Katoptron Government Watch digest ("+str(len(events))+" new sourced item"+("s" if len(events)!=1 else "")+"): "+locality.replace("|",", ")
     lines=[
       "Katoptron detected new source-published Flock accountability records for your opted-in locality watch.",
       "Only source-dated government and vendor disclosures are included.",
       "These are NOT live ALPR detections, confirmed camera uptime, or complete agency access logs.",
+      "Each item below is a separately sourced disclosure. Digest grouping does not imply an additional government action.",
+      "Sources in this digest: "+str(len(events))+" | Unique original URLs: "+str(len({e.get("source_url") for e in events})),
       "",
     ]
     for event in events:
@@ -83,6 +85,7 @@ def make_email(recipient,locality,events,from_address):
           "What the source documents: "+str(event.get("summary",""))[:500],
           "Why this may matter: "+explanation["why"],
           "What to investigate next: "+explanation["next"],
+          "Evidence scope: "+explanation["scope"],
           "Original source: "+str(event.get("source_url","")),
           "Open agency evidence: "+explanation["agency_url"],
           "Save a research case: "+explanation["case_url"],
