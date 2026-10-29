@@ -16,7 +16,21 @@
     attachments_metadata_only:files.map(x=>({filename:x.filename,file_size:x.file_size,created_at:x.created_at})),
     warning:'Attachment bytes are NOT included. Exported statements are not automatically verified; inspect each original source.'};
  }
- return Object.freeze({sourceUrl,agencyKey,exportData});
+
+ function htmlBrief(workspace,entry,requests,notes,files){
+  const d=exportData(workspace,entry,requests,notes,files);
+  const esc=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const list=(items,cb)=>items.length?'<ol>'+items.map(x=>'<li>'+cb(x)+'</li>').join('')+'</ol>':'<p>None recorded.</p>';
+  const notesHtml=list(d.notes,n=>'<p>'+esc(n.note)+'</p>'+(n.source_url?'<p>Original source supplied by researcher: <a href="'+esc(n.source_url)+'" rel="noopener noreferrer">'+esc(n.source_url)+'</a></p>':'<p>No source linked.</p>'));
+  const reqHtml=list(d.public_records_requests,r=>'<strong>'+esc(r.subject)+'</strong> ('+esc(r.status)+')<p>Records custodian: '+esc(r.recipient)+'</p><pre>'+esc(r.body)+'</pre>');
+  const fileHtml=list(d.attachments_metadata_only,f=>esc(f.filename)+' (metadata only; attachment not included)');
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="referrer" content="no-referrer"><title>Katoptron research brief</title><style>body{font:16px/1.55 system-ui,Arial,sans-serif;max-width:850px;margin:2rem auto;padding:0 1.2rem;color:#17212a}h2{border-bottom:1px solid #aaa;padding-bottom:.3rem}li{margin-bottom:1rem;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f4f6;padding:.75rem}a{overflow-wrap:anywhere}@media print{body{margin:0}}<\/style></head><body>'+
+   '<h1>Katoptron research brief</h1><p>Generated (UTC): '+esc(d.generated_utc)+'</p><h2>'+esc(d.case.title)+'</h2><p>Agency: '+esc(d.case.agency_key)+' · stage: '+esc(d.case.status)+'</p>'+
+   '<p><strong>Evidence boundary:</strong> Researcher-entered notes, source links and draft requests are NOT independently verified by Katoptron. Inspect each original before publication. This export does not prove a signed contract, paid spending, adopted policy or active camera location. No attachment bytes are included.</p>'+
+   '<h2>Source-linked research notes</h2>'+notesHtml+'<h2>Records requests</h2>'+reqHtml+'<h2>Private attachment inventory</h2>'+fileHtml+
+   '<p>Private case export; handle confidentially. No external scripts, remote tracking or automatically generated legal conclusions.</p></body></html>';
+ }
+ return Object.freeze({sourceUrl,agencyKey,exportData,htmlBrief});
 });
 async function start(win,U){
  'use strict';
@@ -56,7 +70,51 @@ async function start(win,U){
    }catch(e){status('Invite could not be accepted: '+e.message)}
   }
   await loadWorkspaces();
+  await loadPilotDossiers();
  }
+ const quickstartKeys=new Set(['sacramento county|CA','woodland|CA','san diego|CA','houston|TX','pasadena|CA']);
+ const pilotDossiers=new Map();
+ async function loadPilotDossiers(){
+  if(pilotDossiers.size)return;
+  const select=$('pilotAgency');
+  try{
+   const response=await win.fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'});
+   if(!response.ok)throw Error('Public original-government research index unavailable');
+   const raw=await response.json();
+   const docket=win.KatoptronGovernmentDocket?.build(raw);
+   if(!docket)throw Error('Source verification library unavailable');
+   for(const key of quickstartKeys){
+    const records=docket.byLocality(key);
+    if(!records.length)continue;
+    pilotDossiers.set(key,records[0]);
+   }
+   select.replaceChildren(new Option('Choose a researched jurisdiction',''));
+   for(const [key,record] of pilotDossiers)select.append(new Option(record.agency+' · '+record.state+' ('+docket.byLocality(key).length+' sourced item(s))',key));
+   $('pilotQuickstartStatus').textContent='These dossiers contain historical original-government evidence and unresolved questions, not certified current operations.';
+  }catch(err){
+   select.replaceChildren(new Option('Source list unavailable — use manual case form',''));
+   $('pilotQuickstartStatus').textContent='Dossier lookup unavailable: '+err.message+'. Manual case creation remains available.';
+  }
+ }
+ $('pilotStart').addEventListener('click',async()=>{
+  const btn=$('pilotStart');if(btn.disabled)return;btn.disabled=true;
+  try{
+   if(!user||!user.email_confirmed_at)throw Error('Sign in with a confirmed account');
+   const key=$('pilotAgency').value,record=pilotDossiers.get(key);
+   if(!record)throw Error('Select a source-verified agency from the list');
+   if(!selectedW){
+    const w=unwrap(await sb.from('research_workspaces').insert({owner_id:user.id,title:'Pilot investigations'}).select('id').single());
+    await loadWorkspaces();$('workspaceSelect').value=w.id;await chooseWorkspace();
+   }
+   if(!writable())throw Error('Choose a workspace where you can create cases');
+   $('templateRole').value=$('pilotRole').value;
+   $('agencyKey').value=key;$('caseTitle').value=record.agency+' · original-source investigation';
+   $('noteSource').value=record.source_url;
+   $('templatePreview').click();
+   $('pilotQuickstartStatus').textContent='Saving a private source-linked case and editable request. The government document is a starting point, not independently verified current activity.';
+   $('createCase').requestSubmit();
+  }catch(err){btn.disabled=false;$('pilotQuickstartStatus').textContent='Case not started: '+err.message;}
+ });
  async function loadWorkspaces(){
   workspaces=unwrap(await sb.from('research_workspaces').select('id,owner_id,title,created_at').order('created_at',{ascending:false}).limit(100));
   const select=$('workspaceSelect');const old=select.value;select.replaceChildren();
@@ -289,7 +347,7 @@ async function start(win,U){
   }
   await chooseWorkspace();$('caseSelect').value=record.id;await chooseCase();$('caseTitle').value='';
   if(!template||generated)status(generated?'Case, editable request and research checklist saved. No public-records request was sent.':'Investigation created.');
- }catch(err){msg(err)}});
+ }catch(err){msg(err)}finally{$('pilotStart').disabled=false;}});
  $('saveStage').addEventListener('click',async()=>{try{
   if(!writable())throw Error('Editor access required');
   unwrap(await sb.from('research_cases').update({status:$('caseStatus').value,updated_at:new Date().toISOString()}).eq('id',selectedC.id));
@@ -324,6 +382,11 @@ async function start(win,U){
  $('exportCase').addEventListener('click',()=>{
   if(!selectedC)return;
   fileDownload('katoptron-case-'+selectedC.id+'.json',U.exportData(selectedW,selectedC,detail.requests,detail.notes,detail.files));
+ });
+ $('exportBrief').addEventListener('click',()=>{
+  if(!selectedC)return;
+  fileDownload('katoptron-brief-'+selectedC.id+'.html',U.htmlBrief(selectedW,selectedC,detail.requests,detail.notes,detail.files),'text/html');
+  status('Offline HTML brief exported. Citations are researcher-entered links; recheck originals before publication.');
  });
  $('printCase').addEventListener('click',()=>win.print());
  $('shareInvite').addEventListener('click',async()=>{try{
