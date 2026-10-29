@@ -262,7 +262,7 @@ async function start(win,U){
    $('caseTitle').value=d.title.slice(0,180);
    $('requestSubject').value=d.subject;
    $('requestBody').value=d.body;
-   $('noteText').value=d.questions.map((x,i)=>(i+1)+'. '+x).join('\\n');
+   $('noteText').value=d.questions.map((x,i)=>(i+1)+'. '+x).join('\n');
    $('templateStatus').textContent=d.label+' workflow prepared. Creating a case will save its editable records-request draft and source-checklist note.';
   }catch(e){msg(e)}
  });
@@ -282,7 +282,7 @@ async function start(win,U){
       subject:$('requestSubject').value.trim()||template.subject,
       body:$('requestBody').value||template.body,recipient:'',status:'draft'}));
     unwrap(await sb.from('research_case_notes').insert({case_id:record.id,author_id:user.id,
-      note:('Research workflow: '+template.label+'\\n'+template.questions.map((q,i)=>(i+1)+'. '+q).join('\\n')).slice(0,5000),
+      note:('Research workflow: '+template.label+'\n'+template.questions.map((q,i)=>(i+1)+'. '+q).join('\n')).slice(0,5000),
       source_url:noteSource}));
     generated=true;
    }catch(e){status('Case created but template checklist or draft requires review: '+e.message)}
