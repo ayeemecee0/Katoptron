@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),path=require('n
 const D=require('../government-source-docket.js'),B=require('../government-agency-brief.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const docket=D.build(raw);
-const keys=['lakewood-ca-council-rejects-flock-2026','sheboygan-wi-flock-termination-request-2026','grand-rapids-mi-flock-oversight-order-proposed-2026','henrico-va-flock-contract-termination-announced-2026','fridley-mn-flock-access-restrictions-2026','richland-wa-flock-suspension-announced-2026','liberty-hill-tx-flock-removal-city-statement-2026','elgin-tx-flock-program-pause-2026','redmond-wa-flock-contract-termination-vote-2026','tukwila-wa-revised-flock-contract-adoption-2026','mill-valley-ca-flock-alpr-disabled-government-statement-2026','richmond-va-flock-nonrenewal-mayor-announcement-2026','panama-city-beach-fl-police-flock-suspension-2026','fort-wayne-in-flock-discontinuation-chief-statement-2026'];
+const keys=['lakewood-ca-council-rejects-flock-2026','sheboygan-wi-flock-termination-request-2026','grand-rapids-mi-flock-oversight-order-proposed-2026','henrico-va-flock-contract-termination-announced-2026','fridley-mn-flock-access-restrictions-2026','richland-wa-flock-suspension-announced-2026','liberty-hill-tx-flock-removal-city-statement-2026','elgin-tx-flock-program-pause-2026','redmond-wa-flock-contract-termination-vote-2026','tukwila-wa-revised-flock-contract-adoption-2026','mill-valley-ca-flock-alpr-disabled-government-statement-2026','richmond-va-flock-nonrenewal-mayor-announcement-2026','panama-city-beach-fl-police-flock-suspension-2026','fort-wayne-in-flock-discontinuation-chief-statement-2026','lynchburg-va-flock-alpr-pause-police-original-2026'];
 for(const key of keys){
  const p=B.profile(docket,key);
  assert.equal(p.rows.length,1,'Never merge different agencies merely by locality');
@@ -24,4 +24,4 @@ const page=fs.readFileSync(path.join(__dirname,'../agency-government-brief.html'
 assert.match(page,/government-agency-brief\.js/);
 assert.match(page,/requestText/);
 assert.match(page,/Print \/ Save as PDF/);
-console.log('GOVERNMENT_AGENCY_BRIEF_PASS: 14 exact new agencies, cited five-question evidence profile and editable request, no cross-agency merge');
+console.log('GOVERNMENT_AGENCY_BRIEF_PASS: 15 exact new agencies, cited five-question evidence profile and editable request, no cross-agency merge');
