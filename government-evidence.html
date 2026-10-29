@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Katoptron | Original government evidence expansion</title><link rel="stylesheet" href="./a11y.css"><style>
+:root{font-family:system-ui,sans-serif;background:#0a121a;color:#e8f1f7}*{box-sizing:border-box}body{margin:0}header{padding:1.1rem max(1rem,4vw);background:#102330;border-bottom:1px solid #34516a;display:flex;gap:1rem;flex-wrap:wrap}a{color:#a9e5f1}main{max-width:1050px;margin:auto;padding:1.6rem 1.1rem 5rem}h1{font-size:clamp(1.55rem,4vw,2.2rem)}h2{font-size:1.25rem}p{line-height:1.6;color:#c1d2e0}.note{border-left:3px solid #83bdc8;background:#132839;padding:.8rem 1rem}.controls{display:flex;gap:.7rem;flex-wrap:wrap;margin:1.2rem 0}input,select{background:#1c3548;border:1px solid #6b899a;color:inherit;border-radius:7px;padding:.7rem;min-width:180px;font:inherit}input{flex:1}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}.card{background:#112535;border:1px solid #3d5970;border-radius:12px;padding:1rem;overflow-wrap:anywhere}.card small{color:#bad0df}.card h3{font-size:1.1rem;margin:.2rem 0}.card .status{font-weight:650;color:#9fd7e3}.card p{margin:.6rem 0}.metrics{display:flex;gap:1.5rem;flex-wrap:wrap}.metrics strong{font-size:1.4rem}.muted{font-size:.87rem;color:#b7cedb}.group{border-top:1px solid #395469;margin:1.6rem 0;padding-top:.5rem}.group>a{font-size:.8rem} :focus-visible{outline:3px solid #acdfeb;outline-offset:3px}
+</style></head><body><a href="#main" class="skip-link">Skip to evidence</a><header><strong>KATOPTRON</strong><a href="./agency-xray.html">Agency X-Ray</a><a href="./agency-compare.html">Comparison</a><a href="./government-watch.html">Government Watch</a></header>
+<main id="main"><h1>Original government record expansion</h1>
+<p class="note">Source-indexed government documents and agenda records. These are historical sources reviewed for issuer identity and stated status, <strong>not</strong> individually page-verified complete agency dossiers, current camera coordinates, fresh contract changes or proof of deployment. Proposals stay proposals; a council authorization is not a vendor-executed contract. These records do not trigger old-source Watch emails.</p>
+<div class="metrics" id="metrics"></div>
+<div class="controls"><label for="q">Find an agency or source</label><input id="q" type="search" placeholder="Sacramento County, Cleveland, retention, contracts..." maxlength="140"><label for="state">State</label><select id="state"><option value="">All states</option></select></div><p id="status" role="status" aria-live="polite">Loading government source documents...</p><div id="results" class="grid"></div><p class="note">Missing records are unknown, not proof an agency has no Flock contract or system. No camera locations or system sharing permissions are inferred from these records. Status must be rechecked against original government actions before treating it as a current decision.</p></main>
+<script src="./government-source-docket.js"></script><script>
+'use strict';
+const $=id=>document.getElementById(id),make=(tag,text)=>{const n=document.createElement(tag);if(text!=null)n.textContent=String(text);return n};
+let index=null;
+function render(){
+ const term=$('q').value.trim().toLowerCase(),state=$('state').value;
+ const rows=index.rows.filter(r=>(!state||r.state===state)&&
+  (!term||(r.agency+' '+r.title+' '+r.summary+' '+r.status+' '+r.kind).toLowerCase().includes(term)));
+ $('results').replaceChildren();
+ for(const r of rows){const card=make('article');card.className='card';const small=make('small',r.source_date+' · '+r.state+' · '+r.kind.replaceAll('_',' '));card.append(small);
+ card.append(make('h3',r.agency),make('strong',r.title));
+ const status=make('p','Status: '+r.status.replaceAll('_',' '));status.className='status';card.append(status);
+ card.append(make('p',r.summary));
+ if(r.amount_usd!==null){card.append(make('p','Source-stated figure: $'+r.amount_usd.toLocaleString('en-US',{maximumFractionDigits:2})+' · '+r.amount_basis));}
+ card.append(make('p','Original record check: '+r.proof));
+ const a=make('a','View original government source');a.href=r.source_url;a.target='_blank';a.rel='noopener noreferrer';card.append(a);
+ $('results').append(card);}
+ $('status').textContent=rows.length+' exact source records. No unsupported current deployment or status inferred.';
+ if(!rows.length)$('results').append(make('p','No exact published record matches the query. Coverage is incomplete.'));
+}
+fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('source registry unavailable');return r.json()}).then(raw=>{
+ index=window.KatoptronGovernmentDocket.build(raw);
+ $('metrics').append(make('p',index.rows.length+' source records'),make('p',index.agencies.length+' exact localities'),make('p',index.states.length+' states'));
+ for(const state of index.states){const o=make('option',state);o.value=state;$('state').append(o);}
+ $('q').addEventListener('input',render);$('state').addEventListener('change',render);
+ const params=new URL(location.href).searchParams;
+ const key=params.get('locality');
+ if(key){const match=index.byLocality(key);if(match.length)$('q').value=match[0].agency;}
+ render();
+}).catch(e=>{$('status').textContent='Source registry unavailable: '+e.message;});
+</script></body></html>
