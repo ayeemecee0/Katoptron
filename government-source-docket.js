@@ -3,9 +3,9 @@
    a live camera deployment or a newly adopted agreement. */
 (function(root,factory){'use strict';const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.KatoptronGovernmentDocket=api;})(typeof window!=='undefined'?window:null,function(){
  'use strict';
- const HOSTS=new Set(['ceqanet.lci.ca.gov','www.sacsheriff.com','cityofcleveland.legistar.com','elpasotexas.legistar.com','stpaul.legistar.com','allentownpa.legistar.com','carrolltontx.legistar.com','rockfordil.legistar.com','monterey.legistar.com','manteca-ca.legistar.com','ci-ssf-ca.legistar.com']);
- const STATUSES=new Set(['filed_notice_not_operational_verification','historical_policy_not_verified_current','ordinance_passed_not_executed_contract','council_action_reported_pass_header_discrepancy','council_resolution_adopted_call_for_termination_only','research_contract_authorized_not_flock_vendor_contract','council_item_passed_not_signed_contract','council_approved_sole_source_award','proposed_approval_not_verified_signed','agenda_ready_final_action_unverified','vendor_rfp_recommendation_not_adopted','city_staff_proposed_response_not_final_adoption_verified','proposed_grand_jury_response_resolution_not_legistar_finalized']);
- const KINDS=new Set(['environmental_notice','historic_policy','government_decision','contract_proposal','policy_proposal']);
+ const HOSTS=new Set(['ceqanet.lci.ca.gov','www.sacsheriff.com','www.sacda.org','cityofcleveland.legistar.com','elpasotexas.legistar.com','stpaul.legistar.com','allentownpa.legistar.com','carrolltontx.legistar.com','rockfordil.legistar.com','monterey.legistar.com','manteca-ca.legistar.com','ci-ssf-ca.legistar.com']);
+ const STATUSES=new Set(['filed_notice_not_operational_verification','historical_policy_not_verified_current','ordinance_passed_not_executed_contract','council_action_reported_pass_header_discrepancy','council_resolution_adopted_call_for_termination_only','research_contract_authorized_not_flock_vendor_contract','council_item_passed_not_signed_contract','council_approved_sole_source_award','proposed_approval_not_verified_signed','agenda_ready_final_action_unverified','vendor_rfp_recommendation_not_adopted','city_staff_proposed_response_not_final_adoption_verified','proposed_grand_jury_response_resolution_not_legistar_finalized','published_da_data_access_policy_not_flock_equipment']);
+ const KINDS=new Set(['environmental_notice','historic_policy','published_policy','government_decision','contract_proposal','policy_proposal']);
  function validUrl(value){try{const x=new URL(value);return x.protocol==='https:'&&!x.username&&!x.password&&!x.hash&&HOSTS.has(x.hostname)&&!x.port;}catch{return false;}}
  function build(input){
   if(!input||input.schema_version!==1||!Array.isArray(input.sources)||input.sources.length<8||input.sources.length>35)throw Error('Original government docket unavailable');
@@ -22,8 +22,8 @@
    group.push(s);agencies.set(s.locality_key,group);
   }
   rows.sort((a,b)=>b.source_date.localeCompare(a.source_date)||a.id.localeCompare(b.id));
-  const states=new Set(rows.map(r=>r.state));
-  return Object.freeze({rows,states:[...states].sort(),agencies:[...agencies.keys()].sort(),byLocality:key=>rows.filter(s=>s.locality_key===key),byState:state=>rows.filter(s=>s.state===state),get:id=>rows.find(s=>s.id===id)});
+  const states=new Set(rows.map(r=>r.state)),issuers=new Set(rows.map(r=>r.agency));
+  return Object.freeze({rows,states:[...states].sort(),agencies:[...agencies.keys()].sort(),issuers:[...issuers].sort(),byLocality:key=>rows.filter(s=>s.locality_key===key),byState:state=>rows.filter(s=>s.state===state),get:id=>rows.find(s=>s.id===id)});
  }
  return Object.freeze({build,validUrl,HOSTS});
 });
