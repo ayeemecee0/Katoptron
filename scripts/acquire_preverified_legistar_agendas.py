@@ -72,6 +72,7 @@ def indexed_matters(path=CATALOG):
     if obj.get("scope")!="historical_original_government_records_not_new_source_changes":
         raise ValueError("Government source catalog unavailable")
     known={}
+    known_file_ids={}
     for row in obj.get("sources",[]):
         u=urlsplit(row.get("source_url",""))
         host=(u.hostname or "").lower()
@@ -84,9 +85,15 @@ def indexed_matters(path=CATALOG):
         if not GUID_RE.fullmatch(guid or ""):
             raise ValueError("Government docket GUID absent/invalid")
         known.setdefault(tenant,set()).add(guid.upper())
+        file_number=row.get("file_number")
+        if not isinstance(file_number,str) or not 1<=len(file_number)<=35:
+            raise ValueError("Missing official Legistar file number")
+        normalize=lambda x:" ".join(x.upper().split())
+        file_id=normalize(file_number)
+        known_file_ids.setdefault(tenant,set()).add(file_id)
     if set(known)!=set(TENANTS):
         raise ValueError("Incomplete exact Legistar GUID catalog")
-    return known
+    return known,known_file_ids
 
 def official_matter_guid(tenant,lead,fetcher=scanner.get_json):
     """Verify the stable WebAPI matter UUID before treating a lead as novel."""
@@ -101,10 +108,16 @@ def official_matter_guid(tenant,lead,fetcher=scanner.get_json):
         or item.get("MatterRestrictViewViaWeb") is True or
         not GUID_RE.fullmatch(str(item.get("MatterGuid") or ""))):
         raise ValueError("Official matter GUID unavailable or inconsistent")
-    return item["MatterGuid"].upper()
+    file_id=item.get("MatterFile")
+    if not isinstance(file_id,str) or not 1<=len(file_id)<=35:
+        raise ValueError("Public matter File # missing; novelty held")
+    file_id=" ".join(file_id.upper().split())
+    if not re.fullmatch(r"[A-Z0-9 ./_-]{1,35}",file_id):
+        raise ValueError("Unrecognized public matter file number")
+    return item["MatterGuid"].upper(),file_id
 
 def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4,
-            detail_fetch=scanner.get_json,known_guids=None):
+            detail_fetch=scanner.get_json,known_guids=None,known_file_ids=None):
     # Existing scanner has bounded pages, sanitized query terms, and only
     # public matters. Limit bootstrap scan breadth independently so it
     # cannot burn through hundreds of tenant API requests per scheduled job.
@@ -126,13 +139,19 @@ def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4,
                     outcomes.append((tenant,[],type(exc).__name__))
     finally:
         scanner.PAGE_SIZE,scanner.MAX_PAGES_PER_TENANT,scanner.MAX_MATCHES_PER_TENANT=previous
-    catalog=indexed_matters() if known_guids is None else known_guids
-    if not isinstance(catalog,dict) or not set(seeds)<=set(catalog):
+    if known_guids is None or known_file_ids is None:
+        actual_guids,actual_files=indexed_matters()
+        catalog=actual_guids if known_guids is None else known_guids
+        file_catalog=actual_files if known_file_ids is None else known_file_ids
+    else:
+        catalog=known_guids
+        file_catalog=known_file_ids
+    if not isinstance(catalog,dict) or not isinstance(file_catalog,dict) or not set(seeds)<=set(catalog) or not set(seeds)<=set(file_catalog):
         raise ValueError("Publisher-specific reviewed matter GUID registry missing")
     found=0;created=0;failed=0;already_indexed=0;held=0;uncatalogued=0;all_rows=[]
     for tenant,leads,error in sorted(outcomes):
         row={"tenant":tenant,"publisher":seeds[tenant],"discovery_status":"source_unavailable" if error else "public_agenda_scan_complete",
-             "error_type":error,"matched_agenda_leads":len(leads),"new_to_review_queue":0,"queue_failures":0,"already_in_source_catalog":0,"unreconciled_guid_hold":0,"new_uncatalogued_matches":0}
+             "error_type":error,"matched_agenda_leads":len(leads),"new_to_review_queue":0,"queue_failures":0,"already_in_source_catalog":0,"unreconciled_guid_hold":0,"new_uncatalogued_matches":0,"public_matter_files_seen":[]}
         for lead in leads:
             # Never insert externally supplied website/tenant links. The
             # scanner's MatterId API endpoint is stable, but not the browser ID.
@@ -144,11 +163,12 @@ def acquire(seeds,collector=scanner.scan,enqueue=scanner.queue,workers=4,
                 raise ValueError("Unverified discovery lead held")
             found+=1
             try:
-                guid=official_matter_guid(tenant,lead,detail_fetch)
+                guid,file_code=official_matter_guid(tenant,lead,detail_fetch)
             except Exception:
                 held+=1;row["unreconciled_guid_hold"]+=1
                 continue
-            if guid in catalog[tenant]:
+            row["public_matter_files_seen"].append(file_code)
+            if guid in catalog[tenant] or file_code in file_catalog[tenant]:
                 already_indexed+=1;row["already_in_source_catalog"]+=1
                 continue
             uncatalogued+=1;row["new_uncatalogued_matches"]+=1
@@ -181,6 +201,11 @@ def main():
     out=Path(args.output)
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(result,indent=2)+"\n",encoding="utf8")
+    for row in result["tenant_outcomes"]:
+        if row["public_matter_files_seen"]:
+            print("Official agenda file-number crosscheck:",row["tenant"],
+                  ",".join(row["public_matter_files_seen"]),
+                  "already indexed:",row["already_in_source_catalog"])
     print("P0 government acquisition:",json.dumps({
       k:result[k] for k in ("source_tenants_checked","candidate_matches",
        "new_uncatalogued_matches","already_in_source_catalog","unreconciled_guid_hold",
