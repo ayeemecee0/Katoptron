@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '42 15 * * *'
   workflow_dispatch:
+    inputs:
+      send_test_email:
+        description: 'Send one diagnostic email to the sole confirmed opted-in subscriber (not a surveillance event)'
+        type: boolean
+        required: true
+        default: false
   push:
     branches: [main]
     paths:
@@ -46,4 +52,8 @@ jobs:
       - name: Reconcile source-dated government decisions and vendor structural observations
         run: python scripts/sync_agency_watch_events.py
       - name: Deliver only user-confirmed opt-in Watch emails via encrypted SMTP
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.send_test_email }}
         run: python scripts/send_government_watch_alerts.py
+      - name: Explicit single-recipient SMTP diagnostic (never a source event)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.send_test_email }}
+        run: python scripts/send_government_watch_alerts.py --diagnostic

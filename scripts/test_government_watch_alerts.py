@@ -242,6 +242,64 @@ class GovernmentWatchSafety(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"Oklahoma"):
             S.build_landmark_change_events(national,forged,apache,adoption)
 
+    def test_one_recipient_delivery_diagnostic_never_creates_public_or_private_events(self):
+        # Exercises real composition and authorization without connecting to SMTP.
+        original=M.api
+        confirmed=[{
+          "user_id":"test-user-uuid","email":"confirmed@example.org",
+          "locality_key":"moline|IL","subscribed_at":"2026-10-29T01:00:00Z"
+        }]
+        record=[{"email_enabled":True,"watch_government":False,
+                 "watch_vendor":False,"watch_sharing":False,
+                 "watch_renewals":True,"watch_policies":False}]
+        paths=[]
+        sent=[]
+        def fake_api(url,secret,path,method="GET",payload=None):
+            paths.append((path,method))
+            if path=="rpc/flock_watch_delivery_candidates":
+                self.assertEqual(method,"POST")
+                return confirmed
+            if path.startswith("flock_watch_subscriptions?"):
+                self.assertEqual(method,"GET")
+                return record
+            raise AssertionError("Diagnostic cannot modify evidence or private receipts")
+        M.api=fake_api
+        try:
+            settings=("smtp.example.org",465,"user","app-password","alerts@example.org")
+            def fake_send(message,config):
+                self.assertEqual(config,settings)
+                self.assertEqual(message["To"],"confirmed@example.org")
+                self.assertIn("TEST EMAIL",message["Subject"])
+                self.assertIn("NOT a government decision",message.get_content())
+                self.assertIn("No public evidence, event",message.get_content())
+                self.assertIn("disable your Watch subscription",message.get_content())
+                sent.append(message)
+            self.assertEqual(M.send_diagnostic("https://example.supabase.co",
+                             "protected-key",settings,send=fake_send),1)
+            self.assertEqual(len(sent),1)
+            self.assertEqual(len(paths),2)
+            self.assertTrue(all(not p.startswith("flock_agency_watch_events")
+                        and not p.startswith("flock_watch_deliveries")
+                        for p,_ in paths))
+            confirmed.append(dict(confirmed[0],email="another@example.org"))
+            with self.assertRaisesRegex(RuntimeError,"exactly one"):
+                M.send_diagnostic("https://example.supabase.co","key",settings,send=fake_send)
+            confirmed.pop()
+            record[0]["email_enabled"]=False
+            with self.assertRaisesRegex(RuntimeError,"active category"):
+                M.send_diagnostic("https://example.supabase.co","key",settings,send=fake_send)
+            record[0]["email_enabled"]=True
+            record[0]["watch_renewals"]=False
+            with self.assertRaisesRegex(RuntimeError,"active category"):
+                M.send_diagnostic("https://example.supabase.co","key",settings,send=fake_send)
+            record[0]["watch_renewals"]=True
+            confirmed.clear()
+            with self.assertRaisesRegex(RuntimeError,"exactly one"):
+                M.send_diagnostic("https://example.supabase.co","key",settings,send=fake_send)
+            self.assertEqual(len(sent),1)
+        finally:
+            M.api=original
+
     def test_missing_source_url_cannot_be_alert(self):
         self.assertEqual(S.build_events([{"event_key":"a",
           "event_type":"recorded_legislative_decision",

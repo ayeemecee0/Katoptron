@@ -160,6 +160,59 @@ def deliver(url,secret,settings,send=smtp_send):
     return delivered
 
 
+def send_diagnostic(url,secret,settings,send=smtp_send):
+    """One manually authorized SMTP test to the sole confirmed opt-in recipient.
+
+    Does not create a real source event or a production delivery receipt.
+    Fails closed if there is more than one consenting subscriber, or if the
+    confirmed recipient's subscription has been disabled in the meantime.
+    """
+    candidates=api(url,secret,"rpc/flock_watch_delivery_candidates","POST",{})
+    if not isinstance(candidates,list) or len(candidates)!=1:
+        raise RuntimeError("Diagnostic requires exactly one confirmed opt-in recipient")
+    sub=candidates[0]
+    user_id=sub.get("user_id")
+    locality=sub.get("locality_key")
+    address=sub.get("email")
+    if (not isinstance(user_id,str) or not user_id or
+        not isinstance(locality,str) or not locality or
+        not isinstance(address,str) or "@" not in address or
+        not isinstance(sub.get("subscribed_at"),str)):
+        raise RuntimeError("Protected diagnostic subscriber is incomplete")
+    iso_datetime(sub["subscribed_at"])
+    records=query(url,secret,"flock_watch_subscriptions",{
+      "select":"email_enabled,watch_government,watch_vendor,watch_sharing,watch_renewals,watch_policies",
+      "user_id":"eq."+user_id,"locality_key":"eq."+locality,"limit":"2"
+    })
+    if (len(records)!=1 or records[0].get("email_enabled") is not True or
+        not any(records[0].get(k) is True for k in (
+           "watch_government","watch_vendor","watch_sharing",
+           "watch_renewals","watch_policies"))):
+        raise RuntimeError("Recipient must have an active category-specific Watch opt-in")
+    message=EmailMessage()
+    message["From"]=settings[4]
+    message["To"]=address
+    message["Subject"]="Katoptron Government Watch: TEST EMAIL (not a surveillance event)"
+    message.set_content("\n".join([
+      "Katoptron Government Watch email delivery test.",
+      "",
+      "This is a one-time diagnostic email initiated manually by the project operator.",
+      "It is NOT a government decision, surveillance change, ALPR observation,",
+      "camera detection or report of actual data sharing.",
+      "",
+      "Your confirmed account has an explicitly enabled locality Watch subscription.",
+      "No public evidence, event, subscription or live-delivery receipt was created",
+      "or modified to send this test.",
+      "",
+      "Manage or disable your Watch subscription:",
+      "https://ayeemecee0.github.io/Katoptron/government-watch.html",
+      "",
+      "If you did not request this test, you may disable Watch emails above."
+    ]))
+    send(message,settings)
+    return 1
+
+
 def main():
     env=os.environ
     url=env.get("SUPABASE_URL")
@@ -167,12 +220,21 @@ def main():
     if not url or not key:raise RuntimeError("No private Supabase Watch credentials")
     fields=("WATCH_SMTP_HOST","WATCH_SMTP_PORT","WATCH_SMTP_USER",
             "WATCH_SMTP_PASSWORD","WATCH_SMTP_FROM")
+    diagnostic=(len(sys.argv)==2 and sys.argv[1]=="--diagnostic")
+    if len(sys.argv)>1 and not diagnostic:
+        raise ValueError("Unrecognized Watch sender mode")
     if not all(env.get(k) for k in fields):
+        if diagnostic:raise RuntimeError("Diagnostic requires configured encrypted SMTP sender")
         print("Watch email sender NOT ACTIVE: encrypted SMTP settings missing.")
         print("Evidence synchronization remains active. Zero email alerts sent.")
         return
     settings=(env[fields[0]],int(env[fields[1]]),env[fields[2]],env[fields[3]],env[fields[4]])
     if settings[1] not in (465,587):raise ValueError("Only encrypted SMTP transport permitted")
+    if diagnostic:
+        count=send_diagnostic(url,key,settings)
+        print("One consented diagnostic email accepted by encrypted SMTP:",
+              count,"; mailbox arrival must be confirmed separately. No public source events or delivery receipts created.")
+        return
     count=deliver(url,key,settings)
     print("Source-qualified opt-in email digests delivered:",count,
           "(no email addresses or subscriber identities logged)")
