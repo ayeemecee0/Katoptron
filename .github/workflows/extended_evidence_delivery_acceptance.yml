@@ -5,6 +5,9 @@ on:
       - 'data/qualified-original-government-docket-2026-10-29.json'
       - 'government-source-docket.js'
       - 'agency-xray.html'
+      - 'agency-government-brief.html'
+      - 'government-agency-brief.js'
+      - 'scripts/test_government_agency_brief.cjs'
       - 'agency-investigation.html'
       - 'agency-audit.html'
       - 'scripts/classify_original_government_leads.py'
@@ -46,11 +49,14 @@ jobs:
       - name: Verify at-most-once Watch transitions and opt-in boundaries
         run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
       - name: Verify sourced docket and no unsupported operations
-        run: node scripts/test_government_source_docket.cjs
+        run: |
+          node scripts/test_government_source_docket.cjs
+          node scripts/test_government_agency_brief.cjs
+          node --check government-agency-brief.js
       - name: Check browser script syntax
         run: |
           node --check government-source-docket.js
-          node -e "const fs=require('fs');for(const p of ['agency-xray.html','agency-investigation.html','agency-audit.html']){const s=fs.readFileSync(p,'utf8');const parts=[...s.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)];for(const part of parts)new Function(part[1]);}console.log('Inline browser scripts syntax OK');"
+          node -e "const fs=require('fs');for(const p of ['agency-xray.html','agency-investigation.html','agency-audit.html','agency-government-brief.html']){const s=fs.readFileSync(p,'utf8');const parts=[...s.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)];for(const part of parts)new Function(part[1]);}console.log('Inline browser scripts syntax OK');"
   qualified_review_classification:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: acceptance
