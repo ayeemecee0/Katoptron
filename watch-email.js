@@ -26,13 +26,13 @@
     'You may now manage this locality\'s email alerts.':
     'Sign in to manage email alerts.'):
    'No locality selected. Choose a city under Followed localities to enable or disable its email alerts.';
-  if(user&&locality){await refresh();await receiptHistory();}
+  if(user&&locality){await refresh();try{await receiptHistory();}catch{if($('receiptStatus'))$('receiptStatus').textContent='Private submission history temporarily unavailable.';}}
   else if($('watchDigestHistory'))$('watchDigestHistory').hidden=true;
  }
  async function receiptHistory(){
   const panel=$('watchDigestHistory');if(!panel)return;
   panel.hidden=!(user&&locality);
-  $('receiptItems').replaceChildren();
+  $('receiptItems').textContent='';
   if(!user||!locality)return;
   const [claims,accepted]=await Promise.all([
    client.from('flock_watch_send_claims')
