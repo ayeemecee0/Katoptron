@@ -6,7 +6,7 @@ const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-orig
 const result=V.build(raw);
 assert.equal(result.rows.length,16);
 assert.equal(result.states.length,6);
-assert.equal(result.issuers.length,11);
+assert.equal(result.issuers.length,12);
 assert.equal(result.agencies.length,11);
 assert.equal(result.byLocality('sacramento county|CA').length,3);
 const toledo=result.get('toledo-oh-resolution-r-435-26');
