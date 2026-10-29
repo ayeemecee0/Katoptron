@@ -408,6 +408,30 @@
         "What does the signed final Ordinance 2755 and the April 6 council action establish, if anything, about executed contract authorization?",
         "Which Flock line-item expenditures, privacy policy versions and operational device locations are independently documented by Commerce City?"
       ]
+    },
+    {
+      "id": "commerce-city-co-flock-budget-ord-2756-first-reading-2026",
+      "agency": "Commerce City City Council",
+      "locality_key": "commerce city|CO",
+      "state": "CO",
+      "source_date": "2026-03-02",
+      "kind": "government_decision",
+      "status": "ordinance_first_reading_passed_not_final_adoption",
+      "title": "Commerce City proposed $608,900 Flock expansion appropriation passed first reading",
+      "summary": "The March 2, 2026 official Commerce City Council Legistar meeting lists Ordinance 2756, which proposes recognizing funding from multiple city funds totaling $608,900 and authorizing expenditure for a Flock expansion project. It passed on first reading only. The dollar value is a proposed budget authorization, not verified actual payments, approved final appropriation, executed Flock contract, or installed camera inventory.",
+      "amount_usd": 608900,
+      "amount_basis": "Proposed Flock expansion budget total stated in Ordinance 2756 at first reading; not a paid invoice or verified final appropriation",
+      "source_url": "https://commerce.legistar.com/MeetingDetail.aspx?GUID=66831181-A303-4D53-9F62-FE157437BEEE&ID=1345075&Options=&Search=",
+      "provider": "Commerce City Council official Legistar meeting record",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "proof": "March 2, 2026 official Commerce City City Council meeting, Ord 2756 first reading Pass, proposed $608,900 allocation",
+      "flock_specific": true,
+      "file_number": "Ord 2756",
+      "open_questions": [
+        "Was Ordinance 2756 finally adopted and did the city actually expend the proposed Flock expansion funds?",
+        "Which source-dated contracts, invoices, vendor receipts and camera positions corroborate any subsequently implemented expenditure?"
+      ]
     }
   ]
 }
