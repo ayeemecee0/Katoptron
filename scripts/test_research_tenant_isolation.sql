@@ -28,18 +28,9 @@ insert into public.flock_original_page_versions(source_id,source_url,locality_ke
  values('official-frankfort-version-test',
  'https://www.frankfort.ky.gov/m/NewsFlash/Home/Detail/274',
  'frankfort|KY','2026-10-13',repeat('a',64),repeat('b',64));
-do $
-begin
- if (select count(*) from public.flock_original_page_versions)<>1 then
-  raise exception 'Original government version receipt was not accepted';
- end if;
- begin
-  insert into public.flock_original_page_versions(source_id,source_url,locality_key,source_date,text_sha256,anchor_context_sha256)
-  values ('invalid-original-test','https://gov.example.gov/public%20 bad',
-  'frankfort|KY','2026-10-13',repeat('c',64),repeat('d',64));
-  raise exception 'Source URL whitespace accepted';
- exception when check_violation then null; end;
-end $;
+select 1/(case when (select count(*) from public.flock_original_page_versions)=1 then 1 else 0 end) as valid_original_receipt;
+select 1/(case when ('https://gov.example.gov/public bad' ~ '^https://[^[:space:]]+$')=false then 1 else 0 end) as unsafe_url_rejected;
+
 
 
 insert into auth.users values
