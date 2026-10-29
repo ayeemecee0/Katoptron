@@ -2,6 +2,7 @@ import importlib.util
 import unittest
 from datetime import date
 from pathlib import Path
+from urllib.parse import parse_qs
 
 def load(stem):
     path=Path(__file__).with_name(stem+".py")
@@ -82,7 +83,7 @@ class GovernmentWatchSafety(unittest.TestCase):
         # tests real delivery orchestration without sending actual messages.
         original=M.api
         receipts=set()
-        claims=set()
+        claims=set();states={}
         sent=[]
         subscribers=[{
           "user_id":"test-user-uuid","email":"verified@example.org",
@@ -119,10 +120,21 @@ class GovernmentWatchSafety(unittest.TestCase):
                          "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):
                 return records
+            if path.startswith("flock_watch_send_claims?") and method=="GET":
+                return [{"event_key":k,"status":states.get(k,"queued"),
+                         "status_changed_at":"2026-10-29T21:00:00Z"} for k in claims]
+            if path.startswith("flock_watch_send_claims?") and method=="PATCH":
+                q=parse_qs(path.split("?",1)[1])
+                key=q["event_key"][0][3:]
+                old=q["status"][0][3:]
+                if key not in claims or states.get(key)!=old:return []
+                states[key]=payload["status"]
+                return [{"event_key":key,"status":states[key],
+                         "status_changed_at":payload["status_changed_at"]}]
             if path.startswith("flock_watch_send_claims?") and method=="POST":
                 event=payload[0]["event_key"]
                 if event in claims:return []
-                claims.add(event);return payload
+                claims.add(event);states[event]="queued";return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":x} for x in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
@@ -152,7 +164,7 @@ class GovernmentWatchSafety(unittest.TestCase):
         # At-most-once SMTP submission, even if the delivery receipt cannot
         # be written afterwards. The uncertain outcome is held, not replayed.
         original=M.api
-        claims=set()
+        claims=set();states={}
         messages=[]
         now="2026-10-29T21:00:00Z"
         user={"user_id":"confirmed-user","email":"confirmed@example.org",
@@ -176,10 +188,21 @@ class GovernmentWatchSafety(unittest.TestCase):
                          "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):return [event]
             if path.startswith("flock_watch_deliveries?") and method=="GET":return []
+            if path.startswith("flock_watch_send_claims?") and method=="GET":
+                return [{"event_key":k,"status":states.get(k,"queued"),
+                         "status_changed_at":"2026-10-29T21:00:00Z"} for k in claims]
+            if path.startswith("flock_watch_send_claims?") and method=="PATCH":
+                q=parse_qs(path.split("?",1)[1])
+                key=q["event_key"][0][3:]
+                old=q["status"][0][3:]
+                if key not in claims or states.get(key)!=old:return []
+                states[key]=payload["status"]
+                return [{"event_key":key,"status":states[key],
+                         "status_changed_at":payload["status_changed_at"]}]
             if path.startswith("flock_watch_send_claims?") and method=="POST":
                 key=payload[0]["event_key"]
                 if key in claims:return []
-                claims.add(key);return payload
+                claims.add(key);states[key]="queued";return payload
             if path.startswith("flock_watch_deliveries?") and method=="POST":
                 raise RuntimeError("Receipt store unavailable after SMTP handoff")
             raise AssertionError("Unexpected request "+path)
@@ -238,7 +261,7 @@ class GovernmentWatchSafety(unittest.TestCase):
           "user_id":"uuid-test","email":"confirmed@example.org","locality_key":"green bay|WI",
           "watch_government":True,"watch_vendor":False,"watch_sharing":False,
           "watch_renewals":False,"subscribed_at":"2026-10-25T18:00:00Z"}]
-        receipts=set();claims=set();sent=[]
+        receipts=set();claims=set();states={};sent=[]
         policy_enabled=False
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":return subscribers
@@ -248,10 +271,21 @@ class GovernmentWatchSafety(unittest.TestCase):
                          "watch_policies":policy_enabled,
                          "policy_opted_in_at":"2026-10-25T20:00:00Z" if policy_enabled else None}]
             if path.startswith("flock_agency_watch_events?"):return events
+            if path.startswith("flock_watch_send_claims?") and method=="GET":
+                return [{"event_key":k,"status":states.get(k,"queued"),
+                         "status_changed_at":"2026-10-29T21:00:00Z"} for k in claims]
+            if path.startswith("flock_watch_send_claims?") and method=="PATCH":
+                q=parse_qs(path.split("?",1)[1])
+                key=q["event_key"][0][3:]
+                old=q["status"][0][3:]
+                if key not in claims or states.get(key)!=old:return []
+                states[key]=payload["status"]
+                return [{"event_key":key,"status":states[key],
+                         "status_changed_at":payload["status_changed_at"]}]
             if path.startswith("flock_watch_send_claims?") and method=="POST":
                 event=payload[0]["event_key"]
                 if event in claims:return []
-                claims.add(event);return payload
+                claims.add(event);states[event]="queued";return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":x} for x in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
@@ -379,7 +413,7 @@ class GovernmentWatchSafety(unittest.TestCase):
             "locality_key":"apache junction|AZ","watch_government":True,
             "watch_vendor":False,"watch_sharing":False,"watch_renewals":False,
             "subscribed_at":"2026-10-29T21:00:00Z"}]
-        receipts=set();claims=set();messages=[];orig=M.api
+        receipts=set();claims=set();states={};messages=[];orig=M.api
         def fake_api(url,secret,path,method="GET",payload=None):
             if path=="rpc/flock_watch_delivery_candidates":return subscriber
             if path.startswith("flock_watch_subscriptions?"):
@@ -388,10 +422,21 @@ class GovernmentWatchSafety(unittest.TestCase):
                          "watch_renewals":False,"watch_policies":False,
                          "policy_opted_in_at":None}]
             if path.startswith("flock_agency_watch_events?"):return [event]
+            if path.startswith("flock_watch_send_claims?") and method=="GET":
+                return [{"event_key":k,"status":states.get(k,"queued"),
+                         "status_changed_at":"2026-10-29T21:00:00Z"} for k in claims]
+            if path.startswith("flock_watch_send_claims?") and method=="PATCH":
+                q=parse_qs(path.split("?",1)[1])
+                key=q["event_key"][0][3:]
+                old=q["status"][0][3:]
+                if key not in claims or states.get(key)!=old:return []
+                states[key]=payload["status"]
+                return [{"event_key":key,"status":states[key],
+                         "status_changed_at":payload["status_changed_at"]}]
             if path.startswith("flock_watch_send_claims?") and method=="POST":
                 key=payload[0]["event_key"]
                 if key in claims:return []
-                claims.add(key);return payload
+                claims.add(key);states[key]="queued";return payload
             if path.startswith("flock_watch_deliveries?") and method=="GET":
                 return [{"event_key":key} for key in receipts]
             if path.startswith("flock_watch_deliveries?") and method=="POST":
