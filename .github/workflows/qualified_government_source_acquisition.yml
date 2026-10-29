@@ -1,0 +1,63 @@
+name: Acquire verified government ALPR agenda leads
+on:
+  schedule:
+    - cron: '33 14 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/acquire_preverified_legistar_agendas.py'
+      - 'scripts/test_acquire_preverified_legistar_agendas.py'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'government-source-docket.js'
+      - 'scripts/test_government_source_docket.cjs'
+      - 'government-evidence.html'
+      - '.github/workflows/qualified_government_source_acquisition.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/acquire_preverified_legistar_agendas.py'
+      - 'scripts/test_acquire_preverified_legistar_agendas.py'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - '.github/workflows/qualified_government_source_acquisition.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-reviewed-source-docket
+  cancel-in-progress: false
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify original docket identities and lifecycle boundaries
+        run: |
+          node --check government-source-docket.js
+          node scripts/test_government_source_docket.cjs
+          python scripts/acquire_preverified_legistar_agendas.py --validate-only
+          python -m unittest discover -s scripts -p 'test_acquire_preverified_legistar_agendas.py' -v
+      - name: Require protected review-only queue credentials
+        if: github.event_name != 'pull_request'
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Scan official Legistar public matters and deduplicate into private review queue
+        if: github.event_name != 'pull_request'
+        run: python scripts/acquire_preverified_legistar_agendas.py
+      - name: Upload government discovery audit artifact
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: primary-government-agenda-audit
+          path: .katoptron-ci/government-new-agenda-leads.json
+          retention-days: 14
+          if-no-files-found: warn
