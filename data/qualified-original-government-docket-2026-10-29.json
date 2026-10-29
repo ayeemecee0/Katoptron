@@ -384,6 +384,54 @@
         "Will Toledo City Council adopt, amend or reject R-435-26 at a subsequent meeting?",
         "What original signed city-vendor agreements, termination notices and audited removal confirmations actually exist?"
       ]
+    },
+    {
+      "id": "commerce-city-co-flock-ord-2755-first-reading-2026",
+      "agency": "Commerce City City Council",
+      "locality_key": "commerce city|CO",
+      "state": "CO",
+      "source_date": "2026-03-02",
+      "kind": "government_decision",
+      "status": "ordinance_first_reading_passed_not_final_adoption",
+      "title": "Commerce City council passed first reading of Flock equipment lease ordinance",
+      "summary": "The official Commerce City Legistar meeting record lists Ordinance 2755, concerning an agreement with Flock Group Inc. for a long-term lease of license plate recognition cameras, drones and related camera equipment. Its March 2, 2026 first reading passed 6-3. First reading was not final approval, an executed vendor agreement, installed cameras or verified current camera operations. The separate April 6 council minutes should be independently checked for final status before publishing any later adoption or contract-execution conclusion.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://commerce.legistar.com/MeetingDetail.aspx?GUID=66831181-A303-4D53-9F62-FE157437BEEE&ID=1345075&Options=&Search=",
+      "provider": "Commerce City Council official Legistar meeting record",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "proof": "March 2 2026 official City Council meeting record, ordinance 2755 first reading Pass vote; first-reading status only",
+      "flock_specific": true,
+      "file_number": "Ord 2755",
+      "open_questions": [
+        "What does the signed final Ordinance 2755 and the April 6 council action establish, if anything, about executed contract authorization?",
+        "Which Flock line-item expenditures, privacy policy versions and operational device locations are independently documented by Commerce City?"
+      ]
+    },
+    {
+      "id": "commerce-city-co-flock-budget-ord-2756-first-reading-2026",
+      "agency": "Commerce City City Council",
+      "locality_key": "commerce city|CO",
+      "state": "CO",
+      "source_date": "2026-03-02",
+      "kind": "government_decision",
+      "status": "ordinance_first_reading_passed_not_final_adoption",
+      "title": "Commerce City proposed $608,900 Flock expansion appropriation passed first reading",
+      "summary": "The March 2, 2026 official Commerce City Council Legistar meeting lists Ordinance 2756, which proposes recognizing funding from multiple city funds totaling $608,900 and authorizing expenditure for a Flock expansion project. It passed on first reading only. The dollar value is a proposed budget authorization, not verified actual payments, approved final appropriation, executed Flock contract, or installed camera inventory.",
+      "amount_usd": 608900,
+      "amount_basis": "Proposed Flock expansion budget total stated in Ordinance 2756 at first reading; not a paid invoice or verified final appropriation",
+      "source_url": "https://commerce.legistar.com/MeetingDetail.aspx?GUID=66831181-A303-4D53-9F62-FE157437BEEE&ID=1345075&Options=&Search=",
+      "provider": "Commerce City Council official Legistar meeting record",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "proof": "March 2, 2026 official Commerce City City Council meeting, Ord 2756 first reading Pass, proposed $608,900 allocation",
+      "flock_specific": true,
+      "file_number": "Ord 2756",
+      "open_questions": [
+        "Was Ordinance 2756 finally adopted and did the city actually expend the proposed Flock expansion funds?",
+        "Which source-dated contracts, invoices, vendor receipts and camera positions corroborate any subsequently implemented expenditure?"
+      ]
     }
   ]
 }
