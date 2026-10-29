@@ -17,7 +17,7 @@ li{margin:.55rem 0}.actions{display:flex;flex-wrap:wrap;gap:.8rem;align-items:ce
 @media print{header,.actions,.no-print{display:none}body,main,.card,.panel{background:white;color:#111;box-shadow:none}a{color:#123f66}a:after{content:' (' attr(href) ')';font-size:8pt}}
 </style></head>
 <body><a href="#main" class="skip-link">Skip to agency investigation</a>
-<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-evidence.html">Original government records</a><a href="./government-watch.html">Government Watch</a></header>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-evidence.html">Original government records</a><a href="./government-watch.html">Government Watch</a><a href="./research-workspace.html">Research workspace</a></header>
 <main id="main"><h1 id="heading">Source-backed government agency investigation</h1>
 <p id="date" class="muted"></p>
 <p class="note">Evidence is limited to original government-published statements about the named agency, as of their source dates. A proposal is not a signed contract. A published suspension or removal statement is not independent equipment inspection. Missing records mean unknown, not no surveillance.</p>
@@ -30,7 +30,7 @@ li{margin:.55rem 0}.actions{display:flex;flex-wrap:wrap;gap:.8rem;align-items:ce
 <p>Draft generated from the unresolved questions above. This is not sent. Identify the correct custodian and applicable records law before filing; no plate-search data or private movement histories are requested.</p>
 <label for="requestText">Source-backed request draft</label>
 <textarea id="requestText" aria-label="Editable public-records request"></textarea>
-<div class="actions no-print"><button type="button" id="regenerate">Regenerate draft</button><button type="button" id="copy">Copy request</button><button type="button" id="print">Print / Save as PDF</button><span id="copyStatus" role="status"></span></div>
+<div class="actions no-print"><a id="saveCase" href="./research-workspace.html">Save as private research case</a><button type="button" id="regenerate">Regenerate draft</button><button type="button" id="copy">Copy request</button><button type="button" id="print">Print / Save as PDF</button><span id="copyStatus" role="status"></span></div>
 <p class="muted">This report is a dated research brief, not an official audit, vendor verification or legal compliance assessment. Original statements may change. Source documents and uncertainties are shown separately.</p>
 </section></main>
 <script src="./government-source-docket.js"></script>
@@ -49,6 +49,7 @@ function url(parent,src,label){
 let item=null;
 function render(p){
  item=p;
+ $('saveCase').href='./research-workspace.html?agency='+encodeURIComponent(p.locality_key)+'&title='+encodeURIComponent(p.agency+' government investigation');
  $('heading').textContent='Agency investigation: '+p.agency+' · '+p.state;
  $('date').textContent='Generated '+new Date().toISOString().slice(0,10)+' UTC · '+p.dated_records+
   ' original government record(s) · '+p.source_count+' original source URL(s)';

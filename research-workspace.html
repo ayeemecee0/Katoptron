@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Katoptron | Research workspace</title>
+<meta name="description" content="Private, source-cited surveillance accountability investigations, public-records requests, team collaboration and evidence files.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;font-family:system-ui,Arial,sans-serif;background:#0b151e;color:#e5eef4}
+*{box-sizing:border-box}body{margin:0;line-height:1.55}a{color:#91d8e6}header{background:#152936;padding:1rem max(1rem,4vw);display:flex;gap:1rem;flex-wrap:wrap}
+main{max-width:1140px;margin:1.6rem auto;padding:1rem}h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.4rem 0}
+h2{font-size:1.2rem}h3{font-size:1.04rem;margin:.2rem 0}.muted{color:#b6cbd6}
+.panel{border:1px solid #37546a;background:#142736;border-radius:10px;padding:1rem;margin:1rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:1rem}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end;margin:.65rem 0}
+label{display:block;font-size:.92rem}input,select,textarea,button{font:inherit;padding:.65rem;border-radius:7px;border:1px solid #7893a5;background:#1d3445;color:inherit;max-width:100%}
+input:not([type=file]):not([type=checkbox]),select{min-width:200px}textarea{display:block;width:100%;min-height:135px}
+button{cursor:pointer}button:disabled{opacity:.45;cursor:default}
+button:hover:not(:disabled){background:#285067}.card{padding:.8rem;border:1px solid #435e71;border-radius:8px;margin:.5rem 0}
+small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important}:focus-visible{outline:3px solid #9ee7f6;outline-offset:2px}
+@media print{header,.no-print,#signin,.panel:first-of-type{display:none}body,main,.panel{background:white;color:#111;border:0}}
+</style></head><body>
+<a href="#main" class="skip-link">Skip to workspace</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a></header>
+<main id="main"><h1>Private research workspace</h1>
+<p class="muted">Save agency investigations, track records requests and due dates, attach government responses, collaborate by expiring invite links, and export case files. Public source evidence stays freely available. Workspace notes and attachments are private and require an authenticated account.</p>
+<p class="panel">Do not upload individual license-plate reads, private vehicle locations, driver data, account passwords or unredacted sensitive law-enforcement records. A government publication is not proof of current device operation or legal compliance.</p>
+<div id="status" role="status" aria-live="polite">Checking your account…</div>
+<section class="panel no-print" id="signin">
+<h2>Sign in to your Katoptron account</h2>
+<form id="login" class="row"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" minlength="12" autocomplete="current-password" required></label><button type="submit">Sign in</button><button id="register" type="button">Create confirmed account</button></form>
+</section>
+<section id="workspaceApp" hidden>
+<div class="row no-print"><strong id="account"></strong><button id="signout" type="button">Sign out</button></div>
+<div class="grid">
+<section class="panel"><h2>Workspaces</h2>
+<form id="createWorkspace" class="row no-print"><label>New workspace title<input id="workspaceTitle" maxlength="120" minlength="3" placeholder="Flock contract research" required></label><button type="submit">Create workspace</button></form>
+<label for="workspaceSelect">Current workspace</label><select id="workspaceSelect"></select>
+<div class="row no-print" id="collaboration"><label>Invite role<select id="inviteRole"><option value="editor">Editor</option><option value="viewer">Viewer</option></select></label><button id="shareInvite" type="button">Create 7-day one-use invite link</button></div>
+<p id="inviteResult" class="muted" role="status"></p><div id="members" class="no-print" aria-label="Workspace collaborators"></div>
+</section>
+<section class="panel"><h2>Case files</h2>
+<form id="createCase" class="row no-print">
+<label>Case title<input id="caseTitle" maxlength="180" minlength="4" required placeholder="Contract renewal investigation"></label>
+<label>Agency or locality key<input id="agencyKey" maxlength="160" minlength="3" required placeholder="sacramento county|CA"></label>
+<button type="submit">Add case</button></form>
+<label for="caseSelect">Selected case</label><select id="caseSelect"></select>
+</section>
+</div>
+<section id="caseDetail" class="panel" hidden>
+<h2 id="caseHeading">Investigation</h2>
+<p id="caseAgency" class="muted"></p>
+<div class="row no-print">
+<label>Investigation stage<select id="caseStatus"><option value="open">Open</option><option value="investigating">Investigating</option><option value="waiting_for_records">Waiting for records</option><option value="resolved">Resolved</option><option value="archived">Archived</option></select></label>
+<button id="saveStage" type="button">Save status</button><button id="exportCase" type="button">Export case JSON</button><button id="printCase" type="button">Print / Save PDF</button>
+</div>
+<div class="grid">
+<div><h3>Records requests</h3>
+<form id="createRequest" class="no-print">
+<label>Subject<input id="requestSubject" maxlength="200" value="Public records request" required></label>
+<label>Records custodian<input id="requestRecipient" maxlength="250" placeholder="Agency records officer"></label>
+<label>Editable text<textarea id="requestBody" maxlength="18000"></textarea></label>
+<button type="submit">Save request draft</button>
+</form><div id="requests"></div></div>
+<div><h3>Source-cited research notes</h3>
+<form id="addNote" class="no-print">
+<label>Evidence note<textarea id="noteText" maxlength="5000" required></textarea></label>
+<label>Original source URL (optional)<input id="noteSource" type="url" maxlength="1400" placeholder="https://agency.gov/document"></label>
+<button type="submit">Add note</button></form>
+<div id="notes"></div></div>
+</div>
+<h3>Private government response attachments</h3>
+<div class="row no-print"><input type="file" id="upload" accept=".pdf,.txt,.png,.jpg,.jpeg" aria-label="Upload redacted government response">
+<button type="button" id="uploadFile">Upload response (10 MB max)</button></div>
+<div id="files"></div>
+</section>
+</section>
+</main>
+<script src="./config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="./research-workspace.js"></script>
+</body></html>

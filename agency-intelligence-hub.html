@@ -1,0 +1,113 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Katoptron | Nationwide agency intelligence</title>
+<meta name="description" content="Government source-linked agency decisions, proposed and signed contracts, costs, policy records, timelines and unanswered questions across US jurisdictions.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font-family:system-ui,Arial,sans-serif;color:#e6f0f5;background:#0b1620}*{box-sizing:border-box}
+body{margin:0;line-height:1.55}a{color:#90d9ea}header{background:#152b39;padding:1rem max(1rem,4vw);display:flex;gap:1rem;flex-wrap:wrap}
+main{max-width:1180px;margin:1.5rem auto;padding:1rem}h1{font-size:clamp(1.8rem,4vw,2.5rem)}h2{font-size:1.3rem}h3{font-size:1.05rem}
+p{color:#bcd0dd}input,select,button{padding:.65rem;font:inherit;color:inherit;background:#192f3f;border:1px solid #59788c;border-radius:7px}
+input{min-width:240px}button{cursor:pointer}button:hover{background:#29495b}
+.controls{display:flex;gap:.75rem;flex-wrap:wrap;margin:.8rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:.85rem}
+.card,.panel{background:#162a38;border:1px solid #3f5c6e;border-radius:10px;padding:1rem}
+.card{margin:0;overflow-wrap:anywhere}.card h3{margin:.1rem 0}.status{color:#b7d0dc}.metric{font-size:1.4rem;font-weight:700}
+.fact{border-top:1px solid #3e586a;padding:.65rem 0}small{color:#b5cad5}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:.7rem 0}
+[hidden]{display:none!important}:focus-visible{outline:3px solid #9de2f1;outline-offset:3px}
+</style></head><body><a class="skip-link" href="#main">Skip to intelligence</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./research-workspace.html">Research workspace</a></header>
+<main id="main"><h1>Nationwide agency intelligence</h1>
+<p>This searchable catalog converts source-attributed, historical government publications into exact-issuer timelines, contract and policy evidence, documented amounts, and outstanding investigation questions. It is not a nationwide deployment census or a verified financial expenditure database.</p>
+<div class="panel"><strong>Evidence boundaries:</strong> A procurement proposal is not an executed contract; an announced policy is not necessarily in force; a source-stated amount is not confirmed paid spending. A publisher statement about turning cameras off is not an independent device audit. Source absence means unknown. No machine-extracted PDF candidates appear here without independent review.</div>
+<div class="controls"><label>Search agency or question<input id="filter" type="search" placeholder="Sacramento, contract, retention…" maxlength="150"></label>
+<label>State<select id="state"><option value="">All available states</option></select></label>
+<label>Evidence topic<select id="topic"><option value="">All topics</option><option value="government_decision">Decisions</option><option value="contract_proposal">Contract proposals</option><option value="published_policy">Policies</option><option value="historic_policy">Historical policy</option><option value="policy_proposal">Policy proposals</option></select></label></div>
+<p id="status" role="status" aria-live="polite">Loading original-government publications…</p><div class="actions"><button id="exportIndex" type="button" disabled>Export source-index JSON</button><small>Original publisher links, dates, statuses and questions; never private case data.</small></div>
+<div id="cards" class="grid"></div>
+<section id="details" class="panel" hidden><h2 id="detailTitle">Agency evidence</h2><p id="detailScope"></p>
+<div id="quick" class="grid"></div>
+<h3>Government evidence timeline</h3><div id="timeline"></div>
+<h3>Unanswered questions</h3><div id="questions"></div>
+<div class="actions" id="actions"></div></section>
+</main>
+<script src="./government-source-docket.js"></script><script src="./agency-intelligence-engine.js"></script><script>
+'use strict';
+const $=id=>document.getElementById(id);
+const el=(t,value)=>{const n=document.createElement(t);if(value!=null)n.textContent=String(value);return n;};
+let dataset=null;
+function link(parent,href,name){
+ if(!window.KatoptronGovernmentDocket.validUrl(href))return;
+ const a=el('a',name);a.href=href;a.target='_blank';a.rel='noopener noreferrer';parent.append(a);
+}
+function metric(title,value,description){
+ const c=el('article');c.className='card';c.append(el('h3',title),el('div',value),el('small',description));$('quick').append(c);
+}
+function openAgency(a){
+ $('details').hidden=false;$('detailTitle').textContent=a.agency+' · '+a.state;
+ $('detailScope').textContent=a.documents+' dated original-government publisher document(s), '+a.unique_original_urls+
+  ' distinct source URL(s). Dates and statuses are historical publication evidence, not proof of current equipment.';
+ $('quick').replaceChildren();$('timeline').replaceChildren();$('questions').replaceChildren();$('actions').replaceChildren();
+ metric('Government decisions',a.topics.government_decision.length+' source item(s)','Adoption status retained on each original; a decision does not establish installation');
+ metric('Contracts',a.topics.contract_proposal.length+' proposal(s); '+(a.has_signed_document_announcement?'signed-amendment statement':'signed contract unverified'),'A reported agreement is not independent full execution review');
+ metric('Spending',a.amounts.length?a.amounts.length+' source-stated amount(s)':'Unknown','No paid-expenditure total inferred from overlapping contracts or budgets');
+ metric('Policies',a.topics.published_policy.length+' published, '+a.topics.historic_policy.length+' historical, '+a.topics.policy_proposal.length+' proposed','Adoption and current technical configuration not assumed');
+ metric('Changes',a.trace.length+' dated publication(s)','Multiple dates alone do not establish a real operational change');
+ metric('Open questions',a.questions.length+' source gaps','Specific unanswered original-document questions are research priorities');
+ for(const item of a.trace){
+  const card=el('article');card.className='fact';
+  card.append(el('strong',item.label),el('p',item.source_date+' · '+item.status.replaceAll('_',' ')+' · '+item.issuer),
+   el('p',item.summary),el('small','Original government proof: '+item.proof));
+  if(item.amount_usd!=null)card.append(el('p','Source-stated amount: $'+Number(item.amount_usd).toLocaleString()+' · '+item.amount_basis));
+  card.append(el('p'));link(card,item.source_url,'Open original government publication');$('timeline').append(card);
+ }
+ for(const q of a.questions){const p=el('p',q);$('questions').append(p);}
+ const href='./agency-government-brief.html?id='+encodeURIComponent(a.trace[0].record_id);
+ const a1=el('a','Open printable, source-cited investigation');a1.href=href;$('actions').append(a1);
+ const a2=el('a','Create private research case');a2.href='./research-workspace.html?agency='+encodeURIComponent(a.locality_key)+'&title='+encodeURIComponent(a.agency+' accountability investigation');$('actions').append(a2);
+ const url=new URL(location.href);url.searchParams.set('agency',a.id);history.replaceState(null,'',url);
+ $('details').scrollIntoView({block:'start',behavior:'smooth'});
+}
+function render(){
+ if(!dataset)return;const q=$('filter').value.trim().toLowerCase(),s=$('state').value,t=$('topic').value;
+ const found=dataset.agencies.filter(a=>(!s||a.state===s)&&(!t||a.topics[t]?.length)&&(!q||
+ [a.agency,a.state,a.locality_key,...a.questions,...a.trace.map(x=>x.label)].join(' ').toLowerCase().includes(q)));
+ $('cards').replaceChildren();
+ for(const a of found){
+  const box=el('article');box.className='card';
+  box.append(el('h3',a.agency+' · '+a.state),el('small',a.documents+' original government record(s) · most recent source '+a.latest_source_date),
+   el('p',a.questions.length+' specific unresolved questions · '+a.amounts.length+' source-stated amount records'));
+  const b=el('button','Open exact-agency intelligence');b.type='button';b.addEventListener('click',()=>openAgency(a));
+  box.append(b);$('cards').append(box);
+ }
+ $('status').textContent=found.length+' of '+dataset.agency_count+' identified government issuers shown · '+dataset.states.length+
+ ' states, '+dataset.total_original_documents+' source-attributed records total. Publisher evidence is not an active camera census.';
+}
+(async()=>{try{
+ const res=await fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'});
+ if(!res.ok)throw Error('Original government docket unavailable');
+ const docket=window.KatoptronGovernmentDocket.build(await res.json());
+ dataset=window.KatoptronAgencyIntelligenceEngine.build(docket);
+ for(const state of dataset.states)$('state').append(new Option(state,state));
+ $('exportIndex').disabled=false;
+ $('exportIndex').addEventListener('click',()=>{
+   if(!dataset)return;
+   const records=dataset.agencies.flatMap(a=>a.trace.map(r=>({
+     agency:a.agency,state:a.state,locality_key:a.locality_key,record_id:r.record_id,
+     source_date:r.source_date,date_precision:r.date_precision,title:r.label,
+     status:r.status,kind:r.kind,summary:r.summary,source_url:r.source_url,proof:r.proof,
+     amount_usd:r.amount_usd,amount_basis:r.amount_basis,
+     caveat:r.caveat
+   })));
+   const body=JSON.stringify({schema_version:1,scope:'government_historical_source_attribution_not_operational_or_financial_audit',
+    exported_utc:new Date().toISOString(),original_sources:records},null,2);
+   const u=URL.createObjectURL(new Blob([body],{type:'application/json'}));
+   const a=el('a');a.href=u;a.download='katoptron-original-government-source-index.json';
+   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);
+ });
+ $('filter').addEventListener('input',render);$('state').addEventListener('change',render);$('topic').addEventListener('change',render);
+ render();
+ const key=new URL(location.href).searchParams.get('agency');
+ const agency=dataset.byExactAgency(key);if(agency)openAgency(agency);
+}catch(e){$('status').textContent='Government intelligence source validation held: '+e.message;}})();
+</script></body></html>

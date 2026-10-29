@@ -94,7 +94,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Re-fetch and independently fingerprint ten original government agency pages
-        run: python scripts/verify_new_original_agency_html.py --min-verified 10 --min-verified-states 5
+        run: python scripts/verify_new_original_agency_html.py --min-verified 14 --min-verified-states 9
       - uses: actions/upload-artifact@v4
         with:
           name: extended-original-government-evidence-receipts

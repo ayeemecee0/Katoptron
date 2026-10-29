@@ -33,7 +33,13 @@ ANCHORS={
  "richmond-va-flock-nonrenewal-mayor-announcement-2026":"the City will not move forward with the Flock ALPR contract when it’s up for renewal.",
  "panama-city-beach-fl-police-flock-suspension-2026":"suspending its use of the Flock Automated License Plate Reader system effective immediately",
  "fort-wayne-in-flock-discontinuation-chief-statement-2026":"the decision was made to discontinue the Fort Wayne Police Department’s use of Flock.",
- "lynchburg-va-flock-alpr-pause-police-original-2026":"temporarily pause the operation of its fifteen fixed Flock"
+ "lynchburg-va-flock-alpr-pause-police-original-2026":"temporarily pause the operation of its fifteen fixed Flock",
+ "frankfort-ky-flock-nonrenewal-commission-vote-2026":"voted unanimously not to renew",
+ "north-salt-lake-ut-flock-contract-agenda-2025":"Consideration of Approval for Contract Services with Flock Safety",
+ "missouri-mo-alpr-executive-order-26-18-2026":"Executive Order 26-18",
+ "apache-junction-az-public-safety-ordinance-1579-2026":"unanimously approved Ordinance No. 1579",
+ "durango-co-flock-to-axon-planned-transition-2026":"will not renew its contract with Flock Safety in 2027",
+ "salem-ma-flock-nonrenewal-mayor-statement-2026":"The City of Salem is not renewing"
 }
 
 def valid(url):
@@ -85,7 +91,7 @@ def review(row,fetcher=fetch):
 
 def run(doc,fetcher=fetch):
  rows=[r for r in doc["sources"] if r["id"] in ANCHORS]
- if len(rows)!=15 or len({r["id"] for r in rows})!=15 or len({r["locality_key"] for r in rows})!=15:
+ if len(rows)!=21 or len({r["id"] for r in rows})!=21 or len({r["locality_key"] for r in rows})!=21:
   raise ValueError("Missing/duplicate new government agencies")
  if len({r["state"] for r in rows})<5:raise ValueError("Insufficient new publisher states")
  result=[review(row,fetcher) for row in rows]

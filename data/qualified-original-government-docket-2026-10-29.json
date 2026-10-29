@@ -877,6 +877,138 @@
       "open_questions": [
         "Did the promised independent third-party review occur, and what records document continued ALPR account suspension?"
       ]
+    },
+    {
+      "id": "frankfort-ky-flock-nonrenewal-commission-vote-2026",
+      "agency": "Frankfort Board of Commissioners",
+      "locality_key": "frankfort|KY",
+      "state": "KY",
+      "source_date": "2026-10-13",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_future_nonrenewal",
+      "title": "Frankfort commissioners vote not to renew Flock contract in January 2027",
+      "summary": "Frankfort's October 13 original press release records a unanimous October 12 board vote against renewing the Flock Group contract when it expires in January 2027. The city describes an existing lease for nineteen readers. The announced future nonrenewal does not independently prove that later equipment removal occurred.",
+      "source_url": "https://www.frankfort.ky.gov/m/NewsFlash/Home/Detail/274",
+      "provider": "City of Frankfort, Kentucky",
+      "proof": "Frankfort Board of Commissioners official October 13 2026 announcement of October 12 vote",
+      "flock_specific": true,
+      "open_questions": [
+        "Where are the actual Flock nonrenewal notice, final invoices, and records confirming removal after January 2027?"
+      ],
+      "amount_usd": null,
+      "amount_basis": null,
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary"
+    },
+    {
+      "id": "north-salt-lake-ut-flock-contract-agenda-2025",
+      "agency": "North Salt Lake City Council",
+      "locality_key": "north salt lake|UT",
+      "state": "UT",
+      "source_date": "2025-12-15",
+      "kind": "contract_proposal",
+      "status": "agenda_ready_final_action_unverified",
+      "title": "North Salt Lake council agenda lists proposed Flock ALPR contract services",
+      "summary": "The Utah state original public-notice archive lists consideration of approval for contract services with Flock Safety for the police department on the December 16, 2025 council agenda. An agenda listing alone cannot establish approval, a signed vendor agreement, any payment or operating cameras.",
+      "source_url": "https://www.utah.gov/pmn/sitemap/notice/1045995.html",
+      "provider": "Utah Public Notice Website, City of North Salt Lake",
+      "proof": "Utah Public Notice Website official December 15 2025 council meeting agenda",
+      "flock_specific": true,
+      "open_questions": [
+        "Did council actually approve the proposed December 16 2025 Flock agreement, and where are the signed terms and payments?"
+      ],
+      "amount_usd": null,
+      "amount_basis": null,
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary"
+    },
+    {
+      "id": "missouri-mo-alpr-executive-order-26-18-2026",
+      "agency": "Missouri Governor's Office",
+      "locality_key": "missouri|MO",
+      "state": "MO",
+      "source_date": "2026-09-16",
+      "kind": "published_policy",
+      "status": "state_executive_order_alpr_safeguards_includes_flock",
+      "title": "Missouri governor announces Executive Order 26-18 for ALPR privacy safeguards",
+      "summary": "The Missouri Governor's Office published a September 16, 2026 announcement of Executive Order 26-18 establishing statewide restrictions and safeguards for automatic license plate reader technology, expressly including Flock Safety cameras. This statewide policy announcement is not proof any particular local police agency uses Flock or that an operator complied.",
+      "source_url": "https://governor.mo.gov/press-releases/archive/governor-kehoe-signs-executive-order-establishing-safeguards-automated",
+      "provider": "Missouri Governor's Office",
+      "proof": "Governor's official September 16 2026 press release on Executive Order 26-18",
+      "flock_specific": false,
+      "open_questions": [
+        "Which Missouri agencies published implementation policies and independently auditable compliance records under Executive Order 26-18?"
+      ],
+      "amount_usd": null,
+      "amount_basis": null,
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary"
+    },
+    {
+      "id": "apache-junction-az-public-safety-ordinance-1579-2026",
+      "agency": "Apache Junction City Council",
+      "locality_key": "apache junction|AZ",
+      "state": "AZ",
+      "source_date": "2026-10-06",
+      "kind": "government_decision",
+      "status": "council_ordinance_adopted_controls_not_device_audit",
+      "title": "Apache Junction announces adopted surveillance technology Ordinance 1579",
+      "summary": "Apache Junction's official public-safety technology page says the City Council unanimously approved Ordinance No. 1579 on October 6, 2026, adding restrictions on ALPR and other police surveillance technologies. The publication documents a council action and policy statement, not independent verification of actual Flock configuration, current compliance or individual device locations.",
+      "source_url": "https://apachejunctionaz.gov/1241/Public-Safety-Technology",
+      "provider": "City of Apache Junction, Arizona",
+      "proof": "Original city technology page reports October 6 2026 adoption of Ordinance No. 1579",
+      "flock_specific": true,
+      "open_questions": [
+        "Where are the signed ordinance text, police implementation directive, and initial compliance audit records?"
+      ],
+      "amount_usd": null,
+      "amount_basis": null,
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary"
+    },
+    {
+      "id": "durango-co-flock-to-axon-planned-transition-2026",
+      "agency": "Durango Police Department",
+      "locality_key": "durango|CO",
+      "state": "CO",
+      "source_date": "2026-09-01",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_future_nonrenewal",
+      "title": "Durango police announce Flock nonrenewal in 2027 and planned Axon transition",
+      "summary": "Durango Police's September 1, 2026 government announcement says the department intends not to renew its Flock Safety contract in 2027 and plans to transition to Axon ALPR. The publication separately describes new access and retention requirements; it is not proof that the 2027 contract ended or technical transition occurred.",
+      "source_url": "https://www.durangoco.gov/m/newsflash/Home/Detail/4836",
+      "provider": "City of Durango Police Department",
+      "proof": "Original Durango Police news release dated September 1 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Where are Durango's executed Flock termination, Axon replacement contract, and current source-revised ALPR policy documents?"
+      ],
+      "amount_usd": null,
+      "amount_basis": null,
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary"
+    },
+    {
+      "id": "salem-ma-flock-nonrenewal-mayor-statement-2026",
+      "agency": "Salem Police Department",
+      "locality_key": "salem|MA",
+      "state": "MA",
+      "source_date": "2026-07-23",
+      "kind": "government_decision",
+      "status": "government_publisher_announces_future_nonrenewal",
+      "title": "Salem officials announce Flock nonrenewal and planned replacement",
+      "summary": "Salem's July 23, 2026 municipal announcement says the city will not renew the Salem Police Department Flock ALPR contract and plans to remove and replace Flock readers with an alternative system. It is an official intent statement, not a signed end-of-service receipt, independently verified physical removal or proof that ALPR surveillance ended.",
+      "source_url": "https://www.salemma.gov/m/newsflash/home/detail/427",
+      "provider": "City of Salem, Massachusetts",
+      "proof": "City of Salem original joint mayor and police chief announcement dated July 23 2026",
+      "flock_specific": true,
+      "open_questions": [
+        "Have Salem's signed Flock nonrenewal, replacement procurement and removal-completion records been released?"
+      ],
+      "amount_usd": null,
+      "amount_basis": null,
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary"
     }
   ]
 }

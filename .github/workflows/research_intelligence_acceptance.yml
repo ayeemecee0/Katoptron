@@ -1,0 +1,91 @@
+name: Research workspace, intelligence and actionable Watch acceptance
+on:
+  pull_request:
+    paths:
+      - 'research-workspace.html'
+      - 'research-workspace.js'
+      - 'agency-intelligence-hub.html'
+      - 'scripts/smoke_research_intelligence.cjs'
+      - 'supabase/migrations/153_research_collaborator_owner_controls.sql'
+      - 'agency-intelligence-engine.js'
+      - 'agency-xray.html'
+      - 'agency-government-brief.html'
+      - 'government-watch.html'
+      - 'scripts/watch_alert_actionability.py'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'scripts/test_watch_alert_actionability.py'
+      - 'scripts/test_research_workspace.cjs'
+      - 'scripts/test_agency_intelligence_engine.cjs'
+      - 'scripts/test_government_watch_alerts.py'
+      - 'supabase/migrations/150_research_workspace_cases_and_private_files.sql'
+      - 'supabase/migrations/151_research_workspace_rls_policies.sql'
+      - 'supabase/migrations/152_research_workspace_invites_and_storage.sql'
+      - '.github/workflows/research_intelligence_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research-workspace.js'
+      - 'agency-intelligence-engine.js'
+      - 'scripts/send_government_watch_alerts.py'
+      - '.github/workflows/research_intelligence_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify original issuer identity, historical stages and unknown cost boundaries
+        run: node scripts/test_agency_intelligence_engine.cjs
+      - name: Verify private case export, input validation and workspace security controls
+        run: node scripts/test_research_workspace.cjs
+      - name: Verify every Watch event gets sourced, cautious next-action guidance
+        run: python -m unittest discover -s scripts -p 'test_watch_alert_actionability.py' -v
+      - name: Verify consent and exactly-once SMTP submission guard
+        run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+      - name: Validate JavaScript syntax
+        run: |
+          node --check research-workspace.js
+          node --check agency-intelligence-engine.js
+          node --check government-source-docket.js
+          node -e "const fs=require('fs');for(const p of ['research-workspace.html','agency-intelligence-hub.html','agency-xray.html','government-watch.html','agency-government-brief.html']){const s=fs.readFileSync(p,'utf8');for(const m of s.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g))new Function(m[1]);}console.log('Public and private browser script syntax PASS');"
+      - name: Assert core security boundaries on schema text
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          core=Path('supabase/migrations/150_research_workspace_cases_and_private_files.sql').read_text()
+          policy=Path('supabase/migrations/151_research_workspace_rls_policies.sql').read_text()
+          invite=Path('supabase/migrations/152_research_workspace_invites_and_storage.sql').read_text()
+          assert policy.count('enable row level security')==6
+          assert 'revoke all on public.research_workspaces' in policy
+          assert 'auth.uid()' in policy and 'with check' in policy
+          assert 'create policy research_storage_read' in invite
+          assert "'research-case-files','research-case-files',false,10485760" in invite
+          assert 'research_accept_invite' in invite
+          print('PRIVATE_RESEARCH_SCHEMA_BOUNDARIES_PASS')
+          PY
+  mobile_browser:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Start static source and private research site
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/katoptron-research-site.log 2>&1 &
+      - name: Install pinned browser client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Verify mobile source intelligence, citations, case-link and signed-out auth boundary
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_research_intelligence.cjs
