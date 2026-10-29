@@ -62,11 +62,11 @@ jobs:
           core=Path('supabase/migrations/150_research_workspace_cases_and_private_files.sql').read_text()
           policy=Path('supabase/migrations/151_research_workspace_rls_policies.sql').read_text()
           invite=Path('supabase/migrations/152_research_workspace_invites_and_storage.sql').read_text()
-          assert core.count('enable row level security')==6
-          assert 'revoke all on public.research_workspaces' in core
+          assert policy.count('enable row level security')==6
+          assert 'revoke all on public.research_workspaces' in policy
           assert 'auth.uid()' in policy and 'with check' in policy
           assert 'create policy research_storage_read' in invite
-          assert "'research-case-files',false,10485760" in invite
+          assert "'research-case-files','research-case-files',false,10485760" in invite
           assert 'research_accept_invite' in invite
           print('PRIVATE_RESEARCH_SCHEMA_BOUNDARIES_PASS')
           PY
