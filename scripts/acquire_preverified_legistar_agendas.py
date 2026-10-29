@@ -92,11 +92,11 @@ def official_matter_guid(tenant,lead,fetcher=scanner.get_json):
     """Verify the stable WebAPI matter UUID before treating a lead as novel."""
     url=urlsplit(lead["url"])
     if (url.scheme!="https" or url.hostname!="webapi.legistar.com" or
-        not re.fullmatch("/v1/"+re.escape(tenant)+r"/matters/\\d+",url.path) or
+        not re.fullmatch("/v1/"+re.escape(tenant)+r"/matters/\d+",url.path) or
         url.query or url.fragment or url.username or url.password):
         raise ValueError("Unapproved detail URL")
     item=fetcher(lead["url"])
-    match=re.fullmatch("/v1/"+re.escape(tenant)+r"/matters/(\\d+)",url.path)
+    match=re.fullmatch("/v1/"+re.escape(tenant)+r"/matters/(\d+)",url.path)
     if (not isinstance(item,dict) or str(item.get("MatterId"))!=match.group(1)
         or item.get("MatterRestrictViewViaWeb") is True or
         not GUID_RE.fullmatch(str(item.get("MatterGuid") or ""))):
