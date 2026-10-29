@@ -19,7 +19,7 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 @media print{header,.no-print,#signin,.panel:first-of-type{display:none}body,main,.panel{background:white;color:#111;border:0}}
 </style></head><body>
 <a href="#main" class="skip-link">Skip to workspace</a>
-<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a></header>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a><a href="./research-plans.html">Professional pilot plans</a></header>
 <main id="main"><h1>Private research workspace</h1>
 <p class="muted">Save agency investigations, track records requests and due dates, attach government responses, collaborate by expiring invite links, and export case files. Public source evidence stays freely available. Workspace notes and attachments are private and require an authenticated account.</p>
 <p class="panel">Do not upload individual license-plate reads, private vehicle locations, driver data, account passwords or unredacted sensitive law-enforcement records. A government publication is not proof of current device operation or legal compliance.</p>
@@ -33,11 +33,19 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <div class="grid">
 <section class="panel"><h2>Workspaces</h2>
 <form id="createWorkspace" class="row no-print"><label>New workspace title<input id="workspaceTitle" maxlength="120" minlength="3" placeholder="Flock contract research" required></label><button type="submit">Create workspace</button></form>
-<label for="workspaceSelect">Current workspace</label><select id="workspaceSelect"></select>
+<label for="workspaceSelect">Current workspace</label><select id="workspaceSelect"></select><button id="deleteWorkspace" type="button" class="danger no-print">Delete workspace and all private case files</button>
 <div class="row no-print" id="collaboration"><label>Invite role<select id="inviteRole"><option value="editor">Editor</option><option value="viewer">Viewer</option></select></label><button id="shareInvite" type="button">Create 7-day one-use invite link</button></div>
 <p id="inviteResult" class="muted" role="status"></p><div id="members" class="no-print" aria-label="Workspace collaborators"></div>
 </section>
 <section class="panel"><h2>Case files</h2>
+<div class="panel no-print"><h3>Start with a professional research workflow</h3>
+<p>Select a role to prepare an agency-specific records request and investigation checklist. Templates are editable, do not send requests, and do not substitute for local legal advice.</p>
+<div class="row"><label>Workflow<select id="templateRole"><option value="">Blank investigation</option>
+<option value="journalist">Journalist · chronology and source confirmation</option>
+<option value="nonprofit">Nonprofit · policy and accountability</option>
+<option value="legal_researcher">Legal researcher · primary-record provenance</option></select></label>
+<button type="button" id="templatePreview">Prepare selected workflow</button></div>
+<p id="templateStatus" role="status"></p></div>
 <form id="createCase" class="row no-print">
 <label>Case title<input id="caseTitle" maxlength="180" minlength="4" required placeholder="Contract renewal investigation"></label>
 <label>Agency or locality key<input id="agencyKey" maxlength="160" minlength="3" required placeholder="sacramento county|CA"></label>
@@ -50,7 +58,7 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <p id="caseAgency" class="muted"></p>
 <div class="row no-print">
 <label>Investigation stage<select id="caseStatus"><option value="open">Open</option><option value="investigating">Investigating</option><option value="waiting_for_records">Waiting for records</option><option value="resolved">Resolved</option><option value="archived">Archived</option></select></label>
-<button id="saveStage" type="button">Save status</button><button id="exportCase" type="button">Export case JSON</button><button id="printCase" type="button">Print / Save PDF</button>
+<button id="deleteCase" type="button" class="danger">Delete case and attachments</button><button id="saveStage" type="button">Save status</button><button id="exportCase" type="button">Export case JSON</button><button id="printCase" type="button">Print / Save PDF</button>
 </div>
 <div class="grid">
 <div><h3>Records requests</h3>
@@ -76,5 +84,6 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 </main>
 <script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="./research-templates.js"></script>
 <script src="./research-workspace.js"></script>
 </body></html>

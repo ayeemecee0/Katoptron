@@ -74,6 +74,14 @@ async function start(win,U){
   for(const m of members){
    const item=el('div');item.className='row';
    item.append(el('span',m.member_role+' · member '+m.member_id.slice(0,8)+'…'));
+   item.append(button('Set viewer',async()=>{
+    unwrap(await sb.rpc('research_change_collaborator_role',{p_workspace:selectedW.id,p_user:m.member_id,p_role:'viewer'}));
+    await refreshMembers();status('Member is now read-only.');
+   }));
+   item.append(button('Set editor',async()=>{
+    unwrap(await sb.rpc('research_change_collaborator_role',{p_workspace:selectedW.id,p_user:m.member_id,p_role:'editor'}));
+    await refreshMembers();status('Member can now edit workspace cases.');
+   }));
    item.append(button('Revoke access',async()=>{
     if(!win.confirm('Revoke this collaborator from this workspace?'))return;
     unwrap(await sb.rpc('research_remove_collaborator',{p_workspace:selectedW.id,p_user:m.member_id}));
@@ -82,11 +90,54 @@ async function start(win,U){
    $('members').append(item);
   }
  }
+ async function deletePrivateCase(entry,workspace){
+  if(workspace.owner_id!==user.id)throw Error('Only the original workspace owner can delete case files.');
+  const prefix=workspace.id+'/'+entry.id+'/';
+  let scans=0;
+  while(scans++<40){
+   const objects=unwrap(await sb.storage.from('research-case-files').list(prefix,{limit:100,offset:0}));
+   if(!objects.length)break;
+   if(objects.some(x=>!x.name||!x.id))throw Error('Storage folder contains unexpected nested entries; deletion held.');
+   const files=objects.map(x=>prefix+x.name);
+   unwrap(await sb.storage.from('research-case-files').remove(files));
+  }
+  if(scans>40)throw Error('Too many attachments to safely remove in one operation.');
+  // SQL trigger independently rejects any case deletion while blobs remain.
+  const found=unwrap(await sb.storage.from('research-case-files').list(prefix,{limit:1,offset:0}));
+  if(found.length)throw Error('Storage cleanup not yet complete. Case metadata retained.');
+  const removed=unwrap(await sb.from('research_cases').delete().eq('id',entry.id).eq('workspace_id',workspace.id).select('id'));
+  if(removed.length!==1)throw Error('Case not deleted: ownership or concurrent change rejected.');
+ }
+ $('deleteCase').addEventListener('click',async()=>{
+  try{
+   if(!selectedC||selectedW.owner_id!==user.id)throw Error('Only workspace owner can permanently delete cases.');
+   if(!win.confirm('Delete this case, its private files, requests, and notes? This cannot be undone.'))return;
+   const old=selectedC;await deletePrivateCase(old,selectedW);
+   await chooseWorkspace();status('Private case, response attachments, drafts and notes deleted.');
+  }catch(e){msg(e)}
+ });
+ $('deleteWorkspace').addEventListener('click',async()=>{
+  try{
+   if(!selectedW||selectedW.owner_id!==user.id)throw Error('Only workspace owner can delete the workspace.');
+   if(!win.confirm('Permanently delete ALL cases, private responses, collaboration and requests in this workspace?'))return;
+   const w=selectedW;
+   for(let pass=0;pass<60;pass++){
+    const rows=unwrap(await sb.from('research_cases').select('id').eq('workspace_id',w.id).limit(100));
+    if(!rows.length)break;
+    for(const c of rows)await deletePrivateCase(c,w);
+    if(pass===59)throw Error('Workspace deletion paused after too many case batches.');
+   }
+   const removed=unwrap(await sb.from('research_workspaces').delete().eq('id',w.id).select('id'));
+   if(removed.length!==1)throw Error('Workspace deletion was blocked; remaining data stays private.');
+   await loadWorkspaces();status('Workspace and all privately stored case files deleted.');
+  }catch(e){msg(e)}
+ });
  async function chooseWorkspace(){
   selectedW=workspaces.find(w=>w.id===$('workspaceSelect').value)||null;
   selectedC=null;cases=[];$('caseDetail').hidden=true;$('inviteResult').textContent='';
   $('createCase').hidden=!selectedW;
   $('collaboration').hidden=!selectedW||selectedW.owner_id!==user.id;
+  $('deleteWorkspace').hidden=!selectedW||selectedW.owner_id!==user.id;
   if(!selectedW){$('caseSelect').replaceChildren(new Option('Create a workspace first',''));return;}
   membershipRole=selectedW.owner_id===user.id?'owner':(unwrap(await sb.from('research_workspace_members').select('role').eq('workspace_id',selectedW.id).eq('user_id',user.id).maybeSingle())?.role||'viewer');
   $('createCase').hidden=!writable();
@@ -105,12 +156,19 @@ async function start(win,U){
   $('caseAgency').textContent=selectedC.agency_key+' · Case ID '+selectedC.id;
   $('caseStatus').value=selectedC.status;
   for(const id of ['saveStage','createRequest','addNote','uploadFile','upload'])$(id).disabled=!writable();
+  $('deleteCase').hidden=selectedW.owner_id!==user.id;
   $('createRequest').hidden=!writable();$('addNote').hidden=!writable();
   let [r,n,f]=await Promise.all([
    sb.from('research_case_requests').select('*').eq('case_id',selectedC.id).order('created_at',{ascending:false}).limit(100),
    sb.from('research_case_notes').select('*').eq('case_id',selectedC.id).order('created_at',{ascending:false}).limit(100),
    sb.from('research_case_files').select('*').eq('case_id',selectedC.id).order('created_at',{ascending:false}).limit(100)]);
-  detail={requests:unwrap(r),notes:unwrap(n),files:unwrap(f)};
+  detail={requests:unwrap(r),notes:unwrap(n),files:unwrap(f),history:[]};
+  if(detail.requests.length){
+   const ids=detail.requests.map(x=>x.id);
+   detail.history=unwrap(await sb.from('research_request_activity')
+    .select('request_id,previous_status,new_status,previous_due_on,new_due_on,action_at')
+    .in('request_id',ids).order('action_at',{ascending:false}).limit(150));
+  }
   renderDetails();
  }
  function renderDetails(){
@@ -133,7 +191,13 @@ async function start(win,U){
     due.textContent=distance<0?'User-entered follow-up date overdue by '+Math.abs(distance)+' day(s).':
       'User-entered follow-up in '+distance+' day(s). No statutory deadline inferred.';
    }
-   const content=[due,subject,recipient,el('label','Request body'),body,el('label','Status'),statusSel,...dates.map(x=>x[1])];
+   const history=el('div');
+   const audit=(detail.history||[]).filter(h=>h.request_id===req.id).slice(0,10);
+   for(const h of audit)history.append(el('small',
+    'Recorded '+String(h.action_at).slice(0,16)+' UTC: '+h.previous_status+' → '+h.new_status+
+    (h.new_due_on?' · follow-up '+h.new_due_on:'')+'\n'));
+   if(!audit.length)history.append(el('small','No status or date edits recorded yet.'));
+   const content=[due,history,subject,recipient,el('label','Request body'),body,el('label','Status'),statusSel,...dates.map(x=>x[1])];
    if(writable())content.push(button('Save request and dates',async()=>{
     unwrap(await sb.from('research_case_requests').update({recipient:rinput.value,subject:sinput.value,body:body.value,status:statusSel.value,
       sent_on:dates[0][2].value||null,response_due_on:dates[1][2].value||null,response_received_on:dates[2][2].value||null,
@@ -185,13 +249,46 @@ async function start(win,U){
  }catch(err){msg(err)}});
  $('workspaceSelect').addEventListener('change',()=>chooseWorkspace().catch(msg));
  $('caseSelect').addEventListener('change',()=>chooseCase().catch(msg));
+ function chosenTemplate(){
+  const role=$('templateRole').value;
+  if(!role)return null;
+  if(!win.KatoptronResearchTemplates)throw Error('Research templates unavailable');
+  return win.KatoptronResearchTemplates.draft(role,$('agencyKey').value,$('noteSource').value);
+ }
+ $('templatePreview').addEventListener('click',()=>{
+  try{
+   const d=chosenTemplate();
+   if(!d){$('templateStatus').textContent='Blank investigation selected.';return;}
+   $('caseTitle').value=d.title.slice(0,180);
+   $('requestSubject').value=d.subject;
+   $('requestBody').value=d.body;
+   $('noteText').value=d.questions.map((x,i)=>(i+1)+'. '+x).join('\n');
+   $('templateStatus').textContent=d.label+' workflow prepared. Creating a case will save its editable records-request draft and source-checklist note.';
+  }catch(e){msg(e)}
+ });
  $('createCase').addEventListener('submit',async e=>{e.preventDefault();try{
   if(!writable())throw Error('Editor access required');
   const key=$('agencyKey').value.trim();
   if(key.length<3||key.length>160)throw Error('Enter an exact agency label/key');
+  const template=chosenTemplate();
+  const caseTitle=$('caseTitle').value.trim();
+  const noteSource=U.sourceUrl($('noteSource').value.trim());
   const record=unwrap(await sb.from('research_cases').insert({workspace_id:selectedW.id,created_by:user.id,
-   title:$('caseTitle').value.trim(),agency_key:key}).select('id').single());
-  await chooseWorkspace();$('caseSelect').value=record.id;await chooseCase();$('caseTitle').value='';status('Investigation created.');
+   title:caseTitle,agency_key:key}).select('id').single());
+  let generated=false;
+  if(template){
+   try{
+    unwrap(await sb.from('research_case_requests').insert({case_id:record.id,created_by:user.id,
+      subject:$('requestSubject').value.trim()||template.subject,
+      body:$('requestBody').value||template.body,recipient:'',status:'draft'}));
+    unwrap(await sb.from('research_case_notes').insert({case_id:record.id,author_id:user.id,
+      note:('Research workflow: '+template.label+'\n'+template.questions.map((q,i)=>(i+1)+'. '+q).join('\n')).slice(0,5000),
+      source_url:noteSource}));
+    generated=true;
+   }catch(e){status('Case created but template checklist or draft requires review: '+e.message)}
+  }
+  await chooseWorkspace();$('caseSelect').value=record.id;await chooseCase();$('caseTitle').value='';
+  if(!template||generated)status(generated?'Case, editable request and research checklist saved. No public-records request was sent.':'Investigation created.');
  }catch(err){msg(err)}});
  $('saveStage').addEventListener('click',async()=>{try{
   if(!writable())throw Error('Editor access required');

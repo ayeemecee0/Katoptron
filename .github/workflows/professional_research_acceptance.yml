@@ -1,0 +1,82 @@
+name: Professional research, source version and privacy release gates
+on:
+  pull_request:
+    paths:
+      - 'scripts/watch_original_government_versions.py'
+      - 'scripts/test_watch_original_government_versions.py'
+      - 'scripts/test_research_tenant_isolation.sql'
+      - 'scripts/test_research_pro_workflows.cjs'
+      - 'research-templates.js'
+      - 'research-workspace.js'
+      - 'research-workspace.html'
+      - 'research-plans.html'
+      - 'research-pilot.js'
+      - 'watch-email.js'
+      - 'government-watch.html'
+      - 'scripts/send_government_watch_alerts.py'
+      - 'supabase/migrations/155_original_government_version_review_queue.sql'
+      - 'supabase/migrations/156_pilot_interest_and_watch_my_receipts.sql'
+      - 'supabase/migrations/157_research_collaborator_roles.sql'
+      - 'supabase/migrations/158_research_request_audit_lifecycle.sql'
+      - 'supabase/migrations/159_prevent_research_orphan_storage.sql'
+      - '.github/workflows/professional_research_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/watch_original_government_versions.py'
+      - 'research-workspace.js'
+      - 'research-plans.html'
+      - '.github/workflows/professional_research_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  logic_and_safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test original government baseline and review-only HTML version changes
+        run: python -m unittest discover -s scripts -p 'test_watch_original_government_versions.py' -v
+      - name: Check source-qualified digest safety and no duplicate submissions
+        run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
+      - name: Check three role-specific templates and honest pilot packaging
+        run: node scripts/test_research_pro_workflows.cjs
+      - name: Verify research workspace existing export, invites, and private files
+        run: node scripts/test_research_workspace.cjs
+      - name: Reject malformed Javascript and inline client scripts
+        run: |
+          node --check research-templates.js
+          node --check research-workspace.js
+          node --check research-pilot.js
+          node --check watch-email.js
+          node -e "const fs=require('fs');for(const p of ['research-plans.html','research-workspace.html','government-watch.html']){const t=fs.readFileSync(p,'utf8');for(const x of t.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g))new Function(x[1]);}console.log('PROFESSIONAL_CLIENT_SYNTAX_PASS')"
+  isolated_rls_and_lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: local_ci_only_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 15
+    env:
+      PGPASSWORD: local_ci_only_password
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install local PostgreSQL test client if unavailable
+        run: command -v psql || (sudo apt-get update -qq && sudo apt-get install -y postgresql-client)
+      - name: Exercise real Postgres RLS, distinct accounts, member role changes and audited deletion
+        run: psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 -f scripts/test_research_tenant_isolation.sql

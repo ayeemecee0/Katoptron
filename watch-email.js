@@ -26,8 +26,46 @@
     'You may now manage this locality\'s email alerts.':
     'Sign in to manage email alerts.'):
    'No locality selected. Choose a city under Followed localities to enable or disable its email alerts.';
-  if(user&&locality)await refresh();
+  if(user&&locality){await refresh();try{await receiptHistory();}catch{if($('receiptStatus'))$('receiptStatus').textContent='Private submission history temporarily unavailable.';}}
+  else if($('watchDigestHistory'))$('watchDigestHistory').hidden=true;
  }
+ async function receiptHistory(){
+  const panel=$('watchDigestHistory');if(!panel)return;
+  panel.hidden=!(user&&locality);
+  $('receiptItems').textContent='';
+  if(!user||!locality)return;
+  const [claims,accepted]=await Promise.all([
+   client.from('flock_watch_send_claims')
+    .select('event_key,status,claimed_at,status_changed_at,smtp_accepted_at')
+    .eq('user_id',user.id).eq('locality_key',locality.key)
+    .order('claimed_at',{ascending:false}).limit(20),
+   client.from('flock_watch_deliveries').select('event_key,delivered_at')
+    .eq('user_id',user.id).eq('locality_key',locality.key).limit(100)
+  ]);
+  if(claims.error||accepted.error){
+   $('receiptStatus').textContent='Private mail receipt history unavailable.';
+   return;
+  }
+  const ack=new Set((accepted.data||[]).map(x=>x.event_key));
+  const rows=claims.data||[];
+  $('receiptStatus').textContent=rows.length?
+   rows.length+' recent source-event delivery attempts for '+locality.label:
+   'No qualifying post-opt-in source events have been submitted to SMTP for this locality.';
+  for(const c of rows){
+   const line=document.createElement('p');line.className='entry';
+   const status=(c.status==='smtp_submitted'&&ack.has(c.event_key))?
+    'SMTP submitted; database receipt recorded (not inbox-confirmed)':
+    c.status==='uncertain'?'Submission uncertain; held for reconciliation, not automatically resent':
+    c.status==='claimed'?'Claimed by mail worker; SMTP outcome not yet confirmed':
+    c.status==='queued'?'Queued; not sent':
+    c.status==='canceled'?'Canceled because consent was not current':
+    c.status==='failed'?'Failed; not delivered':
+    c.status==='smtp_submitted'?'SMTP accepted; receipt reconciliation pending':'Processing status: '+c.status;
+   line.textContent=status+' · '+String(c.claimed_at||'date unknown').slice(0,19)+' UTC · event '+String(c.event_key).slice(0,12);
+   $('receiptItems').append(line);
+  }
+ }
+ $('refreshDigestReceipts').addEventListener('click',()=>receiptHistory().catch(()=>{$('receiptStatus').textContent='Unable to load private Watch receipt status.';}));
  async function refresh(){
   if(!user||!locality)return;
   const {data,error}=await client.from('flock_watch_subscriptions')

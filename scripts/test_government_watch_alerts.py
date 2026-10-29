@@ -74,6 +74,8 @@ class GovernmentWatchSafety(unittest.TestCase):
             "source_date":"2026-10-20","source_url":"https://gov.example.org/a"}],
           "alerts@katoptron.example.org")
         self.assertEqual(mail["To"],"confirmed@example.org")
+        self.assertIn("digest (1 new sourced item)",mail["Subject"])
+        self.assertIn("Unique original URLs: 1",mail.get_content())
         self.assertIn("Manage or disable",mail.get_content())
         self.assertIn("not a travel route",mail.get_content())
         self.assertIn("Why this may matter:",mail.get_content())
