@@ -13,7 +13,7 @@ class StateSources(unittest.TestCase):
   self.assertEqual(len(j),51)
   self.assertEqual(len({s["state"] for s in j}),51)
   self.assertIn("DC",{s["state"] for s in j})
-  self.assertEqual(len(seeds),43)
+  self.assertEqual(len(seeds),45)
   self.assertEqual(len(p),8)
   self.assertEqual(len({s["state"] for s in seeds}|p),51)
  def test_ssrf_origins_and_path_escape_rejected(self):
