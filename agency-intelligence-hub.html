@@ -23,7 +23,7 @@ input{min-width:240px}button{cursor:pointer}button:hover{background:#29495b}
 <div class="controls"><label>Search agency or question<input id="filter" type="search" placeholder="Sacramento, contract, retention…" maxlength="150"></label>
 <label>State<select id="state"><option value="">All available states</option></select></label>
 <label>Evidence topic<select id="topic"><option value="">All topics</option><option value="government_decision">Decisions</option><option value="contract_proposal">Contract proposals</option><option value="published_policy">Policies</option><option value="historic_policy">Historical policy</option><option value="policy_proposal">Policy proposals</option></select></label></div>
-<p id="status" role="status" aria-live="polite">Loading original-government publications…</p>
+<p id="status" role="status" aria-live="polite">Loading original-government publications…</p><div class="actions"><button id="exportIndex" type="button" disabled>Export source-index JSON</button><small>Original publisher links, dates, statuses and questions; never private case data.</small></div>
 <div id="cards" class="grid"></div>
 <section id="details" class="panel" hidden><h2 id="detailTitle">Agency evidence</h2><p id="detailScope"></p>
 <div id="quick" class="grid"></div>
@@ -89,6 +89,22 @@ function render(){
  const docket=window.KatoptronGovernmentDocket.build(await res.json());
  dataset=window.KatoptronAgencyIntelligenceEngine.build(docket);
  for(const state of dataset.states)$('state').append(new Option(state,state));
+ $('exportIndex').disabled=false;
+ $('exportIndex').addEventListener('click',()=>{
+   if(!dataset)return;
+   const records=dataset.agencies.flatMap(a=>a.trace.map(r=>({
+     agency:a.agency,state:a.state,locality_key:a.locality_key,record_id:r.record_id,
+     source_date:r.source_date,date_precision:r.date_precision,title:r.label,
+     status:r.status,kind:r.kind,summary:r.summary,source_url:r.source_url,proof:r.proof,
+     amount_usd:r.amount_usd,amount_basis:r.amount_basis,
+     caveat:r.caveat
+   })));
+   const body=JSON.stringify({schema_version:1,scope:'government_historical_source_attribution_not_operational_or_financial_audit',
+    exported_utc:new Date().toISOString(),original_sources:records},null,2);
+   const u=URL.createObjectURL(new Blob([body],{type:'application/json'}));
+   const a=el('a');a.href=u;a.download='katoptron-original-government-source-index.json';
+   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);
+ });
  $('filter').addEventListener('input',render);$('state').addEventListener('change',render);$('topic').addEventListener('change',render);
  render();
  const key=new URL(location.href).searchParams.get('agency');
