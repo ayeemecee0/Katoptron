@@ -185,13 +185,46 @@ async function start(win,U){
  }catch(err){msg(err)}});
  $('workspaceSelect').addEventListener('change',()=>chooseWorkspace().catch(msg));
  $('caseSelect').addEventListener('change',()=>chooseCase().catch(msg));
+ function chosenTemplate(){
+  const role=$('templateRole').value;
+  if(!role)return null;
+  if(!win.KatoptronResearchTemplates)throw Error('Research templates unavailable');
+  return win.KatoptronResearchTemplates.draft(role,$('agencyKey').value,$('noteSource').value);
+ }
+ $('templatePreview').addEventListener('click',()=>{
+  try{
+   const d=chosenTemplate();
+   if(!d){$('templateStatus').textContent='Blank investigation selected.';return;}
+   $('caseTitle').value=d.title.slice(0,180);
+   $('requestSubject').value=d.subject;
+   $('requestBody').value=d.body;
+   $('noteText').value=d.questions.map((x,i)=>(i+1)+'. '+x).join('\\n');
+   $('templateStatus').textContent=d.label+' workflow prepared. Creating a case will save its editable records-request draft and source-checklist note.';
+  }catch(e){msg(e)}
+ });
  $('createCase').addEventListener('submit',async e=>{e.preventDefault();try{
   if(!writable())throw Error('Editor access required');
   const key=$('agencyKey').value.trim();
   if(key.length<3||key.length>160)throw Error('Enter an exact agency label/key');
+  const template=chosenTemplate();
+  const caseTitle=$('caseTitle').value.trim();
+  const noteSource=U.sourceUrl($('noteSource').value.trim());
   const record=unwrap(await sb.from('research_cases').insert({workspace_id:selectedW.id,created_by:user.id,
-   title:$('caseTitle').value.trim(),agency_key:key}).select('id').single());
-  await chooseWorkspace();$('caseSelect').value=record.id;await chooseCase();$('caseTitle').value='';status('Investigation created.');
+   title:caseTitle,agency_key:key}).select('id').single());
+  let generated=false;
+  if(template){
+   try{
+    unwrap(await sb.from('research_case_requests').insert({case_id:record.id,created_by:user.id,
+      subject:$('requestSubject').value.trim()||template.subject,
+      body:$('requestBody').value||template.body,recipient:'',status:'draft'}));
+    unwrap(await sb.from('research_case_notes').insert({case_id:record.id,author_id:user.id,
+      note:('Research workflow: '+template.label+'\\n'+template.questions.map((q,i)=>(i+1)+'. '+q).join('\\n')).slice(0,5000),
+      source_url:noteSource}));
+    generated=true;
+   }catch(e){status('Case created but template checklist or draft requires review: '+e.message)}
+  }
+  await chooseWorkspace();$('caseSelect').value=record.id;await chooseCase();$('caseTitle').value='';
+  if(!template||generated)status(generated?'Case, editable request and research checklist saved. No public-records request was sent.':'Investigation created.');
  }catch(err){msg(err)}});
  $('saveStage').addEventListener('click',async()=>{try{
   if(!writable())throw Error('Editor access required');
