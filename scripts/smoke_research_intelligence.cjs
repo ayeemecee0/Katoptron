@@ -29,7 +29,7 @@ async function run(){
   if(!/Frankfort/.test(await page.locator('#heading').innerText()))throw Error('New public source dossier failed');
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js',
    async route=>route.fulfill({status:200,contentType:'application/javascript',
-    body:'window.supabase={createClient:()=>({auth:{getUser:async()=>({data:{user:null},error:{name:'AuthSessionMissingError',message:'No session'}})}})};'}));
+    body:'window.supabase={createClient:()=>({auth:{getUser:async()=>({data:{user:null},error:{name:"AuthSessionMissingError",message:"No session"}})}})};'}));
   await go('research-workspace.html');
   await page.locator('#signin:not([hidden])').waitFor({timeout:10000});
   if(!(await page.locator('#workspaceApp').isHidden()))throw Error('Private research workspace exposed before authentication');
