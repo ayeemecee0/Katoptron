@@ -302,6 +302,29 @@
         "Has the City Clerk posted a finalized adopted resolution and certified voting record?",
         "Which specific audit, access and sharing safeguards have been implemented rather than promised?"
       ]
+    },
+    {
+      "id": "sacramento-ca-district-attorney-alpr-access-policy-2026",
+      "agency": "Sacramento County District Attorney's Office",
+      "locality_key": "sacramento county|CA",
+      "state": "CA",
+      "source_date": "2026-01-09",
+      "kind": "published_policy",
+      "status": "published_da_data_access_policy_not_flock_equipment",
+      "title": "Sacramento District Attorney publishes ALPR database-access directive",
+      "summary": "The Sacramento County District Attorney's publicly hosted ALPR data-access directive states that its office does not employ or deploy ALPR readers, but may access ALPR data collected by other entities. It requires official law-enforcement purposes, case identifiers for queries, agency-manager authorization and periodic audits. The website's January 9, 2026 timestamp is a page timestamp, not independently verified policy-effective date, proof of Flock data access, or an audit of actual searches.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.sacda.org/policies/alpr/",
+      "provider": "Sacramento County District Attorney's Office",
+      "watch_category": "historical_research_only",
+      "source_type": "government_publisher_first_party_policy_page",
+      "proof": "County District Attorney policy webpage, January 9 2026 page timestamp; section III(A-B) no agency-deployed equipment and authorized access, section IV(B,C) authorization and audits",
+      "flock_specific": false,
+      "open_questions": [
+        "Which provider databases does the District Attorney's Office actually have access to, and during what periods?",
+        "What is the formal adoption or last-amendment date of the published directive, and are periodic audit reports publicly available?"
+      ]
     }
   ]
 }
