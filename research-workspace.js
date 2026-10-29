@@ -123,7 +123,15 @@ async function start(win,U){
    const dates=['sent_on','response_due_on','response_received_on'].map(k=>{
     const [label,x]=field(k.replaceAll('_',' '),req[k]||'','date');return [k,label,x];
    });
-   const content=[subject,recipient,el('label','Request body'),body,el('label','Status'),statusSel,...dates.map(x=>x[1])];
+   const due=el('small');
+   if(req.response_due_on&& !['received','closed'].includes(req.status)){
+    const end=new Date(req.response_due_on+'T00:00:00Z');
+    const today=new Date().toISOString().slice(0,10);
+    const distance=Math.round((end.getTime()-Date.parse(today+'T00:00:00Z'))/86400000);
+    due.textContent=distance<0?'User-entered follow-up date overdue by '+Math.abs(distance)+' day(s).':
+      'User-entered follow-up in '+distance+' day(s). No statutory deadline inferred.';
+   }
+   const content=[due,subject,recipient,el('label','Request body'),body,el('label','Status'),statusSel,...dates.map(x=>x[1])];
    if(writable())content.push(button('Save request and dates',async()=>{
     unwrap(await sb.from('research_case_requests').update({recipient:rinput.value,subject:sinput.value,body:body.value,status:statusSel.value,
       sent_on:dates[0][2].value||null,response_due_on:dates[1][2].value||null,response_received_on:dates[2][2].value||null,
@@ -145,6 +153,14 @@ async function start(win,U){
     fileDownload(f.filename,blob);
     status('Private file downloaded to your device.');
    }));
+   if(writable()&&(f.uploaded_by===user.id||selectedW.owner_id===user.id)){
+    box.append(button('Delete attachment',async()=>{
+      if(!win.confirm('Permanently remove this stored attachment?'))return;
+      unwrap(await sb.storage.from('research-case-files').remove([f.storage_path]));
+      unwrap(await sb.from('research_case_files').delete().eq('id',f.id));
+      await chooseCase();status('Private response attachment deleted.');
+    }));
+   }
    $('files').append(box);
   }
   if(!detail.files.length)$('files').append(el('p','No government response files uploaded.'));
