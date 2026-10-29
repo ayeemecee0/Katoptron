@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const D=require('../government-source-docket.js');
+const E=require('../agency-intelligence-engine.js');
+const rows=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
+const docket=D.build(rows),data=E.build(docket);
+assert.equal(data.total_original_documents,docket.rows.length);
+assert.equal(data.states.length,14);
+assert.equal(data.localities.length,32);
+assert.ok(data.agency_count>=30);
+for(const a of data.agencies){
+ assert.equal(a.historical_only,true);
+ assert.ok(a.trace.length);
+ assert.ok(a.trace.every(t=>t.source_url.startsWith('https://')&&t.proof&&t.status&&t.date_precision));
+ assert.equal(a.research_gap_count,a.trace.reduce((n,r)=>n+rows.sources.find(s=>s.id===r.record_id).open_questions.length,0));
+ assert.ok(a.amounts.every(x=>x.limitation.includes('not verified payment')));
+ assert.equal(a.documents,a.trace.length);
+}
+const sheriff=data.byRecord('sacramento-ca-ceqa-flock-noe-2025');
+assert.equal(sheriff.agency,"Sacramento County Sheriff's Office");
+assert.equal(sheriff.trace.length,2);
+assert.ok(!sheriff.trace.some(x=>x.record_id==='sacramento-ca-district-attorney-alpr-access-policy-2026'));
+assert.equal(sheriff.spending_status,'actual_spending_unknown');
+const cleveland=data.byRecord('cleveland-oh-ordinance-683-2026');
+assert.ok(cleveland);
+assert.equal(cleveland.has_signed_document_announcement,false);
+assert.ok(E.researchActions(cleveland).length);
+const tampered={...docket,rows:[{...docket.rows[0],watch_category:'government_decision'},...docket.rows.slice(1)]};
+assert.throws(()=>E.build(tampered),/Unreviewed/);
+assert.throws(()=>E.safeDate('2026-99-80'));
+assert.match(fs.readFileSync(path.join(__dirname,'../agency-intelligence-hub.html'),'utf8'),/agency-intelligence-engine\.js/);
+console.log('AGENCY_INTELLIGENCE_ENGINE_PASS: exact authority, sourced timeline, source-amount limits, source gaps');
