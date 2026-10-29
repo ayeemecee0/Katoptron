@@ -21,7 +21,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_hosted_primary",
       "proof": "Notice of Exemption; posted May 29, 2025",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Was the installation actually completed and activated?",
+        "Where are the currently applicable Sheriff's Flock access and retention policies?"
+      ]
     },
     {
       "id": "sacramento-ca-sheriff-alpr-general-order-2016",
@@ -40,7 +44,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_hosted_primary_pdf",
       "proof": "Six-page agency General Order, stamped 10/12 (Rev 4/16), pages 1 and 5 visually reviewed",
-      "flock_specific": false
+      "flock_specific": false,
+      "open_questions": [
+        "Does the Sheriff have a current Flock-specific ALPR policy?",
+        "Did the historical LEARN sharing and two-year retention rules change?"
+      ]
     },
     {
       "id": "cleveland-oh-ordinance-683-2026",
@@ -59,7 +67,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Ordinance 683-2026; official action status Passed; adoption 2026-07-15",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Was a signed license or maintenance agreement later executed?",
+        "What amount was actually spent and what were its sharing terms?"
+      ]
     },
     {
       "id": "el-paso-tx-item-26-1092",
@@ -78,7 +90,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Item 26-1092, October 13 history row Approve / Pass; status header Agenda Ready",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Does the signed resolution or final City Council minutes reconcile the status-header discrepancy?",
+        "Did any existing vendor agreement actually terminate?"
+      ]
     },
     {
       "id": "saint-paul-mn-res-26-1421",
@@ -97,7 +113,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "RES 26-1421 Council Adopted / Pass; unsigned-by-mayor status",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Did the city administration terminate any agreements after the resolution?",
+        "Was the requested 60-day implementation report delivered?"
+      ]
     },
     {
       "id": "allentown-pa-ipvm-15-8653",
@@ -116,7 +136,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Item 15-8653, resolution 31307, Passed 2026-09-16",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Did the independent review produce a publicly released assessment?",
+        "What agreements or camera systems were later approved, if any?"
+      ]
     },
     {
       "id": "carrollton-tx-item-7749",
@@ -135,7 +159,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Item 7749, official Legistar status Passed, agenda/final action 2026-09-15",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Was a final agreement signed and what was paid?",
+        "Which of the described IP cameras are actually ALPR readers?"
+      ]
     },
     {
       "id": "rockford-il-res-26-00160",
@@ -154,7 +182,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Item 26-00160, Council Adopted / Pass 2026-03-02",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Was the approved vendor contract signed and what equipment was delivered?",
+        "Were any of the three one-year options exercised?"
+      ]
     },
     {
       "id": "monterey-ca-agenda-a-26-368",
@@ -173,7 +205,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Item A 26-368, Scheduled PM, no final action",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Did the Board ultimately approve or execute the proposed agreement?",
+        "How does the 63-camera proposal reconcile with the separately proposed 103-camera item?"
+      ]
     },
     {
       "id": "manteca-ca-agenda-26-399",
@@ -192,7 +228,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Item 26-399, agenda August 18, no adopted action in header",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Did City Council adopt the amendment?",
+        "Were the Condor devices installed, and are any of them ALPR readers?"
+      ]
     },
     {
       "id": "south-san-francisco-ca-26-2370",
@@ -211,7 +251,11 @@
       "watch_category": "historical_research_only",
       "source_type": "government_legistar_primary",
       "proof": "Staff report 26-2370, Agenda Ready; dated 2026-10-28",
-      "flock_specific": true
+      "flock_specific": true,
+      "open_questions": [
+        "Did Council authorize a vendor RFP?",
+        "What vendor, if any, did a later evaluation select?"
+      ]
     }
   ]
 }
