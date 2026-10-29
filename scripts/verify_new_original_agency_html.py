@@ -96,7 +96,10 @@ def run(doc,fetcher=fetch):
       "current_access_permissions","signed_agreement_not_in_original"],
   "records":result}
 def main():
- ap=argparse.ArgumentParser();ap.add_argument("--out",type=Path,default=OUT);args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument("--out",type=Path,default=OUT)
+ ap.add_argument("--min-verified",type=int,default=0)
+ ap.add_argument("--min-verified-states",type=int,default=0)
+ args=ap.parse_args()
  result=run(json.loads(CATALOG.read_text()))
  out=args.out.resolve()
  if not out.is_relative_to(ROOT):raise ValueError("Verification output outside repo")
@@ -107,4 +110,7 @@ def main():
   "checked":result["new_agencies_checked"],"states":result["states"]}))
  for row in result["records"]:
   print("GOV_ORIGINAL_CHECK",json.dumps({k:row[k] for k in ("id","status","sha256")}))
+ verified_states={r["state"] for r in result["records"] if r["source_statement_verified"]}
+ if result["verified_original_html_statements"]<args.min_verified or len(verified_states)<args.min_verified_states:
+  raise RuntimeError("Insufficient independently fingerprinted original government issuers/states; held records are not verified")
 if __name__=="__main__":main()
