@@ -63,6 +63,23 @@ async function start(win,U){
   select.value=workspaces.some(w=>w.id===old)?old:workspaces[0]?.id||'';
   await chooseWorkspace();
  }
+ async function refreshMembers(){
+  $('members').replaceChildren();
+  if(!selectedW||selectedW.owner_id!==user.id)return;
+  const members=unwrap(await sb.rpc('research_list_collaborators',{p_workspace:selectedW.id}));
+  if(!members.length){$('members').append(el('small','No collaborators have accepted an invite.'));return;}
+  $('members').append(el('h3','Active collaborators'));
+  for(const m of members){
+   const item=el('div');item.className='row';
+   item.append(el('span',m.member_role+' · member '+m.member_id.slice(0,8)+'…'));
+   item.append(button('Revoke access',async()=>{
+    if(!win.confirm('Revoke this collaborator from this workspace?'))return;
+    unwrap(await sb.rpc('research_remove_collaborator',{p_workspace:selectedW.id,p_user:m.member_id}));
+    await refreshMembers();status('Collaboration access revoked.');
+   }));
+   $('members').append(item);
+  }
+ }
  async function chooseWorkspace(){
   selectedW=workspaces.find(w=>w.id===$('workspaceSelect').value)||null;
   selectedC=null;cases=[];$('caseDetail').hidden=true;$('inviteResult').textContent='';
@@ -71,6 +88,7 @@ async function start(win,U){
   if(!selectedW){$('caseSelect').replaceChildren(new Option('Create a workspace first',''));return;}
   membershipRole=selectedW.owner_id===user.id?'owner':(unwrap(await sb.from('research_workspace_members').select('role').eq('workspace_id',selectedW.id).eq('user_id',user.id).maybeSingle())?.role||'viewer');
   $('createCase').hidden=!writable();
+  await refreshMembers();
   cases=unwrap(await sb.from('research_cases').select('id,title,agency_key,status,created_at,workspace_id').eq('workspace_id',selectedW.id).order('created_at',{ascending:false}).limit(200));
   const select=$('caseSelect'),old=select.value;select.replaceChildren(new Option('Choose a case',''));
   for(const c of cases)select.append(new Option(c.title+' · '+c.status,c.id));
