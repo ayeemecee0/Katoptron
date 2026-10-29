@@ -87,11 +87,9 @@ create policy research_workspace_delete on public.research_workspaces for delete
  using(owner_id=(select auth.uid()));
 
 create policy research_member_read on public.research_workspace_members for select to authenticated
- using(user_id=(select auth.uid()) or exists
- (select 1 from public.research_workspaces w where w.id=workspace_id and w.owner_id=(select auth.uid())));
+ using(user_id=(select auth.uid()));
 create policy research_member_delete on public.research_workspace_members for delete to authenticated
- using(user_id=(select auth.uid()) or exists
- (select 1 from public.research_workspaces w where w.id=workspace_id and w.owner_id=(select auth.uid())));
+ using(user_id=(select auth.uid()));
 -- No direct member INSERT/UPDATE. Invite codes only accepted through restricted RPC.
 
 create policy research_case_read on public.research_cases for select to authenticated
