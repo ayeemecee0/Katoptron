@@ -11,6 +11,9 @@ on:
       - 'agency-investigation.html'
       - 'agency-audit.html'
       - 'scripts/classify_original_government_leads.py'
+      - 'scripts/extract_original_government_fact_candidates.py'
+      - 'scripts/test_extract_original_government_fact_candidates.py'
+      - 'supabase/migrations/149_private_original_fact_candidates.sql'
       - 'scripts/test_classify_original_government_leads.py'
       - 'scripts/verify_new_original_agency_html.py'
       - 'scripts/test_verify_new_original_agency_html.py'
@@ -46,6 +49,8 @@ jobs:
         run: python -m unittest discover -s scripts -p 'test_verify_new_original_agency_html.py' -v
       - name: Verify private government link review dispositions
         run: python -m unittest discover -s scripts -p 'test_classify_original_government_leads.py' -v
+      - name: Verify safe original PDF structured candidate extraction without vehicle data
+        run: python -m unittest discover -s scripts -p 'test_extract_original_government_fact_candidates.py' -v
       - name: Verify at-most-once Watch transitions and opt-in boundaries
         run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
       - name: Verify sourced docket and no unsupported operations
