@@ -12,6 +12,10 @@
   const ids=new Set(),rows=[],agencies=new Map();
   for(const s of input.sources){
    if(!s||typeof s.id!=='string'||!/^([a-z0-9]+-){2,}[a-z0-9-]+$/.test(s.id)||ids.has(s.id)||!validUrl(s.source_url)||!STATUSES.has(s.status)||!KINDS.has(s.kind)||!/^20[012][0-9]-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12][0-9]|3[01]))?$/.test(s.source_date)||!/^[-a-z ]+\|[A-Z]{2}$/.test(s.locality_key)||!s.locality_key.endsWith('|'+s.state)||typeof s.agency!=='string'||s.agency.length<9||typeof s.summary!=='string'||s.summary.length<90||typeof s.proof!=='string'||s.proof.length<25||s.watch_category!=='historical_research_only'||typeof s.flock_specific!=='boolean'||(s.amount_usd!==null&&(!Number.isFinite(s.amount_usd)||s.amount_usd<=0||!s.amount_basis))){throw Error('Unverified government record held');}
+   if(s.id==='sacramento-ca-sheriff-alpr-general-order-2016'&&
+      (s.source_date!=='2016-04'||s.flock_specific!==false||
+       s.status!=='historical_policy_not_verified_current'))
+    throw Error('Historical sheriff policy date or equipment identity drift');
    if((/proposal|agenda_ready|not_executed|research_contract|unsigned|call_for_termination|historical/i.test(s.status))&&/executed agreement confirmed|camera installed and operating/i.test(s.summary))throw Error('Unverified adoption assertion');
    ids.add(s.id);rows.push(Object.freeze({...s}));
    const group=agencies.get(s.locality_key)||[];
