@@ -25,6 +25,13 @@ for(const x of ['not purchasable','No billing','Professional research pilot','un
 const pilot=fs.readFileSync(path.join(__dirname,'../research-pilot.js'),'utf8');
 assert.match(pilot,/research_pilot_interest/);
 assert.match(pilot,/\.delete\(\)/);
+assert.match(pilot,/research_pilot_task_measurements/);
+assert.match(pilot,/measurementConsent/);
+assert.match(pricing,/id="measurementForm"/);
+const measurementSql=fs.readFileSync(path.join(__dirname,'../supabase/migrations/161_research_pilot_task_measurements.sql'),'utf8');
+assert.match(measurementSql,/enable row level security/);
+assert.match(measurementSql,/auth\.uid\(\)/);
+assert.doesNotMatch(measurementSql,/grant .* to anon/);
 const sql=fs.readFileSync(path.join(__dirname,'../supabase/migrations/159_prevent_research_orphan_storage.sql'),'utf8');
 assert.match(sql,/storage\.objects/);
 assert.match(sql,/before delete on public\.research_cases/);
