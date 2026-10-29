@@ -7,6 +7,10 @@ on:
       - 'agency-original-loader.js'
       - 'agency-change-tracker.js'
       - 'agency-xray.html'
+      - 'government-evidence.html'
+      - 'government-source-docket.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'scripts/test_government_source_docket.cjs'
       - 'agency-compare.html'
       - 'agency-investigation.html'
       - 'surveillance-changes.html'
@@ -40,6 +44,9 @@ jobs:
           node --check agency-original-loader.js
           node --check agency-change-tracker.js
           node scripts/test_investigations.cjs
+          node --check government-source-docket.js
+          node scripts/test_government_source_docket.cjs
+          python3 -m unittest discover -s scripts -p 'test_acquire_preverified_legistar_agendas.py' -v
       - name: Verify Watch email account UI and locality controls
         run: |
           node --check watch-email.js
