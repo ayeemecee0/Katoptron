@@ -1,0 +1,40 @@
+name: Extract private original-government PDF fact candidates
+on:
+  schedule:
+    - cron: '14 16 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/extract_original_government_fact_candidates.py'
+      - 'scripts/test_extract_original_government_fact_candidates.py'
+      - 'supabase/migrations/149_private_original_fact_candidates.sql'
+      - '.github/workflows/extract_original_government_fact_candidates.yml'
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-private-government-fact-extraction
+  cancel-in-progress: false
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pinned PDF reader
+        run: pip install -r scripts/requirements-original-pdf-triage.txt
+      - name: Reject unverified claims and private vehicle data
+        run: python -m unittest discover -s scripts -p 'test_extract_original_government_fact_candidates.py' -v
+      - name: Require private service credential
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Extract bounded, unverified candidates only from original pinned PDF bytes
+        run: python scripts/extract_original_government_fact_candidates.py
