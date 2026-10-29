@@ -336,6 +336,30 @@
         "Which provider databases does the District Attorney's Office actually have access to, and during what periods?",
         "What is the formal adoption or last-amendment date of the published directive, and are periodic audit reports publicly available?"
       ]
+    },
+    {
+      "id": "manteca-ca-flock-program-presentation-26-448",
+      "agency": "Manteca Police Department",
+      "locality_key": "manteca|CA",
+      "state": "CA",
+      "source_date": "2026-09-01",
+      "kind": "published_policy",
+      "status": "police_department_published_flock_program_statement_not_independent_audit",
+      "title": "Manteca police report on Flock ALPR operations and monthly audit safeguards",
+      "summary": "Official Manteca City Council staff memo and presentation for September 1, 2026 describe the Police Department's July 2024 adoption of Flock ALPR, preceding use of Vigilant readers, asserted monthly search audits and mandatory case-purpose records. These are department-published descriptions of its policy and capabilities, not an independent audit of actual searches or verification of device coordinates. The council meeting's public Legistar item still has no final-action field, so the presentation itself is not proof of a new policy enactment.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://manteca-ca.legistar.com/LegislationDetail.aspx?GUID=8108E08A-62DD-47AA-ABEC-54081FE762C5&ID=8194570",
+      "provider": "Manteca City Council",
+      "watch_category": "historical_research_only",
+      "source_type": "government_legistar_primary",
+      "file_number": "26-448",
+      "proof": "September 1 2026 Manteca City Council File # 26-448, staff agenda narrative and attached ALPR presentation; agenda ready without recorded final action",
+      "flock_specific": true,
+      "open_questions": [
+        "Does an independent audit corroborate the police department's claimed monthly ALPR query reviews?",
+        "What current camera inventory and Flock sharing settings have been documented by the city, rather than merely described in an agenda memo?"
+      ]
     }
   ]
 }
