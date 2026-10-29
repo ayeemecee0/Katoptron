@@ -41,7 +41,9 @@ async function start(win,U){
   const url=URL.createObjectURL(blob);const a=el('a');a.href=url;a.download=name;win.document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
  }
  async function auth(){
-  const result=unwrap(await sb.auth.getUser());user=result.user;
+  const session=await sb.auth.getUser();
+  if(session.error && session.error.name!=='AuthSessionMissingError')throw Error(session.error.message);
+  user=session.data?.user||null;
   if(!user){$('signin').hidden=false;$('workspaceApp').hidden=true;status('Sign in to access private investigations.');return;}
   if(!user.email_confirmed_at){$('signin').hidden=false;$('workspaceApp').hidden=true;status('Email confirmation required before using the research workspace.');return;}
   $('signin').hidden=true;$('workspaceApp').hidden=false;$('account').textContent=user.email||'Confirmed account';
