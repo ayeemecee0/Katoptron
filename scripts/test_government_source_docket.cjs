@@ -6,7 +6,7 @@ const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-orig
 const result=V.build(raw);
 assert.equal(result.rows.length,53);
 assert.equal(result.states.length,19);
-assert.equal(result.issuers.length,46);
+assert.equal(result.issuers.length,47);
 assert.equal(result.agencies.length,45);
 assert.equal(result.byLocality('sacramento county|CA').length,3);
 for(const id of ['new-hanover-nc-sheriff-lpr-ptz-bid-2024','louisville-ky-metro-alpr-camera-disclosure-ordinance-denied-2026','los-angeles-ca-flock-proposed-restrictions-motion-2026']){
