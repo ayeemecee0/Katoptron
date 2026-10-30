@@ -27,6 +27,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   const urls=await page.locator('#leads a').evaluateAll(all=>all.map(x=>x.href));
   assert(urls.every(x=>x.startsWith('https://')));
   assert.match(await page.locator('#leads').textContent(),/unresolved|Unresolved/i);
+  const review=await page.goto(new URL('nationwide-document-review.html',base).href,{waitUntil:'domcontentloaded',timeout:20000});
+  assert.equal(review.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('15 changed-source candidates triaged'),null,{timeout:14000});
+  assert.equal(await page.locator('#changed article').count(),15);
+  assert.equal(await page.locator('#held article').count(),13);
+  assert.equal(await page.locator('#depth article').count(),8);
+  assert.match(await page.locator('#status').textContent(),/No original-document wording change automatically approved/);
   assert.deepEqual(errors,[]);
   console.log('NATIONWIDE_SOURCE_MONITOR_BROWSER_PASS: 51 rows, 59 curated URLs, archived vs unobserved sources, no false statewide coverage');
  }catch(e){
