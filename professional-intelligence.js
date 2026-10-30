@@ -69,6 +69,100 @@ function leadFromWatch(events){
  }
  return out.sort((a,b)=>Date.parse(b.observed_at)-Date.parse(a.observed_at));
 }
+
+/* Original-government national starters are historically source-attributed.
+ * They are NOT newly observed Watch events, independent page-diffs or evidence
+ * of operational devices. The issuer is preserved as the scope of each lead. */
+function leadFromNational(sets){
+ if(!Array.isArray(sets)||sets.length!==2)throw Error('Two reviewed national source registries required');
+ const ids=new Set(),out=[];
+ for(const batch of sets){
+  if(!batch||batch.schema_version!==1||!Array.isArray(batch.leads)||batch.leads.length<1||batch.leads.length>50)
+   throw Error('Reviewed national source registry unavailable');
+  for(const r of batch.leads){
+   const host=String(r.source_url||'').match(/^https:\/\/([^/]+)/)?.[1]||'';
+   if(!r.id||ids.has(r.id)||!validUrl(r.source_url)||
+    !(host.endsWith('.gov')||host==='www.naperville.il.us')||
+    !/^[A-Z]{2}$/.test(r.state||'')||!String(r.source_issuer_review_status||'').startsWith('source_attributed_')||
+    r.camera_coordinates_republished!==false||r.policy_enactment_inferred!==false||
+    !Array.isArray(r.what_is_unknown)||r.what_is_unknown.length<2||
+    !r.title||!r.published_finding||!r.verified_boundary||!r.source_date||
+    r.independent_original_document_version_diff_verified===true||r.changed_source_hash_proven===true){
+    throw Error('National source lead not sufficiently qualified');
+   }
+   ids.add(r.id);
+   const issuer=String(r.agency||r.publisher||'Agency not independently verified');
+   const key=issuer.toLowerCase().replace(/[^a-z0-9 -]/g,'').replace(/\s+/g,' ').trim().slice(0,115)+'|'+r.state;
+   if(!/^[a-z0-9][a-z0-9 -]{1,120}\|[A-Z]{2}$/.test(key))throw Error('Invalid agency-scoped national research key');
+   const topicList=topics({kind:r.document_type,title:r.title,summary:r.published_finding,status:r.source_issuer_review_status});
+   out.push(Object.freeze({id:'national:'+r.id,locality_key:key,agency:issuer,title:r.title,
+    summary:r.published_finding+' Evidence limit: '+r.verified_boundary,
+    source_date:r.source_date,observed_at:null,status:r.source_issuer_review_status,kind:'source_attributed_historical',
+    original_url:r.source_url,source_ids:[r.id],originals:[{title:r.title,url:r.source_url,
+      date:r.source_date,status:r.source_issuer_review_status,proof:r.verified_boundary}],
+    topics:topicList,why:why(topicList[0]),unknown:r.what_is_unknown.slice(0,6),
+    steps:['Check the original government publication and its precise action/status.',
+      'Resolve: '+r.further_verification,'Do not infer device operation or adopted policy from publication alone.'],
+    label:'Source-attributed national research starter',fresh:false,
+    verified_scope:'original_government_publisher_claim_not_independent_page_diff',amount:null,amount_basis:null}));
+  }
+ }
+ return out;
+}
+/* Personalization is editorial topical relevance, never a probability of
+ * misconduct, newsworthiness, verified truth or source completeness. */
+function rankForResearch(leads,topic='all',question='',jurisdiction=''){
+ if(!Array.isArray(leads)||typeof question!=='string'||question.length>160||
+    !(['all',...TOPICS].includes(topic)))throw Error('Invalid research ranking inputs');
+ const terms=[...new Set((question.toLowerCase().match(/[a-z0-9]{3,}/g)||[]).slice(0,12))];
+ return leads.filter(l=>l&&validUrl(l.original_url)&&(!jurisdiction||l.locality_key===jurisdiction)&&
+   (topic==='all'||l.topics.includes(topic))).map(l=>{
+  const text=[l.title,l.summary,l.status,l.agency,...l.unknown].join(' ').toLowerCase();
+  const overlap=terms.filter(t=>text.includes(t)).length;
+  const match=topic==='all'?0:l.topics.includes(topic)?25:0;
+  const score=match+overlap*8+(l.observed_at?2:0)+Math.min(l.unknown.length,4);
+  return {lead:l,score,matched_terms:overlap,why_ranked:overlap+' research question term(s) match original-source wording; '+(topic==='all'?'any topic':topic+' topic')};
+ }).sort((a,b)=>b.score-a.score||String(b.lead.observed_at||b.lead.source_date).localeCompare(String(a.lead.observed_at||a.lead.source_date))||a.lead.id.localeCompare(b.lead.id));
+}
+function digest(leads,prefs,now=new Date().toISOString()){
+ if(!Number.isFinite(Date.parse(now)))throw Error('Valid digest review time required');
+ const feed=personalize(leads,prefs),cutoff=Date.parse(now)-7*86400000;
+ const recent=feed.newItems.filter(x=>x.observed_at&&Date.parse(x.observed_at)>=cutoff&&Date.parse(x.observed_at)<=Date.parse(now));
+ return Object.freeze({newReviewed:recent,historical:feed.historical.slice(0,8),previouslyReviewed:feed.reviewed.slice(0,8),
+   summary:recent.length?'New independently published, source-qualified Watch events since follow baseline':'No qualifying new Watch events in the last seven days',
+   last_seven_days:true,automatic_email_enabled:false});
+}
+const ACTIONS=Object.freeze({
+ contract:{role:'Procurement and finance records custodian (confirm actual public agency)',
+   record:'Signed agreements, amendments, itemized invoices, payment registers and procurement award documents, if held'},
+ policy:{role:'Department policy records custodian (confirm actual public agency)',
+   record:'Effective and prior policy versions, dated approval orders and implementation notices, if held'},
+ oversight:{role:'Clerk or oversight records custodian (confirm actual public agency)',
+   record:'Final minutes, official vote results, audit responses and oversight correspondence, if held'},
+ sharing:{role:'Agency data-governance records custodian (confirm actual public agency)',
+   record:'Published interagency sharing agreements, access policy versions and aggregate audit procedures, if held'},
+ procurement:{role:'Purchasing or finance records custodian (confirm actual public agency)',
+   record:'Solicitations, bids, scoring memoranda, award notices and signed purchase orders, if held'}
+});
+function acquisitionBacklog(leads,existing,limit=20){
+ if(!Number.isInteger(limit)||limit<1||limit>100)throw Error('Bounded evidence gap review required');
+ const tasks=[],seen=new Set();
+ for(const l of leads){
+  if(!l||!validUrl(l.original_url)||!Array.isArray(l.unknown))continue;
+  for(let i=0;i<l.unknown.length;i++){
+   const q=l.unknown[i];
+   if(!q||q.length<15||seen.has(l.id+':'+i))continue;
+   seen.add(l.id+':'+i);
+   tasks.push({task_id:l.id+':'+i,locality_key:l.locality_key,agency:l.agency,
+    question:q,source_url:l.original_url,source_date:l.source_date,
+    draft:acquisition({...l,unknown:[q]},existing),
+    status:'missing_evidence_not_claim_of_wrongdoing'});
+   if(tasks.length>=limit)return tasks;
+  }
+ }
+ return tasks;
+}
+
 function personalize(leads,prefs){
  if(!Array.isArray(leads))throw Error('Source leads required');
  if(!Array.isArray(prefs)||!prefs.length)return {newItems:[],historical:leads.filter(x=>!x.observed_at).slice(0,15),reviewed:leads.filter(x=>x.observed_at).slice(0,15)};
@@ -133,20 +227,33 @@ function crossAgency(docket,topic){
   caveat:'Different jurisdictions or technologies are not directly comparable; no contradiction inferred.'}));
 }
 function acquisition(lead,existing){
- if(!lead||!validUrl(lead.original_url)||!Array.isArray(lead.unknown))throw Error('No sourced lead to request records for');
- const related=(existing||[]).filter(r=>r.locality_key===lead.locality_key&&validUrl(r.source_url)).slice(0,8);
+ if(!lead||!validUrl(lead.original_url)||!Array.isArray(lead.unknown)||!lead.locality_key)
+  throw Error('No sourced lead to request records for');
+ const related=(existing||[]).filter(r=>r.locality_key===lead.locality_key&&
+  validUrl(r.source_url)&&r.source_url!==lead.original_url).slice(0,8);
  const questions=lead.unknown.slice(0,4);
+ const selected=[...new Set((lead.topics||[]).filter(t=>ACTIONS[t]))];
+ if(!selected.length)selected.push('oversight');
+ const records=selected.map(t=>ACTIONS[t].record);
  const custodian=lead.agency||lead.locality_key;
- const content=['To: Public Records Officer, '+custodian,'Subject: Existing government records about '+lead.title,'',
-  'Please provide reasonably identifiable, publicly releasable existing government records relating to:',
+ const content=[
+  'UNSENT DRAFT — verify government custodian and responsive date range before submission',
+  'To: Public Records Officer for '+custodian+' (recipient and authority unverified)',
+  'Subject: Existing government records relating to '+lead.title,'',
+  'I request existing, non-exempt and reasonably identifiable public records, IF HELD, for the source-dated matter below:',
+  'Source: '+lead.original_url,'Government source date: '+lead.source_date,
+  'Documentary status: '+lead.status,
+  '','Specific unanswered questions (for record identification only, not requests for new analysis):',
   ...questions.map((q,i)=>(i+1)+'. '+q),
-  '','Relevant government publication: '+lead.original_url,
-  'Reference date: '+lead.source_date,
-  '','Please include signed agreements, publicly releasable amendments, adoption records, agendas, invoices, or official written policies where responsive.',
-  'This request does not seek individual license-plate observations, personal location histories, hotlists, credentials, or confidential law-enforcement query logs.',
-  'Please advise of fees and available narrowing options. No statutory deadline is assumed or submission made by Katoptron.'].join('\n');
- return {custodian_role:'Agency records custodian / city clerk / procurement officer (confirm jurisdiction)',
-  agency:custodian,questions,existing:related,body:content,subject:'Public government records follow-up: '+lead.title,submitted:false};
+  '','Please search for the following categories of existing records to the extent responsive:',
+  ...records.map((q,i)=>(i+1)+'. '+q+'.'),
+  '','This request does not seek individual license-plate observations, personal location histories, hotlists, credentials, or confidential law-enforcement query logs.',
+  'Please advise of fees and available narrowing options. Provide reasonably segregable public portions and identify the legal basis of any withholding.',
+  'This is not a request for the government to create new records. No statutory deadline is assumed or submission made by Katoptron.'
+ ].join('\n');
+ return {custodian_role:selected.map(x=>ACTIONS[x].role).join('; '),
+  agency:custodian,questions,requested_record_types:records,existing:related,body:content,
+  subject:'Public government records follow-up: '+lead.title,submitted:false};
 }
 function assemblePackage(lead,docket){
  if(!lead||!validUrl(lead.original_url)||!docket||!Array.isArray(docket.rows))throw Error('Verified original-government source index required');
@@ -185,5 +292,5 @@ function packageHtml(lead,comparison,request){
   '<h2>Unsent editable records request</h2><p>Suggested custodian: '+esc(request?.custodian_role||'Confirm appropriate records custodian')+'</p><pre>'+esc(request?.body||'')+'</pre>'+
   '<p>Katoptron does not file this request, provide legal advice, or guarantee that an unpublished document exists. This package contains only public-source material, no private case notes.</p></body></html>';
 }
-return Object.freeze({TOPICS,validUrl,topics,leadFromDocket,leadFromWatch,personalize,compare,crossAgency,acquisition,assemblePackage,packageHtml});
+return Object.freeze({TOPICS,validUrl,topics,leadFromDocket,leadFromWatch,leadFromNational,rankForResearch,digest,personalize,compare,crossAgency,acquisition,acquisitionBacklog,assemblePackage,packageHtml});
 });
