@@ -19,7 +19,7 @@ assert(triage.held_originals.every(x=>x.original_evidence_retained===true&&x.rep
 const base=data('data/nationwide-original-government-source-receipts.json').receipts;
 const old=new Map(base.map(x=>[x.source_id,x]));
 for(const r of triage.changed_candidates)assert.equal(r.old_observed_sha256,old.get(r.source_id).sha256_at_observation);
-assert.equal(depth.sources.length,11);
+assert.equal(depth.sources.length,12);
 assert.equal(groups.groups.length,8);
 assert(groups.groups.every(x=>x.independently_identified_originals.length>=2&&!x.comprehensive_agency_records_inventory&&
  !x.documentary_difference_verified&&x.unresolved_gaps.length));
