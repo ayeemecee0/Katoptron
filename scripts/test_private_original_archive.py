@@ -19,7 +19,7 @@ class MockGateway:
 class Archive(unittest.TestCase):
  def fixture(self,root):
   original=b"<html><body>Real original public government policy</body></html>"
-  sha=a.digest(original);sid="test-00001"
+  sha=a.digest(original);sid="archived-original-00001"
   base=root/"baseline";base.mkdir()
   (base/(sid+".html")).write_bytes(original)
   manifest={"schema_version":1,"sources":{sid:{"kind":"html","sha256":sha,"observed_on":"2026-10-30"}},"seen_pairs":{}}
