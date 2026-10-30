@@ -4,6 +4,10 @@ on:
     paths:
       - 'scripts/watch_nationwide_government_originals.py'
       - 'data/nationwide-recovery-government-originals-2026-10-29.json'
+      - 'data/nationwide-targeted-agency-original-depth-2026-10-29.json'
+      - 'data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json'
+      - 'data/nationwide-original-research-leads-expanded-2026-10-29.json'
+      - 'nationwide-document-review.html'
       - 'scripts/nationwide_source_health.py'
       - 'scripts/review_nationwide_source_changes.py'
       - 'data/nationwide-original-document-difference-approvals.json'
@@ -20,6 +24,10 @@ on:
     paths:
       - 'scripts/watch_nationwide_government_originals.py'
       - 'data/nationwide-recovery-government-originals-2026-10-29.json'
+      - 'data/nationwide-targeted-agency-original-depth-2026-10-29.json'
+      - 'data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json'
+      - 'data/nationwide-original-research-leads-expanded-2026-10-29.json'
+      - 'nationwide-document-review.html'
       - 'scripts/nationwide_source_health.py'
       - 'scripts/test_nationwide_source_health.py'
       - 'scripts/test_watch_nationwide_government_originals.py'
@@ -43,7 +51,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install 'pypdf>=5,<7'
-      - name: Validate original source registry, all 70 sources, source change and held-baseline semantics
+      - name: Validate original source registry, all 81 sources, source change and held-baseline semantics
         run: |
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
