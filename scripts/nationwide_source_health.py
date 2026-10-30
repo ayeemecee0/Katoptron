@@ -37,7 +37,8 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
  reviewed=monitor.reviewed_addition_sources()
  alternates=monitor.independent_issuer_alternatives(seeds+legacy+supplemental+depth+reviewed)
  underserved=monitor.underrepresented_government_originals()
- expected={s["id"]:s for s in seeds+legacy+supplemental+depth+reviewed+alternates+underserved}
+ high_value=monitor.original_value_sources()
+ expected={s["id"]:s for s in seeds+legacy+supplemental+depth+reviewed+alternates+underserved+high_value}
  rows=current.get("all_source_receipts")
  if current.get("jurisdictions_total")!=51 or not isinstance(rows,list):raise ValueError("Not complete national retrieval")
  validated(rows,expected)
