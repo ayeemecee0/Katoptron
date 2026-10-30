@@ -18,18 +18,19 @@ const get=async name=>{
  return r.json();
 };
 try{
- const [sources,held,diffs,policy,workflows,alternates]=await Promise.all([
+ const [sources,held,diffs,policy,workflows,alternates,alternateReceipts]=await Promise.all([
   get('editorial-originals-intelligence-batch-2026-10-29.json'),
   get('nationwide-19-held-original-government-source-recovery-2026-10-29.json'),
   get('current-source-version-hash-review-workplan-2026-10-29.json'),
   get('naperville-paired-policy-clause-revisions-2026-10-29.json'),
   get('investigation-original-source-workflow-verification-2026-10-29.json'),
-  get('nationwide-original-government-recovery-alternates-2026-10-29.json')]);
+  get('nationwide-original-government-recovery-alternates-2026-10-29.json'),
+  get('nationwide-alternate-source-retrieval-receipts-2026-10-29.json')]);
  if(sources.schema_version!==1||sources.sources.length!==14||
   held.resolutions.length!==19||diffs.sources.length!==38||
   diffs.approved_substantive_document_version_differences!==0||
   policy.changes.length!==10||policy.count_distinct_document_pairs!==1||
-  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6)
+  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6||alternateReceipts.receipts.length!==6||alternateReceipts.original_held_recovered!==0)
   throw Error('Evidence inventory incomplete or changed without review');
  $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 38 authenticated source-byte pairs · 0 approved prior/new source-version wording differences';
  for(const entry of policy.changes){
@@ -83,10 +84,13 @@ try{
   const d=el($('alternateCards'),'details');
   el(d,'summary',alt.state+' · Original issuer alternative for '+alt.source_id);
   el(d,'p',alt.why_relevant);
+  const receipt=alternateReceipts.receipts.find(r=>r.source_id===alt.id);
+  if(!receipt)throw Error('Missing issuer-alt observation receipt');
+  el(d,'p','Live government-original retrieval: '+(receipt.status.startsWith('original_')?'Accessible, SHA-256 fingerprinted':'Still held: '+receipt.status));
   const box=el(d,'p');src(box,alt.source_url,'Inspect alternate original-government publisher page');
   el(d,'small','Original source remains held and preserved; alternate subject equivalence NOT independently confirmed.');
  }
- $('alternateStatus').textContent=alternates.originals.length+' verified publisher alternate URLs added to observation; no held-original recovery claimed.';
+ $('alternateStatus').textContent=alternateReceipts.alternate_sources_accessible+' of '+alternates.originals.length+' official issuer alternative URLs accessible; original 19 held URLs remain held.';
  for(const item of held.resolutions){
   const d=el($('heldCards'),'details');el(d,'summary',item.state+' · '+item.source_id+' · '+item.monitor_status);
   el(d,'p',item.next_action);el(d,'p','Evidence limit: '+item.evidence_limit);
