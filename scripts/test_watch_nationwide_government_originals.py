@@ -57,6 +57,23 @@ class StateSources(unittest.TestCase):
    for x in links))
   missing=M.inspect(src,fetcher=lambda _:(_ for _ in ()).throw(ValueError("original_redirect")))
   self.assertEqual(missing["unreviewed_same_host_policy_candidates"],[])
+ def test_all_nineteen_historical_cases_are_preserved_and_verdicts_are_verifiable(self):
+  held=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=4)
+  report=M.historical_recovery_receipts(held)
+  self.assertEqual(report["historical_total"],19)
+  self.assertEqual(report["recovered"],0)
+  self.assertEqual(report["remaining"],19)
+  self.assertEqual(len({x["source_id"] for x in report["cases"]}),19)
+  self.assertTrue(all(x["historical_url"].startswith("https://") and not x["historical_original_retrieved"] for x in report["cases"]))
+  # The original source URL remains unchanged, and a fake unrelated government page cannot count.
+  x=next(y for y in held["all_source_receipts"] if y["source_id"]=="reviewed-23-tx")
+  x["status"]="original_government_html_accessible"
+  x["original_sha256"]="a"*64
+  x["retrieved_url"]="https://www.elgintexas.gov/another-government-page"
+  x["verified_same_publisher_redirect"]=True
+  self.assertEqual(M.historical_recovery_receipts(held)["recovered"],0)
+  x["retrieved_url"]="https://www.elgintexas.gov/m/newsflash/Archive/Item/1824?arcId=2451"
+  self.assertEqual(M.historical_recovery_receipts(held)["recovered"],1)
  def test_51_state_outage_cannot_upgrade_link_leads(self):
   result=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=6)
   self.assertEqual(result["unreviewed_same_host_policy_link_candidates"],0)
