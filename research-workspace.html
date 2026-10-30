@@ -89,6 +89,39 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <button type="submit">Add note</button></form>
 <div id="notes"></div></div>
 </div>
+<section class="panel no-print" id="recordsCopilot" aria-labelledby="copilotHeading">
+<h2 id="copilotHeading">Public records research copilot</h2>
+<p class="muted">Draft specific, existing-record requests from documented government sources and prepare follow-ups after an agency responds. Nothing is sent, automatically classified or given an assumed legal deadline. Every draft stays private until you explicitly save it.</p>
+<details open><summary><strong>1. Prepare a narrow original-records request</strong></summary>
+<div class="grid">
+<label>Records category<select id="copilotTopic"><option value="contract">Executed contracts and expenditure</option><option value="policy">Policy adoption and versions</option><option value="oversight">Audits and oversight</option><option value="sharing">Access, retention and sharing</option><option value="termination">Termination and decommissioning</option></select></label>
+<label>Official recipient / custodian (verify before sending)<input id="copilotCustodian" type="text" maxlength="200" placeholder="Government records officer"></label>
+<label>Previously cited source in this case<select id="copilotSourcePick"><option value="">Use source URL below</option></select></label>
+<label>Source document URL (HTTPS only; check identity)<input id="copilotSource" type="url" maxlength="1400" placeholder="https://city.gov/official-document"></label>
+<label>Records from<input id="copilotStart" type="date"></label>
+<label>Records through<input id="copilotEnd" type="date"></label>
+<label>Notify before fees exceeding ($, optional)<input id="copilotFee" type="number" min="0" max="10000" step=".01" placeholder="25.00"></label>
+<label>Electronic file preference<select id="copilotFormat"><option value="either">Existing PDF or native formats</option><option value="pdf">Searchable PDF where maintained</option><option value="native">Existing native digital files</option></select></label>
+</div><button id="copilotPrep" type="button">Generate source-scoped request</button>
+</details>
+<details><summary><strong>2. Respond to an actual records-office reply</strong></summary>
+<p class="muted">Select an existing sent request, then classify the response yourself. The copilot generates a suggested follow-up. It never reads private attachments or determines legal compliance.</p>
+<div class="grid">
+<label>Original saved request<select id="copilotPrior"><option value="">Choose a sent request</option></select></label>
+<label>What did the agency communicate?<select id="copilotOutcome"><option value="acknowledged">Acknowledgment / tracking number</option><option value="delayed">Still processing / delayed</option><option value="partial">Partial document production</option><option value="fees">Fee estimate / deposit</option><option value="denial">Withheld records / exemption</option><option value="no_records">No responsive records</option><option value="referral">Referred to another office</option><option value="produced">Records received</option><option value="clarification">Needs clarification</option></select></label>
+</div><label>Brief response summary (user-entered, omit confidential details)<textarea id="copilotSummary" maxlength="800" placeholder="e.g. Agency provided a redacted invoice but no executed agreement."></textarea></label>
+<button id="copilotFollowupPrep" type="button">Prepare response-specific follow-up</button>
+</details>
+<div id="copilotPreview" class="panel" hidden>
+<h3>Review and edit the unsent draft</h3>
+<label>Subject<input id="copilotSubject" maxlength="200"></label>
+<label>Recipient<input id="copilotRecipient" maxlength="250"></label>
+<label>Request or follow-up body<textarea id="copilotBody" maxlength="18000"></textarea></label>
+<h3>Verification checklist before sending</h3><ul id="copilotChecklist"></ul>
+<div class="row"><button id="copilotCopy" type="button">Copy text</button><button id="copilotSave" type="button">Save as new private draft</button></div>
+</div>
+<p id="copilotStatus" role="status" aria-live="polite">Select a records category or a previously submitted request. This tool never submits correspondence.</p>
+</section>
 <h3>Private government response attachments</h3>
 <div class="row no-print"><input type="file" id="upload" accept=".pdf,.txt,.png,.jpg,.jpeg" aria-label="Upload redacted government response">
 <button type="button" id="uploadFile">Upload response (10 MB max)</button></div>
@@ -101,5 +134,6 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <script src="./government-source-docket.js"></script>
 <script src="./pilot-dossiers.js"></script>
 <script src="./research-templates.js"></script>
+<script src="./records-copilot.js"></script>
 <script src="./research-workspace.js"></script>
 </body></html>

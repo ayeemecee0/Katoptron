@@ -42,6 +42,7 @@ async function start(win,U){
  }
  const sb=win.supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey);
  let user=null,workspaces=[],cases=[],selectedW=null,selectedC=null,detail={requests:[],notes:[],files:[]},membershipRole='viewer';
+ let stagedCopilotCaseId=null;
  const status=text=>{$('status').textContent=text};
  const unwrap=({data,error})=>{if(error)throw Error(error.message);return data};
  const msg=err=>{status('Action not completed: '+(err?.message||'Unexpected error'))};
@@ -71,6 +72,17 @@ async function start(win,U){
   }
   await loadWorkspaces();
   await loadPilotDossiers();
+  // Imported links are context previews only. They cannot create a case or
+  // attest that a government record is authentic.
+  const params=new URL(win.location.href).searchParams;
+  const key=U.agencyKey(params.get('agency')),source=U.sourceUrl(params.get('source'));
+  if(key&&source){
+   $('agencyKey').value=key;
+   $('caseTitle').value=String(params.get('title')||'Original-government records research').trim().slice(0,180);
+   $('noteSource').value=source;
+   $('copilotSource').value=source;
+   $('templateStatus').textContent='Imported public source context for preview only. Check document identity, then explicitly create and save a case.';
+  }
  }
  let curatedDossiers=new Map();
  const dossierIdFromUrl=()=>new URL(win.location.href).searchParams.get('dossier');
@@ -280,6 +292,9 @@ async function start(win,U){
  async function chooseCase(){
   selectedC=cases.find(c=>c.id===$('caseSelect').value)||null;
   $('caseDetail').hidden=!selectedC;if(!selectedC)return;
+  $('recordsCopilot').hidden=!writable();
+  stagedCopilotCaseId=null;
+  $('copilotPreview').hidden=true;
   $('caseHeading').textContent=selectedC.title;
   $('caseAgency').textContent=selectedC.agency_key+' · Case ID '+selectedC.id;
   $('caseStatus').value=selectedC.status;
@@ -301,6 +316,16 @@ async function start(win,U){
  }
  function renderDetails(){
   for(const id of ['requests','notes','files'])$(id).replaceChildren();
+  const sourcePicker=$('copilotSourcePick'),oldSource=sourcePicker.value;
+  sourcePicker.replaceChildren(new Option('Use source URL below',''));
+  const citationUrls=[...new Set(detail.notes.map(n=>U.sourceUrl(n.source_url)).filter(Boolean))].slice(0,100);
+  for(const url of citationUrls)sourcePicker.append(new Option(url.slice(0,130),url));
+  if(citationUrls.includes(oldSource))sourcePicker.value=oldSource;
+  const originalPicker=$('copilotPrior'),oldRequest=originalPicker.value;
+  originalPicker.replaceChildren(new Option('Choose a sent request',''));
+  for(const req of detail.requests.filter(r=>r.status!=='draft'))
+   originalPicker.append(new Option(req.subject.slice(0,100)+' · '+req.status,req.id));
+  if(detail.requests.some(r=>r.id===oldRequest&&r.status!=='draft'))originalPicker.value=oldRequest;
   for(const req of detail.requests){
    const [recipient,rinput]=field('Records custodian',req.recipient);
    const [subject,sinput]=field('Subject',req.subject);
@@ -331,6 +356,11 @@ async function start(win,U){
       sent_on:dates[0][2].value||null,response_due_on:dates[1][2].value||null,response_received_on:dates[2][2].value||null,
       updated_at:new Date().toISOString()}).eq('id',req.id));
     status('Records request saved. Dates are user-entered, not inferred.');await chooseCase();
+   }));
+   if(writable()&&req.status!=='draft')content.push(button('Prepare response follow-up',()=>{
+    $('copilotPrior').value=req.id;
+    $('recordsCopilot').scrollIntoView({behavior:'smooth',block:'start'});
+    $('copilotStatus').textContent='Selected sent request. Choose what the agency communicated and prepare an unsent follow-up.';
    }));
    $('requests').append(row(req.subject,content));
   }
@@ -429,6 +459,74 @@ async function start(win,U){
   unwrap(await sb.from('research_cases').update({status:$('caseStatus').value,updated_at:new Date().toISOString()}).eq('id',selectedC.id));
   await chooseWorkspace();status('Case stage saved.');
  }catch(err){msg(err)}});
+ // Copilot stages drafts locally. The existing private request table remains the
+ // only store for deliberately saved drafts; it never sends email or portal forms.
+ const copilot=win.KatoptronRecordsCopilot;
+ function stageCopilot(d){
+  if(!writable()||!selectedC)throw Error('Open a writable private case');
+  if(!copilot)throw Error('Records copilot module unavailable');
+  stagedCopilotCaseId=selectedC.id;
+  $('copilotSubject').value=d.subject;
+  $('copilotRecipient').value=d.custodian||d.recipient||'';
+  $('copilotBody').value=d.body;
+  $('copilotChecklist').replaceChildren();
+  for(const item of d.check_before_sending)$('copilotChecklist').append(el('li',item));
+  $('copilotPreview').hidden=false;
+  $('copilotStatus').textContent='Unsent draft prepared. Review the original source, actual receiving office, fee limits and every requested item.';
+  $('copilotPreview').scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ $('copilotSourcePick').addEventListener('change',()=>{
+  if($('copilotSourcePick').value)$('copilotSource').value=$('copilotSourcePick').value;
+ });
+ $('copilotPrep').addEventListener('click',()=>{
+  try{
+   if(!copilot)throw Error('Copilot module unavailable');
+   if(!selectedC)throw Error('Select a case');
+   stageCopilot(copilot.draft({
+    agency:selectedC.agency_key,subject:selectedC.title,
+    topic:$('copilotTopic').value,custodian:$('copilotCustodian').value,
+    source_url:$('copilotSource').value.trim(),start_date:$('copilotStart').value,
+    end_date:$('copilotEnd').value,fee_cap:$('copilotFee').value,
+    format:$('copilotFormat').value
+   }));
+  }catch(err){msg(err)}
+ });
+ $('copilotFollowupPrep').addEventListener('click',()=>{
+  try{
+   if(!copilot)throw Error('Copilot module unavailable');
+   const request=detail.requests.find(x=>x.id===$('copilotPrior').value);
+   if(!request)throw Error('Select an existing saved request first');
+   stageCopilot(copilot.followUp(request,$('copilotOutcome').value,$('copilotSummary').value));
+  }catch(err){msg(err)}
+ });
+ $('copilotCopy').addEventListener('click',async()=>{
+  try{
+   if(!selectedC||stagedCopilotCaseId!==selectedC.id)throw Error('Prepare a draft in the current case');
+   if(!win.navigator.clipboard?.writeText)throw Error('Clipboard unavailable; select and copy the editable draft manually');
+   await win.navigator.clipboard.writeText($('copilotSubject').value+'\n\n'+$('copilotBody').value);
+   $('copilotStatus').textContent='Draft copied. No correspondence sent and no request status changed.';
+  }catch(err){msg(err)}
+ });
+ $('copilotSave').addEventListener('click',async()=>{
+  const saveButton=$('copilotSave');
+  try{
+   if(!writable()||!selectedC||stagedCopilotCaseId!==selectedC.id)
+    throw Error('Prepare a draft in the active writable case');
+   const subject=$('copilotSubject').value.trim(),body=$('copilotBody').value.trim();
+   if(subject.length<5||subject.length>200||body.length<50||body.length>18000)
+    throw Error('Review and provide a descriptive subject and substantive request text');
+   saveButton.disabled=true;
+   unwrap(await sb.from('research_case_requests').insert({
+    case_id:selectedC.id,created_by:user.id,recipient:$('copilotRecipient').value.trim().slice(0,250),
+    subject,body,status:'draft'
+   }));
+   stagedCopilotCaseId=null;
+   $('copilotPreview').hidden=true;
+   await chooseCase();
+   status('Copilot draft saved to this private case. No email, portal submission or legal deadline triggered.');
+   $('copilotStatus').textContent='Draft saved. Mark it sent only after actual authorized submission, then set your own follow-up date.';
+  }catch(err){msg(err)}finally{saveButton.disabled=false}
+ });
  $('createRequest').addEventListener('submit',async e=>{e.preventDefault();try{
   if(!writable())throw Error('Editor access required');
   unwrap(await sb.from('research_case_requests').insert({case_id:selectedC.id,created_by:user.id,
