@@ -32,6 +32,8 @@ const measurementSql=fs.readFileSync(path.join(__dirname,'../supabase/migrations
 assert.match(measurementSql,/enable row level security/);
 assert.match(measurementSql,/auth\.uid\(\)/);
 assert.doesNotMatch(measurementSql,/grant .* to anon/);
+assert.match(workspace,/refreshTeamSecurity/);
+assert.match(workspace,/Revoke unused invite/);
 const sql=fs.readFileSync(path.join(__dirname,'../supabase/migrations/159_prevent_research_orphan_storage.sql'),'utf8');
 assert.match(sql,/storage\.objects/);
 assert.match(sql,/before delete on public\.research_cases/);

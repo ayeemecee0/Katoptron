@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'research-workspace.html'
+      - 'verified-version-diffs.js'
+      - 'scripts/test_verified_version_diffs.cjs'
+      - 'surveillance-changes.html'
       - 'research-workspace.js'
       - 'agency-intelligence-hub.html'
       - 'scripts/smoke_research_intelligence.cjs'
@@ -45,6 +48,8 @@ jobs:
           node-version: '22'
       - name: Verify original issuer identity, historical stages and unknown cost boundaries
         run: node scripts/test_agency_intelligence_engine.cjs
+      - name: Verify reviewed contract and policy statement differences
+        run: node scripts/test_verified_version_diffs.cjs
       - name: Verify private case export, input validation and workspace security controls
         run: node scripts/test_research_workspace.cjs
       - name: Verify every Watch event gets sourced, cautious next-action guidance
@@ -53,6 +58,7 @@ jobs:
         run: python -m unittest discover -s scripts -p 'test_government_watch_alerts.py' -v
       - name: Validate JavaScript syntax
         run: |
+          node --check verified-version-diffs.js
           node --check research-workspace.js
           node --check agency-intelligence-engine.js
           node --check government-source-docket.js

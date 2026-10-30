@@ -25,8 +25,14 @@ assert.match(cited,/city.gov\/records\?a=1&amp;b=2/);
 assert.match(cited,/NOT independently verified/);
 assert.doesNotMatch(cited,/<script/);
 const html=fs.readFileSync(path.join(__dirname,'../research-workspace.html'),'utf8');
-for(const key of ['research-workspace.js','createRequest','uploadFile','inviteRole','exportCase','exportBrief','pilotStart','pilotAgency','caseStatus','requestBody'])
+for(const key of ['research-workspace.js','createRequest','uploadFile','inviteRole','teamSecurity','pendingInvites','teamActivity','exportCase','exportBrief','pilotStart','pilotAgency','caseStatus','requestBody'])
  assert.ok(html.includes(key));
+assert.match(U.htmlBrief({id:'w',title:'W'},{id:'c',agency_key:'county|CA',title:'Case',status:'open'},[],[],[]),/Private case export/);
+const secure=fs.readFileSync(path.join(__dirname,'../supabase/migrations/162_research_team_audit_ledger.sql'),'utf8');
+assert.match(secure,/enable row level security/);
+assert.match(secure,/research_team_activity_owner_read/);
+assert.match(secure,/revoke all on function katoptron_private/);
+assert.doesNotMatch(secure,/invite_token.*values/);
 const schema=fs.readFileSync(path.join(__dirname,'../supabase/migrations/151_research_workspace_rls_policies.sql'),'utf8');
 assert.match(schema,/research_case_read/);assert.match(schema,/research_request_update/);
 assert.match(schema,/auth\.uid\(\)/);

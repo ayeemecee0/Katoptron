@@ -16,8 +16,8 @@ async function run(){
   const count=await page.locator('#cards .card').count();
   if(count<35)throw Error('New nationwide source publishers missing: '+count);
   await page.selectOption('#state','KY');
-  if(await page.locator('#cards .card').count()!==1)throw Error('Kentucky issuer not indexed');
-  await page.locator('#cards .card button').click();
+  if(await page.locator('#cards .card').count()<2)throw Error('Kentucky original government issuers missing');
+  await page.locator('#cards .card').filter({hasText:'Frankfort'}).locator('button').click();
   await page.locator('#details:not([hidden])').waitFor();
   if(!/Frankfort/.test(await page.locator('#detailTitle').innerText()))throw Error('Exact agency not selected');
   if(!/source-stated|unknown/i.test(await page.locator('#quick').innerText()))throw Error('Source amount boundary not stated');

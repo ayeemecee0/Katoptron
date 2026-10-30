@@ -5,6 +5,7 @@ on:
       - 'scripts/watch_original_government_versions.py'
       - 'scripts/test_watch_original_government_versions.py'
       - 'scripts/test_research_tenant_isolation.sql'
+      - 'supabase/migrations/162_research_team_audit_ledger.sql'
       - 'scripts/test_research_pro_workflows.cjs'
       - 'research-templates.js'
       - 'research-workspace.js'

@@ -19,7 +19,7 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 @media print{header,.no-print,#signin,.panel:first-of-type{display:none}body,main,.panel{background:white;color:#111;border:0}}
 </style></head><body>
 <a href="#main" class="skip-link">Skip to workspace</a>
-<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a><a href="./research-plans.html">Professional pilot plans</a></header>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a><a href="./surveillance-changes.html">Contract and policy comparisons</a><a href="./research-plans.html">Professional pilot plans</a></header>
 <main id="main"><h1>Private research workspace</h1>
 <p class="muted">Save agency investigations, track records requests and due dates, attach government responses, collaborate by expiring invite links, and export case files. Public source evidence stays freely available. Workspace notes and attachments are private and require an authenticated account.</p>
 <p class="panel">Do not upload individual license-plate reads, private vehicle locations, driver data, account passwords or unredacted sensitive law-enforcement records. A government publication is not proof of current device operation or legal compliance.</p>
@@ -44,6 +44,12 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <label for="workspaceSelect">Current workspace</label><select id="workspaceSelect"></select><button id="deleteWorkspace" type="button" class="danger no-print">Delete workspace and all private case files</button>
 <div class="row no-print" id="collaboration"><label>Invite role<select id="inviteRole"><option value="editor">Editor</option><option value="viewer">Viewer</option></select></label><button id="shareInvite" type="button">Create 7-day one-use invite link</button></div>
 <p id="inviteResult" class="muted" role="status"></p><div id="members" class="no-print" aria-label="Workspace collaborators"></div>
+<section id="teamSecurity" class="no-print" hidden aria-label="Owner team security">
+<h3>Pending invitations</h3><p class="muted">Only workspace owners can issue or revoke these single-use, 7-day links. Never post invitation URLs publicly.</p>
+<div id="pendingInvites"></div>
+<h3>Team security activity</h3><p class="muted">Private membership and invitation events. No invitation tokens, emails or case contents are logged here.</p>
+<div id="teamActivity" aria-live="polite"></div>
+</section>
 </section>
 <section class="panel"><h2>Case files</h2>
 <div class="panel no-print"><h3>Start with a professional research workflow</h3>
