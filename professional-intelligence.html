@@ -70,6 +70,14 @@ fieldset{border:1px solid #436478}fieldset label{display:inline-flex;align-items
 <p id="feedStatus" role="status"></p><div id="followList"></div>
 <div class="row"><button id="copyWeeklyDigest" type="button">Copy my 7-day source review</button><a href="./government-watch.html">Manage separate locality Watch email opt-in</a></div>
 <p id="weeklyDigestStatus" role="status">No personal email has been enabled by these research follows.</p>
+<section class="card" id="researchEmail" aria-labelledby="researchEmailHeading">
+<h3 id="researchEmailHeading">Separate research email alerts</h3>
+<p>Optional and disabled until you explicitly enroll. New reviewed original-government evidence matching the selected jurisdiction, topics and research keyword may be emailed after enrollment. Existing historical documents will never be mailed as new discoveries. These alerts are distinct from ordinary research follows and Government Watch subscriptions.</p>
+<label><input id="researchEmailConsent" type="checkbox"> I explicitly agree to receive personalized research-source emails for the selected jurisdiction. I understand I can disable them here.</label>
+<div class="row"><button id="researchEmailEnable" type="button">Enable personalized research email</button><button id="researchEmailDisable" type="button">Disable email for selected jurisdiction</button><button id="researchEmailRefresh" type="button">Refresh delivery receipts</button></div>
+<p class="muted">The email topic and keyword are copied from the research controls above only when Enable is pressed. Editing your normal research follows does not change email consent. Changing email topics/keyword or re-enabling resets the new-event baseline.</p>
+<p id="researchEmailStatus" role="status" aria-live="polite">Research email alerts OFF unless explicitly enabled.</p><div id="researchEmailReceipts" class="scroll" aria-label="Private email submission receipts"></div>
+</section>
 <h3>Genuinely new since your follow</h3><div id="newFeed"></div>
 <h3>Previously published reviewed evidence</h3><div id="reviewedFeed"></div>
 <h3>Historical research opportunities</h3><div id="historicalFeed"></div></div>
@@ -90,4 +98,5 @@ fieldset{border:1px solid #436478}fieldset label{display:inline-flex;align-items
 <script src="./verified-version-diffs.js"></script><script src="./agency-intelligence-v2.js"></script>
 <script src="./agency-change-tracker.js"></script>
 <script src="./professional-intelligence-app.js"></script>
+<script src="./research-email.js"></script>
 </body></html>
