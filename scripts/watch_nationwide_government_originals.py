@@ -21,6 +21,7 @@ QUALIFIED_DOCKET=ROOT/"data"/"qualified-original-government-docket-2026-10-29.js
 NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-10-29.json"
 PAGE_REVIEW=ROOT/"data"/"manual-original-evidence-review-2026-10-29.json"
 ALTERNATE_RECOVERY=ROOT/"data"/"nationwide-original-government-recovery-alternates-2026-10-29.json"
+UNDERREPRESENTED=ROOT/"data"/"underrepresented-state-original-government-research-2026-10-29.json"
 ADDITIONAL_EDITORIAL=ROOT/"data"/"editorial-originals-intelligence-batch-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
@@ -192,6 +193,28 @@ def independent_issuer_alternatives(official):
     "parent_held_source_id":row["source_id"]})
  return found
 
+def underrepresented_government_originals():
+ """Original legislative/lobbying documents only: never installation or adopted policy."""
+ data=json.loads(UNDERREPRESENTED.read_text(encoding="utf8"))
+ if (data.get("schema_version")!=1 or len(data.get("government_originals",[]))!=3 or
+     data.get("confirmed_government_operational_installations")!=0):
+  raise ValueError("Invalid underserved original government source research")
+ out=[];seen=set()
+ for row in data["government_originals"]:
+  if (row.get("id") in seen or not re.fullmatch(r"underrepresented-(?:ct|ri)-[0-9]{2}",str(row.get("id",""))) or
+      row.get("state") not in ("CT","RI") or row.get("kind") not in ("html","pdf") or
+      not exact(row.get("source_url")) or
+      (row["kind"]=="pdf")!=urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf") or
+      not row.get("publisher") or len(row.get("grounded_finding",""))<80 or
+      len(row.get("unknown",""))<45 or len(row.get("next_step",""))<45 or
+      row.get("no_adoption_inferred") is not True):
+   raise ValueError("Unreviewed original government legislative source")
+  seen.add(row["id"])
+  out.append({"id":row["id"],"state":row["state"],"source_url":row["source_url"],
+   "kind":row["kind"],"publisher":row["publisher"],
+   "origin_role":"government_legislative_original_not_operational_deployment"})
+ return out
+
 def catalog(obj,existing):
  if (not isinstance(obj,dict) or obj.get("schema_version")!=1 or
      obj.get("universe")!="50_us_states_plus_district_of_columbia" or
@@ -353,7 +376,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
  reviewed=reviewed_addition_sources()
  official=seeds+legacy+recovery+depth+reviewed
  alternates=independent_issuer_alternatives(official)
- existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed+alternates]
+ underrepresented=underrepresented_government_originals()
+ existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed+alternates+underrepresented]
  existing_ids=[s["id"] for s in seeds+legacy+recovery+depth+reviewed+alternates]
  if (len(existing_urls)!=len(set(existing_urls)) or len(existing_ids)!=len(set(existing_ids)) or
      not 100<=len(existing_urls)<=MAX_MONITORED_SOURCES):
@@ -365,7 +389,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   depth_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),depth))
   reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),reviewed))
   alternate_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),alternates))
- all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts+alternate_receipts
+  underrepresented_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),underrepresented))
+ all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts+alternate_receipts+underrepresented_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
@@ -377,7 +402,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   deep=[x for x in depth_receipts if x["state"]==code]
   newly_monitored=[x for x in reviewed_receipts if x["state"]==code]
   alternate=[x for x in alternate_receipts if x["state"]==code]
-  combined=r+old+extra+deep+newly_monitored+alternate
+  additional=[x for x in underrepresented_receipts if x["state"]==code]
+  combined=r+old+extra+deep+newly_monitored+alternate+additional
   accessible=sum(x["status"].startswith("original_") for x in combined)
   held=sum(x["status"].startswith("held_") for x in combined)
   source_gap=("no_monitored_government_original_accessible" if accessible==0 else
@@ -403,7 +429,7 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,"official_alternate_receipts":alternate_receipts,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,"official_alternate_receipts":alternate_receipts,"underrepresented_government_receipts":underrepresented_receipts,
   "monitored_sources_total":len(all_receipts),
   "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
   "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
@@ -431,6 +457,8 @@ def main():
   "supplemental_sources_monitored":len(result["recovery_receipts"]),
   "agency_depth_sources_monitored":len(result["depth_receipts"]),
   "reviewed_original_urls_newly_monitored":len(result["reviewed_addition_receipts"]),
+  "underrepresented_new_government_originals_monitored":len(result["underrepresented_government_receipts"]),
+  "underrepresented_new_government_originals_accessible":sum(x["status"].startswith("original_") for x in result["underrepresented_government_receipts"]),
   "held_original_publisher_alternates_monitored":len(result["official_alternate_receipts"]),
   "held_original_publisher_alternates_accessible":sum(x["status"].startswith("original_") for x in result["official_alternate_receipts"]),
   "reviewed_original_urls_accessible":sum(x["status"].startswith("original_") for x in result["reviewed_addition_receipts"]),
