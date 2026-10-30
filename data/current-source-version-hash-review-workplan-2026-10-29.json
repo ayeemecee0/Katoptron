@@ -1,0 +1,421 @@
+{
+  "schema_version": 1,
+  "monitor_run_id": 40999367165,
+  "reviewed_on": "2026-10-29",
+  "observed_changes": 34,
+  "scope": "hash_changed_original_publisher_pages_needing_review_not_source_pinned_wording_differences",
+  "sources": [
+    {
+      "source_id": "az-government-oversight-announcement",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ga-government-investigation-announcement",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "id-police-technology-disclosure",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ks-police-other-vendor-disclosure",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "mn-police-technology-disclosure",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "mo-government-public-consultation",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ok-police-technology-disclosure",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ri-police-technology-disclosure",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "mt-state-alpr-statute",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "vt-state-alpr-statute-index",
+      "priority": "P0",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ak-unadopted-alpr-prohibition-amendment",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "legacy-ca-palo-alto-transparency",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "legacy-wi-green-bay-police-reports",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "legacy-va-richmond-flock-updates",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "legacy-tx-austin-public-safety-audits",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ms-flock-university-medical-procurement-notice",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "nc-hillsborough-flock-contract-cancel-notice",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "nv-legislature-2026-alpr-recommendations",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "wv-code-photo-monitoring-traffic-law",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "il-naperville-2026-alpr-policy-history",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "il-naperville-police-transparency",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "mo-columbia-alpr-operations",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "ga-gbi-september-misuse-investigation",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "vt-act-135-enacted-original",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "mn-robbinsdale-2026-policy-discussion",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-01-ca",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-05-mn",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-06-wa",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-10-mo",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-14-ut",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-15-ca",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-16-wa",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-17-wa",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-18-id",
+      "priority": "P1",
+      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "review_actions": [
+        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
+        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
+        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
+        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+      ],
+      "human_approved_page_cited_difference": false
+    }
+  ],
+  "approved_substantive_document_version_differences": 0,
+  "target": 10,
+  "reason": "Retained fingerprints do not substitute for authentic prior government PDF/HTML bytes. Current version archives are now enabled for future monitoring.",
+  "research_only": true
+}
