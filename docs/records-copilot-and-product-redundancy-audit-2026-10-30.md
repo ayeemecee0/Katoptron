@@ -66,3 +66,11 @@ Building generic FOIA request drafting, request-status tracking, map layers, sta
 - Ten independent authentic document or agency-response evidence resolutions, with proof of government action versus mere proposal and external editorial approval before publication.
 - At least three validated completed tasks with recorded researcher time saved, separate from synthetic test successes.
 - Three users explicitly request the same *new* differentiated workflow before building a seventh dashboard.
+
+## Confirmed avoidable infrastructure waste: public OSM request-time recomputation
+
+**Detected by production browser acceptance, October 30:** the original \`flock_public_osm_exact_render_snapshot()\` RPC ordered and encoded 116,340 community-source coordinate rows on every public map visit. The public Supabase \`anon\` role has a 3-second SQL statement timeout. A live browser probe returned HTTP 500 with PostgreSQL \`57014\` and the exact original-coordinate layer vanished despite the underlying source being present.
+
+**Remediation:** production migration \`165_cached_osm_exact_snapshot.sql\` maintains one RLS-protected source-coordinate snapshot with exactly 116,340 unmodified OSM-reported observations. The same public RPC now reads one cached row in approximately 9.46 ms under SQL EXPLAIN, rather than recomputing and sorting 116k points per request. The existing OSM source-import workflow alone refreshes it after safe whole-source reconciliation; failure leaves last-good data available. Only \`service_role\` can refresh; \`anon\` and \`authenticated\` have read-only access. A direct live Supabase SQL reconciliation and privilege audit passed; full browser acceptance still requires passing CI.
+
+This *is* an unnecessary implementation cost we removed, and a stronger reason to audit hot API paths before adding new user-facing features.
