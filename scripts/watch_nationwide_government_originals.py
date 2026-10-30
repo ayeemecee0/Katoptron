@@ -285,35 +285,62 @@ def trusted_redirect(src,current,target):
 def pdf_limit(src):
  return MAX_EXCEPTIONAL_PDF if src["id"] in LARGE_PDF_ORIGINALS else MAX_BYTES_PDF
 
+class SourceTransportError(ValueError):
+ """Safe metadata for original-source triage, never an editorial claim."""
+ def __init__(self,kind,http_status=None,redirect_location=None):
+  super().__init__(kind)
+  self.http_status=http_status
+  self.redirect_location=redirect_location
+
 def fetch(src):
- """Bounded original or validated same-document publisher redirect. Never follow external redirects."""
+ """Bounded exact original fetch; one targeted retry for transient government transport errors.
+ Cross-authority redirects are prohibited. Never conceal a blocked URL behind a related issuer index.
+ """
+ import time
  url=src["source_url"];initial=url
- if not exact(url):raise ValueError("unsafe_source")
+ if not exact(url):raise SourceTransportError("unsafe_source")
  cap=pdf_limit(src) if src["kind"]=="pdf" else MAX_BYTES_HTML
  opener=urllib.request.build_opener(NoRedirect())
- for _ in range(3):
-  if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):raise ValueError("unsafe_dns")
+ for hop in range(3):
+  if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):
+   raise SourceTransportError("unsafe_dns")
   req=urllib.request.Request(url,headers={
    "Accept":"text/html,application/pdf;q=0.9,*/*;q=0.5",
    "Accept-Language":"en-US,en;q=0.8","Accept-Encoding":"identity",
    "User-Agent":"Mozilla/5.0 (compatible; KatoptronSourceReader/1.0; +https://ayeemecee0.github.io/Katoptron/)"})
-  try:
-   with opener.open(req,timeout=22) as res:
-    if res.status!=200 or res.geturl()!=url:raise ValueError("unexpected_response")
-    length=res.headers.get("Content-Length")
-    if length and length.isdecimal() and int(length)>cap:raise ValueError("oversized_original")
-    data=res.read(cap+1)
-    if len(data)>cap:raise ValueError("oversized_original")
-    if url!=initial and src["id"]=="reviewed-23-tx" and b"Pausing City of Elgin" not in data:
-     raise ValueError("archive_document_identity_unconfirmed")
-    return (data,url)
-  except urllib.error.HTTPError as exc:
-   if exc.code in (301,302,303,307,308):
-    target=urllib.parse.urljoin(url,exc.headers.get("Location",""))
-    if target==url or not trusted_redirect(src,url,target):raise ValueError("original_redirect") from None
-    url=target;continue
-   raise ValueError("http_error") from None
- raise ValueError("original_redirect")
+  for attempt in range(2):
+   try:
+    with opener.open(req,timeout=20) as res:
+     if res.status!=200 or res.geturl()!=url:raise SourceTransportError("unexpected_response")
+     length=res.headers.get("Content-Length")
+     if length and length.isdecimal() and int(length)>cap:raise SourceTransportError("oversized_original")
+     data=res.read(cap+1)
+     if len(data)>cap:raise SourceTransportError("oversized_original")
+     if url!=initial and src["id"]=="reviewed-23-tx" and b"Pausing City of Elgin" not in data:
+      raise SourceTransportError("archive_document_identity_unconfirmed")
+     return data,url
+   except urllib.error.HTTPError as exc:
+    if exc.code in (301,302,303,307,308):
+     loc=exc.headers.get("Location","")
+     target=urllib.parse.urljoin(url,loc) if loc else ""
+     if target==url or not trusted_redirect(src,url,target):
+      candidate=target if exact(target) else None
+      raise SourceTransportError("original_redirect",http_status=exc.code,redirect_location=candidate) from None
+     url=target
+     break
+    if exc.code in (429,500,502,503,504) and attempt==0:
+     time.sleep(0.4);continue
+    raise SourceTransportError("http_error",http_status=exc.code) from None
+   except (TimeoutError,ConnectionError,urllib.error.URLError,OSError):
+    if attempt==0:
+     time.sleep(0.4);continue
+    raise SourceTransportError("network_error") from None
+  else:
+   raise SourceTransportError("network_error")
+  # A validated redirect advances to the next bounded government-origin hop.
+  continue
+ raise SourceTransportError("original_redirect")
+
 
 class PolicyLinks(HTMLParser):
  """Bounded original government href discovery, never source fact promotion."""
@@ -384,7 +411,9 @@ def inspect(src,fetcher=fetch,capture_dir=None):
   "publisher_flock_keyword_seen":False,"published_facts_verified":False,
   "device_status_verified":False,"camera_coordinates_published":False,
   "unreviewed_same_host_policy_candidates":[],"retrieved_url":None,
-  "verified_same_publisher_redirect":False}
+  "verified_same_publisher_redirect":False,
+  "transport_http_status":None,"transport_redirect_candidate":None,
+  "transport_failure_reason":None}
  try:
   item=fetcher(src)
   raw,final_url=item if isinstance(item,tuple) and len(item)==2 else (item,src["source_url"])
@@ -393,6 +422,9 @@ def inspect(src,fetcher=fetch,capture_dir=None):
   record["verified_same_publisher_redirect"]=final_url!=src["source_url"]
  except Exception as err:
   reason=str(err)
+  record["transport_failure_reason"]=reason if reason in ("http_error","network_error","original_redirect","oversized_original","unsafe_dns","archive_document_identity_unconfirmed","unsafe_source","unexpected_response") else "unclassified_transport_error"
+  record["transport_http_status"]=getattr(err,"http_status",None)
+  record["transport_redirect_candidate"]=getattr(err,"redirect_location",None)
   record["status"]="held_redirect" if reason in ("original_redirect","archive_document_identity_unconfirmed") else (
    "held_oversized" if reason=="oversized_original" else ("held_http_error" if reason=="http_error" else "held_timeout_or_network"))
   return record
