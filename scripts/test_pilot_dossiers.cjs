@@ -47,4 +47,6 @@ assert(workspace.includes('PilotDossiers.recordNote'));
 assert(workspace.includes('source_url:record.source_url'));
 assert(workspace.includes("sb.from('research_cases').delete()")); 
 assert(workspace.includes('Partial private case'));
+assert(workspace.includes("confirmationUrl.searchParams.set('dossier',selectedDossier)"));
+assert(!workspace.includes("emailRedirectTo:win.location.origin+win.location.pathname"));
 console.log('PILOT_DOSSIERS_PASS: eight vetted reporting-beat dossiers, citations, independent preview and escaped printable briefs');

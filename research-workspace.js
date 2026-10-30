@@ -364,8 +364,14 @@ async function start(win,U){
   $('password').value='';await auth();
  }catch(err){msg(err)}});
  $('register').addEventListener('click',async()=>{try{
+  // Keep a verified public dossier selection across email confirmation, but
+  // NEVER forward private one-use collaboration invitation tokens.
+  const confirmationUrl=new URL(win.location.origin+win.location.pathname);
+  const selectedDossier=$('pilotAgency').value||dossierIdFromUrl();
+  if(win.KatoptronPilotDossiers?.catalog.some(d=>d.id===selectedDossier))
+   confirmationUrl.searchParams.set('dossier',selectedDossier);
   unwrap(await sb.auth.signUp({email:$('email').value.trim(),password:$('password').value,
-   options:{emailRedirectTo:win.location.origin+win.location.pathname}}));
+   options:{emailRedirectTo:confirmationUrl.href}}));
   $('password').value='';status('Check your email and confirm the account before signing in.');
  }catch(err){msg(err)}});
  $('signout').addEventListener('click',async()=>{try{unwrap(await sb.auth.signOut());user=null;await auth()}catch(e){msg(e)}});
