@@ -12,6 +12,8 @@ on:
       - 'data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json'
       - 'data/national-government-audit-source-portals.json'
       - 'scripts/watch_nationwide_government_originals.py'
+      - 'scripts/triage_nationwide_original_acquisition.py'
+      - 'scripts/test_triage_nationwide_original_acquisition.py'
       - 'scripts/nationwide_source_health.py'
       - 'scripts/review_nationwide_source_changes.py'
       - 'data/nationwide-original-document-difference-approvals.json'
@@ -54,6 +56,7 @@ jobs:
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
           python -m unittest discover -s scripts -p 'test_recovered_originals_editorial_changes.py' -v
+          python -m unittest discover -s scripts -p 'test_triage_nationwide_original_acquisition.py' -v
           node scripts/test_nationwide_evidence_depth.cjs
       - name: Restore last successful fingerprint receipt baseline
         uses: actions/cache/restore@v4
@@ -65,6 +68,8 @@ jobs:
             katoptron-nationwide-source-health-v2-
       - name: Retrieve 100 original-government URLs including 18 additional source-dated publications
         run: python scripts/watch_nationwide_government_originals.py --workers 6
+      - name: Turn same-host government document links into 25 bounded editorial acquisition tasks
+        run: python scripts/triage_nationwide_original_acquisition.py --watch-only
       - name: Compare against prior usable fingerprints and document every held state/source
         run: python scripts/nationwide_source_health.py
       - name: Qualify changed government originals for page-specific editorial review
@@ -104,5 +109,6 @@ jobs:
             .katoptron-ci/nationwide-public-health.json
             .katoptron-ci/nationwide-documentary-difference-review.json
             .katoptron-ci/nationwide-approved-documentary-differences.json
+            .katoptron-ci/nationwide-original-acquisition-editorial-queue.json
           retention-days: 30
           if-no-files-found: warn
