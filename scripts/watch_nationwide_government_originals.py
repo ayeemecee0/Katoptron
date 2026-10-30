@@ -20,6 +20,7 @@ REVIEWED_ADDITIONS=ROOT/"data"/"nationwide-reviewed-original-monitor-additions-2
 QUALIFIED_DOCKET=ROOT/"data"/"qualified-original-government-docket-2026-10-29.json"
 NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-10-29.json"
 PAGE_REVIEW=ROOT/"data"/"manual-original-evidence-review-2026-10-29.json"
+ALTERNATE_RECOVERY=ROOT/"data"/"nationwide-original-government-recovery-alternates-2026-10-29.json"
 ADDITIONAL_EDITORIAL=ROOT/"data"/"editorial-originals-intelligence-batch-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
@@ -162,6 +163,34 @@ def reviewed_addition_sources():
   out.append({"id":row["id"],"state":row["state"],"publisher":row["publisher"],
    "source_url":row["source_url"],"kind":row["kind"],"origin_role":row["origin_role"]})
  return out
+
+def independent_issuer_alternatives(official):
+ """Publisher indexes that contextualize held originals. Never assert exact PDF recovery."""
+ data=json.loads(ALTERNATE_RECOVERY.read_text(encoding="utf8"))
+ if data.get("schema_version")!=1 or len(data.get("originals",[]))!=7:
+  raise ValueError("Incomplete issuer-recovery provenance evidence")
+ indexed={x["id"]:x for x in official}
+ found=[];ids=set();urls=set()
+ for row in data["originals"]:
+  prior=indexed.get(row.get("source_id"))
+  if (not prior or row.get("id") in ids or not re.fullmatch(r"gov-alternate-[0-9]{2}",str(row.get("id",""))) or
+      row.get("source_url") in urls or row.get("source_url")==row.get("original_url") or
+      row.get("original_url")!=prior["source_url"] or row.get("state")!=prior["state"] or
+      row.get("kind") not in ("html","pdf") or not exact(row.get("source_url")) or
+      row.get("publisher_review")!="official_original_issuer_document_index_or_related_government_publication" or
+      len(str(row.get("why_relevant","")))<35 or
+      row.get("original_source_deleted") is not False or
+      row.get("original_source_automatically_recovered") is not False or
+      row.get("same_document_version_equivalence_proven") is not False or
+      row.get("camera_operation_inferred") is not False or
+      row.get("policy_adoption_inferred") is not False):
+   raise ValueError("Unverified original-government fallback or changed publisher identity")
+  ids.add(row["id"]);urls.add(row["source_url"])
+  found.append({"id":row["id"],"state":row["state"],"publisher":row["publisher"],
+    "source_url":row["source_url"],"kind":row["kind"],
+    "origin_role":"same_official_issuer_alternate_original_not_equivalent_to_held_source",
+    "parent_held_source_id":row["source_id"]})
+ return found
 
 def catalog(obj,existing):
  if (not isinstance(obj,dict) or obj.get("schema_version")!=1 or
@@ -322,8 +351,10 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
  recovery=recovery_sources()
  depth=agency_depth_sources()
  reviewed=reviewed_addition_sources()
- existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed]
- existing_ids=[s["id"] for s in seeds+legacy+recovery+depth+reviewed]
+ official=seeds+legacy+recovery+depth+reviewed
+ alternates=independent_issuer_alternatives(official)
+ existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed+alternates]
+ existing_ids=[s["id"] for s in seeds+legacy+recovery+depth+reviewed+alternates]
  if (len(existing_urls)!=len(set(existing_urls)) or len(existing_ids)!=len(set(existing_ids)) or
      not 100<=len(existing_urls)<=MAX_MONITORED_SOURCES):
   raise ValueError("Missing, duplicate or excessive original-government monitoring inventory")
@@ -333,7 +364,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),recovery))
   depth_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),depth))
   reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),reviewed))
- all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts
+  alternate_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),alternates))
+ all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts+alternate_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
@@ -344,7 +376,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   extra=[x for x in recovery_receipts if x["state"]==code]
   deep=[x for x in depth_receipts if x["state"]==code]
   newly_monitored=[x for x in reviewed_receipts if x["state"]==code]
-  combined=r+old+extra+deep+newly_monitored
+  alternate=[x for x in alternate_receipts if x["state"]==code]
+  combined=r+old+extra+deep+newly_monitored+alternate
   accessible=sum(x["status"].startswith("original_") for x in combined)
   held=sum(x["status"].startswith("held_") for x in combined)
   source_gap=("no_monitored_government_original_accessible" if accessible==0 else
@@ -370,7 +403,7 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,"official_alternate_receipts":alternate_receipts,
   "monitored_sources_total":len(all_receipts),
   "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
   "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
@@ -398,6 +431,8 @@ def main():
   "supplemental_sources_monitored":len(result["recovery_receipts"]),
   "agency_depth_sources_monitored":len(result["depth_receipts"]),
   "reviewed_original_urls_newly_monitored":len(result["reviewed_addition_receipts"]),
+  "held_original_publisher_alternates_monitored":len(result["official_alternate_receipts"]),
+  "held_original_publisher_alternates_accessible":sum(x["status"].startswith("original_") for x in result["official_alternate_receipts"]),
   "reviewed_original_urls_accessible":sum(x["status"].startswith("original_") for x in result["reviewed_addition_receipts"]),
   "agency_depth_sources_accessible":sum(x["status"].startswith("original_") for x in result["depth_receipts"]),
   "supplemental_accessible":sum(x["status"].startswith("original_") for x in result["recovery_receipts"]),
