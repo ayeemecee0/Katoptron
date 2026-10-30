@@ -12,7 +12,7 @@ M=load("nationwide_source_health");G=load("watch_nationwide_government_originals
 R=json.loads(G.REGISTRY.read_text());OLD=json.loads(G.EXISTING.read_text())
 BASE=json.loads(M.BUILTIN.read_text())
 j,seeds,_=G.catalog(R,OLD)
-all_sources=seeds+G.legacy_sources(OLD)+G.recovery_sources()+G.agency_depth_sources()
+all_sources=seeds+G.legacy_sources(OLD)+G.recovery_sources()+G.agency_depth_sources()+G.reviewed_addition_sources()
 def fake(status="original_government_html_accessible"):
  rows=[]
  for i,s in enumerate(all_sources):
