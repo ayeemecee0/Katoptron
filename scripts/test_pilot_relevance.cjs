@@ -15,7 +15,19 @@ for(const preset of P.PRESETS){
  assert(list.every(x=>x.selected.every(v=>Array.isArray(v.reasons)&&v.score>=0)));
  const results=P.rank(docket,preset.id,'houston|TX');
  assert.equal(results.length,1);assert.equal(results[0].records.length,2);
+ const action=P.actionPlan(results[0]);
+ assert.equal(action.locality_key,'houston|TX');
+ assert.equal(action.sources.length,results[0].selected.length);
+ assert(action.sources.every(x=>x.url.startsWith('https://')&&x.date&&x.status));
+ assert.match(action.requestDraft,/UNSENT PUBLIC-RECORDS REQUEST DRAFT/);
+ assert.match(action.requestDraft,/recipient not verified/);
+ assert.match(action.requestDraft,/signed agreements and amendments/);
+ assert.match(action.requestDraft,/invoices or payment registers/);
+ assert.match(action.requestDraft,/license plate reads, individual vehicle movements/);
+ assert(!action.requestDraft.includes('katoptron00@gmail.com'));
  const report=P.pack(results[0]);
+ assert(report.includes('Source-specific next action'));
+ assert(report.includes('Unsent records-request draft'));
  for(const r of results[0].records){
   assert(report.includes(r.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;')));assert(report.includes(r.source_url.replace(/&/g,'&amp;')));assert(report.includes(r.status));
  }
@@ -38,6 +50,11 @@ assert.deepEqual(P.rank(docket,'technology','nowhere|CA'),[]);
 assert.throws(()=>P.rank(docket,'fake'),/Unknown/);
 assert.throws(()=>P.rank(docket,'technology','', 'Q'.repeat(161)),/exceeds/);
 assert.throws(()=>P.group({rows:[{source_url:'https://evil.test'}]}),/Unreviewed/);
+const cross=P.rank(docket,'technology','houston|TX')[0];
+assert.throws(()=>P.actionPlan({...cross,selected:[{source:{...cross.selected[0].source,locality_key:'sacramento county|CA'}}]}),/cross-jurisdiction/);
+assert.throws(()=>P.actionPlan({...cross,selected:[]}),/Verified jurisdiction/);
+assert(!P.actionPlan(P.rank(docket,'local_accountability','new hanover county|NC')[0]).requestDraft.includes('executed agreement confirmed'));
+
 const share=P.sharePath('civil_liberties','san diego|CA');
 assert(share.includes('focus=civil_liberties')&&share.includes('agency=san%20diego%7CCA'));
 assert(!share.includes('question=')&&!share.includes('@'));
@@ -51,11 +68,11 @@ assert(!escaped.includes('<img'));assert(!escaped.includes('<script>alert(1)</sc
 assert(escaped.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
 assert(escaped.includes('&quot; onclick=&quot;evil()'));
 const page=fs.readFileSync(path.join(__dirname,'../pilot-research.html'),'utf8');
-for(const id of ['researchFocus','researchAgency','researchQuestion','recommendations','dossier','downloadPacket','shareResearchLink']){
+for(const id of ['researchFocus','researchAgency','researchQuestion','recommendations','dossier','downloadPacket','shareResearchLink','requestDraft','copyRequestDraft','copyRequestStatus']){
  assert(page.includes('id="'+id+'"'));
 }
 assert(page.includes('No names, emails, search history or research questions are stored.'));
 assert(!page.includes('katoptron00@gmail.com'));
 const app=fs.readFileSync(path.join(__dirname,'../professional-intelligence-app.js'),'utf8');
 assert(app.includes("searchParams.get('agency')"));
-console.log('PILOT_RESEARCH_RELEVANCE_PASS: five beats, 45 validated jurisdictions, two added documents, source-complete exports, no confidential prospect data or invented records');
+console.log('PILOT_RESEARCH_RELEVANCE_PASS: five beats, 45 jurisdictions, source-specific unsent requests and secure handoff, no confidential prospect data');
