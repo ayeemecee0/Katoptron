@@ -14,7 +14,8 @@
       "additional_page": 5,
       "claim": "Original department Policy 13D1 displays effective date April 24, 2024 and revised date September 22, 2026; page 5 states ALPR reads and hits are retained for a maximum of 30 days except records held for an investigation.",
       "caveat": "The revised policy document does not establish the precise textual changes from any previous version.",
-      "original_publisher": "Brookings Police Department"
+      "original_publisher": "Brookings Police Department",
+      "source_date_note": "revised 2026-09-22"
     },
     {
       "id": "san-bruno-2026-audit",
@@ -25,7 +26,8 @@
       "page": 1,
       "claim": "The department reports 3,149,556 partner-agency searches in its January–June 2026 audit; it identified 29 searches warranting deeper review, 23 associated with NCRIC, and states NCRIC access was removed.",
       "caveat": "Department-reported findings; suspected indirect sharing is not an adjudicated privacy-law violation. Search totals describe a multi-month interval.",
-      "original_publisher": "San Bruno Police Department"
+      "original_publisher": "San Bruno Police Department",
+      "source_date_note": "2026-07-14"
     },
     {
       "id": "san-bruno-2025-audit",
@@ -36,7 +38,8 @@
       "page": 1,
       "claim": "The report states 1,238 internal and 461,711 partner searches for the December 2025 audit and reports 66 total cameras, 46 operational.",
       "caveat": "Report itself bears an anomalous memorandum date of January 5, 2025 while describing December 2025 and a period extending to January 2026; its chronology requires agency confirmation.",
-      "original_publisher": "San Bruno Police Department"
+      "original_publisher": "San Bruno Police Department",
+      "source_date_note": "memo stamped 2025-01-05; conflicting audit period December 2025"
     },
     {
       "id": "green-bay-sep2026-report",
@@ -47,7 +50,8 @@
       "page": 1,
       "claim": "The October 1, 2026 report lists 443,664 unique plate reads, 9,534 hotlist hits, 522 user search sessions, and four organizations granted access to Green Bay PD data.",
       "caveat": "Aggregate agency statements do not prove any particular data search, recipient query or current sharing beyond the dated report.",
-      "original_publisher": "Green Bay Police Department"
+      "original_publisher": "Green Bay Police Department",
+      "source_date_note": "2026-10-01"
     },
     {
       "id": "robbinsdale-policy-427",
