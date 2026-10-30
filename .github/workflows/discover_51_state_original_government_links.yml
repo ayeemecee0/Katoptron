@@ -4,6 +4,8 @@ on:
     paths:
       - 'data/nationwide-government-jurisdiction-registry.json'
       - 'scripts/discover_51_state_original_government_links.py'
+      - 'scripts/triage_nationwide_original_acquisition.py'
+      - 'scripts/test_triage_nationwide_original_acquisition.py'
       - 'nationwide-policy.html'
       - 'nationwide-policy-coverage.js'
       - 'scripts/test_discover_51_state_original_government_links.py'
@@ -29,12 +31,18 @@ jobs:
           python-version: '3.12'
       - name: Test 51-state queue, provider outages, safe links and no-fact promotion
         run: python -m unittest discover -s scripts -p 'test_discover_51_state_original_government_links.py' -v
+      - name: Test acquisition deduplication, prioritization and no-fact publication
+        run: python -m unittest discover -s scripts -p 'test_triage_nationwide_original_acquisition.py' -v
       - name: Search public government-publisher link metadata for all jurisdictions
         run: python scripts/discover_51_state_original_government_links.py --workers 5
+      - name: Prioritize at most 25 editorial checks without publishing claims
+        run: python scripts/triage_nationwide_original_acquisition.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: all-51-states-unverified-government-original-link-discovery
-          path: .katoptron-ci/nationwide-51-state-publication-discovery-leads.json
+          path: |
+            .katoptron-ci/nationwide-51-state-publication-discovery-leads.json
+            .katoptron-ci/nationwide-original-acquisition-editorial-queue.json
           retention-days: 21
           if-no-files-found: warn
