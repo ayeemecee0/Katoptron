@@ -44,8 +44,8 @@ No private plate-read data, locations, credentials, FOIA submissions or bulk cam
 - All 15 existing changed hash candidates are individually enumerated with prior/current SHA-256 in `data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json`. None can be certified as a text change because the 2026-10-27 baseline retained hashes without full earlier source copies. Every candidate is explicitly held for the missing original, rather than silently accepted or dismissed. Requested target of three independently verified before-and-after page-pinned differences is **not met**; the existing review approval ledger remains empty.
 - All 13 previously held original URLs have explicit failure reasons and separate issuer-sourced fallbacks. The originals are preserved. The separate alternatives are not represented as the same document or a repaired original URL.
 - Twelve new original-government sourced research starters have explicit source URLs, dated or undated provenance, possible reporting questions and limits. Three previous starters remain, for 15 total.
-- Eleven independently identified original-government source URLs are additionally monitored to deepen eight targeted exact-agency/legislative source groups with at least two distinct primary publisher pages each. These do not constitute a complete agency census or proof of current Flock use.
-- The monitoring inventory expands from 70 to 81 URLs, subject to live reachability and CI outcome. The 15 candidate statuses are historical audit records, not a stream of newly detected events.
+- Twelve independently identified original-government source URLs are additionally monitored (eleven targeted agency documents plus a Pennsylvania Open Records original) to deepen eight targeted exact-agency/legislative source groups with at least two distinct primary publisher pages each. These do not constitute a complete agency census or proof of current Flock use.
+- The monitoring inventory expands from 70 to 82 URLs, subject to live reachability and CI outcome. The 15 candidate statuses are historical audit records, not a stream of newly detected events.
 
 ## Subsequent value-based milestones
 
