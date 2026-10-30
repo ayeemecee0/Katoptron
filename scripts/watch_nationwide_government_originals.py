@@ -207,9 +207,10 @@ def underrepresented_government_originals():
       (row["kind"]=="pdf")!=urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf") or
       not row.get("publisher") or len(row.get("grounded_finding",""))<80 or
       len(row.get("unknown",""))<45 or len(row.get("next_step",""))<45 or
-      row.get("no_adoption_inferred") is not True):
+      row.get("no_adoption_inferred") is not True or row.get("monitor_eligible") not in (True,False)):
    raise ValueError("Unreviewed original government legislative source")
   seen.add(row["id"])
+  if not row["monitor_eligible"]:continue
   out.append({"id":row["id"],"state":row["state"],"source_url":row["source_url"],
    "kind":row["kind"],"publisher":row["publisher"],
    "origin_role":"government_legislative_original_not_operational_deployment"})
