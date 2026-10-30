@@ -32,7 +32,8 @@ def validated(receipts,expected):
 def continuity(current,registry,existing,previous=None,day="2026-10-29"):
  jurisdiction,seeds,_=monitor.catalog(registry,existing)
  legacy=monitor.legacy_sources(existing)
- expected={s["id"]:s for s in seeds+legacy}
+ supplemental=monitor.recovery_sources()
+ expected={s["id"]:s for s in seeds+legacy+supplemental}
  rows=current.get("all_source_receipts")
  if current.get("jurisdictions_total")!=51 or not isinstance(rows,list):raise ValueError("Not complete national retrieval")
  validated(rows,expected)
@@ -63,6 +64,7 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
   result={"source_id":row["source_id"],"state":row["state"],"source_url":row["source_url"],
    "kind":row["kind"],"status":row["status"],"change":change,
    "observed_on":day,"last_usable_sha256":new_hash,"last_usable_on":new_date,
+   "previous_usable_sha256":last_hash,"current_observation_sha256":row["original_sha256"] if good else None,
    "individual_document_facts_verified":False,"camera_deployment_verified":False,
    "policy_adoption_verified":False}
   items.append(result);counts[change]=counts.get(change,0)+1
@@ -88,10 +90,10 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
    "statewide_camera_locations_verified":False})
  assert len(by_state)==51 and all(s["originals_monitored"]>=1 for s in by_state)
  snapshot={"schema_version":2,"observed_on":day,"scope":"government_source_access_and_fingerprint_only_not_published_contract_or_policy_findings",
-  "jurisdictions_monitored":51,"monitored_urls":len(items),"receipts":items,"review_queue":changes,"review_counts":counts,
+  "jurisdictions_monitored":51,"monitored_urls":len(items),"supplemental_urls":len(supplemental),"receipts":items,"review_queue":changes,"review_counts":counts,
   "states":by_state,"verified_new_contract_or_policy_claims":0,"automatic_camera_or_sharing_publications":0}
  health={"schema_version":1,"observed_on":day,"scope":snapshot["scope"],
-  "jurisdictions":51,"monitored_urls":len(items),
+  "jurisdictions":51,"monitored_urls":len(items),"supplemental_urls":len(supplemental),
   "accessible_origins":sum(s["status"].startswith("original_") for s in items),
   "held_origins":sum(s["status"].startswith("held_") for s in items),
   "source_hash_changes_pending_individual_review":counts.get("source_bytes_changed_review_required",0),
@@ -120,6 +122,6 @@ def main():
   path.parent.mkdir(parents=True,exist_ok=True)
   path.write_text(json.dumps(obj,indent=2)+"\n",encoding="utf8")
  print("NATIONWIDE_51_ORIGINAL_SOURCE_MONITOR",json.dumps({k:health[k] for k in
-  ("jurisdictions","monitored_urls","accessible_origins","held_origins",
+  ("jurisdictions","monitored_urls","supplemental_urls","accessible_origins","held_origins",
    "source_hash_changes_pending_individual_review","first_baselines_pending_individual_review")},sort_keys=True))
 if __name__=="__main__":main()

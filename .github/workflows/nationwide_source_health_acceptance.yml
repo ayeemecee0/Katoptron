@@ -3,21 +3,30 @@ on:
   pull_request:
     paths:
       - 'scripts/watch_nationwide_government_originals.py'
+      - 'data/nationwide-recovery-government-originals-2026-10-29.json'
       - 'scripts/nationwide_source_health.py'
+      - 'scripts/review_nationwide_source_changes.py'
+      - 'data/nationwide-original-document-difference-approvals.json'
+      - 'scripts/test_recovered_originals_editorial_changes.py'
       - 'scripts/test_nationwide_source_health.py'
       - 'scripts/test_watch_nationwide_government_originals.py'
       - 'scripts/smoke_nationwide_source_monitor.cjs'
       - 'nationwide-source-monitor.html'
+      - 'nationwide-research-leads.html'
+      - 'data/nationwide-original-source-research-leads-2026-10-29.json'
       - '.github/workflows/nationwide_source_health_acceptance.yml'
   push:
     branches: [main]
     paths:
       - 'scripts/watch_nationwide_government_originals.py'
+      - 'data/nationwide-recovery-government-originals-2026-10-29.json'
       - 'scripts/nationwide_source_health.py'
       - 'scripts/test_nationwide_source_health.py'
       - 'scripts/test_watch_nationwide_government_originals.py'
       - 'scripts/smoke_nationwide_source_monitor.cjs'
       - 'nationwide-source-monitor.html'
+      - 'nationwide-research-leads.html'
+      - 'data/nationwide-original-source-research-leads-2026-10-29.json'
       - '.github/workflows/nationwide_source_health_acceptance.yml'
   workflow_dispatch:
 permissions:
@@ -34,10 +43,11 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install 'pypdf>=5,<7'
-      - name: Validate original source registry, all 59 sources, source change and held-baseline semantics
+      - name: Validate original source registry, all 70 sources, source change and held-baseline semantics
         run: |
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
+          python -m unittest discover -s scripts -p 'test_recovered_originals_editorial_changes.py' -v
           python -m unittest discover -s scripts -p 'test_discover_nationwide_original_document_links.py' -v
   browser:
     runs-on: ubuntu-24.04

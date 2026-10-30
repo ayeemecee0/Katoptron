@@ -14,12 +14,14 @@ from pypdf import PdfReader
 ROOT=Path(__file__).resolve().parents[1]
 REGISTRY=ROOT/"data"/"nationwide-government-jurisdiction-registry.json"
 EXISTING=ROOT/"data"/"national-government-audit-source-portals.json"
+RECOVERY=ROOT/"data"/"nationwide-recovery-government-originals-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
 MAX_PAGES=120
-LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us"}
+LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.co.routt.co.us","www.leg.state.nv.us","www.lvmpd.com"}
 MAX_MONITORED_SOURCES=100
+MAX_PAGES=200  # bounded 159-page Nevada legislative report; only first 8 text pages sampled
 STATES=("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC").split()
 STATUS={"original_government_html_accessible","original_government_pdf_accessible",
  "held_redirect","held_http_error","held_oversized","held_wrong_format",
@@ -56,6 +58,30 @@ def legacy_sources(existing):
  if len(items)!=len({x["id"] for x in items}) or len(items)>25:
   raise ValueError("Duplicate or oversized historical publisher registry")
  return items
+
+def recovery_sources(original=None):
+ """Discovery does not grant publication authority; exact vetted 11 publisher URLs only."""
+ if original is None:original=json.loads(RECOVERY.read_text(encoding="utf8"))
+ if not isinstance(original,dict) or original.get("schema_version")!=1 or not isinstance(original.get("original_source_recovery_candidates"),list):
+  raise ValueError("Supplementary government recovery registry invalid")
+ rows=original["original_source_recovery_candidates"]
+ held=set("CO FL HI IA MI MS NC NV NY UT WV".split())
+ if len(rows)!=11 or {r.get("state") for r in rows}!=held:
+  raise ValueError("Source recovery needs one independently located government publisher per affected state")
+ seen=set();sources=[]
+ for r in rows:
+  if (r.get("id") in seen or r.get("state") not in STATES or r.get("kind") not in {"html","pdf"} or
+      r.get("origin_role")!="supplemental_government_publisher_individual_claims_unverified" or
+      r.get("operational_camera_verified") is not False or r.get("executed_contract_verified") is not False or
+      not isinstance(r.get("publisher"),str) or len(r["publisher"])<12 or
+      not re.fullmatch(r"[a-z]{2}-[a-z0-9-]{12,95}",r.get("id","")) or
+      not exact(r.get("source_url")) or "no unverified" not in r.get("evidence_limit","")):
+   raise ValueError("Supplemental original-government publication held as unsafe")
+  seen.add(r["id"])
+  sources.append({"id":r["id"],"state":r["state"],"publisher":r["publisher"],
+    "source_url":r["source_url"],"kind":r["kind"],
+    "origin_role":"supplemental_government_publisher_individual_claims_unverified"})
+ return sources
 
 def catalog(obj,existing):
  if (not isinstance(obj,dict) or obj.get("schema_version")!=1 or
@@ -207,10 +233,12 @@ def inspect(src,fetcher=fetch):
 def watch(obj,existing,fetcher=fetch,workers=5):
  jurisdictions,seeds,existing_states=catalog(obj,existing)
  legacy=legacy_sources(existing)
+ recovery=recovery_sources()
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
   receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
   legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
- all_receipts=receipts+legacy_receipts
+  recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher),recovery))
+ all_receipts=receipts+legacy_receipts+recovery_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
@@ -218,7 +246,8 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   code=j["state"]
   r=[x for x in receipts if x["state"]==code]
   old=[x for x in legacy_receipts if x["state"]==code]
-  combined=r+old
+  extra=[x for x in recovery_receipts if x["state"]==code]
+  combined=r+old+extra
   accessible=sum(x["status"].startswith("original_") for x in combined)
   held=sum(x["status"].startswith("held_") for x in combined)
   source_gap=("no_monitored_government_original_accessible" if accessible==0 else
@@ -244,7 +273,7 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,
   "monitored_sources_total":len(all_receipts),
   "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
   "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
@@ -267,6 +296,8 @@ def main():
  print("NATIONWIDE_ORIGINAL_GOVERNMENT_SOURCE_WATCH",json.dumps({"jurisdictions":51,"states_with_seed_or_existing":result["states_with_existing_or_new_official_seed_sources"],
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,
   "all_government_urls_monitored":result["monitored_sources_total"],
+  "supplemental_sources_monitored":len(result["recovery_receipts"]),
+  "supplemental_accessible":sum(x["status"].startswith("original_") for x in result["recovery_receipts"]),
   "all_originals_accessible":result["monitored_original_accessible"],
   "all_originals_held":result["monitored_original_held"],
   "states_with_no_accessible_original":sorted(row["state"] for row in result["jurisdictions"] if row["monitored_original_accessible"]==0),

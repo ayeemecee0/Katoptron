@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-29",
+  "policy": "Only source-attributed government issuer statements, distinct from independently authenticated before-and-after document changes and never evidence of wrongdoing. This publication does not assert camera locations, installation verification, signed payment, or effective policy beyond original issuer's dated statement.",
+  "leads": [
+    {
+      "id": "fl-panama-2026-council-stated-removal-vote",
+      "state": "FL",
+      "agency": "City of Panama City Commission",
+      "source_url": "https://panamacity.gov/m/newsflash/home/detail/811",
+      "publisher": "City of Panama City",
+      "source_date": "2026-09-08",
+      "source_issuer_review_status": "source_attributed_government_announcement_not_independent_execution_audit",
+      "document_type": "municipal_action_announcement",
+      "title": "Panama City publicly reports a vote to terminate and remove a subset of Flock cameras",
+      "published_finding": "The municipal announcement states that on September 8, 2026, commissioners voted unanimously to terminate and remove 41 Flock cameras on state rights-of-way and requested options for remaining cameras.",
+      "reviewed_original_evidence": "City of Panama City 'Commission Takes Action on FLOCK Cameras' municipal notice, updated September 8, 2026.",
+      "verified_boundary": "This verifies the text of a city-issued decision announcement, not that the equipment was later physically removed, that the vendor contract ended, or that all city cameras were disabled.",
+      "what_is_unknown": [
+        "What original signed contract clause and notice governs termination?",
+        "What completion notice proves the affected equipment was actually removed?",
+        "What council action was taken for the remaining cameras?"
+      ],
+      "further_verification": "Review September 8 commission minutes and signed termination notice, obtain completed FDOT removal inventory.",
+      "camera_coordinates_republished": false,
+      "policy_enactment_inferred": false
+    },
+    {
+      "id": "mi-state-2026-flock-procurement-catalog",
+      "state": "MI",
+      "agency": "Michigan Department of Technology Management and Budget",
+      "source_url": "https://www.michigan.gov/dtmb/procurement/mideal-extended-purchasing-program/mideal-contract-search/categories/folder-2/systems-data-collections-and-reporting",
+      "publisher": "State of Michigan DTMB",
+      "source_date": "publisher_page_undated_checked_2026-10-29",
+      "source_issuer_review_status": "source_attributed_government_contract_directory_not_buyer_confirmation",
+      "document_type": "state_procurement_contract_directory",
+      "title": "Michigan procurement directory lists Flock license-plate reader contract 250000000832",
+      "published_finding": "Michigan's official procurement directory lists Flock Group Inc. doing business as Flock Safety, contract 250000000832, for a hosted license plate reader solution, with a displayed contract expiration date of June 3, 2030.",
+      "reviewed_original_evidence": "Michigan Department of Technology, Management and Budget official MiDEAL systems/data reporting contract index, original Flock contract listing.",
+      "verified_boundary": "A statewide procurement listing is not proof that any particular Michigan city bought, deployed or paid for Flock equipment; renewal terms and amendments require the executed file.",
+      "what_is_unknown": [
+        "Which participating agencies issued purchase orders under the contract?",
+        "Where are the executed agreement, extensions, invoices and effective terms?",
+        "Does the listed expiry reflect amendments not visible in this directory?"
+      ],
+      "further_verification": "Retrieve contract 250000000832 and amendments, government purchase-order and invoice records by participating agency.",
+      "camera_coordinates_republished": false,
+      "policy_enactment_inferred": false
+    },
+    {
+      "id": "nc-hillsborough-2025-flock-contract-update",
+      "state": "NC",
+      "agency": "Town of Hillsborough",
+      "source_url": "https://www.hillsboroughnc.gov/Home/Components/News/News/856/14",
+      "publisher": "Town of Hillsborough",
+      "source_date": "2025-12-03",
+      "source_issuer_review_status": "source_attributed_local_government_update_not_independent_site_audit",
+      "document_type": "municipal_contract_termination_update",
+      "title": "Hillsborough's municipal notice reports ending a Flock contract and later camera removal",
+      "published_finding": "The town's October 28, 2025 announcement describes ending its Flock camera contract; an update dated December 3 reports that all Flock cameras contracted by the town had been removed.",
+      "reviewed_original_evidence": "Town of Hillsborough official news release dated October 28, 2025 and updated December 3, 2025.",
+      "verified_boundary": "Town-published removal is an attributed official statement rather than an independent physical camera audit; no conclusion is drawn about other agencies' devices.",
+      "what_is_unknown": [
+        "Where are the formal executed termination agreement and final vendor invoices?",
+        "Did the town receive written vendor deletion or preservation confirmations?",
+        "Which public contract terms governed removal and data retention?"
+      ],
+      "further_verification": "Obtain town contract, termination correspondence, final closeout records and public release of vendor data-deletion policy.",
+      "camera_coordinates_republished": false,
+      "policy_enactment_inferred": false
+    }
+  ]
+}
