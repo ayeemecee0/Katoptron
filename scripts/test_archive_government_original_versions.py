@@ -26,6 +26,8 @@ class OriginalArchiveTests(unittest.TestCase):
    out=A.reconcile(sample(),cur,old)
    assert out["source_bytes_verified_and_archived"]==1
    assert out["machine_differences_for_human_review"]==1
+   assert out['authenticated_before_after_original_byte_pairs']==1
+   assert out['original_version_pairs'][0]['editorial_status']=='machine_text_difference_requires_editorial_check'
    assert out["automatic_editorial_approvals"]==0
    c=out["original_version_pairs"][0]
    assert c["machine_page_candidates"][0]["page"]==1
@@ -39,6 +41,19 @@ class OriginalArchiveTests(unittest.TestCase):
    out=A.reconcile(sample(),cur,old)
    assert out["machine_differences_for_human_review"]==0
    assert out["original_version_pairs"][0]["editorial_status"]=="held_missing_authentic_prior_document_bytes"
+ def test_site_loading_timer_is_not_documentary_change(self):
+  before=b'<!doctype html><html><body>Government original policy: no change. Loading Articles 0.003858804702</body></html>'
+  after=b'<!doctype html><html><body>Government original policy: no change. Loading Articles 0.004951000213</body></html>'
+  with tempfile.TemporaryDirectory() as tmp:
+   cur=Path(tmp)/"current";old=Path(tmp)/"baseline";cur.mkdir();old.mkdir()
+   (cur/"test-000.html").write_bytes(after)
+   (old/"test-000.html").write_bytes(before)
+   (old/"manifest.json").write_text(json.dumps({"schema_version":1,"sources":{
+    "test-000":{"sha256":sha(before),"kind":"html","observed_on":"2026-10-29"}}}))
+   o=A.reconcile(sample(before,after),cur,old)
+   assert o["authenticated_before_after_original_byte_pairs"]==1
+   assert o["machine_differences_for_human_review"]==0
+   assert o["original_version_pairs"][0]["editorial_status"]=="authenticated_byte_pair_no_substantive_text_difference_identified"
  def test_forged_current_bytes_rejected(self):
   with tempfile.TemporaryDirectory() as tmp:
    cur=Path(tmp)/"current";old=Path(tmp)/"baseline";cur.mkdir();old.mkdir()
