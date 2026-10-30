@@ -171,3 +171,19 @@ delete from public.research_pilot_task_measurements;
 select 1/(case when (select count(*) from public.research_pilot_task_measurements)=0 then 1 else 0 end) as owner_can_withdraw_metrics;
 reset role;
 select 'RESEARCH_PILOT_OPT_IN_RLS_PASS' as result;
+
+-- Owner reads audited membership and invite events; authenticated non-owner cannot inspect or mutate audit rows.
+set role authenticated;
+set request.jwt.claim.sub='33333333-3333-3333-3333-333333333333';
+select 1/(case when (select count(*) from public.research_team_activity)=0 then 1 else 0 end) as outsider_team_audit_hidden;
+select 1/(case when not has_table_privilege('authenticated','public.research_team_activity','insert') then 1 else 0 end) as team_audit_append_only;
+set request.jwt.claim.sub='22222222-2222-2222-2222-222222222222';
+select 1/(case when (select count(*) from public.research_team_activity)=0 then 1 else 0 end) as team_member_cannot_read_owner_audit;
+set request.jwt.claim.sub='11111111-1111-1111-1111-111111111111';
+select 1/(case when (select count(*) from public.research_team_activity where event_type='role_changed')=1 then 1 else 0 end) as team_audit_role_change_verified;
+insert into public.research_workspace_invites(workspace_id,created_by,role)
+ values('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','11111111-1111-1111-1111-111111111111','viewer');
+select 1/(case when (select count(*) from public.research_team_activity where event_type='invite_created')=1 then 1 else 0 end) as owner_invite_creation_audited;
+delete from public.research_workspace_invites where workspace_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+select 1/(case when (select count(*) from public.research_team_activity where event_type='invite_revoked')=1 then 1 else 0 end) as owner_invite_revocation_audited;
+reset role;
