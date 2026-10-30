@@ -5,6 +5,9 @@ on:
       - 'scripts/watch_nationwide_government_originals.py'
       - 'data/nationwide-recovery-government-originals-2026-10-29.json'
       - 'scripts/nationwide_source_health.py'
+      - 'scripts/review_nationwide_source_changes.py'
+      - 'data/nationwide-original-document-difference-approvals.json'
+      - 'scripts/test_recovered_originals_editorial_changes.py'
       - 'scripts/test_nationwide_source_health.py'
       - 'scripts/test_watch_nationwide_government_originals.py'
       - 'scripts/smoke_nationwide_source_monitor.cjs'
@@ -40,6 +43,7 @@ jobs:
         run: |
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
+          python -m unittest discover -s scripts -p 'test_recovered_originals_editorial_changes.py' -v
           python -m unittest discover -s scripts -p 'test_discover_nationwide_original_document_links.py' -v
   browser:
     runs-on: ubuntu-24.04
