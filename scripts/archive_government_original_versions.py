@@ -54,8 +54,8 @@ def substantive(before,after,kind):
 
 def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
  rows=snapshot.get("receipts",[])
- if snapshot.get("schema_version")!=2 or not isinstance(rows,list) or
-    len(rows)<100 or len({x.get("source_id") for x in rows})!=len(rows):
+ if (snapshot.get("schema_version")!=2 or not isinstance(rows,list) or
+    len(rows)<100 or len({x.get("source_id") for x in rows})!=len(rows)):
   raise ValueError("Complete national original-fingerprint snapshot required")
  baseline.mkdir(parents=True,exist_ok=True)
  manifest_path=baseline/"manifest.json"
