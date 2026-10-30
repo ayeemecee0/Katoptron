@@ -16,6 +16,9 @@ REGISTRY=ROOT/"data"/"nationwide-government-jurisdiction-registry.json"
 EXISTING=ROOT/"data"/"national-government-audit-source-portals.json"
 RECOVERY=ROOT/"data"/"nationwide-recovery-government-originals-2026-10-29.json"
 AGENCY_DEPTH=ROOT/"data"/"nationwide-targeted-agency-original-depth-2026-10-29.json"
+REVIEWED_ADDITIONS=ROOT/"data"/"nationwide-reviewed-original-monitor-additions-2026-10-29.json"
+QUALIFIED_DOCKET=ROOT/"data"/"qualified-original-government-docket-2026-10-29.json"
+NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
@@ -100,6 +103,45 @@ def agency_depth_sources():
    raise ValueError("Non-original source or unreviewed agency claim in depth registry")
   ids.add(x["id"]);out.append({"id":x["id"],"state":x["state"],"publisher":x["publisher"],
     "source_url":x["source_url"],"kind":x["kind"],"origin_role":x["origin_role"]})
+ return out
+
+def reviewed_addition_sources():
+ """18 exact government originals already separately source-attributed in published research.
+
+ Added to *monitoring*, not newly discovered or independently confirmed new facts.
+ A source's prior editorial ID, issuer, state, URL and source date must match.
+ """
+ data=json.loads(REVIEWED_ADDITIONS.read_text(encoding="utf8"))
+ dossier=json.loads(QUALIFIED_DOCKET.read_text(encoding="utf8"))
+ national=json.loads(NATIONAL_REVIEWED.read_text(encoding="utf8"))
+ if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=18 or
+     dossier.get("schema_version")!=1 or national.get("schema_version")!=1):
+  raise ValueError("Reviewed original additions not source-qualified")
+ indexed={("qualified_original_government_docket",x["id"]):x for x in dossier["sources"]}
+ indexed.update({("source_attributed_national_original_government_leads",x["id"]):x for x in national["leads"]})
+ out=[];ids=set();urls=set()
+ for row in data["sources"]:
+  src=indexed.get((row.get("record_origin"),row.get("record_id")))
+  if (not src or row.get("id") in ids or not re.fullmatch(r"reviewed-[0-9]{2}-[a-z]{2}",str(row.get("id",""))) or
+      row.get("state") not in STATES or row.get("source_url") in urls or
+      row.get("state")!=src.get("state") or row.get("source_url")!=src.get("source_url") or
+      row.get("publisher")!=src.get("agency") or row.get("source_date")!=src.get("source_date") or
+      row.get("origin_role")!="original_government_historical_publication_monitor_only" or
+      row.get("kind") not in ("html","pdf") or
+      (row["kind"]=="pdf") != urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf") or
+      not exact(row.get("source_url")) or
+      row.get("individual_document_facts_verified_by_monitor") is not False or
+      row.get("operational_camera_verified_by_monitor") is not False or
+      row.get("policy_change_verified_by_monitor") is not False):
+   raise ValueError("New monitored original lacks independent prior source citation")
+  if row["record_origin"]=="qualified_original_government_docket":
+   if src.get("watch_category")!="historical_research_only" or not src.get("source_type","").startswith("government_"):
+    raise ValueError("Docket source lacks original-government provenance")
+  elif not src.get("source_issuer_review_status","").startswith("source_attributed_"):
+   raise ValueError("National original not source-attributed")
+  ids.add(row["id"]);urls.add(row["source_url"])
+  out.append({"id":row["id"],"state":row["state"],"publisher":row["publisher"],
+   "source_url":row["source_url"],"kind":row["kind"],"origin_role":row["origin_role"]})
  return out
 
 def catalog(obj,existing):
@@ -254,12 +296,19 @@ def watch(obj,existing,fetcher=fetch,workers=5):
  legacy=legacy_sources(existing)
  recovery=recovery_sources()
  depth=agency_depth_sources()
+ reviewed=reviewed_addition_sources()
+ existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed]
+ existing_ids=[s["id"] for s in seeds+legacy+recovery+depth+reviewed]
+ if (len(existing_urls)!=len(set(existing_urls)) or len(existing_ids)!=len(set(existing_ids)) or
+     len(existing_urls)!=MAX_MONITORED_SOURCES):
+  raise ValueError("Missing or duplicate 100-original-government monitoring inventory")
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
   receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
   legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
   recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher),recovery))
   depth_receipts=list(pool.map(lambda s:inspect(s,fetcher),depth))
- all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts
+  reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher),reviewed))
+ all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
@@ -269,7 +318,8 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   old=[x for x in legacy_receipts if x["state"]==code]
   extra=[x for x in recovery_receipts if x["state"]==code]
   deep=[x for x in depth_receipts if x["state"]==code]
-  combined=r+old+extra+deep
+  newly_monitored=[x for x in reviewed_receipts if x["state"]==code]
+  combined=r+old+extra+deep+newly_monitored
   accessible=sum(x["status"].startswith("original_") for x in combined)
   held=sum(x["status"].startswith("held_") for x in combined)
   source_gap=("no_monitored_government_original_accessible" if accessible==0 else
@@ -295,7 +345,7 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,
   "monitored_sources_total":len(all_receipts),
   "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
   "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
@@ -320,6 +370,8 @@ def main():
   "all_government_urls_monitored":result["monitored_sources_total"],
   "supplemental_sources_monitored":len(result["recovery_receipts"]),
   "agency_depth_sources_monitored":len(result["depth_receipts"]),
+  "reviewed_original_urls_newly_monitored":len(result["reviewed_addition_receipts"]),
+  "reviewed_original_urls_accessible":sum(x["status"].startswith("original_") for x in result["reviewed_addition_receipts"]),
   "agency_depth_sources_accessible":sum(x["status"].startswith("original_") for x in result["depth_receipts"]),
   "supplemental_accessible":sum(x["status"].startswith("original_") for x in result["recovery_receipts"]),
   "all_originals_accessible":result["monitored_original_accessible"],
