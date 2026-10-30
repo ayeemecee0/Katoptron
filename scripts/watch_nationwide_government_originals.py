@@ -6,7 +6,7 @@ research. This watcher only generates source receipts and state-level work queue
 A fetched page or PDF is NEVER a verified camera, policy, adoption, contract,
 sharing relationship or current agency operation. No plate records are acquired.
 """
-import argparse,concurrent.futures,datetime as dt,hashlib,io,json,re,urllib.parse,urllib.request
+import argparse,concurrent.futures,datetime as dt,hashlib,io,ipaddress,json,re,socket,urllib.parse,urllib.request
 from pathlib import Path
 from html.parser import HTMLParser
 from pypdf import PdfReader
@@ -18,6 +18,8 @@ OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.js
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
 MAX_PAGES=120
+LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us"}
+MAX_MONITORED_SOURCES=100
 STATES=("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC").split()
 STATUS={"original_government_html_accessible","original_government_pdf_accessible",
  "held_redirect","held_http_error","held_oversized","held_wrong_format",
@@ -29,10 +31,32 @@ def exact(url):
  try:
   p=urllib.parse.urlsplit(url)
   return (p.scheme=="https" and p.hostname is not None and
-   (p.hostname.endswith(".gov") or p.hostname=="www.state.wv.us") and
+   (p.hostname.endswith(".gov") or p.hostname=="www.state.wv.us" or p.hostname in LEGACY_GOV_HOSTS) and
    p.netloc==p.hostname and not p.fragment and not p.username and not p.password and
    len(p.path)>1 and len(p.query)<=190)
  except (ValueError,TypeError):return False
+def public_dns(host):
+ try:
+  addresses=socket.getaddrinfo(host,443,type=socket.SOCK_STREAM)
+  return bool(addresses) and all(ipaddress.ip_address(item[4][0]).is_global for item in addresses)
+ except (OSError,ValueError):return False
+
+def legacy_sources(existing):
+ """Exactly the pre-curated original publishers; no unverifiable domains."""
+ items=[]
+ for src in existing["sources"]:
+  if src.get("kind") not in ("html_index","pdf_original") or not exact(src.get("url")):
+   raise ValueError("Unsafe existing original government source")
+  if not re.fullmatch(r"[a-z0-9-]{8,100}",src.get("id","")) or not src.get("agency"):
+   raise ValueError("Missing historical publisher identity")
+  items.append({"id":"legacy-"+src["id"],"state":src["state"],
+    "publisher":src["agency"],"source_url":src["url"],
+    "kind":"pdf" if src["kind"]=="pdf_original" else "html",
+    "origin_role":"precurated_government_publication_not_individually_reviewed"})
+ if len(items)!=len({x["id"] for x in items}) or len(items)>25:
+  raise ValueError("Duplicate or oversized historical publisher registry")
+ return items
+
 def catalog(obj,existing):
  if (not isinstance(obj,dict) or obj.get("schema_version")!=1 or
      obj.get("universe")!="50_us_states_plus_district_of_columbia" or
@@ -61,12 +85,13 @@ def catalog(obj,existing):
    raise ValueError("Ungrounded original government publication source")
   seen.add(src["id"])
  if len(obj["official_seed_sources"])<20:raise ValueError("Too few new state sources")
- present={x["state"] for x in existing.get("sources",[])}
- if not present<=set(STATES):raise ValueError("Existing official state evidence invalid")
+ legacy=legacy_sources(existing)
+ present={x["state"] for x in legacy}
+ if not present<=set(STATES) or len(seen)+len(legacy)>MAX_MONITORED_SOURCES:raise ValueError("Existing official state evidence invalid")
  return obj["jurisdictions"],obj["official_seed_sources"],present
 def fetch(src):
  url=src["source_url"]
- if not exact(url):raise ValueError("Original government source not approved")
+ if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):raise ValueError("Original government source not approved or resolves privately")
  req=urllib.request.Request(url,headers={"Accept":"text/html,application/pdf",
    "User-Agent":"Katoptron-US-national-original-government-source-observation/1.0"})
  try:
@@ -181,22 +206,36 @@ def inspect(src,fetcher=fetch):
  return record
 def watch(obj,existing,fetcher=fetch,workers=5):
  jurisdictions,seeds,existing_states=catalog(obj,existing)
+ legacy=legacy_sources(existing)
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
   receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
- original_seed_states={r["state"] for r in receipts if r["status"].startswith("original_")}
+  legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
+ all_receipts=receipts+legacy_receipts
+ original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
  for j in jurisdictions:
   code=j["state"]
   r=[x for x in receipts if x["state"]==code]
+  old=[x for x in legacy_receipts if x["state"]==code]
+  combined=r+old
+  accessible=sum(x["status"].startswith("original_") for x in combined)
+  held=sum(x["status"].startswith("held_") for x in combined)
+  source_gap=("no_monitored_government_original_accessible" if accessible==0 else
+    "publisher_urls_accessible_but_agency_inventory_not_complete")
   by_state.append({"state":code,"name":j["name"],
    "research_queue_enrolled":True,
    "existing_curated_publisher_count":sum(x["state"]==code for x in existing["sources"]),
    "new_original_sources_seeded":len(r),
    "new_original_sources_retrieved":sum(x["status"].startswith("original_") for x in r),
    "new_original_sources_held":sum(x["status"].startswith("held_") for x in r),
-   "source_gap":"needs_authenticated_government_original" if code not in planned else
-     "publisher_monitoring_started_not_statewide_evidence_complete",
+   "source_gap":source_gap,
+   "monitored_original_urls":len(combined),
+   "monitored_original_accessible":accessible,
+   "monitored_original_held":held,
+   "held_source_ids":[x["source_id"] for x in combined if x["status"].startswith("held_")],
+   "state_agency_original_inventory_verified":False,
+   "statewide_flock_contract_policy_coverage_verified":False,
    "camera_coverage_claimed":False,"agency_inventory_complete":False,
    "new_same_host_policy_link_candidates_unverified":sum(
       len(x["unreviewed_same_host_policy_candidates"]) for x in r)})
@@ -205,7 +244,12 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"jurisdictions":by_state,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,
+  "monitored_sources_total":len(all_receipts),
+  "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
+  "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
+  "all_source_receipts":all_receipts,
+  "jurisdictions":by_state,
   "unreviewed_same_host_policy_link_candidates":sum(
    len(x["unreviewed_same_host_policy_candidates"]) for x in receipts),
   "verified_policy_adoptions_published":0}
@@ -222,9 +266,13 @@ def main():
  n=sum(x["status"].startswith("original_") for x in result["seed_receipts"])
  print("NATIONWIDE_ORIGINAL_GOVERNMENT_SOURCE_WATCH",json.dumps({"jurisdictions":51,"states_with_seed_or_existing":result["states_with_existing_or_new_official_seed_sources"],
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,
+  "all_government_urls_monitored":result["monitored_sources_total"],
+  "all_originals_accessible":result["monitored_original_accessible"],
+  "all_originals_held":result["monitored_original_held"],
+  "states_with_no_accessible_original":sorted(row["state"] for row in result["jurisdictions"] if row["monitored_original_accessible"]==0),
   "states_needing_original_government_seed":result["states_without_official_sources_seeded"],
   "new_same_host_policy_links_to_review":result["unreviewed_same_host_policy_link_candidates"],
   "policy_adoptions_automatically_published":0},sort_keys=True))
- for row in result["seed_receipts"]:
+ for row in result["all_source_receipts"]:
   print("ORIGINAL_GOVERNMENT_STATE_SOURCE",json.dumps({k:row[k] for k in ["state","source_id","status","original_sha256","pdf_pages"]},sort_keys=True))
 if __name__=="__main__":main()
