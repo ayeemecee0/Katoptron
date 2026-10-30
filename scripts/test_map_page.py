@@ -105,7 +105,7 @@ class MapPageTests(unittest.TestCase):
         self.assertNotIn('SYNTH-4827',old)
         self.assertNotIn('ORIGINAL SIMULATOR',self.html)
         self.assertIn('original simulator has been retired',old.lower())
-        self.assertIn('ORIGINAL SIMULATOR',self.html)
+        self.assertNotIn('href="./legacy-simulator.html"',self.html)
 
     def test_route_alternatives_accessible_and_explicitly_modeled(self):
         self.assertIn('id="routeChoice"',self.html)
