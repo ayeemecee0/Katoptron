@@ -14,7 +14,7 @@ function download(name,html){
 }
 function packageForSelected(){
  if(!selected)throw Error('Select a sourced lead first');
- return I.packageHtml(selected,issues,I.acquisition(selected,docket.rows));
+ return I.packageHtml(I.assemblePackage(selected,docket),issues,I.acquisition(selected,docket.rows));
 }
 function choose(lead){
  selected=lead;
@@ -187,14 +187,14 @@ $('downloadPackage').addEventListener('click',()=>{
  try{
   const lead=selected,request=I.acquisition(lead,docket.rows);request.body=$('draftBody').value;
   download('katoptron-investigation-'+lead.id.replace(/[^a-z0-9_-]/gi,'-').slice(0,70)+'.html',
-   I.packageHtml(lead,issues,request));
+   I.packageHtml(I.assemblePackage(lead,docket),issues,request));
   $('packageStatus').textContent='Printable original-source package saved. No private case materials included.';
  }catch(e){$('packageStatus').textContent='Package withheld: '+e.message;}
 });
 $('printPackage').addEventListener('click',()=>{
  try{
   const request=I.acquisition(selected,docket.rows);request.body=$('draftBody').value;
-  const html=I.packageHtml(selected,issues,request),popup=win.open('','_blank');
+  const html=I.packageHtml(I.assemblePackage(selected,docket),issues,request),popup=win.open('','_blank');
   if(!popup)throw Error('Browser blocked print window; download HTML instead');
   popup.document.open();popup.document.write(html);popup.document.close();popup.focus();popup.print();
  }catch(e){$('packageStatus').textContent='Print unavailable: '+e.message;}
