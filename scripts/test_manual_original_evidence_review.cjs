@@ -10,7 +10,7 @@ assert.equal(ledger.discovery_candidates.filter(x=>x.status==='original_pdf_page
 assert.equal(ledger.discovery_candidates.filter(x=>x.status==='held_pdf_redirect_original_parent_verified').length,2);
 assert.equal(ledger.held_sources.length,16);
 assert.equal(ledger.changed_source_candidates.length,25);
-assert.equal(additions.sources.length,22);
+assert.equal(additions.sources.length,33);
 const accepted=ledger.discovery_candidates.filter(x=>x.status==='original_pdf_page_visually_verified');
 for(const x of accepted){
  assert(x.url.startsWith('https://')&&Number.isInteger(x.page)&&x.page>=1);
