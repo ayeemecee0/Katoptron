@@ -57,6 +57,24 @@ class StateSources(unittest.TestCase):
    for x in links))
   missing=M.inspect(src,fetcher=lambda _:(_ for _ in ()).throw(ValueError("original_redirect")))
   self.assertEqual(missing["unreviewed_same_host_policy_candidates"],[])
+ def test_safe_government_transport_diagnostics_do_not_verify_content(self):
+  src={"id":"co-police-technology-disclosure","state":"CO","publisher":"Lafayette Police",
+   "kind":"html","source_url":"https://www.lafayetteco.gov/4282/Flock-Safety-ALPR-Program"}
+  def rejected(_):
+   raise M.SourceTransportError("original_redirect",http_status=302,
+    redirect_location="https://www.lafayetteco.gov/2592/Police-Transparency")
+  r=M.inspect(src,fetcher=rejected)
+  self.assertEqual(r["status"],"held_redirect")
+  self.assertEqual(r["transport_http_status"],302)
+  self.assertEqual(r["transport_redirect_candidate"],"https://www.lafayetteco.gov/2592/Police-Transparency")
+  self.assertIsNone(r["original_sha256"])
+  self.assertIsNone(r["retrieved_url"])
+  def blocked(_):raise M.SourceTransportError("http_error",http_status=403)
+  no=M.inspect(src,fetcher=blocked)
+  self.assertEqual(no["transport_http_status"],403)
+  self.assertEqual(no["transport_failure_reason"],"http_error")
+  self.assertIsNone(no["transport_redirect_candidate"])
+  self.assertIsNone(no["original_sha256"])
  def test_all_nineteen_historical_cases_are_preserved_and_verdicts_are_verifiable(self):
   held=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=4)
   report=M.historical_recovery_receipts(held)
