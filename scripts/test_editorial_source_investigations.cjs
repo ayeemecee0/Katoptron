@@ -37,6 +37,7 @@ assert(js.includes('textContent'));assert(!js.includes('innerHTML'));
 
 const policy=load('naperville-paired-policy-clause-revisions-2026-10-29.json');
 const progressed=load('investigation-original-source-workflow-verification-2026-10-29.json');
+const fallback=load('nationwide-original-government-recovery-alternates-2026-10-29.json');
 assert.equal(policy.count_clause_changes,10);
 assert.equal(policy.changes.length,10);
 assert.equal(policy.count_distinct_document_pairs,1);
@@ -53,6 +54,12 @@ assert(policy.changes.every(x=>x.before_pdf_url===policy.before.url+'#page='+x.b
 assert(policy.changes.every(x=>x.after_pdf_url===policy.after.url+'#page='+x.after_pdf_page));
 assert(policy.changes.every(x=>x.before_summary!==x.after_summary&&x.substantive_wording_difference.length>45));
 assert(policy.changes.every(x=>x.assistant_editorial_review.includes('passed')&&x.independent_human_editorial_status==='pending'&&!x.legal_violation_inferred));
+assert.equal(fallback.originals.length,7);
+assert.equal(new Set(fallback.originals.map(r=>r.id)).size,7);
+assert.equal(new Set(fallback.originals.map(r=>r.source_url)).size,7);
+assert(fallback.originals.every(r=>held.resolutions.some(h=>h.source_id===r.source_id)));
+assert(fallback.originals.every(r=>r.source_url.startsWith('https://')&&r.original_url.startsWith('https://')&&r.source_url!==r.original_url));
+assert(fallback.originals.every(r=>r.original_source_deleted===false&&r.original_source_automatically_recovered===false&&r.same_document_version_equivalence_proven===false));
 assert.equal(progressed.workflows.length,10);
 assert.equal(new Set(progressed.workflows.map(x=>x.lead_id)).size,10);
 assert.equal(progressed.requests_submitted,0);
@@ -62,5 +69,6 @@ assert(progressed.workflows.every(x=>x.confirmed_scope.length>30&&x.next_check.l
 assert(html.includes('id="policyPairs"')&&html.includes('id="workflowCards"'));
 assert(js.includes('naperville-paired-policy-clause-revisions-2026-10-29.json'));
 assert(js.includes('investigation-original-source-workflow-verification-2026-10-29.json'));
+assert(js.includes('nationwide-original-government-recovery-alternates-2026-10-29.json'));
 
 console.log('GOV_SOURCE_INTELLIGENCE_PASS: 13 unique extra original-government URLs, 14 source-backed investigative tasks, 19 held source dispositions, 38 unapproved source-byte comparisons');
