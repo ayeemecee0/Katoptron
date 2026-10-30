@@ -53,6 +53,29 @@ class Monitor(unittest.TestCase):
   self.assertEqual(out["receipts"][0]["change"],"previously_retrieved_source_currently_held")
   self.assertIn("al-city-council-agenda",health["states"][0]["held_original_source_ids"])
   self.assertEqual(health["states"][0]["documented_gap"],"no_accessible_curated_government_original")
+ def test_retrieval_provenance_and_last_good_hash_survive_publisher_outage(self):
+  first=fake()
+  original=next(r for r in first["all_source_receipts"] if r["source_id"]=="reviewed-23-tx")
+  original["retrieved_url"]="https://www.elgintexas.gov/m/newsflash/Archive/Item/1824?arcId=2451"
+  original["verified_same_publisher_redirect"]=True
+  snap,_=M.continuity(first,R,OLD,BASE,day="2026-10-30")
+  good=next(r for r in snap["receipts"] if r["source_id"]=="reviewed-23-tx")
+  self.assertEqual(good["last_verified_retrieved_url"],original["retrieved_url"])
+  after=fake()
+  row=next(r for r in after["all_source_receipts"] if r["source_id"]=="reviewed-23-tx")
+  row.update({"status":"held_http_error","original_sha256":None,
+   "transport_http_status":403,"transport_failure_reason":"http_error",
+   "transport_redirect_candidate":None})
+  next_snapshot,health=M.continuity(after,R,OLD,snap,day="2026-10-31")
+  last=next(r for r in next_snapshot["receipts"] if r["source_id"]=="reviewed-23-tx")
+  self.assertEqual(last["last_usable_sha256"],good["last_usable_sha256"])
+  self.assertEqual(last["last_usable_on"],"2026-10-30")
+  self.assertEqual(last["last_verified_retrieved_url"],good["last_verified_retrieved_url"])
+  self.assertEqual(last["status"],"held_http_error")
+  self.assertEqual(last["transport_http_status"],403)
+  self.assertEqual(last["change"],"previously_retrieved_source_currently_held")
+  self.assertFalse(last["camera_deployment_verified"])
+  self.assertEqual(health["source_verified_contract_changes"],0)
  def test_all_sources_held_still_nationally_enrolled_not_coverage_verified(self):
   run=fake()
   for x in run["all_source_receipts"]:
