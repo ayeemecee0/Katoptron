@@ -30,15 +30,15 @@ declare
  new_role text;
 begin
  if TG_TABLE_NAME='research_workspace_members' then
-  ws:=coalesce(new.workspace_id,old.workspace_id);
-  target:=coalesce(new.user_id,old.user_id);
+  if TG_OP='DELETE' then ws:=old.workspace_id;target:=old.user_id;
+  else ws:=new.workspace_id;target:=new.user_id;end if;
   if TG_OP='INSERT' then kind:='member_joined';new_role:=new.role;
   elsif TG_OP='DELETE' then kind:='member_removed';old_role:=old.role;
   elsif TG_OP='UPDATE' and old.role is distinct from new.role then
    kind:='role_changed';old_role:=old.role;new_role:=new.role;
   end if;
  elsif TG_TABLE_NAME='research_workspace_invites' then
-  ws:=coalesce(new.workspace_id,old.workspace_id);
+  if TG_OP='DELETE' then ws:=old.workspace_id;else ws:=new.workspace_id;end if;
   if TG_OP='INSERT' then kind:='invite_created';new_role:=new.role;
   elsif TG_OP='DELETE' and old.accepted_by is null then kind:='invite_revoked';old_role:=old.role;
   elsif TG_OP='UPDATE' and old.accepted_by is null and new.accepted_by is not null
@@ -50,7 +50,8 @@ begin
   insert into public.research_team_activity(workspace_id,actor_id,subject_id,event_type,role_before,role_after)
    values(ws,auth.uid(),target,kind,old_role,new_role);
  end if;
- return case when TG_OP='DELETE' then old else new end;
+ if TG_OP='DELETE' then return old;end if;
+ return new;
 end $$;
 revoke all on function katoptron_private.audit_research_team_changes() from public,anon,authenticated;
 
