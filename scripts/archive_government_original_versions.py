@@ -41,7 +41,13 @@ def substantive(before,after,kind):
  for i in range(min(len(a),len(b),200)):
   earlier,later=a[i][1],b[i][1]
   # Filter generated site timing markers. Raw checksums can differ even if the government-authored text does not.
-  dynamic=lambda t:re.sub(r"\bLoading Articles\s+\d+(?:\.\d+)?", "Loading Articles [runtime]",t)
+  def dynamic(t):
+   t=re.sub(r"\\bLoading Articles\\s+\\d+(?:\\.\\d+)?", "Loading Articles [runtime]",t)
+   if kind=="html":
+    # Explicit chrome-only transforms for confirmed dynamic government-site elements.
+    t=re.sub(r"(West Virginia Code \\| §17C-6-7A )\\w+, \\w+ \\d{1,2}, \\d{4}",r"\\1[site clock]",t)
+    t=re.sub(r"\\b\\d{2,3}°F(?= X Hot Key:)", "[site weather]",t)
+   return t
   if dynamic(earlier)==dynamic(later):continue
   opcodes=difflib.SequenceMatcher(None,earlier,later,autojunk=True).get_opcodes()
   candidates=[(x,y,z,w) for tag,x,y,z,w in opcodes if tag!="equal"]
