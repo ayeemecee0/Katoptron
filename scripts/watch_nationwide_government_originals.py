@@ -339,7 +339,7 @@ def watch(obj,existing,fetcher=fetch,workers=5):
    "statewide_flock_contract_policy_coverage_verified":False,
    "camera_coverage_claimed":False,"agency_inventory_complete":False,
    "new_same_host_policy_link_candidates_unverified":sum(
-      len(x["unreviewed_same_host_policy_candidates"]) for x in r)})
+      len(x["unreviewed_same_host_policy_candidates"]) for x in combined)})
  return {"schema_version":1,"created_on":dt.datetime.now(dt.timezone.utc).date().isoformat(),
   "scope":"all_51_state_discovery_queue_and_government_source_receipts_not_coverage_claims",
   "jurisdictions_total":51,
@@ -352,7 +352,7 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "all_source_receipts":all_receipts,
   "jurisdictions":by_state,
   "unreviewed_same_host_policy_link_candidates":sum(
-   len(x["unreviewed_same_host_policy_candidates"]) for x in receipts),
+   len(x["unreviewed_same_host_policy_candidates"]) for x in all_receipts),
   "verified_policy_adoptions_published":0}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
