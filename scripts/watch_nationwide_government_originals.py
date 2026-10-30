@@ -138,7 +138,7 @@ def reviewed_addition_sources():
       row.get("individual_document_facts_verified_by_monitor") is not False or
       row.get("operational_camera_verified_by_monitor") is not False or
       row.get("policy_change_verified_by_monitor") is not False):
-   raise ValueError("New monitored original lacks independent prior source citation")
+   raise ValueError("New monitored original lacks independent prior source citation: "+str(row.get("id","?")))
   if row["record_origin"]=="qualified_original_government_docket":
    if src.get("watch_category")!="historical_research_only" or not src.get("source_type","").startswith("government_"):
     raise ValueError("Docket source lacks original-government provenance")
