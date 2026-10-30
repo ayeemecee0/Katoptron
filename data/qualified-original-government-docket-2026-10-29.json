@@ -1101,6 +1101,75 @@
         "What Flock contract documents and amendments were presented to the Public Safety Committee?",
         "Did subsequent council or committee action actually change contract scope or policy?"
       ]
+    },
+    {
+      "id": "new-hanover-nc-sheriff-lpr-ptz-bid-2024",
+      "agency": "New Hanover County Sheriff's Office",
+      "locality_key": "new hanover county|NC",
+      "state": "NC",
+      "source_date": "2024-10-28",
+      "kind": "contract_proposal",
+      "status": "government_rfp_no_vendor_award_verified",
+      "title": "New Hanover County Sheriff's Office advertises license plate reader and PTZ procurement",
+      "summary": "The county's original purchasing notice solicited proposals for twenty license plate readers and eight pan-tilt-zoom cameras, with a November 21, 2024 deadline. The notice does not name Flock as the winning vendor, document a signed contract, establish amounts paid or prove that the requested devices were installed.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.nhcgov.com/bids.aspx?bidID=111",
+      "provider": "New Hanover County Procurement",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "County bid posting #111, October 28, 2024; public notice and procurement description; vendor not named",
+      "flock_specific": false,
+      "open_questions": [
+        "What original award, signed contract and amendments identify the awarded vendor?",
+        "Were all requested cameras procured or installed and under which retention and sharing policy?"
+      ]
+    },
+    {
+      "id": "louisville-ky-metro-alpr-camera-disclosure-ordinance-denied-2026",
+      "agency": "Louisville Metro Council District 6",
+      "locality_key": "louisville|KY",
+      "state": "KY",
+      "source_date": "2026-04-23",
+      "kind": "government_decision",
+      "status": "government_page_reports_alpr_mapping_ordinance_denied",
+      "title": "Louisville council district reports ALPR mapping disclosure ordinance denied",
+      "summary": "Louisville Metro Council District 6's government legislative index identifies O-062-26, a proposed ordinance requiring mapping and listing automated license plate recognition cameras, as denied at the April 23, 2026 council meeting. The page does not establish which contractor operated the cameras, whether there is a current Flock contract, or any implemented camera policy change.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://louisvilleky.gov/government/metro-council-district-6/district-6-sponsored-legislation",
+      "provider": "Louisville Metro Council District 6",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Official council district sponsored-legislation list identifies April 23, 2026 and O-062-26 as denied; full roll call not independently reviewed",
+      "flock_specific": false,
+      "open_questions": [
+        "What official council minutes establish the vote and exact ordinance text?",
+        "What current Flock purchase orders, signed agreements and policy versions govern any Louisville system?"
+      ]
+    },
+    {
+      "id": "los-angeles-ca-flock-proposed-restrictions-motion-2026",
+      "agency": "Los Angeles City Council",
+      "locality_key": "los angeles|CA",
+      "state": "CA",
+      "source_date": "2026-05-29",
+      "kind": "policy_proposal",
+      "status": "council_motion_introduced_pending_not_enacted",
+      "title": "Los Angeles council motion proposes Flock agreement restrictions and reporting",
+      "summary": "Los Angeles Council District 14 announced a May 29, 2026 motion asking the Board of Police Commissioners to refrain from new Flock agreements and seeking reports on existing arrangements, data sharing and outside access. The official council file 26-0803 is referred to Public Safety Committee; an introduced motion is not an enacted ban, executed amendment, camera removal or independently audited data-sharing limitation.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://cd14.lacity.gov/articles/councilmember-ysabel-jurado-moves-stop-expansion-flock-safety-technology-los-angeles",
+      "provider": "Los Angeles City Council District 14",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Government Council District 14 release dated May 29, 2026; Council File 26-0803 docket shows committee referral, not adoption",
+      "flock_specific": true,
+      "open_questions": [
+        "What subsequent official committee or council action has resolved Council File 26-0803?",
+        "What dated signed Flock MOU, access agreements and legal opinions are available from LAPD or the Police Commission?"
+      ]
     }
   ]
 }
