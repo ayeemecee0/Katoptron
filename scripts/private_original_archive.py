@@ -6,6 +6,8 @@ short-lived, main-branch OIDC JWT authorizes narrowly scoped signed object URLs.
 Only SHA-256 authenticated original documents are exported. No editorial claims.
 """
 import argparse
+import concurrent.futures
+import tempfile
 import hashlib
 import json
 import os
@@ -111,17 +113,22 @@ def collect(baseline=BASELINE,snapshot=SNAPSHOT):
 def backup(gateway,baseline=BASELINE,snapshot=SNAPSHOT):
     index,items=collect(baseline,snapshot)
     written=0;already=0
-    for (sid,kind,sha),blob in items.items():
+    def preserve(item):
+        (sid,kind,sha),blob=item
         args={"source_id":sid,"kind":kind,"sha256":sha}
         try:
             old=gateway.download(**args)
-            if digest(old)!=sha:raise ValueError("Archive mismatch")
-            already+=1
+            if old!=blob:raise ValueError("Archived original has mismatched bytes")
+            return "already"
         except urllib.error.HTTPError as ex:
             if ex.code!=404:raise
             gateway.upload(blob,**args)
             if gateway.download(**args)!=blob:raise ValueError("Upload/restore mismatch")
-            written+=1
+            return "written"
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+        for result in pool.map(preserve,items.items()):
+            if result=="written":written+=1
+            else:already+=1
     record=json.dumps(index,sort_keys=True,separators=(",",":")).encode()
     if len(record)>MAX_SIZE:raise ValueError("Archive index too large")
     gateway.upload(record,state=True)
@@ -144,10 +151,14 @@ def restore(gateway,baseline=BASELINE,snapshot=SNAPSHOT,require=False):
     receipts={r["source_id"]:r for r in snap["receipts"]}
     if len(receipts)!=snap.get("monitored_urls") or len(receipts)<100:raise ValueError("Incomplete restore index")
     restored={}
-    for item in index["archives"]:
+    def acquire(item):
         sid=item["source_id"];sha=item["sha256"];kind=item["kind"]
         valid_file(sid,kind,sha)
-        restored[(sid,kind,sha)]=gateway.download(source_id=sid,kind=kind,sha256=sha)
+        return (sid,kind,sha),gateway.download(source_id=sid,kind=kind,sha256=sha)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+        for key,blob in pool.map(acquire,index["archives"]):
+            if key in restored: raise ValueError("Duplicate private original identity")
+            restored[key]=blob
     for sid,meta in manifest.get("sources",{}).items():
         key=(sid,meta["kind"],meta["sha256"])
         if key not in restored or receipts.get(sid,{}).get("last_usable_sha256")!=meta["sha256"]:
@@ -166,12 +177,22 @@ def restore(gateway,baseline=BASELINE,snapshot=SNAPSHOT,require=False):
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("mode",choices=["backup","restore","restore-if-missing"])
+    p.add_argument("mode",choices=["backup","restore","restore-if-missing","cold-restore-test"])
     a=p.parse_args()
     if a.mode=="restore-if-missing" and SNAPSHOT.is_file() and (BASELINE/"manifest.json").is_file():
         print("PRIVATE_GOVERNMENT_ORIGINAL_ARCHIVE",json.dumps({"state":"cache_present"}));return
     gw=Gateway()
     if a.mode=="backup":result=backup(gw)
+    elif a.mode=="cold-restore-test":
+        # A fresh directory represents total CI cache loss. Never read a local
+        # fingerprint or document. Validate all hashes against remote objects.
+        with tempfile.TemporaryDirectory(prefix="katoptron-archive-cold-test-") as root:
+            restored=restore(gw,Path(root)/"baselines",Path(root)/"snapshot.json",require=True)
+            index,blobs=collect(Path(root)/"baselines",Path(root)/"snapshot.json")
+            if not blobs or len(blobs)!=restored["versions"]:
+                raise ValueError("Incomplete cold archive validation")
+            result={"state":"verified_complete_cold_restore","originals":restored["originals"],
+                    "versions":restored["versions"],"all_sha256_verified":True}
     else:result=restore(gw,require=a.mode=="restore")
     print("PRIVATE_GOVERNMENT_ORIGINAL_ARCHIVE",json.dumps(result,sort_keys=True))
 if __name__=="__main__":main()

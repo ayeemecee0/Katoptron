@@ -112,6 +112,11 @@ jobs:
         env:
           SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
         run: python scripts/private_original_archive.py backup
+      - name: Prove full SHA-256-authenticated restore after complete cache loss
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+        run: python scripts/private_original_archive.py cold-restore-test
       - name: Publish status counts to workflow summary
         run: |
           python - <<'PY'
