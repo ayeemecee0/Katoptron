@@ -9,6 +9,7 @@ on:
       - 'data/manual-original-evidence-review-2026-10-29.json'
       - 'data/editorial-originals-intelligence-batch-2026-10-29.json'
       - 'data/nationwide-original-government-recovery-alternates-2026-10-29.json'
+      - 'data/underrepresented-state-original-government-research-2026-10-29.json'
       - 'data/nationwide-target-agency-original-groups-2026-10-29.json'
       - 'data/nationwide-original-research-leads-expanded-2026-10-29.json'
       - 'scripts/test_nationwide_evidence_depth.cjs'
@@ -56,7 +57,7 @@ jobs:
           python-version: '3.12'
       - name: Install bounded PDF metadata reader
         run: python -m pip install 'pypdf>=5,<7'
-      - name: Unit test 51 jurisdictions, 134 monitored originals and no-policy-publication safeguards
+      - name: Unit test 51 jurisdictions, 137 monitored originals and no-policy-publication safeguards
         run: |
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
@@ -79,7 +80,7 @@ jobs:
           key: katoptron-original-document-bytes-v1-${{ github.run_id }}
           restore-keys: |
             katoptron-original-document-bytes-v1-
-      - name: Retrieve 134 original-government URLs including six independently reviewed issuer alternatives
+      - name: Retrieve 137 original-government URLs including CT and RI original legislature/registration records
         run: python scripts/watch_nationwide_government_originals.py --workers 6 --capture-originals
       - name: Turn same-host government document links into 25 bounded editorial acquisition tasks
         run: python scripts/triage_nationwide_original_acquisition.py --watch-only
