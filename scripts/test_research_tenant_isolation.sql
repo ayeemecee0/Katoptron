@@ -25,6 +25,7 @@ grant select,insert,delete on storage.objects to authenticated;
 \i supabase/migrations/155_original_government_version_review_queue.sql
 \i supabase/migrations/160_fix_original_source_url_check.sql
 \i supabase/migrations/161_research_pilot_task_measurements.sql
+\i supabase/migrations/162_research_team_audit_ledger.sql
 insert into public.flock_original_page_versions(source_id,source_url,locality_key,source_date,text_sha256,anchor_context_sha256)
  values('official-frankfort-version-test',
  'https://www.frankfort.ky.gov/m/NewsFlash/Home/Detail/274',
