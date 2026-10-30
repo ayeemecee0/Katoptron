@@ -559,6 +559,9 @@ def historical_recovery_receipts(result):
     "original_sha256":row["original_sha256"] if eligible else None,
     "pdf_pages":row.get("pdf_pages") if eligible else None,
     "historical_original_retrieved":bool(eligible),
+    "transport_http_status":row.get("transport_http_status"),
+    "transport_failure_reason":row.get("transport_failure_reason"),
+    "transport_redirect_candidate":row.get("transport_redirect_candidate"),
     "same_publisher_redirect_verified":bool(eligible and final!=source),
     "new_equipment_or_policy_claim_verified":False,
     "evidence_limit":prior["evidence_limit"]})
@@ -566,7 +569,10 @@ def historical_recovery_receipts(result):
   "historical_total":19,"recovered":sum(x["historical_original_retrieved"] for x in cases),
   "remaining":sum(not x["historical_original_retrieved"] for x in cases),
   "historical_source_urls_deleted":0,"camera_operations_claimed":0,
-  "cases":cases,"note":"Only original issuer bytes from the exact original or narrow proven same-document redirect count. Pubisher-related indexes, other agencies, and stale search results never clear a historical original hold."}
+  "cases":cases,
+  "by_failure_reason":{k:sum(x.get("transport_failure_reason")==k for x in cases) for k in
+   ("original_redirect","http_error","network_error","oversized_original","unclassified_transport_error")},
+  "note":"Only original issuer bytes from the exact original or narrow proven same-document redirect count. Publisher-related indexes, other agencies, and stale search results never clear a historical original hold."}
 
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
