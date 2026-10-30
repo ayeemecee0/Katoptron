@@ -182,5 +182,9 @@
         "Check unverified exceptions before releasing a public approved finding"
       ]
     }
-  ]
+  ],
+  "external_review_invitations_sent": 2,
+  "external_review_invitation_status": "awaiting_independent_human_response",
+  "external_review_invited_on": "2026-10-29",
+  "external_signoff_requirements": "An external human must separately examine both original government PDFs, each exact comparison, revision dates, and authorize a documented approval or rejection. Sent invitations confer no editor status."
 }
