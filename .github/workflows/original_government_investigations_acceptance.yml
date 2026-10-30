@@ -1,0 +1,42 @@
+name: Additional original-government investigative evidence acceptance
+on:
+  pull_request:
+    paths:
+      - 'data/editorial-originals-intelligence-batch-2026-10-29.json'
+      - 'data/nationwide-19-held-original-government-source-recovery-2026-10-29.json'
+      - 'data/current-source-version-hash-review-workplan-2026-10-29.json'
+      - 'research-acquisition.*'
+      - 'professional-intelligence.js'
+      - 'professional-intelligence-app.js'
+      - 'scripts/test_editorial_source_investigations.cjs'
+      - '.github/workflows/original_government_investigations_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/editorial-originals-intelligence-batch-2026-10-29.json'
+      - 'data/nationwide-19-held-original-government-source-recovery-2026-10-29.json'
+      - 'data/current-source-version-hash-review-workplan-2026-10-29.json'
+      - 'research-acquisition.*'
+      - 'professional-intelligence.js'
+      - 'professional-intelligence-app.js'
+      - 'scripts/test_editorial_source_investigations.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test original-source claims and no automatic document-change approval
+        run: |
+          node --check research-acquisition.js
+          node --check professional-intelligence.js
+          node --check professional-intelligence-app.js
+          node scripts/test_editorial_source_investigations.cjs
