@@ -14,7 +14,7 @@ button{cursor:pointer}button:hover{background:#315c6e}button.primary{background:
 button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .muted,small{color:#bed0dc}.notice{padding:.8rem 1rem;border-left:4px solid #8dcde0;background:#203d4b}
 #recommendations .card{margin:0}#recommendations button{text-align:left}
-ol li{margin:.4rem 0}[hidden]{display:none!important}
+ol li{margin:.4rem 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:25rem;overflow:auto;background:#071b27;border:1px solid #4a6c80;padding:1rem;border-radius:7px}[hidden]{display:none!important}
 @media print{header,.no-print{display:none!important}body,.card,.panel{background:#fff;color:#111;border:0}}
 </style></head><body><a class="skip-link" href="#main">Skip to investigations</a>
 <header><a href="./index.html">KATOPTRON</a><a href="./professional-intelligence.html">Professional intelligence</a><a href="./pilot-dossiers.html">Original-source dossiers</a><a href="./research-workspace.html">Private workspace</a></header>
@@ -43,6 +43,11 @@ ol li{margin:.4rem 0}[hidden]{display:none!important}
 <h3>Documents to inspect first</h3><div id="sourceItems"></div>
 <h3>Unresolved research questions</h3><ol id="openQuestions"></ol>
 <p class="muted">These are verification tasks, not allegations. Original URL and historical status remain with each record.</p>
+<h3>One-click next step: targeted public-records request</h3>
+<p>Created from the cited historical sources and their unresolved evidence gaps. This is an <strong>unsent draft</strong>, not a request to disclose personal plate scans. Confirm the responsible agency, appropriate records custodian and request scope before sending.</p>
+<pre id="requestDraft" aria-label="Editable by copying into your own records request"></pre>
+<div class="row no-print"><button id="copyRequestDraft" type="button">Copy source-specific request draft</button><a href="./research-plans.html#pilotMeasurements">Record whether this saved research time (optional sign-in)</a></div>
+<p id="copyRequestStatus" role="status" aria-live="polite"></p>
 </section>
 </main>
 <script src="./government-source-docket.js"></script>
@@ -57,6 +62,8 @@ let docket=null,ranked=[],current=null;
 for(const preset of P.PRESETS){const o=el('option',preset.label);o.value=preset.id;$('researchFocus').append(o)}
 function openDossier(d){
  current=d;$('dossier').hidden=false;
+ $('requestDraft').textContent=P.actionPlan(d).requestDraft;
+ $('copyRequestStatus').textContent='No request has been sent.';
  $('dossierHeading').textContent=d.locality_key.replace('|',', ')+' · '+P.byId(d.preset_id).label;
  $('dossierStatus').textContent=d.records.length+' individually reviewed original document(s); '+d.selected.length+' prioritized first. '+d.limitation;
  $('sourceItems').replaceChildren();
@@ -95,6 +102,15 @@ function recalc(){
  }catch(err){$('recommendationStatus').textContent='Research preview withheld: '+err.message;$('dossier').hidden=true;}
 }
 $('refreshLeads').addEventListener('click',recalc);
+$('copyRequestDraft').addEventListener('click',async()=>{
+ if(!current)return;
+ try{
+  const draft=P.actionPlan(current).requestDraft;
+  if(!navigator.clipboard?.writeText)throw Error('clipboard access not supported');
+  await navigator.clipboard.writeText(draft);
+  $('copyRequestStatus').textContent='Draft copied. Confirm agency custodian and scope before sending; Katoptron did not submit it.';
+ }catch(err){$('copyRequestStatus').textContent='Clipboard unavailable. Select and copy the displayed draft manually. No request was submitted.';}
+});
 $('downloadPacket').addEventListener('click',()=>{
  if(!current)return;try{
   const output=P.pack(current),blob=new Blob([output],{type:'text/html'}),url=URL.createObjectURL(blob);
