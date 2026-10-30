@@ -260,7 +260,7 @@ def policy_candidates(original,raw):
  except (ValueError,TypeError):
   return []
 
-def inspect(src,fetcher=fetch):
+def inspect(src,fetcher=fetch,capture_dir=None):
  record={"source_id":src["id"],"state":src["state"],"publisher":src["publisher"],
   "source_url":src["source_url"],"kind":src["kind"],"status":None,
   "original_sha256":None,"original_bytes":None,"pdf_pages":None,
@@ -299,8 +299,14 @@ def inspect(src,fetcher=fetch):
   record["status"]="original_government_pdf_accessible"
  record["original_sha256"]=hashlib.sha256(raw).hexdigest()
  record["original_bytes"]=len(raw)
+ if capture_dir is not None:
+  dst=Path(capture_dir).resolve()
+  if not dst.is_relative_to(ROOT) or not re.fullmatch(r"[a-z0-9_-]{7,120}",src["id"]):
+   raise ValueError("Unsafe public original capture path")
+  dst.mkdir(parents=True,exist_ok=True)
+  (dst/(src["id"]+"."+src["kind"])).write_bytes(raw)
  return record
-def watch(obj,existing,fetcher=fetch,workers=5):
+def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
  jurisdictions,seeds,existing_states=catalog(obj,existing)
  legacy=legacy_sources(existing)
  recovery=recovery_sources()
@@ -312,11 +318,11 @@ def watch(obj,existing,fetcher=fetch,workers=5):
      not 100<=len(existing_urls)<=MAX_MONITORED_SOURCES):
   raise ValueError("Missing, duplicate or excessive original-government monitoring inventory")
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
-  receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
-  legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
-  recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher),recovery))
-  depth_receipts=list(pool.map(lambda s:inspect(s,fetcher),depth))
-  reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher),reviewed))
+  receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),seeds))
+  legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),legacy))
+  recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),recovery))
+  depth_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),depth))
+  reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),reviewed))
  all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
@@ -365,10 +371,12 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "verified_policy_adoptions_published":0}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
+ p.add_argument("--capture-originals",action="store_true")
  p.add_argument("--out",type=Path,default=OUTPUT)
  args=p.parse_args()
  if not 1<=args.workers<=8:raise ValueError("Rate limit exceeded")
- result=watch(json.loads(REGISTRY.read_text(encoding="utf8")),json.loads(EXISTING.read_text(encoding="utf8")),workers=args.workers)
+ result=watch(json.loads(REGISTRY.read_text(encoding="utf8")),json.loads(EXISTING.read_text(encoding="utf8")),workers=args.workers,
+  capture_dir=(ROOT/'.katoptron-ci/nationwide-original-current') if args.capture_originals else None)
  path=args.out.resolve()
  if not path.is_relative_to(ROOT):raise ValueError("Unsafe output")
  path.parent.mkdir(parents=True,exist_ok=True)
