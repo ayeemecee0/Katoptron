@@ -260,5 +260,25 @@
       "last_verified_on": "2026-10-30"
     }
   ],
-  "scope": "peak_complete_live_issuer_retrieval_snapshot_2026_10_30_not_a_guarantee_all_sites_remain_reachable_now"
+  "scope": "peak_complete_live_issuer_retrieval_snapshot_2026_10_30_not_a_guarantee_all_sites_remain_reachable_now",
+  "additional_publisher_authentication": {
+    "source_id": "nv-county-alpr-grant-application-not-installation",
+    "state": "NV",
+    "sha256": "a511bff148db23d1b179695d1af97a26be85d51f63dc6de7d8c90e5d1cf44e92",
+    "pdf_pages": 31,
+    "run": "https://github.com/ayeemecee0/Katoptron/actions/runs/41082720998",
+    "verified_at": "2026-10-30T15:40:30Z",
+    "exact_original_issuer_redirect": true
+  },
+  "cumulative_authenticated_originals_across_two_runs": 13,
+  "cumulative_never_authenticated_originals_across_two_runs": 6,
+  "latest_observed_full_run": {
+    "url": "https://github.com/ayeemecee0/Katoptron/actions/runs/41082720998",
+    "verified_at": "2026-10-30T15:40:30Z",
+    "accessible_historical": 11,
+    "held_historical": 8,
+    "accessible_nationwide": 122,
+    "held_nationwide": 16
+  },
+  "explanation_of_difference": "12 distinct original historical documents were retrieved in one complete 15:35 UTC run. A later 15:40 run retrieved 11 including the newly verified Nevada PDF, while temporarily losing two Kentucky pages. Across both authenticated CI runs, 13 distinct originals have verified original issuer SHA-256 receipts. This cumulative count does not assert current accessibility for all 13."
 }
