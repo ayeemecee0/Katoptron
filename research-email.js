@@ -58,7 +58,7 @@ $('researchEmailEnable').addEventListener('click',async()=>{
   const prior=await client.from('research_email_subscriptions').select('enabled').eq('user_id',user.id)
    .eq('locality_key',prefs.locality_key).maybeSingle();
   if(prior.error)throw Error('Cannot verify existing email consent');
-  const request=prior.data?client.from('research_email_subscriptions').update({...prefs,enabled:true})
+  const request=prior.data?client.from('research_email_subscriptions').update({topics:prefs.topics,keyword:prefs.keyword,enabled:true})
      .eq('user_id',user.id).eq('locality_key',prefs.locality_key):
     client.from('research_email_subscriptions').insert({...prefs,user_id:user.id});
   const {error}=await request;if(error)throw Error('Consent could not be saved: '+error.message);
