@@ -61,4 +61,31 @@ class Archive(unittest.TestCase):
    root=Path(tmp);base,snap,raw,sid,sha=self.fixture(root)
    (base/(sid+".html")).write_bytes(b"tampered")
    with self.assertRaisesRegex(ValueError,"SHA-256"):a.collect(base,snap)
+ def test_gateway_refreshes_only_expired_oidc_identity(self):
+  from unittest.mock import patch
+  import urllib.error
+  gw=a.Gateway.__new__(a.Gateway)
+  gw.origin="https://verified.supabase.co"
+  gw.endpoint=gw.origin+"/functions/v1/private-original-archive"
+  gw.oidc="expired"
+  def fake_request(url,*,headers=None,**kwargs):
+   if headers.get("Authorization")=="Bearer expired":
+    raise urllib.error.HTTPError(url,401,"Expired",{},None)
+   return json.dumps({"signed_url":gw.origin+"/storage/v1/object/sign/bucket/key?token=abc"}).encode()
+  with patch.object(a,"request",side_effect=fake_request),patch.object(gw,"refresh_token",return_value="fresh") as refreshed:
+   result=gw.sign("sign_download",source_id="test-original-001",kind="html",sha256="a"*64)
+   self.assertIn("verified.supabase.co",result)
+   refreshed.assert_called_once()
+   self.assertEqual(gw.oidc,"fresh")
+ def test_gateway_does_not_refresh_on_authorization_forbidden(self):
+  from unittest.mock import patch
+  import urllib.error
+  gw=a.Gateway.__new__(a.Gateway)
+  gw.origin="https://verified.supabase.co"
+  gw.endpoint=gw.origin+"/functions/v1/private-original-archive"
+  gw.oidc="denied"
+  def fake_request(url,**kwargs):raise urllib.error.HTTPError(url,403,"Forbidden",{},None)
+  with patch.object(a,"request",side_effect=fake_request),patch.object(gw,"refresh_token") as refreshed:
+   with self.assertRaises(urllib.error.HTTPError):gw.sign("sign_download",state=True)
+   refreshed.assert_not_called()
 if __name__=="__main__":unittest.main()
