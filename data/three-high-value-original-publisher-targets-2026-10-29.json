@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-29",
+  "qualification_scope": "individually_checked_original_government_indexes_in_underrepresented_states_no_automated_camera_or_legal_claims",
+  "sources": [
+    {
+      "id": "value-ct-foic-manchester-2025",
+      "state": "CT",
+      "kind": "html",
+      "publisher": "Connecticut Freedom of Information Commission",
+      "source_url": "https://portal.ct.gov/FOI/Decisions/Final-Decisions/Final-Decisions",
+      "original_title": "Connecticut Freedom of Information Commission original decision catalogue",
+      "observed_document_date": "2026-10-29",
+      "supported_finding": "Original Connecticut FOIC state decision catalogue provides provenance for the November 19, 2025 Manchester Flock public-records case FIC 2024-0808.",
+      "doc_kind": "original_government_records_appeals_index",
+      "case_specific_original": "https://portal.ct.gov/-/media/foi/finaldecisions/2025/nov19/2024-0808.pdf",
+      "limitations": "Catalogue is not a replacement for the signed November 19 2025 final PDF; case-specific conclusions require checking the decision pages and final status.",
+      "next_verification": "Retrieve FIC 2024-0808 final decision PDF, verify its orders and whether Manchester requested reconsideration or judicial review.",
+      "claimed_flock_use": false
+    },
+    {
+      "id": "value-ne-buffalo-alpr-2026",
+      "state": "NE",
+      "kind": "html",
+      "publisher": "Buffalo County Sheriff, Nebraska",
+      "source_url": "https://buffalocounty.ne.gov/county-offices/sheriff/flock-safety-system",
+      "original_title": "Buffalo County Sheriff Flock Safety system document and reporting index",
+      "observed_document_date": "2026-10-29",
+      "supported_finding": "Original sheriff's government transparency page links ALPR policy 1346, a state ALPR privacy statute, public annual ALPR usage reports and a joint relationship with Kearney Police.",
+      "doc_kind": "government_agency_policy_and_audit_index",
+      "case_specific_original": "https://buffalocounty.ne.gov/Portals/0/Buffalo%20County%20Sheriff_s%20Office%20Flock%20ALPR_Data_%20Year%20End%20Report%202024.pdf",
+      "limitations": "Original government index supports access to documents, not proof that all reporting periods are complete or that current sharing controls meet every legal standard.",
+      "next_verification": "Compare the signed ALPR General Order 1346 with the original annual report, record distinct revision and period dates, and request subsequent annual public reporting.",
+      "claimed_flock_use": true
+    },
+    {
+      "id": "value-sc-bluffton-policy-2026",
+      "state": "SC",
+      "kind": "html",
+      "publisher": "Town of Bluffton Police Department",
+      "source_url": "https://www.townofbluffton.sc.gov/708/Transparency",
+      "original_title": "Bluffton Police ALPR transparency and Flock policy documentation",
+      "observed_document_date": "2026-10-29",
+      "supported_finding": "Official Bluffton police transparency page links Flock-specific public policy and safeguards and a public usage transparency portal.",
+      "doc_kind": "municipal_police_policy_oversight_index",
+      "case_specific_original": "https://www.townofbluffton.sc.gov/708/Transparency",
+      "limitations": "Published vendor transparency statistics are not independent audits. Agency-specific signed contract, dated retention policy and independent log review remain to be verified.",
+      "next_verification": "Retrieve published adopted ALPR policy and signed procurement amendments, then assess retention, sharing and independent audit with exact original citations.",
+      "claimed_flock_use": true
+    }
+  ],
+  "value_targets": 3,
+  "research_lead_targets": 3
+}
