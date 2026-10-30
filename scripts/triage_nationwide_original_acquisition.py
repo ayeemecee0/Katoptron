@@ -16,6 +16,7 @@ RECOVERY=ROOT/"data/nationwide-recovery-government-originals-2026-10-29.json"
 DEPTH=ROOT/"data/nationwide-targeted-agency-original-depth-2026-10-29.json"
 REVIEWED=ROOT/"data/nationwide-reviewed-original-monitor-additions-2026-10-29.json"
 ALTERNATES=ROOT/"data/nationwide-original-government-recovery-alternates-2026-10-29.json"
+UNDERREPRESENTED=ROOT/"data/underrepresented-state-original-government-research-2026-10-29.json"
 WATCH=ROOT/".katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json"
 OUT=ROOT/".katoptron-ci/nationwide-original-acquisition-editorial-queue.json"
 SENSITIVE=re.compile(r"(?:search|query)[-_/]?(?:logs?|records?|history)|"
@@ -24,12 +25,13 @@ SENSITIVE=re.compile(r"(?:search|query)[-_/]?(?:logs?|records?|history)|"
 RELEVANCE=re.compile(r"\b(?:flock|alpr|license[ -]?plate|plate[ -]?readers?|"
                      r"retention|sharing|access|contract|procurement|audit)\b",re.I)
 
-def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None):
+def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None,underserved=None):
     groups=(registry["official_seed_sources"],legacy["sources"],
-            recovery["original_source_recovery_candidates"],depth["sources"],reviewed["sources"],(alternates or {}).get("originals",[]))
+            recovery["original_source_recovery_candidates"],depth["sources"],reviewed["sources"],(alternates or {}).get("originals",[]),(underserved or {}).get("government_originals",[]))
     result={}
     for group in groups:
         for row in group:
+            if row.get('monitor_eligible') is False:continue
             url=row.get("source_url") or row.get("url")
             if not url:raise ValueError("Curated URL missing")
             url=allowed_link(url) or url
@@ -38,14 +40,15 @@ def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None):
             result[url]=row.get("state")
     return result
 
-def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None,watch=None):
+def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None,underserved=None,watch=None):
     states=discovery.get("states")
     all_states={x["state"] for x in registry["jurisdictions"]}
     if (discovery.get("schema_version")!=1 or discovery.get("states_enrolled")!=51 or
         not isinstance(states,list) or len(states)!=51 or
         {x.get("state") for x in states}!=all_states or len(all_states)!=51):
         raise ValueError("Complete 50-state/DC search receipt required")
-    known=existing_urls(registry,legacy,recovery,depth,reviewed,alternates)
+    known=existing_urls(registry,legacy,recovery,depth,reviewed,alternates,underserved)
+    editorial_held_urls={x['source_url'] for x in (underserved or {}).get('government_originals',[]) if x.get('monitor_eligible') is False}
     per_state={code:sum(code==s for s in known.values()) for code in all_states}
     seen=set();queue=[];diagnostics=[]
     for state in states:
@@ -66,7 +69,7 @@ def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None
                 hit.get("flock_equipment_confirmed") is not False or
                 hit.get("state_relevance_confirmed") is not False):
                 held+=1;continue
-            if url in seen or url in known:held+=1;continue
+            if url in seen or url in known or url in editorial_held_urls:held+=1;continue
             seen.add(url);accepted+=1
             # Priority measures acquisition need only, NOT newsworthiness or claim accuracy.
             score=(70 if per_state[code]==0 else 45 if per_state[code]==1 else 20)+(
@@ -149,7 +152,7 @@ def main():
     p.add_argument("--watch",type=Path,default=WATCH)
     p.add_argument("--watch-only",action="store_true")
     a=p.parse_args()
-    inputs=[json.loads(f.read_text(encoding="utf8")) for f in (REGISTRY,LEGACY,RECOVERY,DEPTH,REVIEWED,ALTERNATES)]
+    inputs=[json.loads(f.read_text(encoding="utf8")) for f in (REGISTRY,LEGACY,RECOVERY,DEPTH,REVIEWED,ALTERNATES,UNDERREPRESENTED)]
     if a.watch_only:
         d={"schema_version":1,"states_enrolled":51,"states":[
             {"state":r["state"],"discovery_status":"source_watch_only_no_external_search","search_leads":[]}

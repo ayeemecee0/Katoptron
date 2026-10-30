@@ -76,7 +76,12 @@ assert(fallback.originals.every(r=>r.source_url.startsWith('https://')&&r.origin
 assert(fallback.originals.every(r=>r.original_source_deleted===false&&r.original_source_automatically_recovered===false&&r.same_document_version_equivalence_proven===false));
 
 assert.equal(sentRequests.requests.length,6);
-assert(sentRequests.requests.every(r=>r.status==='sent'&&!r.records_received&&!r.government_acknowledgment_received&&!r.resolution_verified&&r.private_message_id==='not_published'));
+assert(sentRequests.requests.every(r=>['sent','acknowledged'].includes(r.status)&&!r.records_received&&!r.resolution_verified&&r.private_message_id==='not_published'));
+assert.equal(sentRequests.requests.filter(r=>r.government_acknowledgment_received).length,2);
+assert.equal(sentRequests.requests.filter(r=>r.status==='acknowledged').length,2);
+assert(sentRequests.requests.filter(r=>r.government_acknowledgment_received).every(r=>r.acknowledgment_kind&&r.acknowledgment_summary.length>40));
+assert.equal(sentRequests.request_counts.responses_with_original_documents,0);
+assert.equal(sentRequests.request_counts.independently_completed,0);
 assert.equal(editorial.items.length,10);
 assert.equal(editorial.independent_editor_approved,0);
 assert(editorial.items.every(x=>!x.reviewer_approved&&!x.reviewer_independence_verified&&x.reviewer_identity==='unassigned_external'));

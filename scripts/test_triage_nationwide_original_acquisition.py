@@ -5,7 +5,7 @@ P=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location("triage",P/"triage_nationwide_original_acquisition.py")
 T=importlib.util.module_from_spec(spec);spec.loader.exec_module(T)
 def fixture():
-    objs=[json.loads(p.read_text(encoding="utf8")) for p in (T.REGISTRY,T.LEGACY,T.RECOVERY,T.DEPTH,T.REVIEWED,T.ALTERNATES)]
+    objs=[json.loads(p.read_text(encoding="utf8")) for p in (T.REGISTRY,T.LEGACY,T.RECOVERY,T.DEPTH,T.REVIEWED,T.ALTERNATES,T.UNDERREPRESENTED)]
     registry=objs[0]
     discovery={"schema_version":1,"states_enrolled":51,"states":[
         {"state":r["state"],"discovery_status":"public_search_completed_leads_unverified","search_leads":[]}
@@ -22,7 +22,7 @@ class AcquisitionTriage(unittest.TestCase):
         out=T.prioritize(discovery,*parts)
         self.assertEqual(out["states"],51)
         self.assertEqual(out["new_unreviewed_candidates"],1)
-        self.assertEqual(out["curated_urls"],134)
+        self.assertEqual(out["curated_urls"],135)
         self.assertEqual(len(out["ready_for_review"]),1)
         item=out["ready_for_review"][0]
         self.assertFalse(item["eligible_for_publication"])

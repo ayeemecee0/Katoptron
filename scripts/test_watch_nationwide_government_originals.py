@@ -77,7 +77,7 @@ class StateSources(unittest.TestCase):
   self.assertTrue(all(x["status"]=="held_redirect" for x in result["seed_receipts"]))
   self.assertTrue(all(x["camera_coverage_claimed"] is False and x["agency_inventory_complete"] is False for x in result["jurisdictions"]))
   self.assertEqual(result["states_without_official_sources_seeded"],[])
-  self.assertEqual(result["monitored_sources_total"],134)
+  self.assertEqual(result["monitored_sources_total"],135)
   self.assertEqual(len(result["depth_receipts"]),12)
   self.assertEqual(len(result["reviewed_addition_receipts"]),46)
   self.assertEqual(len(result["recovery_receipts"]),11)
