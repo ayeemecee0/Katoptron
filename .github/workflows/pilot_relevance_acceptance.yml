@@ -1,0 +1,64 @@
+name: Personalized pilot research and original-government source acceptance
+on:
+  pull_request:
+    paths:
+      - 'pilot-relevance.js'
+      - 'pilot-research.html'
+      - 'scripts/test_pilot_relevance.cjs'
+      - 'scripts/smoke_pilot_relevance.cjs'
+      - 'government-source-docket.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'professional-intelligence-app.js'
+      - '.github/workflows/pilot_relevance_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilot-relevance.js'
+      - 'pilot-research.html'
+      - 'scripts/test_pilot_relevance.cjs'
+      - 'scripts/smoke_pilot_relevance.cjs'
+      - 'government-source-docket.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'professional-intelligence-app.js'
+      - '.github/workflows/pilot_relevance_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source_safety:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check original-source credibility, research ranking and no-prospect privacy
+        run: |
+          node --check pilot-relevance.js
+          node --check professional-intelligence-app.js
+          node --check scripts/test_pilot_relevance.cjs
+          node scripts/test_government_source_docket.cjs
+          node scripts/test_pilot_relevance.cjs
+          node scripts/test_professional_intelligence.cjs
+          node scripts/test_agency_intelligence_engine.cjs
+          node scripts/test_pilot_dossiers.cjs
+  browser:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Playwright client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Serve public source files locally
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/katoptron-pilot-relevance.log 2>&1 &
+      - name: Validate no-signup personalized recommendation to completed source pack
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_pilot_relevance.cjs
