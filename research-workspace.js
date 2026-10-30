@@ -134,18 +134,53 @@ async function start(win,U){
    item.append(el('span',m.member_role+' · member '+m.member_id.slice(0,8)+'…'));
    item.append(button('Set viewer',async()=>{
     unwrap(await sb.rpc('research_change_collaborator_role',{p_workspace:selectedW.id,p_user:m.member_id,p_role:'viewer'}));
-    await refreshMembers();status('Member is now read-only.');
+    await refreshMembers();await refreshTeamSecurity();status('Member is now read-only.');
    }));
    item.append(button('Set editor',async()=>{
     unwrap(await sb.rpc('research_change_collaborator_role',{p_workspace:selectedW.id,p_user:m.member_id,p_role:'editor'}));
-    await refreshMembers();status('Member can now edit workspace cases.');
+    await refreshMembers();await refreshTeamSecurity();status('Member can now edit workspace cases.');
    }));
    item.append(button('Revoke access',async()=>{
     if(!win.confirm('Revoke this collaborator from this workspace?'))return;
     unwrap(await sb.rpc('research_remove_collaborator',{p_workspace:selectedW.id,p_user:m.member_id}));
-    await refreshMembers();status('Collaboration access revoked.');
+    await refreshMembers();await refreshTeamSecurity();status('Collaboration access revoked.');
    }));
    $('members').append(item);
+  }
+ }
+ async function refreshTeamSecurity(){
+  const isOwner=selectedW&&selectedW.owner_id===user.id;
+  $('teamSecurity').hidden=!isOwner;
+  $('pendingInvites').replaceChildren();$('teamActivity').replaceChildren();
+  if(!isOwner)return;
+  const {data:invites,error:inviteError}=await sb.from('research_workspace_invites')
+   .select('token,role,expires_at,accepted_at').eq('workspace_id',selectedW.id)
+   .is('accepted_at',null).gt('expires_at',new Date().toISOString())
+   .order('expires_at',{ascending:true}).limit(50);
+  if(inviteError)throw Error('Pending invites unavailable: '+inviteError.message);
+  if(!invites.length)$('pendingInvites').append(el('small','No unexpired pending invitations.'));
+  for(const invite of invites){
+   const line=el('div');line.className='row';
+   line.append(el('span',invite.role+' · expires '+new Date(invite.expires_at).toLocaleString()));
+   line.append(button('Revoke unused invite',async()=>{
+    if(!win.confirm('Revoke this unused invite link?'))return;
+    const deleted=unwrap(await sb.from('research_workspace_invites').delete()
+     .eq('token',invite.token).eq('workspace_id',selectedW.id).select('token'));
+    if(deleted.length!==1)throw Error('Invite not revoked or already consumed');
+    await refreshTeamSecurity();status('Unused invitation revoked.');
+   }));
+   $('pendingInvites').append(line);
+  }
+  const {data:events,error:eventError}=await sb.from('research_team_activity')
+    .select('event_type,actor_id,subject_id,role_before,role_after,happened_at')
+    .eq('workspace_id',selectedW.id).order('happened_at',{ascending:false}).limit(30);
+  if(eventError)throw Error('Team history unavailable: '+eventError.message);
+  if(!events.length)$('teamActivity').append(el('small','No team access events recorded yet.'));
+  for(const event of events){
+   const actor=event.actor_id===user.id?'workspace owner':'authenticated team participant';
+   const change=event.role_before&&event.role_after?' ('+event.role_before+' to '+event.role_after+')':'';
+   const item=el('div',new Date(event.happened_at).toLocaleString()+' · '+event.event_type.replaceAll('_',' ')+' · '+actor+change);
+   $('teamActivity').append(item);
   }
  }
  async function deletePrivateCase(entry,workspace){
@@ -199,7 +234,7 @@ async function start(win,U){
   if(!selectedW){$('caseSelect').replaceChildren(new Option('Create a workspace first',''));return;}
   membershipRole=selectedW.owner_id===user.id?'owner':(unwrap(await sb.from('research_workspace_members').select('role').eq('workspace_id',selectedW.id).eq('user_id',user.id).maybeSingle())?.role||'viewer');
   $('createCase').hidden=!writable();
-  await refreshMembers();
+  await refreshMembers();await refreshTeamSecurity();
   cases=unwrap(await sb.from('research_cases').select('id,title,agency_key,status,created_at,workspace_id').eq('workspace_id',selectedW.id).order('created_at',{ascending:false}).limit(200));
   const select=$('caseSelect'),old=select.value;select.replaceChildren(new Option('Choose a case',''));
   for(const c of cases)select.append(new Option(c.title+' · '+c.status,c.id));
@@ -396,6 +431,7 @@ async function start(win,U){
   const u=new URL(win.location.origin+win.location.pathname);u.searchParams.set('invite',invite.token);
   $('inviteResult').textContent='One-use invite (7 days): '+u.href;
   try{await win.navigator.clipboard.writeText(u.href);$('inviteResult').textContent+=' · link copied.';}catch{}
+  await refreshTeamSecurity();
  }catch(e){msg(e)}});
  // Support prefilled exact-government agency research without publishing notes.
  const q=new URL(win.location.href).searchParams;
