@@ -192,6 +192,7 @@ on:
       - 'scripts/test_agency_watch_security.sql'
       - 'agency-network.js'
       - 'watch-email.js'
+      - 'supabase/migrations/165_cached_osm_exact_snapshot.sql'
       - 'scripts/test_osm_exact_snapshot_sql.sql'
       - 'scripts/test_osm_point_canvas.cjs'
       - 'osm-point-canvas.js'
@@ -901,6 +902,8 @@ jobs:
             -f scripts/test_community_density_real_anchors.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_viewport_original_anchor.sql
+          psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
+            -f supabase/migrations/165_cached_osm_exact_snapshot.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
             -f scripts/test_osm_exact_snapshot_sql.sql
           psql -h 127.0.0.1 -U postgres -d katoptron_test -v ON_ERROR_STOP=1 \
