@@ -16,6 +16,7 @@ on:
       - 'scripts/test_nationwide_evidence_depth.cjs'
       - 'data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json'
       - 'data/national-government-audit-source-portals.json'
+      - 'data/19-held-original-issuer-recovery-audit-2026-10-29.json'
       - 'scripts/watch_nationwide_government_originals.py'
       - 'scripts/archive_government_original_versions.py'
       - 'scripts/test_archive_government_original_versions.py'
@@ -128,6 +129,7 @@ jobs:
           name: nationwide-all-51-government-source-health-${{ github.run_id }}
           path: |
             .katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json
+            .katoptron-ci/historical-19-originals-retrieval-recovery.json
             .katoptron-ci/nationwide-monitor-snapshot.json
             .katoptron-ci/nationwide-public-health.json
             .katoptron-ci/nationwide-documentary-difference-review.json
