@@ -3,10 +3,12 @@
  */
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
+const fixtures=require('./browser_source_fixtures.cjs');
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1440,height:960}});
  const failures=[];page.on('pageerror',e=>failures.push(e.message));
+ const sourceRequests=await fixtures.install(page);
  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
  try{
   await page.route('**/config.js',async route=>{
@@ -92,7 +94,9 @@ const assert=require('node:assert/strict');
   await page.locator('#compareCommunityRoute').uncheck();
   assert.ok((await page.locator('#communityRouteStatus').textContent()).includes('Off by default'));
   assert.deepEqual(failures,[]);
-  console.log('COMMUNITY ROUTE EVIDENCE PASS: independent OSM route count, official simulation unchanged');
- }catch(error){console.error('COMMUNITY ROUTE EVIDENCE FAILED',error.message);process.exitCode=1}
+  assert(sourceRequests.some(r=>r.table==='flock_osm_community_points'&&r.rows===1),'Exact public OSM source endpoint was not queried');
+  assert(sourceRequests.some(r=>r.table==='flock_public_coverage_stats'&&r.rows===1),'National government-source statistics missing');
+  console.log('COMMUNITY_ROUTE_BROWSER_FIXTURE_PASS: source-separated corridor scans, exact counts, route alternatives and zero real plate reads. Not a live-source check.');
+ }catch(error){console.error('COMMUNITY_ROUTE_BROWSER_FIXTURE_FAILED',error.message,'Current UI:',await page.locator('#routeStatus').textContent().catch(()=>'?'),'Community:',await page.locator('#communityRouteStatus').textContent().catch(()=>'?'),'Comparison:',await page.locator('#comparisonStatus').textContent().catch(()=>'?'),'Requests:',JSON.stringify(sourceRequests.slice(-15)));process.exitCode=1}
  finally{await browser.close()}
 })().catch(e=>{console.error(e.message);process.exitCode=1});
