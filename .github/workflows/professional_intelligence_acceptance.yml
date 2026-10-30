@@ -1,0 +1,87 @@
+name: Five professional intelligence capability acceptance
+on:
+  pull_request:
+    paths:
+      - 'professional-intelligence.js'
+      - 'professional-intelligence-app.js'
+      - 'professional-intelligence.html'
+      - 'scripts/test_professional_intelligence.cjs'
+      - 'scripts/smoke_professional_intelligence.cjs'
+      - 'scripts/test_research_tenant_isolation.sql'
+      - 'supabase/migrations/163_research_intelligence_follows.sql'
+      - '.github/workflows/professional_intelligence_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'professional-intelligence.js'
+      - 'professional-intelligence-app.js'
+      - 'professional-intelligence.html'
+      - 'scripts/test_professional_intelligence.cjs'
+      - 'scripts/smoke_professional_intelligence.cjs'
+      - 'supabase/migrations/163_research_intelligence_follows.sql'
+      - '.github/workflows/professional_intelligence_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verified_engines:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify five engine source gates, feed baselines, request and export safety
+        run: |
+          node --check professional-intelligence.js
+          node --check professional-intelligence-app.js
+          node --check scripts/test_professional_intelligence.cjs
+          node scripts/test_professional_intelligence.cjs
+          node scripts/test_government_source_docket.cjs
+          node scripts/test_research_workspace.cjs
+          node scripts/test_research_pro_workflows.cjs
+  isolated_follows_rls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: local_ci_only_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 15
+    env:
+      PGPASSWORD: local_ci_only_password
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install PostgreSQL client
+        run: command -v psql || (sudo apt-get update -qq && sudo apt-get install -y postgresql-client)
+      - name: Verify RLS owner-only feeds, no forged follows and immutable baseline
+        run: psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 -f scripts/test_research_tenant_isolation.sql
+  browser:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Playwright browser client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Start local public research site
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/research-intelligence-smoke.log 2>&1 &
+      - name: Check research lead through printable package and private follow
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_professional_intelligence.cjs
