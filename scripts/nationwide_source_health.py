@@ -68,6 +68,9 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
   last_date=prev.get("last_usable_on") if prev else None
   new_hash=row["original_sha256"] if good else last_hash
   new_date=day if good else last_date
+  last_verified_url=(row.get("retrieved_url") or row["source_url"]) if good else (
+   prev.get("last_verified_retrieved_url") if prev else None)
+
   if good and last_hash and row["original_sha256"]!=last_hash:change="source_bytes_changed_review_required"
   elif good and not last_hash:change="new_source_baseline_requires_review"
   elif not good and last_hash:change="previously_retrieved_source_currently_held"
@@ -80,6 +83,10 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
    "format_correction_from_held_html_to_original_pdf":pdf_kind_correction,
    "retrieved_url":row.get("retrieved_url") if good else None,
    "verified_same_publisher_redirect":row.get("verified_same_publisher_redirect",False) if good else False,
+   "last_verified_retrieved_url":last_verified_url,
+   "transport_failure_reason":row.get("transport_failure_reason") if not good else None,
+   "transport_http_status":row.get("transport_http_status") if not good else None,
+   "transport_redirect_candidate":row.get("transport_redirect_candidate") if not good else None,
    "individual_document_facts_verified":False,"camera_deployment_verified":False,
    "policy_adoption_verified":False}
   items.append(result);counts[change]=counts.get(change,0)+1
@@ -115,7 +122,12 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
   "first_baselines_pending_individual_review":counts.get("new_source_baseline_requires_review",0),
   "states":by_state,"source_receipts":[{"source_id":s["source_id"],"state":s["state"],
     "url":s["source_url"],"status":s["status"],"change":s["change"],
-    "last_accessible_on":s["last_usable_on"]} for s in items],
+    "last_accessible_on":s["last_usable_on"],
+    "last_usable_sha256":s["last_usable_sha256"],
+    "last_verified_retrieved_url":s["last_verified_retrieved_url"],
+    "transport_http_status":s["transport_http_status"],
+    "transport_failure_reason":s["transport_failure_reason"],
+    "transport_redirect_candidate":s["transport_redirect_candidate"]} for s in items],
   "source_verified_contract_changes":0,"new_camera_locations_published":0,
   "limitations":"Source monitoring and SHA changes do not prove Flock adoption, current use, policy changes or statewide source completeness. Every difference requires individual original-document review."}
  return snapshot,health
