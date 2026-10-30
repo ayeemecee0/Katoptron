@@ -71,7 +71,7 @@ class Recovery(unittest.TestCase):
   self.assertIn("#page=2",approved[0]["before"]["government_url"])
   self.assertTrue(approved[0]["automatically_approved_wrongdoing"] is False)
   altered=copy.deepcopy(row);altered["before_sha256"]="c"*64
-  with self.assertRaisesRegex(ValueError,"fingerprints"):D.review(snapshot,{"schema_version":1,"approvals":[altered]})
+  with self.assertRaisesRegex(ValueError,"hashes"):D.review(snapshot,{"schema_version":1,"approvals":[altered]})
   altered=copy.deepcopy(row);altered["after_original_url"]=row["before_original_url"]
   with self.assertRaisesRegex(ValueError,"Permanent"):D.review(snapshot,{"schema_version":1,"approvals":[altered]})
   altered=copy.deepcopy(row);altered["category"]="installed_camera_now"
