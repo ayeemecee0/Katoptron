@@ -19,6 +19,7 @@ AGENCY_DEPTH=ROOT/"data"/"nationwide-targeted-agency-original-depth-2026-10-29.j
 REVIEWED_ADDITIONS=ROOT/"data"/"nationwide-reviewed-original-monitor-additions-2026-10-29.json"
 QUALIFIED_DOCKET=ROOT/"data"/"qualified-original-government-docket-2026-10-29.json"
 NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-10-29.json"
+PAGE_REVIEW=ROOT/"data"/"manual-original-evidence-review-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
@@ -106,7 +107,7 @@ def agency_depth_sources():
  return out
 
 def reviewed_addition_sources():
- """18 exact government originals already separately source-attributed in published research.
+ """22 exact government originals, four independently page-reviewed, for safe monitoring.
 
  Added to *monitoring*, not newly discovered or independently confirmed new facts.
  A source's prior editorial ID, issuer, state, URL and source date must match.
@@ -114,21 +115,25 @@ def reviewed_addition_sources():
  data=json.loads(REVIEWED_ADDITIONS.read_text(encoding="utf8"))
  dossier=json.loads(QUALIFIED_DOCKET.read_text(encoding="utf8"))
  national=json.loads(NATIONAL_REVIEWED.read_text(encoding="utf8"))
- if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=18 or
+ page_review=json.loads(PAGE_REVIEW.read_text(encoding="utf8"))
+ if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=22 or
      dossier.get("schema_version")!=1 or national.get("schema_version")!=1):
   raise ValueError("Reviewed original additions not source-qualified")
  indexed={("qualified_original_government_docket",x["id"]):x for x in dossier["sources"]}
  indexed.update({("source_attributed_national_original_government_leads",x["id"]):x for x in national["leads"]})
+ indexed.update({("manually_verified_original_document",x["id"]):x for x in page_review["discovery_candidates"] if x.get("status")=="original_pdf_page_visually_verified"})
  out=[];ids=set();urls=set()
  for row in data["sources"]:
   src=indexed.get((row.get("record_origin"),row.get("record_id")))
   if (not src or row.get("id") in ids or not re.fullmatch(r"reviewed-[0-9]{2}-[a-z]{2}",str(row.get("id",""))) or
       row.get("state") not in STATES or row.get("source_url") in urls or
       row.get("state")!=src.get("state") or row.get("source_url")!=src.get("source_url") or
-      row.get("publisher")!=src.get("agency") or row.get("source_date")!=src.get("source_date") or
+      row.get("publisher")!=src.get("agency",src.get("original_publisher")) or
+      row.get("source_date")!=src.get("source_date",src.get("source_date_note")) or
       row.get("origin_role")!="original_government_historical_publication_monitor_only" or
       row.get("kind") not in ("html","pdf") or
-      (row["kind"]=="pdf") != urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf") or
+      (row.get("record_origin")!="manually_verified_original_document" and
+        (row["kind"]=="pdf") != urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf")) or
       not exact(row.get("source_url")) or
       row.get("individual_document_facts_verified_by_monitor") is not False or
       row.get("operational_camera_verified_by_monitor") is not False or
@@ -137,6 +142,10 @@ def reviewed_addition_sources():
   if row["record_origin"]=="qualified_original_government_docket":
    if src.get("watch_category")!="historical_research_only" or not src.get("source_type","").startswith("government_"):
     raise ValueError("Docket source lacks original-government provenance")
+  elif row["record_origin"]=="manually_verified_original_document":
+   if row["kind"]!="pdf" or not isinstance(src.get("page"),int) or src.get("page")<1 or
+       src.get("status")!="original_pdf_page_visually_verified":
+    raise ValueError("Independently page-inspected original PDF required")
   elif not src.get("source_issuer_review_status","").startswith("source_attributed_"):
    raise ValueError("National original not source-attributed")
   ids.add(row["id"]);urls.add(row["source_url"])
