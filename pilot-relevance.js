@@ -62,8 +62,58 @@ function rank(docket,presetId,localityKey='',question=''){
  }
  return results.sort((a,b)=>b.score-a.score||b.documents-a.documents||a.locality_key.localeCompare(b.locality_key));
 }
+/* Every proposed next step is attached to reviewed original sources and explicitly
+ * requests records IF HELD. This never transmits a request or names a custodian. */
+function actionPlan(dossier){
+ if(!dossier||!groupKey(dossier.locality_key)||!Array.isArray(dossier.selected)||!dossier.selected.length||
+    !Array.isArray(dossier.records)||!dossier.records.length)throw Error('Verified jurisdiction bundle required');
+ const chosen=dossier.selected.map(x=>x.source);
+ if(chosen.length>3||chosen.some(x=>!isOriginal(x)||x.locality_key!==dossier.locality_key||
+    !dossier.records.some(r=>r.id===x.id)))throw Error('Unverified or cross-jurisdiction action rejected');
+ const requests=new Set(),roles=new Set(['Public records officer (confirm which agency actually holds each record)']);
+ for(const s of chosen){
+  const descriptor=[s.kind,s.title,s.status].join(' ').toLowerCase();
+  if(/contract|agreement|lease|fund|procure|rfp|spend|payment|amendment/.test(descriptor)){
+   roles.add('Procurement or finance records custodian, if applicable');
+   requests.add('Final signed agreements and amendments, procurement approvals, and invoices or payment registers related to the cited matter, if any');
+  }
+  if(/policy|ordinance|retention|access|sharing|safeguard/.test(descriptor)){
+   roles.add('Agency policy records custodian, if applicable');
+   requests.add('Dated adopted policy versions, prior versions, and documented adoption or approval records for the cited matter, if any');
+  }
+  if(/council|resolution|meeting|decision|motion|agenda|vote|approval/.test(descriptor)){
+   roles.add('City or county clerk / legislative records custodian, if applicable');
+   requests.add('Final meeting minutes, official vote or action results, and final resolution or decision records for the cited agenda item, if any');
+  }
+  if(/environmental|notice/.test(descriptor)){
+   requests.add('Final decisions, supporting agency determinations and implementation-status notices corresponding to the cited filing, if any');
+  }
+ }
+ if(!requests.size)requests.add('Final agency records showing disposition or outcome of the cited historical government publication, if any');
+ const originalSources=chosen.map(s=>({title:s.title,date:s.source_date,url:s.source_url,agency:s.agency,status:s.status}));
+ const lines=[
+  'UNSENT PUBLIC-RECORDS REQUEST DRAFT — CONFIRM CUSTODIAN AND SCOPE BEFORE SUBMITTING',
+  'To: Public records officer of the responsible government agency (recipient not verified)',
+  'Subject: Existing records relating to '+dossier.locality_key+' source-dated government publications',
+  '',
+  'I request copies of existing, non-exempt public records, if held, associated with the specific dated government publications listed below:',
+  ...originalSources.map((s,i)=>String(i+1)+'. '+s.agency+' — '+s.title+' ('+s.date+'; recorded status: '+s.status+')\n   Original: '+s.url),
+  '',
+  'Please search, as applicable, for:',
+  ...[...requests].map((q,i)=>String(i+1)+'. '+q+'.'),
+  '',
+  'Please advise of any fees before incurring them, provide reasonably segregable portions of responsive records and identify any legal basis for withholding. If a different public office maintains these records, please identify that office if known.',
+  'I do not request license plate reads, individual vehicle movements, or private personal information.',
+  '',
+  'This is a draft only. It has not been submitted. The cited historical publications do not prove an executed contract, current equipment operation, payments, misconduct or a policy taking effect.'
+ ];
+ return Object.freeze({locality_key:dossier.locality_key,requestDraft:lines.join('\n'),sources:originalSources,
+  recordTypes:[...requests],custodianRoles:[...roles],verificationQuestions:dossier.questions.slice()});
+}
+
 function pack(dossier){
  if(!dossier||!dossier.selected?.length||!dossier.records?.length)throw Error('No source-verified research bundle');
+ const plan=actionPlan(dossier);
  const items=dossier.records.map((r,i)=>{
   if(!isOriginal(r))throw Error('Unreviewed record in bundle');
   return '<section><h2>['+(i+1)+'] '+esc(r.title)+'</h2><p>'+esc(r.agency)+' | '+esc(r.source_date)+
@@ -85,7 +135,9 @@ function pack(dossier){
   ' — '+esc(x.reasons.join('; '))+'</li>').join('')+'</ol>'+
   '<h2>Verification checklist</h2><ol>'+dossier.questions.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol>'+
   '<h2>Original-source chronology and appendix</h2>'+items+
-  '<h2>Next records-request preparation</h2><p>Confirm the named agency’s records custodian and request executed agreements, amendments, approvals, policy versions or payment records addressing the listed gaps. No request was submitted.</p>'+
+  '<h2>Source-specific next action</h2><p>Candidate custodian roles (not verified contacts): '+esc(plan.custodianRoles.join('; '))+'</p>'+ 
+  '<h3>Unsent records-request draft</h3><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(plan.requestDraft)+'</pre>'+ 
+  '<p>Verify the responsible records custodian, date range, available records and applicable local records law before submitting. No request was submitted.</p>'+
   '<p>This is a research starting point, not a completed investigation, legal opinion or finding of wrongdoing. No personal data, plate observations or private case contents included.</p></body></html>';
 }
 function sharePath(presetId,localityKey){
@@ -93,5 +145,5 @@ function sharePath(presetId,localityKey){
  return './pilot-research.html?focus='+encodeURIComponent(presetId)+'&agency='+encodeURIComponent(localityKey);
 }
 function groupKey(v){return typeof v==='string'&&/^[a-z0-9][a-z0-9 -]{1,120}\|[A-Z]{2}$/.test(v)}
-return Object.freeze({PRESETS,byId,group,rank,pack,sharePath});
+return Object.freeze({PRESETS,byId,group,rank,actionPlan,pack,sharePath});
 });
