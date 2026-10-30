@@ -127,7 +127,7 @@ def reviewed_addition_sources():
   src=indexed.get((row.get("record_origin"),row.get("record_id")))
   if (not src or row.get("id") in ids or not re.fullmatch(r"reviewed-[0-9]{2}-[a-z]{2}",str(row.get("id",""))) or
       row.get("state") not in STATES or row.get("source_url") in urls or
-      row.get("state")!=src.get("state") or row.get("source_url")!=src.get("source_url") or
+      row.get("state")!=src.get("state") or row.get("source_url")!=src.get("source_url",src.get("url")) or
       row.get("publisher")!=src.get("agency",src.get("original_publisher")) or
       row.get("source_date")!=src.get("source_date",src.get("source_date_note")) or
       row.get("origin_role")!="original_government_historical_publication_monitor_only" or
