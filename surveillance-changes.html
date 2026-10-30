@@ -28,10 +28,11 @@ a:focus-visible,select:focus-visible{outline:3px solid #a8eafb;outline-offset:3p
  <div><label for="state">State</label><select id="state"><option value="all">All states</option></select></div>
 </div>
 <div id="events"></div>
+<section aria-labelledby="differenceHeading"><h2 id="differenceHeading">Reviewed claim-level before / after differences</h2><p>Computed automatically from individually reviewed original government document findings. Highlighted changes compare evidence summaries, not full contract/PDF text. Only source-pinned transitions enter this panel. Drafts and proposals are not enacted amendments.</p><p id="diffStatus" role="status" aria-live="polite">Validating source versions…</p><div id="diffCards"></div></section>
 <p>For alerts about newly published source evidence, <a href="./government-watch.html">use explicit confirmed-account opt-in</a>. Existing records are not replayed just because a user subscribes.</p>
 </main>
 <script src="./okc-original-contracts.js"></script><script src="./nebraska-original-aggregate.js"></script><script src="./ri-sd-original-policies.js"></script><script src="./wa-kittitas-draft-review.js"></script><script src="./national-primary-documents.js"></script><script src="./verified-agency-dossiers.js"></script><script src="./wa-reviewed-flock-sources.js"></script><script src="./wa-original-policies.js"></script><script src="./wa-original-agency-dossiers.js"></script>
-<script src="./agency-original-loader.js"></script><script src="./agency-intelligence-v2.js"></script><script src="./agency-change-tracker.js"></script>
+<script src="./agency-original-loader.js"></script><script src="./verified-version-diffs.js"></script><script src="./agency-intelligence-v2.js"></script><script src="./agency-change-tracker.js"></script>
 <script>
 'use strict';const $=id=>document.getElementById(id);let all=[];
 function el(tag,text){const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);return n;}
@@ -73,10 +74,32 @@ function render(){
     }));
   all=window.KatoptronChangeTracker.events(window.KatoptronInvestigations.build(index),
    {adoption,apacheResolution});
+
+  const comparisons=window.KatoptronVerifiedDiffs.fromEvents(all);
+  const target=$('diffCards');target.replaceChildren();
+  for(const item of comparisons){
+   const card=el('article');card.append(el('h3',item.title),el('p',item.category+' · '+item.status));
+   card.append(el('p',item.interpretation));
+   const left=el('p');left.append(el('strong','Earlier reviewed statement: '),el('span',item.before));
+   const right=el('p');right.append(el('strong','Later reviewed statement: '),el('span',item.after));
+   card.append(left,right);
+   const changed=el('p');changed.append(el('strong','Changed evidence wording: '));
+   if(item.delta.same)changed.append(el('span','No difference in reviewed statements.'));
+   else{
+    changed.append(el('span','Earlier-only: '+(item.delta.removed||'(none)')+' | Later-only: '+(item.delta.added||'(none)')));
+   }
+   card.append(changed);
+   const proofs=el('p');
+   for(const s of item.evidence){
+    const a=el('a',s.label+' · sha256 '+s.sha.slice(0,12)+'…');a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';proofs.append(a,el('span',' · '));
+   }
+   card.append(proofs);target.append(card);
+  }
+  $('diffStatus').textContent=comparisons.length+' comparisons generated from individually reviewed, source-pinned findings. No unreviewed HTML/PDF text auto-published.';
   const states=[...new Set(all.map(x=>x.state||x.agency_key.split('-').pop().toUpperCase()))].sort();
   for(const s of states){const o=el('option',s);o.value=s;$('state').append(o);}
   render();
- }catch(e){$('status').textContent='Change tracker withheld: '+e.message;$('events').replaceChildren();}
+  }catch(e){$('status').textContent='Change tracker withheld: '+e.message;$('events').replaceChildren();$('diffCards').replaceChildren();$('diffStatus').textContent='Comparison withheld: '+e.message;}
 })();
 $('kind').addEventListener('change',render);$('state').addEventListener('change',render);
 </script></body></html>
