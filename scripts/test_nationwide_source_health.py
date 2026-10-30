@@ -51,7 +51,7 @@ class Monitor(unittest.TestCase):
   self.assertEqual(out["receipts"][0]["last_usable_on"],"2026-10-29")
   self.assertEqual(out["receipts"][0]["change"],"previously_retrieved_source_currently_held")
   self.assertIn("al-city-council-agenda",health["states"][0]["held_original_source_ids"])
-  self.assertIn("some_curated_originals_held",health["states"][0]["documented_gap"])
+  self.assertEqual(health["states"][0]["documented_gap"],"no_accessible_curated_government_original")
  def test_all_sources_held_still_nationally_enrolled_not_coverage_verified(self):
   run=fake()
   for x in run["all_source_receipts"]:
