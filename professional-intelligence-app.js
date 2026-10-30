@@ -206,8 +206,7 @@ $('copyWeeklyDigest').addEventListener('click',async()=>{
    ...records.flatMap((e,i)=>[(i+1)+'. '+e.title+' · '+e.locality_key,'Source date: '+e.source_date,
      'Status: '+e.status,'Original: '+e.original_url,'Unverified: '+e.unknown.join(' / '),'']),
    'Historical research starters and other unmatched disclosures are excluded from the new-event count.',
-   'This is a manually copied research summary, not an automatic email or finding of misconduct.'].join('
-');
+   'This is a manually copied research summary, not an automatic email or finding of misconduct.'].join('\n');
   await win.navigator.clipboard.writeText(out);
   $('weeklyDigestStatus').textContent='Seven-day research summary copied from your private follows; no email sent.';
  }catch(e){$('weeklyDigestStatus').textContent='Digest copy unavailable: '+e.message;}
