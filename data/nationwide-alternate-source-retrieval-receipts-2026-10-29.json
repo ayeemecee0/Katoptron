@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "run_id": 41002421468,
+  "recorded_on": "2026-10-29",
+  "scope": "real_live_github_runner_access_to_six_original_issuer_alternates_no_legacy_source_recovery_or_document_equivalence",
+  "monitored_total": 134,
+  "accessible_total": 112,
+  "held_total": 22,
+  "historical_original_held": 19,
+  "alternate_sources_monitored": 6,
+  "alternate_sources_accessible": 3,
+  "alternate_sources_held": 3,
+  "receipts": [
+    {
+      "source_id": "gov-alternate-01",
+      "state": "CO",
+      "status": "original_government_html_accessible",
+      "sha256": "c5a9993610569bebc7955fa089517c9b4136def957ee5fd19fe90c9b1179c9cd",
+      "live_monitored_verified_status": true,
+      "replaces_historical_original": false,
+      "same_document_equivalence_proven": false,
+      "independent_editor_approved": false
+    },
+    {
+      "source_id": "gov-alternate-02",
+      "state": "MI",
+      "status": "original_government_html_accessible",
+      "sha256": "a2a90cc3d6f547ec16855b7d5847e21d8e504ec387116b69356243d05a04a120",
+      "live_monitored_verified_status": true,
+      "replaces_historical_original": false,
+      "same_document_equivalence_proven": false,
+      "independent_editor_approved": false
+    },
+    {
+      "source_id": "gov-alternate-03",
+      "state": "MS",
+      "status": "held_http_error",
+      "sha256": null,
+      "live_monitored_verified_status": true,
+      "replaces_historical_original": false,
+      "same_document_equivalence_proven": false,
+      "independent_editor_approved": false
+    },
+    {
+      "source_id": "gov-alternate-04",
+      "state": "NV",
+      "status": "original_government_html_accessible",
+      "sha256": "3e364b4d680fa3fce101701b786d08800437bca2e78c4d638003d1679a1ad0a8",
+      "live_monitored_verified_status": true,
+      "replaces_historical_original": false,
+      "same_document_equivalence_proven": false,
+      "independent_editor_approved": false
+    },
+    {
+      "source_id": "gov-alternate-05",
+      "state": "NY",
+      "status": "held_redirect",
+      "sha256": null,
+      "live_monitored_verified_status": true,
+      "replaces_historical_original": false,
+      "same_document_equivalence_proven": false,
+      "independent_editor_approved": false
+    },
+    {
+      "source_id": "gov-alternate-07",
+      "state": "TX",
+      "status": "held_redirect",
+      "sha256": null,
+      "live_monitored_verified_status": true,
+      "replaces_historical_original": false,
+      "same_document_equivalence_proven": false,
+      "independent_editor_approved": false
+    }
+  ],
+  "original_held_recovered": 0
+}
