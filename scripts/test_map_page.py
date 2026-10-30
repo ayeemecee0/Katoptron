@@ -100,10 +100,11 @@ class MapPageTests(unittest.TestCase):
         self.assertIn("noopener noreferrer",self.script)
         self.assertNotIn('.innerHTML',self.script)
 
-    def test_legacy_simulator_retained(self):
+    def test_legacy_simulator_retired(self):
         old=(ROOT/'legacy-simulator.html').read_text(encoding='utf-8')
-        self.assertIn('SYNTH-4827',old)
-        self.assertIn('Synthetic',old)
+        self.assertNotIn('SYNTH-4827',old)
+        self.assertNotIn('ORIGINAL SIMULATOR',self.html)
+        self.assertIn('original simulator has been retired',old.lower())
         self.assertIn('ORIGINAL SIMULATOR',self.html)
 
     def test_route_alternatives_accessible_and_explicitly_modeled(self):
