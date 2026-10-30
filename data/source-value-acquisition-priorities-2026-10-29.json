@@ -1,0 +1,419 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-29",
+  "current_monitored_unique_urls": 134,
+  "duplicates": 0,
+  "source_coverage_not_equivalent_to_agency_completeness": true,
+  "highest_priority_states": [
+    {
+      "state": "AK",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "AL",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "AR",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "CT",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "DC",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "DE",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "KS",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "LA",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "MD",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "ME",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "MT",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "ND",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "NE",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "NH",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "NJ",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "NM",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "OK",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "OR",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "RI",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "SC",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "TN",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    },
+    {
+      "state": "WY",
+      "current_original_publisher_urls": 1,
+      "priority": "P0_low_source_redundancy",
+      "new_source_target": 2,
+      "preferred_originals": [
+        "Official adopted agency ALPR policy or police audit",
+        "Signed contract, payment register, council packet or legal decision"
+      ],
+      "qualification_steps": [
+        "Match government publisher to agency and jurisdiction",
+        "Retrieve authentic government original and issuer date",
+        "Confirm whether subject is Flock rather than general ALPR, and distinguish proposal from adoption",
+        "Compare URL to all 134 existing originals and separately verified issuer alternatives",
+        "Extract one explicit original-supported finding, one unknown and one independently actionable records request"
+      ],
+      "next_action": "Search original publisher and council records without inferring device coverage"
+    }
+  ],
+  "current_baseline": {
+    "source_urls": 134,
+    "accessible_urls": 112,
+    "held_urls": 22,
+    "historical_exact_originals_held": 19,
+    "official_alternates_accessible": 3
+  },
+  "metric_definitions": {
+    "new_qualified_original": "New unique government-publisher URL actually retrieved and independently subject-classified",
+    "useful_investigation": "Named research question, independently cited original, dated factual assertion and explicit verifiable next action",
+    "actual_value": "A researcher advances a real case or records request to a verifiable answer; never infer time saved",
+    "deduplication": "Unique canonical original URL across every source tier; document family is also reviewed, URLs are not sufficient to prove different substance"
+  },
+  "next_20_target": "Acquire at least two government originals in jurisdictions currently represented by one source, with a source-supported research action for each; do not add duplicative publication feeds merely to inflate counts."
+}
