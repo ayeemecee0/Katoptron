@@ -278,6 +278,10 @@ def trusted_redirect(src,current,target):
  host=lambda x:x.lower().removeprefix("www.")
  if host(a.hostname)!=host(b.hostname):return False
  if a.path==b.path and a.query==b.query:return True
+ if src["id"]=="nv-county-alpr-grant-application-not-installation":
+  return (a.path=="/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf" and
+   b.path=="/siteassets/serc.nv.gov/content/meetings/2024/Douglas_County_-_UWS_Application_FY25.pdf" and
+   b.query=="")
  return (src["id"]=="reviewed-23-tx" and
   a.path.lower()=="/m/newsflash/home/detail/1824" and
   b.path.lower()=="/m/newsflash/archive/item/1824" and b.query=="arcId=2451")
@@ -444,6 +448,13 @@ def inspect(src,fetcher=fetch,capture_dir=None):
    pdf=PdfReader(io.BytesIO(raw),strict=src["id"]!="mi-state-procurement-meeting-minutes")
    if pdf.is_encrypted or not 1<=len(pdf.pages)<=MAX_PAGES:raise ValueError("invalid_pdf")
    record["pdf_pages"]=len(pdf.pages)
+   # For a changed Nevada publisher PDF URL, match the same named grant document,
+   # not an unrelated public attachment merely served by the same .gov authority.
+   if src["id"]=="nv-county-alpr-grant-application-not-installation" and record["verified_same_publisher_redirect"]:
+    lead_text=" ".join((page.extract_text() or "") for page in pdf.pages[:min(len(pdf.pages),10)]).casefold()
+    if not (25<=len(pdf.pages)<=40 and "douglas county" in lead_text and
+            "2025" in lead_text and ("uws" in lead_text or "united we stand" in lead_text)):
+     raise ValueError("redirected_nevada_pdf_identity_not_confirmed")
    # A source could mention Flock in one of many government agenda pages.
    # Do not treat a keyword match as evidence of an approved agreement.
    for page in pdf.pages[:min(8,len(pdf.pages))]:
