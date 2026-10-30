@@ -11,8 +11,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   await page.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('Verified 51-state'),null,{timeout:22000});
   assert.equal(await page.locator('#states tr').count(),51);
   assert.equal(await page.locator('#metrics .metric').count(),6);
-  assert.match(await page.locator('#metrics').textContent(),/81/);
-  assert.match(await page.locator('#metrics').textContent(),/38/);
+  assert.match(await page.locator('#metrics').textContent(),/82/);
+  assert.match(await page.locator('#metrics').textContent(),/39/);
   assert.match(await page.locator('#baselineDate').textContent(),/2026-10-27/);
   await page.locator('#filter').fill('DE');
   assert((await page.locator('#states tr').count())>0);
@@ -35,7 +35,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   assert.equal(await page.locator('#depth article').count(),8);
   assert.match(await page.locator('#status').textContent(),/No original-document wording change automatically approved/);
   assert.deepEqual(errors,[]);
-  console.log('NATIONWIDE_SOURCE_MONITOR_BROWSER_PASS: 51 rows, 81 curated URLs, archived vs unobserved sources, no false statewide coverage');
+  console.log('NATIONWIDE_SOURCE_MONITOR_BROWSER_PASS: 51 rows, 82 curated URLs, archived vs unobserved sources, no false statewide coverage');
  }catch(e){
   console.error('NATIONWIDE_SOURCE_MONITOR_BROWSER_FAILED',e.stack||e.message,
    'STATUS',await page.locator('#status').textContent().catch(()=>'?'),'ERRORS',errors);
