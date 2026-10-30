@@ -80,7 +80,7 @@ $('followJurisdiction').addEventListener('change',()=>refresh().catch(e=>status(
 if(win.supabase&&win.KATOPTRON_CONFIG?.supabasePublishableKey){
  client=win.supabase.createClient(win.KATOPTRON_CONFIG.supabaseUrl,
   win.KATOPTRON_CONFIG.supabasePublishableKey);
- client.auth.onAuthStateChange(()=>{win.setTimeout(()=>refresh().catch(e=>status(e.message)),0)});
+ client.auth.onAuthStateChange?.(()=>{win.setTimeout(()=>refresh().catch(e=>status(e.message)),0)});
  refresh().catch(e=>status(e.message));
 }
 })(window);
