@@ -268,6 +268,16 @@ try{
   $('leadStatus').textContent='Supplemental national research sources withheld: '+err.message+
    '. Existing primary docket remains available.';
  }
+ // Additional original-government leads are source-attributed historical research only.
+ try{
+  const response=await win.fetch('./data/editorial-originals-intelligence-batch-2026-10-29.json',
+    {cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!response.ok)throw Error('Editorial government source HTTP '+response.status);
+  leads=[...leads,...I.leadFromEditorial(await response.json())];
+ }catch(err){
+  $('leadStatus').textContent='Independent original-source investigations withheld: '+err.message+
+   '. Existing reviewed government research remains available.';
+ }
  const distinct=[...new Set(leads.map(l=>l.locality_key))].sort();
  for(const key of distinct){for(const id of ['jurisdiction','followJurisdiction']){
   const opt=element('option',key.replace('|',', '));opt.value=key;$(id).append(opt);

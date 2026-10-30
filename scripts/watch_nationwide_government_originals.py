@@ -20,12 +20,13 @@ REVIEWED_ADDITIONS=ROOT/"data"/"nationwide-reviewed-original-monitor-additions-2
 QUALIFIED_DOCKET=ROOT/"data"/"qualified-original-government-docket-2026-10-29.json"
 NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-10-29.json"
 PAGE_REVIEW=ROOT/"data"/"manual-original-evidence-review-2026-10-29.json"
+ADDITIONAL_EDITORIAL=ROOT/"data"/"editorial-originals-intelligence-batch-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
 MAX_PAGES=120
 LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.co.routt.co.us","www.leg.state.nv.us","www.lvmpd.com","www.senate.state.oh.us","www.house.state.oh.us"}
-MAX_MONITORED_SOURCES=125
+MAX_MONITORED_SOURCES=150
 MAX_PAGES=200  # bounded 159-page Nevada legislative report; only first 8 text pages sampled
 STATES=("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC").split()
 STATUS={"original_government_html_accessible","original_government_pdf_accessible",
@@ -116,12 +117,15 @@ def reviewed_addition_sources():
  dossier=json.loads(QUALIFIED_DOCKET.read_text(encoding="utf8"))
  national=json.loads(NATIONAL_REVIEWED.read_text(encoding="utf8"))
  page_review=json.loads(PAGE_REVIEW.read_text(encoding="utf8"))
- if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=33 or
+ editorial=json.loads(ADDITIONAL_EDITORIAL.read_text(encoding="utf8"))
+ if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=46 or
      dossier.get("schema_version")!=1 or national.get("schema_version")!=1):
   raise ValueError("Reviewed original additions not source-qualified")
  indexed={("qualified_original_government_docket",x["id"]):x for x in dossier["sources"]}
  indexed.update({("source_attributed_national_original_government_leads",x["id"]):x for x in national["leads"]})
  indexed.update({("manually_verified_original_document",x["id"]):x for x in page_review["discovery_candidates"] if x.get("status")=="original_pdf_page_visually_verified"})
+ if editorial.get("schema_version")!=1 or len(editorial.get("sources",[]))!=14:raise ValueError("Incomplete independent original-government editorial register")
+ indexed.update({("independently_reviewed_official_source",x["id"]):x for x in editorial["sources"] if x.get("independently_verified_original_publisher") is True})
  out=[];ids=set();urls=set()
  for row in data["sources"]:
   src=indexed.get((row.get("record_origin"),row.get("record_id")))
@@ -132,7 +136,7 @@ def reviewed_addition_sources():
       row.get("source_date")!=src.get("source_date",src.get("source_date_note")) or
       row.get("origin_role")!="original_government_historical_publication_monitor_only" or
       row.get("kind") not in ("html","pdf") or
-      (row.get("record_origin")!="manually_verified_original_document" and
+      (row.get("record_origin") not in ("manually_verified_original_document","independently_reviewed_official_source") and
         (row["kind"]=="pdf") != urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf")) or
       not exact(row.get("source_url")) or
       row.get("individual_document_facts_verified_by_monitor") is not False or
@@ -146,6 +150,12 @@ def reviewed_addition_sources():
    if (row["kind"]!="pdf" or not isinstance(src.get("page"),int) or src.get("page")<1 or
        src.get("status")!="original_pdf_page_visually_verified"):
     raise ValueError("Independently page-inspected original PDF required")
+  elif row["record_origin"]=="independently_reviewed_official_source":
+   if (src.get("evidence_tier") not in ("official_html_reviewed","official_pdf_page_inspected","official_pdf_text_inspected") or
+       not src.get("unresolved_question") or not src.get("next_verification_action") or
+       src.get("source_version_change_verified") is not False or src.get("new_watch_event") is not False or
+       (row["kind"]=="pdf") != src["evidence_tier"].startswith("official_pdf")):
+    raise ValueError("Unverified government original or false change publication")
   elif not src.get("source_issuer_review_status","").startswith("source_attributed_"):
    raise ValueError("National original not source-attributed")
   ids.add(row["id"]);urls.add(row["source_url"])
