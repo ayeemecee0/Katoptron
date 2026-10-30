@@ -167,7 +167,7 @@ def reviewed_addition_sources():
 def independent_issuer_alternatives(official):
  """Publisher indexes that contextualize held originals. Never assert exact PDF recovery."""
  data=json.loads(ALTERNATE_RECOVERY.read_text(encoding="utf8"))
- if data.get("schema_version")!=1 or len(data.get("originals",[]))!=7:
+ if data.get("schema_version")!=1 or len(data.get("originals",[]))!=6:
   raise ValueError("Incomplete issuer-recovery provenance evidence")
  indexed={x["id"]:x for x in official}
  found=[];ids=set();urls=set()
