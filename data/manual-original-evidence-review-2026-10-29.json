@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-29",
+  "monitor_run_id": 40996907106,
+  "scope": "manual_review_original_government_evidence_not_hash_change_approvals",
+  "discovery_candidates": [
+    {
+      "id": "brookings-policy-13d1",
+      "state": "SD",
+      "title": "Brookings Police Policy 13D1",
+      "url": "https://www.cityofbrookings-sd.gov/DocumentCenter/View/20501/Policy-13D1---Automated-License-Plate-Recognition-System",
+      "status": "original_pdf_page_visually_verified",
+      "page": 1,
+      "additional_page": 5,
+      "claim": "Original department Policy 13D1 displays effective date April 24, 2024 and revised date September 22, 2026; page 5 states ALPR reads and hits are retained for a maximum of 30 days except records held for an investigation.",
+      "caveat": "The revised policy document does not establish the precise textual changes from any previous version.",
+      "original_publisher": "Brookings Police Department"
+    },
+    {
+      "id": "san-bruno-2026-audit",
+      "state": "CA",
+      "title": "San Bruno Flock ALPR Q1/Q2 2026 audit",
+      "url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9279/SBPD-Flock-ALPR-Audit-Q1-and-Q2-2026",
+      "status": "original_pdf_page_visually_verified",
+      "page": 1,
+      "claim": "The department reports 3,149,556 partner-agency searches in its January–June 2026 audit; it identified 29 searches warranting deeper review, 23 associated with NCRIC, and states NCRIC access was removed.",
+      "caveat": "Department-reported findings; suspected indirect sharing is not an adjudicated privacy-law violation. Search totals describe a multi-month interval.",
+      "original_publisher": "San Bruno Police Department"
+    },
+    {
+      "id": "san-bruno-2025-audit",
+      "state": "CA",
+      "title": "San Bruno December 2025 Flock audit",
+      "url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9280/SBPD-Flock-ALPR-Annual-Audit---2025",
+      "status": "original_pdf_page_visually_verified",
+      "page": 1,
+      "claim": "The report states 1,238 internal and 461,711 partner searches for the December 2025 audit and reports 66 total cameras, 46 operational.",
+      "caveat": "Report itself bears an anomalous memorandum date of January 5, 2025 while describing December 2025 and a period extending to January 2026; its chronology requires agency confirmation.",
+      "original_publisher": "San Bruno Police Department"
+    },
+    {
+      "id": "green-bay-sep2026-report",
+      "state": "WI",
+      "title": "Green Bay Police September 2026 ALPR monthly report",
+      "url": "https://www.greenbaywi.gov/DocumentCenter/View/18823/Green-Bay-Police-Department-Monthly-ALPR-Report-September-2026",
+      "status": "original_pdf_page_visually_verified",
+      "page": 1,
+      "claim": "The October 1, 2026 report lists 443,664 unique plate reads, 9,534 hotlist hits, 522 user search sessions, and four organizations granted access to Green Bay PD data.",
+      "caveat": "Aggregate agency statements do not prove any particular data search, recipient query or current sharing beyond the dated report.",
+      "original_publisher": "Green Bay Police Department"
+    },
+    {
+      "id": "robbinsdale-policy-427",
+      "state": "MN",
+      "title": "Robbinsdale Police Policy 427",
+      "url": "https://www.robbinsdalemn.gov/DocumentCenter/View/2520/Robbinsdale-Police-Department-Policy-Manual-Policy-427",
+      "status": "held_pdf_redirect_original_parent_verified",
+      "page": null,
+      "claim": "The official department policy index names Policy 427 and links this PDF, but the exact document content was not accessible for a page-level review.",
+      "caveat": "A government source hyperlink is not independent examination of the policy PDF.",
+      "parent": "https://www.robbinsdalemn.gov/389/4241/Automated-License-Plate-Readers-ALPR",
+      "original_publisher": "Robbinsdale Police Department"
+    },
+    {
+      "id": "san-bruno-current-policy",
+      "state": "CA",
+      "title": "San Bruno current ALPR policy",
+      "url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9522/San-Bruno-PD---ALPR-Policy",
+      "status": "held_pdf_redirect_original_parent_verified",
+      "page": null,
+      "claim": "The official San Bruno ALPR program page names the current policy and links this PDF, but the precise PDF has a redirect loop in the retrieval channel.",
+      "caveat": "Do not substitute the accessible historical 2023 policy manual for this newer version.",
+      "parent": "https://www.sanbruno.ca.gov/2346/Automated-License-Plate-Reader-ALPR-Prog",
+      "original_publisher": "San Bruno Police Department"
+    }
+  ],
+  "held_sources": [
+    {
+      "source_id": "co-police-technology-disclosure",
+      "state": "CO",
+      "monitor_status": "held_redirect",
+      "verified_alternative_url": "https://www.lafayetteco.gov/2592/Police-Transparency",
+      "disposition": "Official police transparency and 2026 city statement retrieved; original legacy program path still redirects",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "fl-police-operational-status-statement",
+      "state": "FL",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://www.pcbfl.gov/m/NewsFlash/Home/Detail/38",
+      "disposition": "Exact city news statement independently retrieved via indexed original page",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "ia-judicial-original-opinion",
+      "state": "IA",
+      "monitor_status": "held_wrong_format",
+      "verified_alternative_url": "https://www.iowacourts.gov/courtcases/24589/embed/CourtAppealsOpinion",
+      "disposition": "Original court opinion readable as indexed web text; monitor expects PDF and rejects actual format",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "mi-state-procurement-meeting-minutes",
+      "state": "MI",
+      "monitor_status": "held_unreadable_original",
+      "verified_alternative_url": "https://www.michigan.gov/dtmb/-/media/Project/Websites/dtmb/Law-and-Policies/SAB/2025/20250603-SAB-Minutes.pdf?hash=23074D14C8E0D3387DC8CEE83DEFE4AA&rev=eb3afcffb0c74542851da4dc9347d9c1",
+      "disposition": "Alternate official file revision indexed; exact Flock-related claim not independently page-verified",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "ms-city-council-meeting-minutes",
+      "state": "MS",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://www.baystlouis-ms.gov/city-council",
+      "disposition": "Official council landing page identified; the exact source document remains unverified",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "nc-police-technology-disclosure",
+      "state": "NC",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://raleighnc.gov/services/how-does-raleigh-use-flock-cameras",
+      "disposition": "Exact original government Raleigh Flock FAQ independently readable",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "ut-government-contract-proposal",
+      "state": "UT",
+      "monitor_status": "held_oversized",
+      "verified_alternative_url": null,
+      "disposition": "Original PDF exceeds current 10 MB acquisition bound; require safe bounded PDF processing without treating failure as evidence absence",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "safe_automatic_retrieval_still_held"
+    },
+    {
+      "source_id": "hi-state-alpr-technology-disclosure",
+      "state": "HI",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": null,
+      "disposition": "No verified safe replacement source found; retain original held and research alternative official publisher paths",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "safe_automatic_retrieval_still_held"
+    },
+    {
+      "source_id": "oh-state-procurement-flock-subscription",
+      "state": "OH",
+      "monitor_status": "held_timeout_or_network",
+      "verified_alternative_url": "https://controllingboard.obm.ohio.gov/Print/PrintCBRequest?id=511a4ceb-9a1e-420f-b949-2257330dbf4a",
+      "disposition": "Exact Ohio Controlling Board source independently readable; it reports approval, not necessarily actual payment",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "nv-county-alpr-grant-application-not-installation",
+      "state": "NV",
+      "monitor_status": "held_redirect",
+      "verified_alternative_url": null,
+      "disposition": "Original Douglas County grant PDF not independently retrieved; grant application must not imply installed cameras",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "safe_automatic_retrieval_still_held"
+    },
+    {
+      "source_id": "ny-state-model-policy-not-agency-adoption",
+      "state": "NY",
+      "monitor_status": "held_redirect",
+      "verified_alternative_url": "https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/MPTC%20LPR%20Model%20Policy%202021.pdf",
+      "disposition": "Government model policy independently indexed, but not proof any locality adopted it",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "wv-other-vendor-alpr-procurement-not-flock",
+      "state": "WV",
+      "monitor_status": "held_oversized",
+      "verified_alternative_url": "https://www.state.wv.us/admin/purchase/Awards/Documents/2026/Q2/A_0926_CPO_PSC2600000003.pdf",
+      "disposition": "Independent indexed PDF shows Drivewyze roadway maintenance, not a Flock ALPR purchase; reject as Flock verification",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "legacy-il-naperville-alpr-transparency",
+      "state": "IL",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://www.naperville.il.us/589/Automated-License-Plate-Readers",
+      "disposition": "Original Naperville transparency page independently readable with links to two dated policies",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "reviewed-02-wi",
+      "state": "WI",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://www.sheboyganwi.gov/m/newsflash/Home/Detail/94",
+      "disposition": "Exact original Sheboygan city statement independently readable",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "reviewed-07-tx",
+      "state": "TX",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://www.libertyhilltx.gov/m/newsflash/Home/Detail/395",
+      "disposition": "Exact Liberty Hill original government notice independently readable",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    },
+    {
+      "source_id": "reviewed-08-in",
+      "state": "IN",
+      "monitor_status": "held_http_error",
+      "verified_alternative_url": "https://www.cityoffortwayne.in.gov/m/newsflash/home/detail/716",
+      "disposition": "Exact original Fort Wayne police chief statement independently readable",
+      "monitor_recovered": false,
+      "source_identity_not_deleted": true,
+      "status": "alternate_government_evidence_located_manual_review_required"
+    }
+  ],
+  "changed_source_candidates": [
+    {
+      "source_id": "az-government-oversight-announcement",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ga-government-investigation-announcement",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "id-police-technology-disclosure",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ks-police-other-vendor-disclosure",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "mn-police-technology-disclosure",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "mo-government-public-consultation",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ok-police-technology-disclosure",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ri-police-technology-disclosure",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "mt-state-alpr-statute",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "vt-state-alpr-statute-index",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ak-unadopted-alpr-prohibition-amendment",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "legacy-ca-san-mateo-grand-jury",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "legacy-ca-palo-alto-transparency",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "legacy-wi-green-bay-police-reports",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "legacy-va-richmond-flock-updates",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "legacy-tx-austin-public-safety-audits",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ms-flock-university-medical-procurement-notice",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "nc-hillsborough-flock-contract-cancel-notice",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "nv-legislature-2026-alpr-recommendations",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "wv-code-photo-monitoring-traffic-law",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "il-naperville-2026-alpr-policy-history",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "il-naperville-police-transparency",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "mo-columbia-alpr-operations",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "ga-gbi-september-misuse-investigation",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    },
+    {
+      "source_id": "vt-act-135-enacted-original",
+      "status": "held_prior_source_bytes_or_authenticated_document_version_unavailable",
+      "documentary_version_difference_approved": false,
+      "action": "Preserve matching earlier and current original document bytes, dated original publisher references and exact page citations; compare substantive wording and submit to editorial approval. Do not infer policy enactment from hash changes."
+    }
+  ],
+  "review_summary": {
+    "discovered_document_links_reviewed": 6,
+    "individual_pdf_content_visually_verified": 4,
+    "document_links_currently_held": 2,
+    "held_monitored_urls_dispositioned": 16,
+    "source_fingerprint_changes_triaged": 25,
+    "independently_confirmed_same_document_before_after_wording_differences": 0,
+    "reason_10_diff_target_not_met": "No authenticated before-and-after original bytes or independently retrievable dated page versions for these 25 fingerprint changes in the monitored receipt artifact; a checksum alone is insufficient",
+    "published_automatic_watch_events": 0
+  },
+  "comparative_research_findings": [
+    {
+      "id": "san-bruno-reported-audit-period-comparison",
+      "category": "source_dated_cross_period_observation_not_verified_version_delta",
+      "before_url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9280/SBPD-Flock-ALPR-Annual-Audit---2025#page=1",
+      "after_url": "https://www.sanbruno.ca.gov/DocumentCenter/View/9279/SBPD-Flock-ALPR-Audit-Q1-and-Q2-2026#page=1",
+      "claim": "The December 2025 report lists 66 total/46 operational cameras; the Q1–Q2 2026 report lists 59 total/51 operational cameras and 29 additional searches needing investigation.",
+      "caveat": "Reports cover different durations. The 2025 PDF's own date conflicts with its December 2025 audit label; these reports are not a before/after version of the same policy document."
+    }
+  ]
+}
