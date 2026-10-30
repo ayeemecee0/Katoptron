@@ -14,6 +14,8 @@ RUN=ROOT/".katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json"
 SNAPSHOT=ROOT/".katoptron-ci/nationwide-monitor-snapshot.json"
 HEALTH=ROOT/".katoptron-ci/nationwide-public-health.json"
 BUILTIN=ROOT/"data/nationwide-original-government-source-receipts.json"
+RECOVERY_MONITOR=ROOT/".katoptron-ci/historical-19-originals-retrieval-recovery.json"
+RECOVERY_CONTINUITY=ROOT/".katoptron-ci/historical-19-originals-recovery-continuity.json"
 
 def validated(receipts,expected):
  if len(receipts)!=len(expected):raise ValueError("Missing monitored original-government source receipts")
@@ -132,6 +134,42 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
   "limitations":"Source monitoring and SHA changes do not prove Flock adoption, current use, policy changes or statewide source completeness. Every difference requires individual original-document review."}
  return snapshot,health
 
+def historical_continuity(recovery,snapshot):
+ """Distinct 'reachable now' and last verified original evidence, including subsequent outages."""
+ historic=recovery.get("cases",[])
+ rows={r["source_id"]:r for r in snapshot.get("receipts",[])}
+ if len(historic)!=19 or len(rows)!=snapshot.get("monitored_urls"):
+  raise ValueError("Incomplete historical recovery provenance")
+ cases=[]
+ for old in historic:
+  r=rows.get(old["source_id"])
+  if not r:raise ValueError("Missing historical baseline")
+  now=old["historical_original_retrieved"]
+  prev_hash=r.get("last_usable_sha256")
+  if now and prev_hash!=old["original_sha256"]:
+   raise ValueError("Recovered original SHA conflicts with live monitor")
+  if prev_hash is not None and not re.fullmatch(r"[a-f0-9]{64}",prev_hash):
+   raise ValueError("Untrusted last usable original source hash")
+  cases.append({"source_id":old["source_id"],"state":old["state"],
+   "historical_url":old["historical_url"],
+   "accessible_this_run":now,"last_authenticated_original_sha256":prev_hash,
+   "ever_authentically_retrieved":prev_hash is not None,
+   "last_authenticated_at":r.get("last_usable_on"),
+   "last_authenticated_publisher_url":r.get("last_verified_retrieved_url"),
+   "held_this_run_with_previous_evidence":not now and prev_hash is not None,
+   "transport_failure_reason":old.get("transport_failure_reason"),
+   "transport_http_status":old.get("transport_http_status"),
+   "publisher_redirect_candidate":old.get("transport_redirect_candidate"),
+   "publication_or_policy_change_verified":False})
+ return {"schema_version":1,"observed_on":snapshot["observed_on"],
+  "historical_total":19,"accessible_this_run":sum(x["accessible_this_run"] for x in cases),
+  "ever_verified_original_bytes":sum(x["ever_authentically_retrieved"] for x in cases),
+  "never_verified_original_bytes":sum(not x["ever_authentically_retrieved"] for x in cases),
+  "previously_accessible_now_held":sum(x["held_this_run_with_previous_evidence"] for x in cases),
+  "historical_source_ids_deleted":0,"automatically_approved_findings":0,
+  "cases":cases,
+  "limitations":"A last successful hash proves only prior issuer retrieval, not current availability or new source wording. Verified content changes require independent paired original bytes and editorial sign-off."}
+
 def main():
  p=argparse.ArgumentParser();p.add_argument("--run",type=Path,default=RUN)
  p.add_argument("--previous",type=Path,default=SNAPSHOT)
@@ -143,6 +181,15 @@ def main():
  prior=json.loads(args.previous.read_text()) if args.previous.is_file() else json.loads(BUILTIN.read_text())
  run=json.loads(args.run.read_text())
  snapshot,health=continuity(run,registry,existing,prior,day=dt.datetime.now(dt.timezone.utc).date().isoformat())
+ if RECOVERY_MONITOR.is_file():
+  event=json.loads(RECOVERY_MONITOR.read_text(encoding="utf8"))
+  historical=historical_continuity(event,snapshot)
+  RECOVERY_CONTINUITY.write_text(json.dumps(historical,indent=2)+"\n",encoding="utf8")
+  print("HISTORICAL_ORIGINAL_SOURCE_CONTINUITY",json.dumps({
+   "current_retrieved":historical["accessible_this_run"],
+   "ever_verified":historical["ever_verified_original_bytes"],
+   "never_verified":historical["never_verified_original_bytes"],
+   "previously_accessible_currently_held":historical["previously_accessible_now_held"]},sort_keys=True))
  for path,obj in ((args.snapshot,snapshot),(args.health,health)):
   path=path.resolve()
   if not path.is_relative_to(ROOT):raise ValueError("Unsafe output location")
