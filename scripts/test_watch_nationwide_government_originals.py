@@ -68,6 +68,35 @@ class StateSources(unittest.TestCase):
   bad=M.inspect(p,fetcher=lambda _:b"<html><body>Flock</body></html>"*9)
   self.assertEqual(bad["status"],"held_wrong_format")
   self.assertIsNone(bad["original_sha256"])
+ def test_publisher_redirects_are_fail_closed(self):
+  original="https://www.elgintexas.gov/m/newsflash/Home/Detail/1824"
+  archived="https://www.elgintexas.gov/m/newsflash/Archive/Item/1824?arcId=2451"
+  src={"id":"reviewed-23-tx","source_url":original}
+  self.assertTrue(M.trusted_redirect(src,original,archived))
+  self.assertFalse(M.trusted_redirect(src,original,"https://example.com/flock"))
+  self.assertFalse(M.trusted_redirect(src,original,"http://www.elgintexas.gov/a"))
+  self.assertFalse(M.trusted_redirect(src,original,"https://www.elgintexas.gov/private"))
+  self.assertFalse(M.trusted_redirect({"id":"reviewed-02-wi","source_url":original},original,archived))
+  self.assertTrue(M.trusted_redirect(src,"https://www.criminaljustice.ny.gov/a.pdf","https://criminaljustice.ny.gov/a.pdf"))
+  sample=b"<html><body>Archived - Pausing City of Elgin FLOCK Safety Camera Program</body></html>"*3
+  result=M.inspect({"id":"reviewed-23-tx","state":"TX","publisher":"City of Elgin","kind":"html","source_url":original},
+     fetcher=lambda _: (sample,archived))
+  self.assertEqual(result["status"],"original_government_html_accessible")
+  self.assertTrue(result["verified_same_publisher_redirect"])
+  self.assertEqual(result["retrieved_url"],archived)
+ def test_iowa_pdf_and_bounded_large_original_handling(self):
+  sources=M.recovery_sources()
+  ia=next(x for x in sources if x["id"]=="ia-judicial-original-opinion")
+  self.assertEqual(ia["kind"],"pdf")
+  self.assertEqual(M.pdf_limit(ia),M.MAX_BYTES_PDF)
+  ut=next(x for x in sources if x["id"]=="ut-government-contract-proposal")
+  wv=next(x for x in sources if x["id"]=="wv-other-vendor-alpr-procurement-not-flock")
+  self.assertEqual(M.pdf_limit(ut),M.MAX_EXCEPTIONAL_PDF)
+  self.assertEqual(M.pdf_limit(wv),M.MAX_EXCEPTIONAL_PDF)
+  self.assertLess(M.MAX_EXCEPTIONAL_PDF,35_000_000)
+  held=M.inspect(ut,fetcher=lambda _: (_ for _ in ()).throw(ValueError("oversized_original")))
+  self.assertEqual(held["status"],"held_oversized")
+  self.assertIsNone(held["original_sha256"])
  def test_transient_unavailable_never_counts_as_source_or_cameras(self):
   def denied(x):raise ValueError("original_redirect")
   result=M.watch(R,OLD,fetcher=denied,workers=3)
