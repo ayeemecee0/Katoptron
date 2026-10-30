@@ -41,17 +41,28 @@ class Gateway:
             raise ValueError("Untrusted archive service origin")
         self.origin = origin
         self.endpoint = origin + "/functions/v1/private-original-archive"
+        self.oidc = self.refresh_token()
+    def refresh_token(self):
+        # GitHub OIDC identity tokens expire during long government-source scans.
+        # Refresh only from the pre-authorized Actions token endpoint.
         token_url = os.environ["ACTIONS_ID_TOKEN_REQUEST_URL"]
         separator = "&" if "?" in token_url else "?"
         body = request(token_url + separator + "audience=" + AUDIENCE, headers={
             "Authorization": "bearer " + os.environ["ACTIONS_ID_TOKEN_REQUEST_TOKEN"]})
-        self.oidc = json.loads(body)["value"]
+        return json.loads(body)["value"]
     def sign(self, action, *, source_id=None, sha256=None, kind=None, state=False):
         payload = {"action":action,"state":state}
         if not state:
             payload.update(source_id=source_id,sha256=sha256,kind=kind)
-        data = request(self.endpoint, method="POST", data=json.dumps(payload).encode(), headers={
-            "Authorization":"Bearer " + self.oidc, "Content-Type":"application/json"})
+        def call_sign(token):
+            return request(self.endpoint, method="POST", data=json.dumps(payload).encode(), headers={
+                "Authorization":"Bearer " + token, "Content-Type":"application/json"})
+        try:
+            data = call_sign(self.oidc)
+        except urllib.error.HTTPError as err:
+            if err.code != 401: raise
+            self.oidc = self.refresh_token()
+            data = call_sign(self.oidc)
         result = json.loads(data)
         signed = result["signed_url"]
         parsed = urllib.parse.urlsplit(signed)
