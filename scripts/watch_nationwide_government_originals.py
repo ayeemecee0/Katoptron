@@ -143,8 +143,8 @@ def reviewed_addition_sources():
    if src.get("watch_category")!="historical_research_only" or not src.get("source_type","").startswith("government_"):
     raise ValueError("Docket source lacks original-government provenance")
   elif row["record_origin"]=="manually_verified_original_document":
-   if row["kind"]!="pdf" or not isinstance(src.get("page"),int) or src.get("page")<1 or
-       src.get("status")!="original_pdf_page_visually_verified":
+   if (row["kind"]!="pdf" or not isinstance(src.get("page"),int) or src.get("page")<1 or
+       src.get("status")!="original_pdf_page_visually_verified"):
     raise ValueError("Independently page-inspected original PDF required")
   elif not src.get("source_issuer_review_status","").startswith("source_attributed_"):
    raise ValueError("National original not source-attributed")
