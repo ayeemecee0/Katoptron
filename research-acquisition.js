@@ -18,15 +18,43 @@ const get=async name=>{
  return r.json();
 };
 try{
- const [sources,held,diffs]=await Promise.all([
+ const [sources,held,diffs,policy,workflows]=await Promise.all([
   get('editorial-originals-intelligence-batch-2026-10-29.json'),
   get('nationwide-19-held-original-government-source-recovery-2026-10-29.json'),
-  get('current-source-version-hash-review-workplan-2026-10-29.json')]);
+  get('current-source-version-hash-review-workplan-2026-10-29.json'),
+  get('naperville-paired-policy-clause-revisions-2026-10-29.json'),
+  get('investigation-original-source-workflow-verification-2026-10-29.json')]);
  if(sources.schema_version!==1||sources.sources.length!==14||
   held.resolutions.length!==19||diffs.sources.length!==38||
-  diffs.approved_substantive_document_version_differences!==0)
+  diffs.approved_substantive_document_version_differences!==0||
+  policy.changes.length!==10||policy.count_distinct_document_pairs!==1||
+  policy.independent_human_signed_off!==0||workflows.workflows.length!==10)
   throw Error('Evidence inventory incomplete or changed without review');
  $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 38 authenticated source-byte pairs · 0 approved prior/new source-version wording differences';
+ for(const entry of policy.changes){
+  const c=el($('policyPairs'),'article');
+  el(c,'h3',entry.title);
+  el(c,'strong','2025 policy, page '+entry.before_pdf_page);
+  el(c,'p',entry.before_summary);
+  const b=el(c,'p');src(b,policy.before.url,'Original 2025 PDF, page '+entry.before_pdf_page,entry.before_pdf_page);
+  el(c,'strong','2026 policy, page '+entry.after_pdf_page);
+  el(c,'p',entry.after_summary);
+  const a=el(c,'p');src(a,policy.after.url,'Original 2026 PDF, page '+entry.after_pdf_page,entry.after_pdf_page);
+  el(c,'p',entry.substantive_wording_difference);
+  el(c,'small','Human editorial sign-off: pending. No legal violation inferred.');
+ }
+ $('policyPairStatus').textContent='10 source-paired ALPR policy wording comparisons · 2 dated originals · 1 government agency · independent human approvals: 0';
+ for(const entry of workflows.workflows){
+  const c=el($('workflowCards'),'article');
+  el(c,'h3',entry.agency);
+  el(c,'p',entry.confirmed_scope);
+  el(c,'small','Original research outcome: '+entry.source_verification_tier);
+  const l=el(c,'p');src(l,entry.source_url,'Government publisher evidence',entry.source_pdf_page);
+  el(c,'strong','Next validation');
+  el(c,'p',entry.next_check);
+  el(c,'small','Requests submitted: no · Compliance or wrongdoing established: no');
+ }
+ $('workflowStatus').textContent='10 original sources checked and research tasks advanced; no records requests filed.';
  function showLeads(){
   const q=$('searchLeads').value.trim().toLowerCase();
   $('leadCards').replaceChildren();
