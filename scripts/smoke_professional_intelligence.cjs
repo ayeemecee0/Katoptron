@@ -32,6 +32,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   await page.waitForFunction(()=>document.querySelector('#evidenceStatus')?.textContent?.includes('validated'),null,{timeout:18000});
   assert.match(await page.locator('#leadStatus').textContent(),/source-attributed leads/);
   assert((await page.locator('#leadCards button').count())>0);
+  assert.equal(await page.locator('#gapBacklog article').count(),20);
+  assert.match(await page.locator('#gapBacklogStatus').textContent(),/20 source-cited/);
+  assert.match(await page.locator('#gapBacklog article').first().textContent(),/Missing evidence/);
+  await page.locator('#leadQuestion').fill('contract');
+  assert((await page.locator('#leadCards button').count())>0);
+  assert.match(await page.locator('#leadCards button').first().textContent(),/Research relevance/);
+  await page.locator('#leadQuestion').fill('');
   assert.match(await page.locator('#selectedStatus').textContent(),/Historical research lead|Reviewed public Watch record/);
   assert((await page.locator('#comparisonList article').count())>0);
   assert((await page.locator('#crossAgency li').count())>2);
@@ -44,6 +51,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert(html.includes('Official roles to contact'));
   assert(html.includes('Evidence boundary'));
   await page.locator('#feedControls').waitFor({state:'visible',timeout:12000});
+  assert.match(await page.locator('#weeklyDigestStatus').textContent(),/qualifying reviewed government event/);
+  assert.equal(await page.locator('#copyWeeklyDigest').count(),1);
   await page.locator('#followJurisdiction').selectOption('houston|TX');
   await page.locator('#saveFollow').click();
   await page.waitForFunction(()=>window.__testFollows.length===1,null,{timeout:8000});
@@ -53,7 +62,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   await page.waitForFunction(()=>window.__testFollows.length===0,null,{timeout:8000});
   assert.equal(await page.locator('#followList p').count(),0);
   assert.deepEqual(errors,[]);
-  console.log('PROFESSIONAL_INTELLIGENCE_BROWSER_PASS: leads, comparisons, acquisition, print package, private follow, no historical replay, deletion');
+  console.log('PROFESSIONAL_INTELLIGENCE_BROWSER_PASS: ranked leads, 20 gaps, source-complete exports, private seven-day digest, historical safety and deletion');
  }catch(error){
   console.error('PROFESSIONAL_INTELLIGENCE_BROWSER_FAILED:',error.stack||error.message);
   console.error('SOURCE_STATUS:',await page.locator('#evidenceStatus').textContent().catch(()=>'?'),

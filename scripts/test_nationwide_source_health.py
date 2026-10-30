@@ -12,7 +12,7 @@ M=load("nationwide_source_health");G=load("watch_nationwide_government_originals
 R=json.loads(G.REGISTRY.read_text());OLD=json.loads(G.EXISTING.read_text())
 BASE=json.loads(M.BUILTIN.read_text())
 j,seeds,_=G.catalog(R,OLD)
-all_sources=seeds+G.legacy_sources(OLD)+G.recovery_sources()+G.agency_depth_sources()
+all_sources=seeds+G.legacy_sources(OLD)+G.recovery_sources()+G.agency_depth_sources()+G.reviewed_addition_sources()
 def fake(status="original_government_html_accessible"):
  rows=[]
  for i,s in enumerate(all_sources):
@@ -22,16 +22,16 @@ def fake(status="original_government_html_accessible"):
  return {"jurisdictions_total":51,"all_source_receipts":rows}
 class Monitor(unittest.TestCase):
  def test_monitor_all_50_states_and_dc_not_just_new_urls(self):
-  self.assertEqual(len(all_sources),82)
+  self.assertEqual(len(all_sources),100)
   run=fake();a,b=M.continuity(run,R,OLD,BASE)
   self.assertEqual(a["jurisdictions_monitored"],51)
-  self.assertEqual(b["monitored_urls"],82)
+  self.assertEqual(b["monitored_urls"],100)
   self.assertEqual(len(b["states"]),51)
   self.assertTrue(all(x["originals_monitored"]>=1 for x in b["states"]))
   self.assertTrue(all(x["statewide_flock_adoption_verified"] is False for x in b["states"]))
   self.assertEqual(b["source_verified_contract_changes"],0)
   self.assertIn("DC",{s["state"] for s in b["states"]})
-  self.assertEqual(b["accessible_origins"],82)
+  self.assertEqual(b["accessible_origins"],100)
   self.assertGreater(b["first_baselines_pending_individual_review"],0)
  def test_changed_source_is_review_lead_not_enacted_policy(self):
   a,b=M.continuity(fake(),R,OLD,BASE)
@@ -57,7 +57,7 @@ class Monitor(unittest.TestCase):
   for x in run["all_source_receipts"]:
    x["status"]="held_http_error";x["original_sha256"]=None
   s,h=M.continuity(run,R,OLD,BASE)
-  self.assertEqual(h["held_origins"],82)
+  self.assertEqual(h["held_origins"],100)
   self.assertTrue(all(x["documented_gap"]=="no_accessible_curated_government_original" for x in h["states"]))
   self.assertTrue(all(x["statewide_camera_locations_verified"] is False for x in h["states"]))
  def test_removed_or_redirected_and_malformed_sources_fail(self):

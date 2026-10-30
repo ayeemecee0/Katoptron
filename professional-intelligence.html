@@ -18,14 +18,15 @@ fieldset{border:1px solid #436478}fieldset label{display:inline-flex;align-items
 </style></head><body><a href="#main" class="skip-link">Skip to research intelligence</a>
 <header><a href="./index.html">KATOPTRON</a><a href="./pilot-dossiers.html">Research dossiers</a><a href="./nationwide-research-leads.html">Reviewed national leads</a><a href="./research-workspace.html">Private cases</a><a href="./surveillance-changes.html">Reviewed document changes</a><a href="./government-watch.html">Government Watch</a></header>
 <main id="main"><h1>Professional investigation intelligence</h1>
-<p>Original-government leads, qualified source differences, missing-records requests, opt-in in-app research feeds and portable investigation packages. Review sources before publication.</p>
+<p>Original-government leads, topic-ranked investigative opportunities, targeted missing-records tasks, opt-in source-qualified seven-day monitoring and portable investigation packages. Review sources before publication.</p>
 <p class="note">Evidence standards: a historical record is not a newly detected event; a government statement is not independently audited operation; a proposal is not enacted policy; missing evidence is UNKNOWN, not evidence of misconduct. Source-version changes remain privately held until editorial review. No personal vehicle searches or location histories.</p>
 <p id="evidenceStatus" role="status" aria-live="polite">Validating original-government evidence…</p>
 <div class="grid">
 <section class="panel" aria-labelledby="leadHeading"><h2 id="leadHeading">1. Investigative Lead Engine</h2>
 <p>Read already-reviewed original-government records. Newly published items appear only after publication through the existing Watch editorial pipeline.</p>
 <div class="row"><label>Jurisdiction <select id="jurisdiction"><option value="">All available</option></select></label>
-<label>Subject <select id="leadTopic"><option value="all">All subjects</option><option value="contract">Contracts</option><option value="policy">Policies</option><option value="oversight">Oversight</option><option value="sharing">Access/sharing</option><option value="procurement">Procurement</option></select></label></div>
+<label>Subject <select id="leadTopic"><option value="all">All subjects</option><option value="contract">Contracts</option><option value="policy">Policies</option><option value="oversight">Oversight</option><option value="sharing">Access/sharing</option><option value="procurement">Procurement</option></select></label><label>Research question (local-only preview) <input id="leadQuestion" type="search" maxlength="160" placeholder="e.g. contract renewal, policy change"></label></div>
+<p class="muted">Relevance is a topical ordering, not an evidence confidence, misconduct, or urgency score. Your preview question is never submitted or stored.</p>
 <p id="leadStatus" class="muted"></p><div id="leadCards" class="scroll" aria-label="Source-qualified leads"></div>
 </section>
 <section class="panel" id="leadDetail" aria-labelledby="detailHeading"><h2 id="detailHeading">Selected source lead</h2>
@@ -44,12 +45,15 @@ fieldset{border:1px solid #436478}fieldset label{display:inline-flex;align-items
 <section class="panel" aria-labelledby="acquisitionHeading"><h2 id="acquisitionHeading">3. Missing-Evidence Acquisition Engine</h2>
 <p>Checks the selected lead against indexed original documents, identifies likely official custodian roles and prepares an editable request. No request is ever transmitted automatically.</p>
 <p id="acquisitionStatus" role="status"></p>
+<h3>20 source-attributed unanswered questions</h3>
+<p>Reusable research tasks with original document links and targeted custodians. These are missing evidence, not accusations or proof that a government holds records.</p>
+<p id="gapBacklogStatus" role="status"></p><div id="gapBacklog" class="scroll"></div>
 <div id="existingSources"></div>
 <label for="draftBody">Editable public-records request</label><textarea id="draftBody" aria-label="Editable records request" maxlength="18000"></textarea>
 <div class="row"><button id="copyRequest" type="button">Copy draft</button><a id="privateCaseLink" href="./research-workspace.html">Open private case and track request</a></div>
 </section></div>
 <section class="panel no-print" aria-labelledby="feedHeading"><h2 id="feedHeading">4. Personal Research Intelligence Feed</h2>
-<p>Follow specific jurisdictions, topics and an optional research question. Your follows are private and in-app only. Email notifications remain <strong>disabled</strong> unless separately enabled in Government Watch. Prior records are never backdated as newly discovered.</p>
+<p>Follow specific jurisdictions, topics and an optional research question. Your follows are private and in-app only, with a seven-day, source-qualified digest you can copy. These research follows do not change email settings. Separately opted-in Government Watch emails have their own category and jurisdiction rules. Prior records are never backdated as newly discovered.</p>
 <p id="feedAuthStatus" role="status">Checking confirmed-account access…</p>
 <form id="signin" class="row" hidden><label>Email <input id="email" type="email" autocomplete="email" required></label>
 <label>Password <input id="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button>
@@ -64,6 +68,8 @@ fieldset{border:1px solid #436478}fieldset label{display:inline-flex;align-items
 <label><input type="checkbox" class="followTopic" value="procurement" checked>Procurement</label></fieldset>
 <div class="row"><button id="saveFollow" type="button" class="primary">Follow and start new-event baseline</button><button id="deleteFollow" type="button">Unfollow selected jurisdiction</button><button id="logout" type="button">Sign out</button></div>
 <p id="feedStatus" role="status"></p><div id="followList"></div>
+<div class="row"><button id="copyWeeklyDigest" type="button">Copy my 7-day source review</button><a href="./government-watch.html">Manage separate locality Watch email opt-in</a></div>
+<p id="weeklyDigestStatus" role="status">No personal email has been enabled by these research follows.</p>
 <h3>Genuinely new since your follow</h3><div id="newFeed"></div>
 <h3>Previously published reviewed evidence</h3><div id="reviewedFeed"></div>
 <h3>Historical research opportunities</h3><div id="historicalFeed"></div></div>

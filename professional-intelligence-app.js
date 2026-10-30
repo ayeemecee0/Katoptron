@@ -44,15 +44,41 @@ function choose(lead){
 function renderLeads(){
  $('leadCards').replaceChildren();
  const jurisdiction=$('jurisdiction').value,topic=$('leadTopic').value;
- const filtered=leads.filter(l=>(!jurisdiction||l.locality_key===jurisdiction)&&(topic==='all'||l.topics.includes(topic)));
- for(const lead of filtered.slice(0,55)){
+ const ranked=I.rankForResearch(leads,topic,$('leadQuestion').value,jurisdiction);
+ const filtered=ranked.map(x=>x.lead);
+ for(const entry of ranked.slice(0,55)){
+  const lead=entry.lead;
   const b=element('button');b.type='button';b.className=selected?.id===lead.id?'selected':'';
-  b.append(element('strong',lead.title),element('small',' · '+lead.locality_key+' · '+lead.label+' · '+lead.source_date));
+  b.append(element('strong',lead.title),element('small',' · '+lead.locality_key+' · '+lead.label+' · '+lead.source_date),
+   element('small',' · Research relevance: '+entry.why_ranked));
   b.addEventListener('click',()=>{choose(lead);renderLeads()});$('leadCards').append(b);
  }
  $('leadStatus').textContent=filtered.length+' source-attributed leads found, displaying '+Math.min(55,filtered.length)+
   '. Historical disclosures are not presented as new alerts.';
  if(!filtered.length)$('leadCards').append(element('p','No matching qualified source records. That does not establish absence of surveillance.'));
+}
+function renderGapBacklog(){
+ $('gapBacklog').replaceChildren();
+ const jobs=I.acquisitionBacklog(leads,docket.rows,20);
+ for(const task of jobs){
+  const article=element('article');article.className='card';
+  article.append(element('strong',task.agency+' · '+task.source_date),
+   element('p',task.question),element('small','Missing evidence: unverified, NOT proof of misconduct.'));
+  const original=safeLink(task.source_url,'Inspect original government document');
+  const lead=leads.find(l=>task.task_id.startsWith(l.id+':'));
+  const button=element('button','Prepare this targeted request');button.type='button';
+  button.addEventListener('click',()=>{
+   if(!lead)return;
+   choose(lead);
+   // Preserve a task-specific request rather than broadening to unrelated questions.
+   const single={...lead,unknown:[task.question]};
+   $('draftBody').value=I.acquisition(single,docket.rows).body;
+   $('acquisitionStatus').textContent='Unsent source-specific request prepared from one documented gap. Verify custodian and date range.';
+   $('acquisitionHeading').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  article.append(original,element('span',' · '),button);$('gapBacklog').append(article);
+ }
+ $('gapBacklogStatus').textContent=jobs.length+' source-cited unresolved evidence tasks prepared for review (not 20 newly discovered or fulfilled documents).';
 }
 function renderComparisons(){
  $('comparisonList').replaceChildren();
@@ -96,6 +122,9 @@ async function optionalVerifiedDiffs(){
 }
 function renderFeed(){
  for(const id of ['newFeed','reviewedFeed','historicalFeed'])$(id).replaceChildren();
+ const week=I.digest(leads,preferences);
+ $('weeklyDigestStatus').textContent=(user?.email_confirmed_at?'Private source review ready. ':'Sign in to save private follows. ')+
+  week.newReviewed.length+' qualifying reviewed government event(s) in the last seven days after follow baseline. No research email automatically sent.';
  const f=I.personalize(leads,preferences);
  const sections=[['newFeed',f.newItems,'No newly published reviewed events since your follow began.'],
   ['reviewedFeed',f.reviewed,'No matching earlier reviewed Watch events.'],
@@ -167,6 +196,21 @@ $('saveFollow').addEventListener('click',async()=>{
   $('feedStatus').textContent='Follow saved. Newly published items are counted only after the database-recorded initial follow time. Historical items stay historical.';
  }catch(err){$('feedStatus').textContent='Follow not saved: '+err.message;}
 });
+$('copyWeeklyDigest').addEventListener('click',async()=>{
+ try{
+  if(!user?.email_confirmed_at)throw Error('Sign in with a confirmed account first');
+  const week=I.digest(leads,preferences),records=week.newReviewed;
+  const out=['Katoptron — seven-day private reviewed-source research summary',
+   'Source-qualified, original-government Watch events only; no historical sources presented as new.',
+   'New qualifying events: '+records.length,'',
+   ...records.flatMap((e,i)=>[(i+1)+'. '+e.title+' · '+e.locality_key,'Source date: '+e.source_date,
+     'Status: '+e.status,'Original: '+e.original_url,'Unverified: '+e.unknown.join(' / '),'']),
+   'Historical research starters and other unmatched disclosures are excluded from the new-event count.',
+   'This is a manually copied research summary, not an automatic email or finding of misconduct.'].join('\n');
+  await win.navigator.clipboard.writeText(out);
+  $('weeklyDigestStatus').textContent='Seven-day research summary copied from your private follows; no email sent.';
+ }catch(e){$('weeklyDigestStatus').textContent='Digest copy unavailable: '+e.message;}
+});
 $('deleteFollow').addEventListener('click',async()=>{
  try{
   if(!user)throw Error('Sign in first');
@@ -201,6 +245,7 @@ $('printPackage').addEventListener('click',()=>{
 });
 $('jurisdiction').addEventListener('change',renderLeads);
 $('leadTopic').addEventListener('change',renderLeads);
+$('leadQuestion').addEventListener('input',renderLeads);
 $('compareTopic').addEventListener('change',renderCrossAgency);
 try{
  const r=await win.fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store',referrerPolicy:'no-referrer'});
@@ -209,7 +254,21 @@ try{
  docket=win.KatoptronGovernmentDocket.build(input);
  const historical=I.leadFromDocket(docket);
  leads=historical;
- const distinct=[...new Set(historical.map(l=>l.locality_key))].sort();
+ // Two dated, editorially source-attributed national lead registries; never Watch events.
+ try{
+  const paths=['./data/nationwide-original-source-research-leads-2026-10-29.json',
+   './data/nationwide-original-research-leads-expanded-2026-10-29.json'];
+  const national=await Promise.all(paths.map(async path=>{
+   const response=await win.fetch(path,{cache:'no-store',referrerPolicy:'no-referrer'});
+   if(!response.ok)throw Error('National research source HTTP '+response.status);
+   return response.json();
+  }));
+  leads=[...historical,...I.leadFromNational(national)];
+ }catch(err){
+  $('leadStatus').textContent='Supplemental national research sources withheld: '+err.message+
+   '. Existing primary docket remains available.';
+ }
+ const distinct=[...new Set(leads.map(l=>l.locality_key))].sort();
  for(const key of distinct){for(const id of ['jurisdiction','followJurisdiction']){
   const opt=element('option',key.replace('|',', '));opt.value=key;$(id).append(opt);
  }}
@@ -222,7 +281,7 @@ try{
   if(!response.ok)throw Error('Reviewed Watch HTTP '+response.status);
   const rows=await response.json();
   if(!Array.isArray(rows))throw Error('Unexpected reviewed Watch feed');
-  leads=[...I.leadFromWatch(rows),...historical];eventsKnown=true;
+  leads=[...I.leadFromWatch(rows),...leads];eventsKnown=true;
  }catch(err){
   $('leadStatus').textContent='Watch service unavailable: '+err.message+'. Showing only historically validated government records.';
  }
@@ -236,7 +295,7 @@ try{
  const wanted=new URL(win.location.href).searchParams.get('agency');
  const permitted=[...new Set(leads.map(l=>l.locality_key))];
  if(permitted.includes(wanted))$('jurisdiction').value=wanted;
- issues=I.compare(docket);renderLeads();
+ issues=I.compare(docket);renderLeads();renderGapBacklog();
  choose((permitted.includes(wanted)&&leads.find(l=>l.locality_key===wanted))||leads[0]);
  renderFeed();
  $('evidenceStatus').textContent='Original-government index validated ('+docket.rows.length+' source records, compiled '+compiledOn+'). '+
