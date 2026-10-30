@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Katoptron | National Original-Source Triage</title><link rel="stylesheet" href="./a11y.css"><style>
+:root{font:15px/1.5 system-ui,Arial,sans-serif;background:#0b1d29;color:#eaf6fa;color-scheme:dark}body{margin:0}header{display:flex;flex-wrap:wrap;gap:1rem;background:#14313f;padding:1rem 4vw}a{color:#9bdded;overflow-wrap:anywhere}
+main{max-width:1100px;margin:auto;padding:1.5rem 1rem 4rem}h1{font-size:clamp(1.8rem,4vw,2.5rem)}
+.notice{background:#244251;border-left:4px solid #8dd7e2;padding:1rem}
+section{margin-top:2rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(295px,100%),1fr));gap:1rem}
+.card{border:1px solid #547787;background:#152f3e;border-radius:8px;padding:1rem;overflow-wrap:anywhere}
+.card h3{font-size:1.05rem}.muted,small{color:#bcd3de}
+label{display:flex;gap:.8rem;align-items:center}input{padding:.6rem;background:#203a49;color:inherit;border:1px solid #83a1b2;border-radius:5px}
+input:focus-visible,a:focus-visible{outline:3px solid #fff;outline-offset:3px}ul{padding-left:1.4rem}
+</style></head><body><a class="skip-link" href="#main">Skip to evidence review</a><header><a href="./index.html">KATOPTRON</a><a href="./nationwide-source-monitor.html">50-state source health</a><a href="./nationwide-research-leads.html">Source-cited research leads</a></header>
+<main id="main"><h1>National original-government evidence review</h1><p class="notice">The 15 detected original-source hash changes are <strong>not</strong> verified new contract terms or policy differences. Their 2026-10-27 baseline stored fingerprints but not earlier documents. Until original before-and-after versions are recovered, the correct disposition is a documented review hold. Previously failed URLs remain in the registry and are linked to separate government-source alternatives.</p>
+<p id="status" role="status" aria-live="polite">Validating the original-source review ledger…</p>
+<label>Filter source and jurisdiction <input id="filter" placeholder="e.g. IL, Robbinsdale" maxlength="80"/></label>
+<section><h2>15 source-version differences requiring originals</h2><div id="changed" class="cards"></div></section>
+<section><h2>13 previously held original URLs and alternate sources</h2><div id="held" class="cards"></div></section>
+<section><h2>Targeted multi-document government agency coverage</h2><p>The independent government-source URLs below increase original-document research depth, not verified Flock installation or complete state coverage. Individual source reachability must be checked in the latest <a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/watch_nationwide_government_originals.yml" rel="noopener noreferrer">monitoring run</a>.</p><div id="depth" class="cards"></div></section>
+<p><a href="./nationwide-research-leads.html">View the separately source-attributed investigative starting points</a>. No unreviewed hash change was silently promoted.</p></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),txt=(tag,value)=>{const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);return e};
+const link=(url,label)=>{const a=txt('a',label);a.href=url;a.rel='noopener noreferrer';a.target='_blank';return a};
+let changed=[],held=[],depth=[],alternative=[];
+const clean=v=>String(v||'').toLowerCase();
+function card(head,description,source,label,extra){
+ const d=txt('article');d.className='card';d.append(txt('h3',head),txt('p',description),link(source,label));
+ if(extra)d.append(txt('p',extra));return d;
+}
+function render(){
+ const q=clean($('filter').value);
+ const match=v=>clean(v).includes(q);
+ for(const id of ['changed','held','depth'])$(id).replaceChildren();
+ for(const r of changed.filter(x=>match(x.state+' '+x.source_id+' '+x.original_url))){
+  const d=card(r.state+' · '+r.source_id,
+   'Status: held. Prior archived source bytes are missing; before/after wording difference has not been independently established.',
+   r.original_url,'Original government publisher',
+   'Next: recover archived original versions, cite exact changed pages, obtain editorial approval.');$('changed').append(d);
+ }
+ for(const r of held.filter(x=>match(x.state+' '+x.source_id+' '+x.original_url))){
+  const alt=alternative.find(x=>x.id===r.replacement_id)||depth.find(x=>x.id===r.replacement_id);
+  const d=card(r.state+' · '+r.source_id,r.observed_status+' · Original URL and previous evidence preserved.',
+    r.original_url,'Original held URL', 'Separate replacement: '+(alt?alt.publisher+' · '+alt.source_url:'Pending verified alternative'));
+  if(alt)d.append(link(alt.source_url,'Inspect alternate government source'));$('held').append(d);
+ }
+ const grouped=new Map();
+ for(const x of depth){const a=grouped.get(x.locality_key)||[];a.push(x);grouped.set(x.locality_key,a)}
+ for(const [key,arr] of grouped){
+  if(!match(key+' '+arr.map(x=>x.publisher+' '+x.source_role).join(' ')))continue;
+  const d=txt('article');d.className='card';d.append(txt('h3',key.replace('|',', ') ),txt('p',arr.length+' independently identified original-government source URLs; content differences not confirmed.'));
+  const u=txt('ul');for(const r of arr){const li=txt('li');li.append(link(r.source_url,r.source_role.replaceAll('_',' ')));u.append(li)}d.append(u);$('depth').append(d);
+ }
+}
+$('filter').addEventListener('input',render);
+(async()=>{try{
+ const paths=['./data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json',
+  './data/nationwide-targeted-agency-original-depth-2026-10-29.json',
+  './data/nationwide-recovery-government-originals-2026-10-29.json'];
+ const values=await Promise.all(paths.map(async path=>{const r=await fetch(path,{cache:'no-store',referrerPolicy:'no-referrer'});if(!r.ok)throw Error('Ledger HTTP '+r.status);return r.json()}));
+ const [audit,multi,recovery]=values;
+ if(audit.schema_version!==1||audit.changed_candidates_count!==15||audit.held_originals_count!==13||
+    multi.sources.length!==11||recovery.original_source_recovery_candidates.length!==11||
+    audit.changed_candidates.some(x=>x.material_documentary_difference_verified!==false))throw Error('Publisher evidence review gate failed');
+ changed=audit.changed_candidates;held=audit.held_originals;depth=multi.sources;alternative=recovery.original_source_recovery_candidates;
+ $('status').textContent='15 changed-source candidates triaged and held for archived originals; 13 failed source URLs preserved with alternate research publishers; 11 additional agency-depth URLs indexed. No original-document wording change automatically approved.';
+ render();
+}catch(e){$('status').textContent='Evidence withheld: '+e.message;for(const id of ['changed','held','depth'])$(id).replaceChildren()}})();
+</script></body></html>
