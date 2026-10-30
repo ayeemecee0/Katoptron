@@ -75,5 +75,14 @@ grant execute on function public.flock_public_osm_exact_render_snapshot()
 comment on function public.flock_public_osm_exact_render_snapshot()
  is 'Precomputed public OSM original-coordinate snapshot; same 8-byte unverified individual source locations and timestamp, no camera promotion.';
 
--- Seed cached public data from currently authenticated original OSM rows.
-select public.katoptron_refresh_osm_exact_snapshot_cache();
+-- Seed only when an authenticated complete source exists. Fresh/CI databases
+-- have no imported OSM rows, and must never publish an empty pseudo-snapshot.
+do $
+begin
+ if (select count(*) from public.flock_osm_community_points
+     where evidence_tier='community_osm'
+       and latitude between 17 and 72 and longitude between -180 and -64)
+     between 90000 and 200000 then
+   perform public.katoptron_refresh_osm_exact_snapshot_cache();
+ end if;
+end $;
