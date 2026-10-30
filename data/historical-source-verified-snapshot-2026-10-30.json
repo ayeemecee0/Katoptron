@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "verified_at": "2026-10-30T15:21:35Z",
-  "source_run": "https://github.com/ayeemecee0/Katoptron/actions/runs/41079828592",
-  "source_commit": "c7495360b000b0c3fc011f402ac0617ccefbc212",
+  "verified_at": "2026-10-30T15:35:42Z",
+  "source_run": "https://github.com/ayeemecee0/Katoptron/actions/runs/41081966900",
+  "source_commit": "59d2500623877b0c878cf2f3c672524e0e934144",
   "monitored_urls_at_observation": 138,
-  "accessible_urls_at_observation": 114,
-  "held_urls_at_observation": 24,
+  "accessible_urls_at_observation": 123,
+  "held_urls_at_observation": 15,
   "original_historical_count": 19,
-  "original_historical_recovered": 4,
-  "original_historical_held": 15,
+  "original_historical_recovered": 12,
+  "original_historical_held": 7,
   "historical_source_ids_untouched": true,
   "status_is_fixed_historical_snapshot_not_live": true,
   "cases": [
@@ -22,19 +22,21 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_redirect",
-      "remaining_evidence_limit": "Same-issuer redirect chain or publisher replacement must be independently authorized"
+      "remaining_evidence_limit": "Same-issuer redirect chain or publisher replacement must be independently authorized",
+      "last_verified_on": null
     },
     {
       "source_id": "fl-police-operational-status-statement",
       "state": "FL",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "1df84725ffc2c8d5f27f5d49daeb7add5a9c84e33ea3118887b9892847f851ca",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "Original municipal site denies monitor retrieval"
+      "remaining_evidence_limit": "Original municipal site denies monitor retrieval",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "ia-judicial-original-opinion",
@@ -46,7 +48,8 @@
       "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_wrong_format",
-      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims."
+      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims.",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "mi-state-procurement-meeting-minutes",
@@ -58,55 +61,60 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_unreadable_original",
-      "remaining_evidence_limit": "No independently confirmed Flock passage or page number"
+      "remaining_evidence_limit": "No independently confirmed Flock passage or page number",
+      "last_verified_on": null
     },
     {
       "source_id": "ms-city-council-meeting-minutes",
       "state": "MS",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
-      "pdf_pages": null,
-      "verified_original_bytes": false,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "0bead04ba28a01be25487f29a5dbfc8b43846d16106488d089c6a26f49fb3212",
+      "pdf_pages": 5,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "No substitute full meeting minutes currently verified"
+      "remaining_evidence_limit": "No substitute full meeting minutes currently verified",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "nc-police-technology-disclosure",
       "state": "NC",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "bc2537dce18ec1de776ecb69dc09b911fd6186e4662a99a96720dda3ea21c4e8",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "No assertion of a current contract from index alone"
+      "remaining_evidence_limit": "No assertion of a current contract from index alone",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "ut-government-contract-proposal",
       "state": "UT",
       "historical_url": "recorded_in_original_source_inventory",
       "status": "recovered_exact_government_source_bytes",
-      "sha256": "ae28b13f5655cc316150d062ebcfa44f4409e90d7bfef47a3c4a4093b0e1311d",
+      "sha256": "ae28b13f5655cc316150d062ebcfa44f4409e90d7bf47a3c4a4093b0e1311d",
       "pdf_pages": 132,
       "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_oversized",
-      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims."
+      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims.",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "hi-state-alpr-technology-disclosure",
       "state": "HI",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "d04fb6eaab36ec22b38d356cc7919637b6b3b2e49873323ab7732cb9edb48718",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "Source provides statewide ALPR disclosure, not independently verified Flock manufacturer identity"
+      "remaining_evidence_limit": "Source provides statewide ALPR disclosure, not independently verified Flock manufacturer identity",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "oh-state-procurement-flock-subscription",
@@ -118,7 +126,8 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_timeout_or_network",
-      "remaining_evidence_limit": "An approval does not prove invoice payment"
+      "remaining_evidence_limit": "An approval does not prove invoice payment",
+      "last_verified_on": null
     },
     {
       "source_id": "nv-county-alpr-grant-application-not-installation",
@@ -130,7 +139,8 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_redirect",
-      "remaining_evidence_limit": "Grant request never proves installation"
+      "remaining_evidence_limit": "Grant request never proves installation",
+      "last_verified_on": null
     },
     {
       "source_id": "ny-state-model-policy-not-agency-adoption",
@@ -142,7 +152,8 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_redirect",
-      "remaining_evidence_limit": "A statewide model cannot establish agency adoption"
+      "remaining_evidence_limit": "A statewide model cannot establish agency adoption",
+      "last_verified_on": null
     },
     {
       "source_id": "wv-other-vendor-alpr-procurement-not-flock",
@@ -154,7 +165,8 @@
       "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_oversized",
-      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims."
+      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims.",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "legacy-il-naperville-alpr-transparency",
@@ -166,7 +178,8 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "Version change not established"
+      "remaining_evidence_limit": "Version change not established",
+      "last_verified_on": null
     },
     {
       "source_id": "reviewed-02-wi",
@@ -178,31 +191,34 @@
       "verified_original_bytes": false,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "A police request for termination is not proof of executed cancellation"
+      "remaining_evidence_limit": "A police request for termination is not proof of executed cancellation",
+      "last_verified_on": null
     },
     {
       "source_id": "reviewed-07-tx",
       "state": "TX",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "e7552f44f5386ab9aa81ff1517b39f5ad38e4b8c14cc88c68b41f26089594051",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "No proof all privately operated cameras were removed"
+      "remaining_evidence_limit": "No proof all privately operated cameras were removed",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "reviewed-08-in",
       "state": "IN",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "980cd768e68c37f30d1bde9261058a0d43573f735d49ee4af88c4a396082867a",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "Planned discontinuation does not establish final contract settlement"
+      "remaining_evidence_limit": "Planned discontinuation does not establish final contract settlement",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "reviewed-23-tx",
@@ -214,31 +230,35 @@
       "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_redirect",
-      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims."
+      "remaining_evidence_limit": "Source retrieval does not prove manufacturer, contract execution, installation or other claims.",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "reviewed-30-ky",
       "state": "KY",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "6a6ec75f57213e54017d7325b941191ce1ecad12d51a5a5050be6b9f8ea01bd0",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "Denial of a proposal does not mean cameras were removed"
+      "remaining_evidence_limit": "Denial of a proposal does not mean cameras were removed",
+      "last_verified_on": "2026-10-30"
     },
     {
       "source_id": "reviewed-33-ky",
       "state": "KY",
       "historical_url": "recorded_in_original_source_inventory",
-      "status": "held_as_of_observation",
-      "sha256": null,
+      "status": "recovered_exact_government_source_bytes",
+      "sha256": "c5f37250913bb17c04590de58aae6e50b0497a303bca29dcb2f9f662a93ee94b",
       "pdf_pages": null,
-      "verified_original_bytes": false,
+      "verified_original_bytes": true,
       "original_publisher_url_preserved": true,
       "historical_failure": "held_http_error",
-      "remaining_evidence_limit": "An appropriation is not an executed invoice or proof of installed equipment"
+      "remaining_evidence_limit": "An appropriation is not an executed invoice or proof of installed equipment",
+      "last_verified_on": "2026-10-30"
     }
-  ]
+  ],
+  "scope": "peak_complete_live_issuer_retrieval_snapshot_2026_10_30_not_a_guarantee_all_sites_remain_reachable_now"
 }
