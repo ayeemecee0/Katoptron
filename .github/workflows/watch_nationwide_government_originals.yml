@@ -32,6 +32,8 @@ on:
       - '.github/workflows/watch_nationwide_government_originals.yml'
   pull_request:
     paths:
+      - 'scripts/archive_government_original_versions.py'
+      - 'scripts/test_archive_government_original_versions.py'
       - 'scripts/watch_nationwide_government_originals.py'
       - 'scripts/nationwide_source_health.py'
       - 'scripts/test_nationwide_source_health.py'
