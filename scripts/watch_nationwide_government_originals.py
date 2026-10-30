@@ -87,7 +87,7 @@ def recovery_sources(original=None):
 def agency_depth_sources():
  """Issuer-attributed supplemental originals, never new verified Flock facts."""
  data=json.loads(AGENCY_DEPTH.read_text(encoding="utf8"))
- if data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=11:
+ if data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=12:
   raise ValueError("Multi-document issuer registry incomplete")
  ids=set();out=[]
  for x in data["sources"]:
