@@ -77,4 +77,43 @@ class OriginalArchiveTests(unittest.TestCase):
    (cur/"test-000.html").write_bytes(b"forged")
    with self.assertRaisesRegex(ValueError,"receipt-hash"):
     A.reconcile(sample(),cur,old)
+ def test_unavailable_source_retains_last_good_bytes_and_provenance(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   cur=Path(tmp)/"current";old=Path(tmp)/"baseline";cur.mkdir();old.mkdir()
+   (cur/"test-000.html").write_bytes(AFTER)
+   (old/"test-000.html").write_bytes(BEFORE)
+   (old/"manifest.json").write_text(json.dumps({"schema_version":1,"sources":{
+    "test-000":{"sha256":sha(BEFORE),"kind":"html","observed_on":"2026-10-29"}}}))
+   first=A.reconcile(sample(),cur,old)
+   self.assertEqual(first["new_authentic_document_version_pairs"],1)
+   held=sample()
+   held["receipts"][0].update({"status":"held_timeout_or_network",
+    "change":"previously_retrieved_source_currently_held",
+    "previous_usable_sha256":sha(AFTER),"current_observation_sha256":None})
+   second=A.reconcile(held,cur,old)
+   self.assertEqual(second["source_bytes_verified_and_archived"],0)
+   self.assertEqual((old/"test-000.html").read_bytes(),AFTER)
+   manifest=json.loads((old/"manifest.json").read_text())
+   self.assertEqual(manifest["sources"]["test-000"]["sha256"],sha(AFTER))
+   self.assertEqual(manifest["sources"]["test-000"]["source_url"],"https://test.gov/page")
+ def test_original_version_pairs_are_immutable_and_not_repeated_findings(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   cur=Path(tmp)/"current";old=Path(tmp)/"baseline";cur.mkdir();old.mkdir()
+   (old/"test-000.html").write_bytes(BEFORE)
+   (old/"manifest.json").write_text(json.dumps({"schema_version":1,"sources":{
+    "test-000":{"sha256":sha(BEFORE),"kind":"html","observed_on":"2026-10-29"}}}))
+   (cur/"test-000.html").write_bytes(AFTER)
+   first=A.reconcile(sample(BEFORE,AFTER),cur,old)
+   self.assertEqual(first["new_authentic_document_version_pairs"],1)
+   (cur/"test-000.html").write_bytes(BEFORE)
+   second=A.reconcile(sample(AFTER,BEFORE),cur,old)
+   self.assertEqual(second["new_authentic_document_version_pairs"],1)
+   (cur/"test-000.html").write_bytes(AFTER)
+   third=A.reconcile(sample(BEFORE,AFTER),cur,old)
+   self.assertEqual(third["new_authentic_document_version_pairs"],0)
+   self.assertEqual(third["previously_seen_document_pairs_not_new_findings"],1)
+   self.assertFalse(third["original_version_pairs"][0]["newly_observed_fingerprint_pair"])
+   for content in (BEFORE,AFTER):
+    saved=old/"versions"/"test-000"/(sha(content)+".html")
+    self.assertEqual(saved.read_bytes(),content)
 if __name__=="__main__":unittest.main()
