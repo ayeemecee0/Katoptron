@@ -77,7 +77,11 @@ class StateSources(unittest.TestCase):
   self.assertTrue(all(x["status"]=="held_redirect" for x in result["seed_receipts"]))
   self.assertTrue(all(x["camera_coverage_claimed"] is False and x["agency_inventory_complete"] is False for x in result["jurisdictions"]))
   self.assertEqual(result["states_without_official_sources_seeded"],[])
-  self.assertTrue(all(x["source_gap"]=="publisher_monitoring_started_not_statewide_evidence_complete" for x in result["jurisdictions"]))
+  self.assertEqual(result["monitored_sources_total"],59)
+  self.assertEqual(len(result["legacy_receipts"]),14)
+  self.assertTrue(all(x["monitored_original_urls"]>=1 for x in result["jurisdictions"]))
+  self.assertTrue(all(x["source_gap"]=="no_monitored_government_original_accessible" for x in result["jurisdictions"]))
+  self.assertTrue(all(x["statewide_flock_contract_policy_coverage_verified"] is False for x in result["jurisdictions"]))
  def test_source_change_and_missing_state_fail_closed(self):
   altered=json.loads(json.dumps(R));altered["jurisdictions"].pop()
   with self.assertRaisesRegex(ValueError,"complete"):M.catalog(altered,OLD)
