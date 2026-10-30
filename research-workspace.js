@@ -72,7 +72,7 @@ async function start(win,U){
   await loadWorkspaces();
   await loadPilotDossiers();
  }
- const quickstartKeys=new Set(['sacramento county|CA','woodland|CA','san diego|CA','houston|TX','pasadena|CA']);
+ const quickstartKeys=new Set(['sacramento county|CA','woodland|CA','san diego|CA','houston|TX','pasadena|CA','new hanover county|NC','louisville|KY','los angeles|CA']);
  const pilotDossiers=new Map();
  async function loadPilotDossiers(){
   if(pilotDossiers.size)return;
