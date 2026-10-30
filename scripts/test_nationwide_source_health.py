@@ -60,8 +60,10 @@ class Monitor(unittest.TestCase):
    "ia-judicial-original-opinion","ut-government-contract-proposal"}]
   self.assertEqual(len(ids),2)
   current=fake()
-  row=next(x for x in current["all_source_receipts"] if x["source_id"]=="ut-government-contract-proposal")
-  row.update({"status":"held_http_error","original_sha256":None})
+  historic_ids={x["source_id"] for x in json.loads(G.HISTORICAL_AUDIT.read_text())["cases"]}
+  for row in current["all_source_receipts"]:
+   if row["source_id"] in historic_ids and row["source_id"]!="ia-judicial-original-opinion":
+    row.update({"status":"held_http_error","original_sha256":None})
   later,_=M.continuity(current,R,OLD,initial,day="2026-10-31")
   historic=[]
   for sid in ids:
