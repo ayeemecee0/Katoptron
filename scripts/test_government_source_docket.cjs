@@ -4,11 +4,19 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const V=require('../government-source-docket.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const result=V.build(raw);
-assert.equal(result.rows.length,48);
-assert.equal(result.states.length,18);
-assert.equal(result.issuers.length,43);
-assert.equal(result.agencies.length,42);
+assert.equal(result.rows.length,51);
+assert.equal(result.states.length,20);
+assert.equal(result.issuers.length,46);
+assert.equal(result.agencies.length,45);
 assert.equal(result.byLocality('sacramento county|CA').length,3);
+for(const id of ['new-hanover-nc-sheriff-lpr-ptz-bid-2024','louisville-ky-metro-alpr-camera-disclosure-ordinance-denied-2026','los-angeles-ca-flock-proposed-restrictions-motion-2026']){
+ const record=result.get(id);assert.ok(record);
+ assert.equal(record.watch_category,'historical_research_only');
+ assert.equal(record.amount_usd,null);
+ assert.ok(!('latitude' in record));
+}
+assert.equal(result.get('new-hanover-nc-sheriff-lpr-ptz-bid-2024').flock_specific,false);
+assert.match(result.get('los-angeles-ca-flock-proposed-restrictions-motion-2026').status,/pending_not_enacted/);
 for(const id of ['woodland-ca-police-alpr-faq-2026','san-diego-ca-sdpd-annual-alpr-audit-report-2025','houston-tx-flock-contract-agenda-2022','pasadena-ca-council-flock-report-directive-2026']){
  const record=result.get(id);assert.ok(record,'Pilot original missing: '+id);
  assert.equal(record.watch_category,'historical_research_only');
@@ -98,4 +106,4 @@ assert.match(html,/government-source-docket\.js/);
 assert.match(html,/renderExactGovSources\(group\.key\)/);
 const page=fs.readFileSync(path.join(__dirname,'../government-evidence.html'),'utf8');
 assert.match(page,/qualified-original-government-docket-2026-10-29\.json/);
-console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 48 original issuer records, 42 exact locality profiles, 18 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
+console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 51 original issuer records, 45 exact locality profiles, 20 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
