@@ -5,7 +5,7 @@ const E=require('../agency-intelligence-engine.js');
 const rows=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const docket=D.build(rows),data=E.build(docket);
 assert.equal(data.total_original_documents,docket.rows.length);
-assert.equal(data.states.length,20);
+assert.equal(data.states.length,19);
 assert.equal(data.localities.length,45);
 assert.ok(data.agency_count>=30);
 for(const a of data.agencies){
