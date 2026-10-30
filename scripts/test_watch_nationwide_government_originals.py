@@ -57,6 +57,23 @@ class StateSources(unittest.TestCase):
    for x in links))
   missing=M.inspect(src,fetcher=lambda _:(_ for _ in ()).throw(ValueError("original_redirect")))
   self.assertEqual(missing["unreviewed_same_host_policy_candidates"],[])
+ def test_all_nineteen_historical_cases_are_preserved_and_verdicts_are_verifiable(self):
+  held=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=4)
+  report=M.historical_recovery_receipts(held)
+  self.assertEqual(report["historical_total"],19)
+  self.assertEqual(report["recovered"],0)
+  self.assertEqual(report["remaining"],19)
+  self.assertEqual(len({x["source_id"] for x in report["cases"]}),19)
+  self.assertTrue(all(x["historical_url"].startswith("https://") and not x["historical_original_retrieved"] for x in report["cases"]))
+  # The original source URL remains unchanged, and a fake unrelated government page cannot count.
+  x=next(y for y in held["all_source_receipts"] if y["source_id"]=="reviewed-23-tx")
+  x["status"]="original_government_html_accessible"
+  x["original_sha256"]="a"*64
+  x["retrieved_url"]="https://www.elgintexas.gov/another-government-page"
+  x["verified_same_publisher_redirect"]=True
+  self.assertEqual(M.historical_recovery_receipts(held)["recovered"],0)
+  x["retrieved_url"]="https://www.elgintexas.gov/m/newsflash/Archive/Item/1824?arcId=2451"
+  self.assertEqual(M.historical_recovery_receipts(held)["recovered"],1)
  def test_51_state_outage_cannot_upgrade_link_leads(self):
   result=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=6)
   self.assertEqual(result["unreviewed_same_host_policy_link_candidates"],0)
@@ -68,6 +85,38 @@ class StateSources(unittest.TestCase):
   bad=M.inspect(p,fetcher=lambda _:b"<html><body>Flock</body></html>"*9)
   self.assertEqual(bad["status"],"held_wrong_format")
   self.assertIsNone(bad["original_sha256"])
+ def test_publisher_redirects_are_fail_closed(self):
+  original="https://www.elgintexas.gov/m/newsflash/Home/Detail/1824"
+  archived="https://www.elgintexas.gov/m/newsflash/Archive/Item/1824?arcId=2451"
+  src={"id":"reviewed-23-tx","source_url":original}
+  self.assertTrue(M.trusted_redirect(src,original,archived))
+  self.assertFalse(M.trusted_redirect(src,original,"https://example.com/flock"))
+  self.assertFalse(M.trusted_redirect(src,original,"http://www.elgintexas.gov/a"))
+  self.assertFalse(M.trusted_redirect(src,original,"https://www.elgintexas.gov/private"))
+  self.assertFalse(M.trusted_redirect({"id":"reviewed-02-wi","source_url":original},original,archived))
+  self.assertTrue(M.trusted_redirect(src,"https://www.criminaljustice.ny.gov/a.pdf","https://criminaljustice.ny.gov/a.pdf"))
+  sample=b"<html><body>Archived - Pausing City of Elgin FLOCK Safety Camera Program</body></html>"*3
+  result=M.inspect({"id":"reviewed-23-tx","state":"TX","publisher":"City of Elgin","kind":"html","source_url":original},
+     fetcher=lambda _: (sample,archived))
+  self.assertEqual(result["status"],"original_government_html_accessible")
+  self.assertTrue(result["verified_same_publisher_redirect"])
+  self.assertEqual(result["retrieved_url"],archived)
+ def test_iowa_pdf_and_bounded_large_original_handling(self):
+  sources=M.recovery_sources()
+  _,seed,_=M.catalog(R,OLD)
+  ia=next(x for x in seed if x["id"]=="ia-judicial-original-opinion")
+  self.assertEqual(ia["kind"],"html") # original metadata is preserved
+  row=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error"))).get("seed_receipts")
+  self.assertEqual(next(x for x in row if x["source_id"]=="ia-judicial-original-opinion")["kind"],"pdf")
+  self.assertEqual(M.pdf_limit(ia),M.MAX_BYTES_PDF)
+  ut=next(x for x in seed if x["id"]=="ut-government-contract-proposal")
+  wv=next(x for x in seed if x["id"]=="wv-other-vendor-alpr-procurement-not-flock")
+  self.assertEqual(M.pdf_limit(ut),M.MAX_EXCEPTIONAL_PDF)
+  self.assertEqual(M.pdf_limit(wv),M.MAX_EXCEPTIONAL_PDF)
+  self.assertLess(M.MAX_EXCEPTIONAL_PDF,35_000_000)
+  held=M.inspect(ut,fetcher=lambda _: (_ for _ in ()).throw(ValueError("oversized_original")))
+  self.assertEqual(held["status"],"held_oversized")
+  self.assertIsNone(held["original_sha256"])
  def test_transient_unavailable_never_counts_as_source_or_cameras(self):
   def denied(x):raise ValueError("original_redirect")
   result=M.watch(R,OLD,fetcher=denied,workers=3)

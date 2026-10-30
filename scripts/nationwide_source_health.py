@@ -31,6 +31,7 @@ def validated(receipts,expected):
 
 def continuity(current,registry,existing,previous=None,day="2026-10-29"):
  jurisdiction,seeds,_=monitor.catalog(registry,existing)
+ seeds=[{**x,"kind":"pdf"} if x["id"]=="ia-judicial-original-opinion" else x for x in seeds]
  legacy=monitor.legacy_sources(existing)
  supplemental=monitor.recovery_sources()
  depth=monitor.agency_depth_sources()
@@ -54,8 +55,14 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
  items=[];changes=[];counts={}
  for row in rows:
   prev=old.get(row["source_id"])
-  if prev and (prev["source_url"]!=row["source_url"] or prev["state"]!=row["state"] or prev["kind"]!=row["kind"]):
+  if prev and (prev["source_url"]!=row["source_url"] or prev["state"]!=row["state"]):
    raise ValueError("Government source changed identity; manual baseline review required")
+  prior_kind=prev.get("kind") if prev else None
+  pdf_kind_correction=(row["source_id"]=="ia-judicial-original-opinion" and
+    prior_kind=="html" and row["kind"]=="pdf" and not prev.get("last_usable_sha256"))
+  if prev and prior_kind!=row["kind"] and not pdf_kind_correction:
+   raise ValueError("Government source media classification changed without signed migration")
+
   good=row["status"].startswith("original_")
   last_hash=prev.get("last_usable_sha256") if prev else None
   last_date=prev.get("last_usable_on") if prev else None
@@ -70,6 +77,9 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
    "kind":row["kind"],"status":row["status"],"change":change,
    "observed_on":day,"last_usable_sha256":new_hash,"last_usable_on":new_date,
    "previous_usable_sha256":last_hash,"current_observation_sha256":row["original_sha256"] if good else None,
+   "format_correction_from_held_html_to_original_pdf":pdf_kind_correction,
+   "retrieved_url":row.get("retrieved_url") if good else None,
+   "verified_same_publisher_redirect":row.get("verified_same_publisher_redirect",False) if good else False,
    "individual_document_facts_verified":False,"camera_deployment_verified":False,
    "policy_adoption_verified":False}
   items.append(result);counts[change]=counts.get(change,0)+1
