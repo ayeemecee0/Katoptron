@@ -13,6 +13,8 @@ on:
       - 'data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json'
       - 'data/national-government-audit-source-portals.json'
       - 'scripts/watch_nationwide_government_originals.py'
+      - 'scripts/archive_government_original_versions.py'
+      - 'scripts/test_archive_government_original_versions.py'
       - 'scripts/triage_nationwide_original_acquisition.py'
       - 'scripts/test_triage_nationwide_original_acquisition.py'
       - 'scripts/nationwide_source_health.py'
@@ -58,6 +60,7 @@ jobs:
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
           python -m unittest discover -s scripts -p 'test_recovered_originals_editorial_changes.py' -v
           python -m unittest discover -s scripts -p 'test_triage_nationwide_original_acquisition.py' -v
+          python -m unittest discover -s scripts -p 'test_archive_government_original_versions.py' -v
           node scripts/test_nationwide_evidence_depth.cjs
       - name: Restore last successful fingerprint receipt baseline
         uses: actions/cache/restore@v4
@@ -67,12 +70,21 @@ jobs:
           key: katoptron-nationwide-source-health-v2-${{ github.run_id }}
           restore-keys: |
             katoptron-nationwide-source-health-v2-
+      - name: Restore prior authenticated original document bytes
+        uses: actions/cache/restore@v4
+        with:
+          path: .katoptron-ci/nationwide-original-baselines
+          key: katoptron-original-document-bytes-v1-${{ github.run_id }}
+          restore-keys: |
+            katoptron-original-document-bytes-v1-
       - name: Retrieve 104 original-government URLs including 22 additional source-dated publications
-        run: python scripts/watch_nationwide_government_originals.py --workers 6
+        run: python scripts/watch_nationwide_government_originals.py --workers 6 --capture-originals
       - name: Turn same-host government document links into 25 bounded editorial acquisition tasks
         run: python scripts/triage_nationwide_original_acquisition.py --watch-only
       - name: Compare against prior usable fingerprints and document every held state/source
         run: python scripts/nationwide_source_health.py
+      - name: Verify available before and after document bytes and prepare bounded page suggestions
+        run: python scripts/archive_government_original_versions.py
       - name: Qualify changed government originals for page-specific editorial review
         run: python scripts/review_nationwide_source_changes.py
       - name: Publish status counts to workflow summary
@@ -99,6 +111,12 @@ jobs:
         with:
           path: .katoptron-ci/nationwide-monitor-snapshot.json
           key: katoptron-nationwide-source-health-v2-${{ github.run_id }}
+      - name: Save authenticated original document bytes for later substantive comparisons
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/cache/save@v4
+        with:
+          path: .katoptron-ci/nationwide-original-baselines
+          key: katoptron-original-document-bytes-v1-${{ github.run_id }}
       - name: Upload complete national retrieval receipts, differences and documented gaps
         if: always()
         uses: actions/upload-artifact@v4
@@ -111,5 +129,7 @@ jobs:
             .katoptron-ci/nationwide-documentary-difference-review.json
             .katoptron-ci/nationwide-approved-documentary-differences.json
             .katoptron-ci/nationwide-original-acquisition-editorial-queue.json
+            .katoptron-ci/nationwide-before-after-document-candidates.json
+            .katoptron-ci/nationwide-original-baselines/manifest.json
           retention-days: 30
           if-no-files-found: warn
