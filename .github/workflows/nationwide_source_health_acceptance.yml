@@ -12,6 +12,8 @@ on:
       - 'scripts/test_watch_nationwide_government_originals.py'
       - 'scripts/smoke_nationwide_source_monitor.cjs'
       - 'nationwide-source-monitor.html'
+      - 'nationwide-research-leads.html'
+      - 'data/nationwide-original-source-research-leads-2026-10-29.json'
       - '.github/workflows/nationwide_source_health_acceptance.yml'
   push:
     branches: [main]
@@ -23,6 +25,8 @@ on:
       - 'scripts/test_watch_nationwide_government_originals.py'
       - 'scripts/smoke_nationwide_source_monitor.cjs'
       - 'nationwide-source-monitor.html'
+      - 'nationwide-research-leads.html'
+      - 'data/nationwide-original-source-research-leads-2026-10-29.json'
       - '.github/workflows/nationwide_source_health_acceptance.yml'
   workflow_dispatch:
 permissions:
