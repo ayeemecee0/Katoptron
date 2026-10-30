@@ -648,7 +648,8 @@
     // Content-Range total is required before the region can be certified.
     const response=await fetch(target.href,{
       headers:{apikey:CFG.supabasePublishableKey,Prefer:'count=exact'},
-      signal,cache:'no-store',referrerPolicy:'no-referrer'
+      signal:signal?AbortSignal.any([signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000),
+      cache:'no-store',referrerPolicy:'no-referrer'
     });
     if(!response.ok)throw Error('Original camera evidence HTTP '+response.status);
     const rows=await response.json();
