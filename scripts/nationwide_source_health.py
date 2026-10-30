@@ -64,6 +64,7 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
   result={"source_id":row["source_id"],"state":row["state"],"source_url":row["source_url"],
    "kind":row["kind"],"status":row["status"],"change":change,
    "observed_on":day,"last_usable_sha256":new_hash,"last_usable_on":new_date,
+   "previous_usable_sha256":last_hash,"current_observation_sha256":row["original_sha256"] if good else None,
    "individual_document_facts_verified":False,"camera_deployment_verified":False,
    "policy_adoption_verified":False}
   items.append(result);counts[change]=counts.get(change,0)+1
