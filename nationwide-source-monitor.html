@@ -19,7 +19,7 @@ td.num{text-align:right}button{font:inherit;background:#23536b;color:inherit;bor
 <main id="main"><h1>50-state original-government monitoring health</h1>
 <p><a href="./nationwide-document-review.html">Inspect all 15 documented change holds, 13 preserved legacy source failures and eight deeper agency-source groups.</a> <a href="./nationwide-research-leads.html">See reviewed government-source investigative leads with precise source limitations and questions to verify.</a></p><p class="note"><strong>Original-source monitoring is not 50-state Flock verification.</strong> This operational index covers all 50 states and D.C. and their currently curated government publisher URLs. It does not represent all agencies, contracts, policies, camera locations or access arrangements in any state. A held source is unknown, never evidence of no deployment.</p>
 <p id="status" role="status" aria-live="polite">Validating historical source-monitoring baseline…</p>
-<p class="muted">The matrix below shows <strong>81 curated government sources with the archived original-retrieval baseline</strong>. The 11 recovery and 11 agency-depth URLs have no archived receipt in that baseline. The archived source-health matrix, dated <span id="baselineDate">unknown</span>. The daily scheduled watcher produces newer, separately downloadable receipt and change reports in <a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/watch_nationwide_government_originals.yml" rel="noopener noreferrer">GitHub Actions</a>. Those files do not automatically upgrade evidence or the archived baseline; consult the latest completed run for current reachability.</p>
+<p class="muted">The matrix below shows <strong>82 curated government sources with the archived original-retrieval baseline</strong>. The 11 recovery and 12 agency-depth URLs have no archived receipt in that baseline. The archived source-health matrix, dated <span id="baselineDate">unknown</span>. The daily scheduled watcher produces newer, separately downloadable receipt and change reports in <a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/watch_nationwide_government_originals.yml" rel="noopener noreferrer">GitHub Actions</a>. Those files do not automatically upgrade evidence or the archived baseline; consult the latest completed run for current reachability.</p>
 <div class="row" id="metrics"></div>
 <h2>Documented jurisdiction gaps</h2>
 <label for="filter">Filter state, source or gap</label>
@@ -71,7 +71,7 @@ $('filter').addEventListener('input',display);
     }));
   const [registry,legacy,baseline,recovery,depth]=docs;
   if(registry.schema_version!==1||legacy.schema_version!==1||baseline.schema_version!==1||recovery.schema_version!==1||depth.schema_version!==1||
-    !Array.isArray(depth.sources)||depth.sources.length!==11||
+    !Array.isArray(depth.sources)||depth.sources.length!==12||
     !Array.isArray(recovery.original_source_recovery_candidates)||recovery.original_source_recovery_candidates.length!==11||
     !Array.isArray(registry.jurisdictions)||registry.jurisdictions.length!==51||
     !Array.isArray(registry.official_seed_sources)||registry.official_seed_sources.length!==45||
@@ -101,15 +101,15 @@ $('filter').addEventListener('input',display);
    return {...state,sources,accessible,held,pending,gap};
   });
   if(new Set(rows.map(s=>s.state)).size!==51||
-    rows.reduce((a,r)=>a+r.sources.length,0)!==81)throw Error('National original sources incomplete');
+    rows.reduce((a,r)=>a+r.sources.length,0)!==82)throw Error('National original sources incomplete');
   $('baselineDate').textContent=baseline.inspected_on;
   metric('U.S. states and D.C. enrolled',51);
-  metric('Curated original-government URLs',81);
+  metric('Curated original-government URLs',82);
   metric('Accessible in archived observations',rows.reduce((n,r)=>n+r.accessible,0));
   metric('Held in archived observations',rows.reduce((n,r)=>n+r.held,0));
   metric('Awaiting first archived receipt',rows.reduce((n,r)=>n+r.pending,0));
   metric('Complete statewide agency inventories',0);
-  $('status').textContent='Verified 51-state source registry and 81 publisher URLs. These are historical monitoring observations, not verified Flock programs.';
+  $('status').textContent='Verified 51-state source registry and 82 publisher URLs. These are historical monitoring observations, not verified Flock programs.';
   display();
  }catch(e){$('status').textContent='Source-health verification failed: '+e.message+'. No statewide conclusions can be drawn.';$('states').replaceChildren()}
 })();
