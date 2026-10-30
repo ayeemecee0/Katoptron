@@ -17,6 +17,7 @@ DEPTH=ROOT/"data/nationwide-targeted-agency-original-depth-2026-10-29.json"
 REVIEWED=ROOT/"data/nationwide-reviewed-original-monitor-additions-2026-10-29.json"
 ALTERNATES=ROOT/"data/nationwide-original-government-recovery-alternates-2026-10-29.json"
 UNDERREPRESENTED=ROOT/"data/underrepresented-state-original-government-research-2026-10-29.json"
+VALUE_ORIGINALS=ROOT/"data/three-high-value-original-publisher-targets-2026-10-29.json"
 WATCH=ROOT/".katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json"
 OUT=ROOT/".katoptron-ci/nationwide-original-acquisition-editorial-queue.json"
 SENSITIVE=re.compile(r"(?:search|query)[-_/]?(?:logs?|records?|history)|"
@@ -25,9 +26,9 @@ SENSITIVE=re.compile(r"(?:search|query)[-_/]?(?:logs?|records?|history)|"
 RELEVANCE=re.compile(r"\b(?:flock|alpr|license[ -]?plate|plate[ -]?readers?|"
                      r"retention|sharing|access|contract|procurement|audit)\b",re.I)
 
-def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None,underserved=None):
+def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None,underserved=None,value_originals=None):
     groups=(registry["official_seed_sources"],legacy["sources"],
-            recovery["original_source_recovery_candidates"],depth["sources"],reviewed["sources"],(alternates or {}).get("originals",[]),(underserved or {}).get("government_originals",[]))
+            recovery["original_source_recovery_candidates"],depth["sources"],reviewed["sources"],(alternates or {}).get("originals",[]),(underserved or {}).get("government_originals",[]),(value_originals or {}).get("sources",[]))
     result={}
     for group in groups:
         for row in group:
@@ -40,14 +41,14 @@ def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None,unders
             result[url]=row.get("state")
     return result
 
-def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None,underserved=None,watch=None):
+def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None,underserved=None,value_originals=None,watch=None):
     states=discovery.get("states")
     all_states={x["state"] for x in registry["jurisdictions"]}
     if (discovery.get("schema_version")!=1 or discovery.get("states_enrolled")!=51 or
         not isinstance(states,list) or len(states)!=51 or
         {x.get("state") for x in states}!=all_states or len(all_states)!=51):
         raise ValueError("Complete 50-state/DC search receipt required")
-    known=existing_urls(registry,legacy,recovery,depth,reviewed,alternates,underserved)
+    known=existing_urls(registry,legacy,recovery,depth,reviewed,alternates,underserved,value_originals)
     editorial_held_urls={x['source_url'] for x in (underserved or {}).get('government_originals',[]) if x.get('monitor_eligible') is False}
     per_state={code:sum(code==s for s in known.values()) for code in all_states}
     seen=set();queue=[];diagnostics=[]
@@ -152,7 +153,7 @@ def main():
     p.add_argument("--watch",type=Path,default=WATCH)
     p.add_argument("--watch-only",action="store_true")
     a=p.parse_args()
-    inputs=[json.loads(f.read_text(encoding="utf8")) for f in (REGISTRY,LEGACY,RECOVERY,DEPTH,REVIEWED,ALTERNATES,UNDERREPRESENTED)]
+    inputs=[json.loads(f.read_text(encoding="utf8")) for f in (REGISTRY,LEGACY,RECOVERY,DEPTH,REVIEWED,ALTERNATES,UNDERREPRESENTED,VALUE_ORIGINALS)]
     if a.watch_only:
         d={"schema_version":1,"states_enrolled":51,"states":[
             {"state":r["state"],"discovery_status":"source_watch_only_no_external_search","search_leads":[]}

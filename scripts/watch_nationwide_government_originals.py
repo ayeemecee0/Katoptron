@@ -22,6 +22,7 @@ NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-
 PAGE_REVIEW=ROOT/"data"/"manual-original-evidence-review-2026-10-29.json"
 ALTERNATE_RECOVERY=ROOT/"data"/"nationwide-original-government-recovery-alternates-2026-10-29.json"
 UNDERREPRESENTED=ROOT/"data"/"underrepresented-state-original-government-research-2026-10-29.json"
+VALUE_ORIGINALS=ROOT/"data"/"three-high-value-original-publisher-targets-2026-10-29.json"
 ADDITIONAL_EDITORIAL=ROOT/"data"/"editorial-originals-intelligence-batch-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
@@ -216,6 +217,24 @@ def underrepresented_government_originals():
    "origin_role":"government_legislative_original_not_operational_deployment"})
  return out
 
+def original_value_sources():
+ """Source-attributed government documents that generate specific verification tasks, not cameras."""
+ data=json.loads(VALUE_ORIGINALS.read_text(encoding="utf8"))
+ if data.get("schema_version")!=1 or len(data.get("sources",[]))!=3 or data.get("research_lead_targets")!=3:
+  raise ValueError("Incomplete evidence-value government original registry")
+ out=[];seen=set()
+ for row in data["sources"]:
+  if (row.get("id") in seen or not re.fullmatch(r"value-(?:ct|ne|sc)-[a-z0-9-]{6,75}",str(row.get("id",""))) or
+      row.get("state") not in ("CT","NE","SC") or row.get("kind")!="html" or
+      not exact(row.get("source_url")) or not row.get("publisher") or
+      len(str(row.get("supported_finding","")))<70 or len(str(row.get("next_verification","")))<65 or
+      len(str(row.get("limitations","")))<65):
+   raise ValueError("Unqualified research-value government publication")
+  seen.add(row["id"]);out.append({"id":row["id"],"state":row["state"],"kind":"html",
+   "publisher":row["publisher"],"source_url":row["source_url"],
+   "origin_role":"original_issuer_research_index_with_actionable_followup_not_camera_claim"})
+ return out
+
 def catalog(obj,existing):
  if (not isinstance(obj,dict) or obj.get("schema_version")!=1 or
      obj.get("universe")!="50_us_states_plus_district_of_columbia" or
@@ -378,7 +397,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
  official=seeds+legacy+recovery+depth+reviewed
  alternates=independent_issuer_alternatives(official)
  underrepresented=underrepresented_government_originals()
- existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed+alternates+underrepresented]
+ high_value=original_value_sources()
+ existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed+alternates+underrepresented+high_value]
  existing_ids=[s["id"] for s in seeds+legacy+recovery+depth+reviewed+alternates]
  if (len(existing_urls)!=len(set(existing_urls)) or len(existing_ids)!=len(set(existing_ids)) or
      not 100<=len(existing_urls)<=MAX_MONITORED_SOURCES):
@@ -391,7 +411,8 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),reviewed))
   alternate_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),alternates))
   underrepresented_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),underrepresented))
- all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts+alternate_receipts+underrepresented_receipts
+  high_value_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),high_value))
+ all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts+alternate_receipts+underrepresented_receipts+high_value_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
@@ -404,6 +425,7 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   newly_monitored=[x for x in reviewed_receipts if x["state"]==code]
   alternate=[x for x in alternate_receipts if x["state"]==code]
   additional=[x for x in underrepresented_receipts if x["state"]==code]
+  additional.extend(x for x in high_value_receipts if x["state"]==code)
   combined=r+old+extra+deep+newly_monitored+alternate+additional
   accessible=sum(x["status"].startswith("original_") for x in combined)
   held=sum(x["status"].startswith("held_") for x in combined)
@@ -430,7 +452,7 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,"official_alternate_receipts":alternate_receipts,"underrepresented_government_receipts":underrepresented_receipts,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,"reviewed_addition_receipts":reviewed_receipts,"official_alternate_receipts":alternate_receipts,"underrepresented_government_receipts":underrepresented_receipts,"high_value_original_receipts":high_value_receipts,
   "monitored_sources_total":len(all_receipts),
   "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
   "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
@@ -458,6 +480,8 @@ def main():
   "supplemental_sources_monitored":len(result["recovery_receipts"]),
   "agency_depth_sources_monitored":len(result["depth_receipts"]),
   "reviewed_original_urls_newly_monitored":len(result["reviewed_addition_receipts"]),
+  "research_value_originals_monitored":len(result["high_value_original_receipts"]),
+  "research_value_originals_accessible":sum(x["status"].startswith("original_") for x in result["high_value_original_receipts"]),
   "underrepresented_new_government_originals_monitored":len(result["underrepresented_government_receipts"]),
   "underrepresented_new_government_originals_accessible":sum(x["status"].startswith("original_") for x in result["underrepresented_government_receipts"]),
   "held_original_publisher_alternates_monitored":len(result["official_alternate_receipts"]),
