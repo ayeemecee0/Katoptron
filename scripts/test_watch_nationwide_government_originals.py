@@ -86,8 +86,11 @@ class StateSources(unittest.TestCase):
   self.assertEqual(result["retrieved_url"],archived)
  def test_iowa_pdf_and_bounded_large_original_handling(self):
   sources=M.recovery_sources()
-  ia=next(x for x in sources if x["id"]=="ia-judicial-original-opinion")
-  self.assertEqual(ia["kind"],"pdf")
+  _,seed,_=M.catalog(R,OLD)
+  ia=next(x for x in seed if x["id"]=="ia-judicial-original-opinion")
+  self.assertEqual(ia["kind"],"html") # original metadata is preserved
+  row=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error"))).get("seed_receipts")
+  self.assertEqual(next(x for x in row if x["source_id"]=="ia-judicial-original-opinion")["kind"],"pdf")
   self.assertEqual(M.pdf_limit(ia),M.MAX_BYTES_PDF)
   ut=next(x for x in sources if x["id"]=="ut-government-contract-proposal")
   wv=next(x for x in sources if x["id"]=="wv-other-vendor-alpr-procurement-not-flock")
