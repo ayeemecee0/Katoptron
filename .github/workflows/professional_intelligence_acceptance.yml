@@ -6,6 +6,9 @@ on:
       - 'professional-intelligence-app.js'
       - 'professional-intelligence.html'
       - 'scripts/test_professional_intelligence.cjs'
+      - 'scripts/test_professional_intelligence_expansion.cjs'
+      - 'data/nationwide-original-source-research-leads-2026-10-29.json'
+      - 'data/nationwide-original-research-leads-expanded-2026-10-29.json'
       - 'scripts/smoke_professional_intelligence.cjs'
       - 'scripts/test_research_tenant_isolation.sql'
       - 'supabase/migrations/163_research_intelligence_follows.sql'
@@ -40,6 +43,7 @@ jobs:
           node --check professional-intelligence-app.js
           node --check scripts/test_professional_intelligence.cjs
           node scripts/test_professional_intelligence.cjs
+          node scripts/test_professional_intelligence_expansion.cjs
           node scripts/test_government_source_docket.cjs
           node scripts/test_research_workspace.cjs
           node scripts/test_research_pro_workflows.cjs
