@@ -17,7 +17,7 @@ for(const preset of P.PRESETS){
  assert.equal(results.length,1);assert.equal(results[0].records.length,2);
  const report=P.pack(results[0]);
  for(const r of results[0].records){
-  assert(report.includes(r.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')));assert(report.includes(r.source_url.replace(/&/g,'&amp;')));assert(report.includes(r.status));
+  assert(report.includes(r.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;')));assert(report.includes(r.source_url.replace(/&/g,'&amp;')));assert(report.includes(r.status));
  }
  assert(report.includes('Original-source chronology and appendix'));
  assert(report.includes('Historical, source-attributed'));
