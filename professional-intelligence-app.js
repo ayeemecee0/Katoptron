@@ -233,7 +233,12 @@ try{
    const opt=element('option',key.replace('|',', '));opt.value=key;$(id).append(opt);
   }
  }
- issues=I.compare(docket);renderLeads();choose(leads[0]);renderFeed();
+ const wanted=new URL(win.location.href).searchParams.get('agency');
+ const permitted=[...new Set(leads.map(l=>l.locality_key))];
+ if(permitted.includes(wanted))$('jurisdiction').value=wanted;
+ issues=I.compare(docket);renderLeads();
+ choose((permitted.includes(wanted)&&leads.find(l=>l.locality_key===wanted))||leads[0]);
+ renderFeed();
  $('evidenceStatus').textContent='Original-government index validated ('+docket.rows.length+' source records, compiled '+compiledOn+'). '+
   (eventsKnown?'Reviewed Watch records loaded separately.':'Watch records unavailable; no fresh claims displayed.');
  optionalVerifiedDiffs();

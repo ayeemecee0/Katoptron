@@ -29,8 +29,8 @@ for(const d of dossiers){
 }
 assert.equal(dossiers.find(d=>d.id==='sacramento').records.length,3);
 assert.equal(dossiers.find(d=>d.id==='new-hanover').records[0].flock_specific,false);
-assert.match(dossiers.find(d=>d.id==='louisville').records[0].status,/denied/);
-assert.match(dossiers.find(d=>d.id==='los-angeles').records[0].status,/pending_not_enacted/);
+assert(dossiers.find(d=>d.id==='louisville').records.some(r=>/denied/.test(r.status)));
+assert(dossiers.find(d=>d.id==='los-angeles').records.some(r=>/pending_not_enacted/.test(r.status)));
 assert.throws(()=>Pilot.build({byLocality:()=>[]} ),/lacks bounded/);
 assert.throws(()=>Pilot.exportHtml(null),/No original-source/);
 const malicious={...dossiers[0],title:'<img src=x onerror=alert(1)>',records:[

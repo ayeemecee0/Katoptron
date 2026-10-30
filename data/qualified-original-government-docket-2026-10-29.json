@@ -1170,6 +1170,52 @@
         "What subsequent official committee or council action has resolved Council File 26-0803?",
         "What dated signed Flock MOU, access agreements and legal opinions are available from LAPD or the Police Commission?"
       ]
+    },
+    {
+      "id": "houston-tx-flock-contract-ceiling-amendment-agenda-2022",
+      "agency": "Houston City Council",
+      "locality_key": "houston|TX",
+      "state": "TX",
+      "source_date": "2022-09-28",
+      "kind": "government_decision",
+      "status": "council_agenda_lists_flock_contract_ceiling_not_paid",
+      "title": "Houston's subsequent council agenda lists Flock contract-ceiling amendment",
+      "summary": "Houston City Secretary's original annotated September 28, 2022 agenda identifies item 40 as Ordinance 2022-0727, amending Ordinance 2022-629 to change the maximum contract amount for automatic license plate recognition services with Flock Group, Inc. This cited agenda page does not state the amended ceiling, establish actual payments or disclose current contract terms; no such values are inferred.",
+      "amount_usd": null,
+      "amount_basis": null,
+      "source_url": "https://www.houstontx.gov/citysec/agenda/2022/Sep2722.pdf",
+      "provider": "City of Houston City Secretary",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_pdf",
+      "proof": "City Secretary original agenda with action notes, September 28, 2022, PDF page 7, item 40, Ordinance 2022-0727; the page itself was visually reviewed",
+      "flock_specific": true,
+      "open_questions": [
+        "What original Ordinance 2022-0727 text and signed contract amendment establish the exact revised ceiling?",
+        "What paid invoices and renewal schedules document expenditures and the agreement's current status?"
+      ]
+    },
+    {
+      "id": "louisville-ky-district20-flock-camera-fund-allocation-2026",
+      "agency": "Louisville Metro Council District 20",
+      "locality_key": "louisville|KY",
+      "state": "KY",
+      "source_date": "2026-05-06",
+      "kind": "government_decision",
+      "status": "agenda_ready_final_action_unverified",
+      "title": "Louisville District 20 fund report lists $6,650 toward one Flock camera",
+      "summary": "Louisville Metro Council District 20's government neighborhood development fund report lists May 6, 2026 item O-094-26 as a $6,650 appropriation toward Louisville Metro Police Department for a two-year lease agreement and installation of one Flock camera near the Grand Lakes subdivision. The fund ledger does not independently establish installation, payment, signed agreement, exact location or system operation.",
+      "amount_usd": 6650,
+      "amount_basis": "Amount listed in District 20 Neighborhood Development Fund report item O-094-26; NOT audited payment, vendor invoice or signed executed lease",
+      "source_url": "https://louisvilleky.gov/government/metro-council-district-20/district-20-ndf-cif-reports",
+      "provider": "Louisville Metro Council District 20",
+      "watch_category": "historical_research_only",
+      "source_type": "government_hosted_primary_html",
+      "proof": "Official District 20 Neighborhood Development Fund ledger, row dated May 6, 2026, O-094-26, description and $6,650 line; final installation and disbursement have not been independently verified",
+      "flock_specific": true,
+      "open_questions": [
+        "Did Louisville Metro approve, execute and pay the proposed two-year Flock camera lease and installation?",
+        "What subsequent invoice, contract, procurement award and official ALPR policy govern this proposed equipment?"
+      ]
     }
   ]
 }
