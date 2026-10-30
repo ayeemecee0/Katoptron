@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "monitor_run_id": 40999367165,
+  "monitor_run_id": 41000610768,
   "reviewed_on": "2026-10-29",
-  "observed_changes": 39,
-  "scope": "39_authenticated_before_after_source_byte_pairs_machine_text_screened_pending_true_substantive_page_citation_not_39_verified_changes",
+  "observed_changes": 38,
+  "scope": "38_latest_authenticated_source_byte_pairs_no_genuine_wording_difference_verified",
   "sources": [
     {
       "source_id": "az-government-oversight-announcement",
@@ -414,18 +414,6 @@
       "human_approved_page_cited_difference": false
     },
     {
-      "source_id": "legacy-ca-san-mateo-grand-jury",
-      "priority": "P1",
-      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
-      "review_actions": [
-        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
-        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
-        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
-        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
-      ],
-      "human_approved_page_cited_difference": false
-    },
-    {
       "source_id": "reviewed-25-va",
       "priority": "P1",
       "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
@@ -478,6 +466,12 @@
   "target": 10,
   "reason": "The latest saved original byte pairs have matching publisher hashes. Most changed raw HTML bytes without changing normalized human-visible text; the observed West Virginia Loading Articles timer difference is dynamic page noise, not substantive policy wording. No authenticated page-cited policy/contract wording change is independently verified.",
   "research_only": true,
-  "authenticated_before_after_original_byte_pairs": 39,
-  "machine_text_candidates_after_dynamic_noise_filter": 0
+  "authenticated_before_after_original_byte_pairs": 38,
+  "machine_text_candidates_after_dynamic_noise_filter": 0,
+  "previous_run": {
+    "run_id": 41000397348,
+    "changed_pages": 39,
+    "now_unchanged_original": "legacy-ca-san-mateo-grand-jury",
+    "note": "Original source is still accessible and its hash is now unchanged; retain prior observation but do not misclassify as a new difference."
+  }
 }
