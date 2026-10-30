@@ -54,6 +54,23 @@ class OriginalArchiveTests(unittest.TestCase):
    assert o["authenticated_before_after_original_byte_pairs"]==1
    assert o["machine_differences_for_human_review"]==0
    assert o["original_version_pairs"][0]["editorial_status"]=="authenticated_byte_pair_no_substantive_text_difference_identified"
+ def test_original_government_site_chrome_is_not_policy_change(self):
+  examples=[
+   (b'<html>West Virginia Code | \xc2\xa717C-6-7A Thursday, October 29, 2026 Government policy unchanged</html>',
+    b'<html>West Virginia Code | \xc2\xa717C-6-7A Friday, October 30, 2026 Government policy unchanged</html>'),
+   (b'<html>Accessibility notice. 65\xc2\xb0F X Hot Key: CTRL-Q Government policy unchanged</html>',
+    b'<html>Accessibility notice. 64\xc2\xb0F X Hot Key: CTRL-Q Government policy unchanged</html>')
+  ]
+  for before,after in examples:
+   with tempfile.TemporaryDirectory() as tmp:
+    cur=Path(tmp)/"current";old=Path(tmp)/"baseline";cur.mkdir();old.mkdir()
+    (cur/"test-000.html").write_bytes(after)
+    (old/"test-000.html").write_bytes(before)
+    (old/"manifest.json").write_text(json.dumps({"schema_version":1,"sources":{
+      "test-000":{"sha256":sha(before),"kind":"html","observed_on":"2026-10-29"}}}))
+    out=A.reconcile(sample(before,after),cur,old)
+    assert out["authenticated_before_after_original_byte_pairs"]==1
+    assert out["machine_differences_for_human_review"]==0
  def test_forged_current_bytes_rejected(self):
   with tempfile.TemporaryDirectory() as tmp:
    cur=Path(tmp)/"current";old=Path(tmp)/"baseline";cur.mkdir();old.mkdir()
