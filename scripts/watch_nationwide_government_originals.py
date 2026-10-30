@@ -116,7 +116,7 @@ def reviewed_addition_sources():
  dossier=json.loads(QUALIFIED_DOCKET.read_text(encoding="utf8"))
  national=json.loads(NATIONAL_REVIEWED.read_text(encoding="utf8"))
  page_review=json.loads(PAGE_REVIEW.read_text(encoding="utf8"))
- if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=22 or
+ if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=33 or
      dossier.get("schema_version")!=1 or national.get("schema_version")!=1):
   raise ValueError("Reviewed original additions not source-qualified")
  indexed={("qualified_original_government_docket",x["id"]):x for x in dossier["sources"]}
