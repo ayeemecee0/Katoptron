@@ -6,7 +6,7 @@ research. This watcher only generates source receipts and state-level work queue
 A fetched page or PDF is NEVER a verified camera, policy, adoption, contract,
 sharing relationship or current agency operation. No plate records are acquired.
 """
-import argparse,concurrent.futures,datetime as dt,hashlib,io,ipaddress,json,re,socket,urllib.parse,urllib.request
+import argparse,concurrent.futures,datetime as dt,hashlib,io,ipaddress,json,re,socket,urllib.parse,urllib.request,urllib.error
 from pathlib import Path
 from html.parser import HTMLParser
 from pypdf import PdfReader
@@ -27,6 +27,8 @@ ADDITIONAL_EDITORIAL=ROOT/"data"/"editorial-originals-intelligence-batch-2026-10
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
+MAX_EXCEPTIONAL_PDF=33_000_000
+LARGE_PDF_ORIGINALS={'ut-government-contract-proposal','wv-other-vendor-alpr-procurement-not-flock'}
 MAX_PAGES=120
 LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.co.routt.co.us","www.leg.state.nv.us","www.lvmpd.com","www.senate.state.oh.us","www.house.state.oh.us"}
 MAX_MONITORED_SOURCES=150
@@ -36,7 +38,7 @@ STATUS={"original_government_html_accessible","original_government_pdf_accessibl
  "held_redirect","held_http_error","held_oversized","held_wrong_format",
  "held_unreadable_original","held_timeout_or_network"}
 class NoRedirect(urllib.request.HTTPRedirectHandler):
- def redirect_request(self,*args,**kwargs):raise ValueError("original_redirect")
+ def redirect_request(self,*args,**kwargs):return None
 def exact(url):
  if not isinstance(url,str) or len(url)>950 or re.search(r"%2e|\\|/\.\.?/",url.split("?")[0],re.I):return False
  try:
@@ -88,7 +90,7 @@ def recovery_sources(original=None):
    raise ValueError("Supplemental original-government publication held as unsafe")
   seen.add(r["id"])
   sources.append({"id":r["id"],"state":r["state"],"publisher":r["publisher"],
-    "source_url":r["source_url"],"kind":r["kind"],
+    "source_url":r["source_url"],"kind":"pdf" if r["id"]=="ia-judicial-original-opinion" else r["kind"],
     "origin_role":"supplemental_government_publisher_individual_claims_unverified"})
  return sources
 
@@ -267,18 +269,49 @@ def catalog(obj,existing):
  present={x["state"] for x in legacy}
  if not present<=set(STATES) or len(seen)+len(legacy)>MAX_MONITORED_SOURCES:raise ValueError("Existing official state evidence invalid")
  return obj["jurisdictions"],obj["official_seed_sources"],present
+def trusted_redirect(src,current,target):
+ """Only equivalent government document paths, or Elgin's authenticated original news archive."""
+ if not exact(target):return False
+ a=urllib.parse.urlsplit(current);b=urllib.parse.urlsplit(target)
+ host=lambda x:x.lower().removeprefix("www.")
+ if host(a.hostname)!=host(b.hostname):return False
+ if a.path==b.path and a.query==b.query:return True
+ return (src["id"]=="reviewed-23-tx" and
+  a.path.lower()=="/m/newsflash/home/detail/1824" and
+  b.path.lower()=="/m/newsflash/archive/item/1824" and b.query=="arcId=2451")
+
+def pdf_limit(src):
+ return MAX_EXCEPTIONAL_PDF if src["id"] in LARGE_PDF_ORIGINALS else MAX_BYTES_PDF
+
 def fetch(src):
- url=src["source_url"]
- if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):raise ValueError("Original government source not approved or resolves privately")
- req=urllib.request.Request(url,headers={"Accept":"text/html,application/pdf",
-   "User-Agent":"Katoptron-US-national-original-government-source-observation/1.0"})
- try:
-  with urllib.request.build_opener(NoRedirect()).open(req,timeout=22) as res:
-   if res.status!=200 or res.geturl()!=url:raise ValueError("unexpected_response")
-   data=res.read((MAX_BYTES_PDF if src["kind"]=="pdf" else MAX_BYTES_HTML)+1)
- except urllib.error.HTTPError as exc:
-  raise ValueError("http_error") from None
- return data
+ """Bounded original or validated same-document publisher redirect. Never follow external redirects."""
+ url=src["source_url"];initial=url
+ if not exact(url):raise ValueError("unsafe_source")
+ cap=pdf_limit(src) if src["kind"]=="pdf" else MAX_BYTES_HTML
+ opener=urllib.request.build_opener(NoRedirect())
+ for _ in range(3):
+  if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):raise ValueError("unsafe_dns")
+  req=urllib.request.Request(url,headers={
+   "Accept":"text/html,application/pdf;q=0.9,*/*;q=0.5",
+   "Accept-Language":"en-US,en;q=0.8","Accept-Encoding":"identity",
+   "User-Agent":"Mozilla/5.0 (compatible; KatoptronSourceReader/1.0; +https://ayeemecee0.github.io/Katoptron/)"})
+  try:
+   with opener.open(req,timeout=22) as res:
+    if res.status!=200 or res.geturl()!=url:raise ValueError("unexpected_response")
+    length=res.headers.get("Content-Length")
+    if length and length.isdecimal() and int(length)>cap:raise ValueError("oversized_original")
+    data=res.read(cap+1)
+    if len(data)>cap:raise ValueError("oversized_original")
+    if url!=initial and src["id"]=="reviewed-23-tx" and b"Pausing City of Elgin" not in data:
+     raise ValueError("archive_document_identity_unconfirmed")
+    return (data,url)
+  except urllib.error.HTTPError as exc:
+   if exc.code in (301,302,303,307,308):
+    target=urllib.parse.urljoin(url,exc.headers.get("Location",""))
+    if target==url or not trusted_redirect(src,url,target):raise ValueError("original_redirect") from None
+    url=target;continue
+   raise ValueError("http_error") from None
+ raise ValueError("original_redirect")
 
 class PolicyLinks(HTMLParser):
  """Bounded original government href discovery, never source fact promotion."""
@@ -348,15 +381,21 @@ def inspect(src,fetcher=fetch,capture_dir=None):
   "original_sha256":None,"original_bytes":None,"pdf_pages":None,
   "publisher_flock_keyword_seen":False,"published_facts_verified":False,
   "device_status_verified":False,"camera_coordinates_published":False,
-  "unreviewed_same_host_policy_candidates":[]}
- try:raw=fetcher(src)
+  "unreviewed_same_host_policy_candidates":[],"retrieved_url":None,
+  "verified_same_publisher_redirect":False}
+ try:
+  item=fetcher(src)
+  raw,final_url=item if isinstance(item,tuple) and len(item)==2 else (item,src["source_url"])
+  if not exact(final_url):raise ValueError("unsafe_retrieval_url")
+  record["retrieved_url"]=final_url
+  record["verified_same_publisher_redirect"]=final_url!=src["source_url"]
  except Exception as err:
   reason=str(err)
-  record["status"]="held_redirect" if reason=="original_redirect" else (
-   "held_http_error" if reason=="http_error" else "held_timeout_or_network")
+  record["status"]="held_redirect" if reason in ("original_redirect","archive_document_identity_unconfirmed") else (
+   "held_oversized" if reason=="oversized_original" else ("held_http_error" if reason=="http_error" else "held_timeout_or_network"))
   return record
- if not isinstance(raw,bytes) or len(raw)<100 or len(raw)>(MAX_BYTES_PDF if src["kind"]=="pdf" else MAX_BYTES_HTML):
-  record["status"]="held_oversized" if isinstance(raw,bytes) and len(raw)>100 else "held_unreadable_original"
+ if not isinstance(raw,bytes) or len(raw)<100 or len(raw)>(pdf_limit(src) if src["kind"]=="pdf" else MAX_BYTES_HTML):
+  record["status"]="held_oversized" if isinstance(raw,bytes) and len(raw)>(pdf_limit(src) if src["kind"]=="pdf" else MAX_BYTES_HTML) else "held_unreadable_original"
   return record
  if src["kind"]=="html":
   if b"<html" not in raw[:1600].lower() and b"<!doctype html" not in raw[:1600].lower():
@@ -368,7 +407,7 @@ def inspect(src,fetcher=fetch,capture_dir=None):
  else:
   if not raw.startswith(b"%PDF-"):record["status"]="held_wrong_format";return record
   try:
-   pdf=PdfReader(io.BytesIO(raw),strict=True)
+   pdf=PdfReader(io.BytesIO(raw),strict=src["id"]!="mi-state-procurement-meeting-minutes")
    if pdf.is_encrypted or not 1<=len(pdf.pages)<=MAX_PAGES:raise ValueError("invalid_pdf")
    record["pdf_pages"]=len(pdf.pages)
    # A source could mention Flock in one of many government agenda pages.
