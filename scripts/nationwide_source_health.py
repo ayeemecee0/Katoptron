@@ -35,7 +35,8 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
  supplemental=monitor.recovery_sources()
  depth=monitor.agency_depth_sources()
  reviewed=monitor.reviewed_addition_sources()
- expected={s["id"]:s for s in seeds+legacy+supplemental+depth+reviewed}
+ alternates=monitor.independent_issuer_alternatives(seeds+legacy+supplemental+depth+reviewed)
+ expected={s["id"]:s for s in seeds+legacy+supplemental+depth+reviewed+alternates}
  rows=current.get("all_source_receipts")
  if current.get("jurisdictions_total")!=51 or not isinstance(rows,list):raise ValueError("Not complete national retrieval")
  validated(rows,expected)
@@ -92,10 +93,10 @@ def continuity(current,registry,existing,previous=None,day="2026-10-29"):
    "statewide_camera_locations_verified":False})
  assert len(by_state)==51 and all(s["originals_monitored"]>=1 for s in by_state)
  snapshot={"schema_version":2,"observed_on":day,"scope":"government_source_access_and_fingerprint_only_not_published_contract_or_policy_findings",
-  "jurisdictions_monitored":51,"monitored_urls":len(items),"supplemental_urls":len(supplemental),"agency_depth_urls":len(depth),"reviewed_additions_urls":len(reviewed),"receipts":items,"review_queue":changes,"review_counts":counts,
+  "jurisdictions_monitored":51,"monitored_urls":len(items),"supplemental_urls":len(supplemental),"agency_depth_urls":len(depth),"reviewed_additions_urls":len(reviewed),"official_alternate_urls":len(alternates),"receipts":items,"review_queue":changes,"review_counts":counts,
   "states":by_state,"verified_new_contract_or_policy_claims":0,"automatic_camera_or_sharing_publications":0}
  health={"schema_version":1,"observed_on":day,"scope":snapshot["scope"],
-  "jurisdictions":51,"monitored_urls":len(items),"supplemental_urls":len(supplemental),"agency_depth_urls":len(depth),"reviewed_additions_urls":len(reviewed),
+  "jurisdictions":51,"monitored_urls":len(items),"supplemental_urls":len(supplemental),"agency_depth_urls":len(depth),"reviewed_additions_urls":len(reviewed),"official_alternate_urls":len(alternates),
   "accessible_origins":sum(s["status"].startswith("original_") for s in items),
   "held_origins":sum(s["status"].startswith("held_") for s in items),
   "source_hash_changes_pending_individual_review":counts.get("source_bytes_changed_review_required",0),
