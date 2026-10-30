@@ -55,8 +55,8 @@ assert(policy.changes.every(x=>x.after_pdf_url===policy.after.url+'#page='+x.aft
 assert(policy.changes.every(x=>x.before_summary!==x.after_summary&&x.substantive_wording_difference.length>45));
 assert(policy.changes.every(x=>x.assistant_editorial_review.includes('passed')&&x.independent_human_editorial_status==='pending'&&!x.legal_violation_inferred));
 assert.equal(fallback.originals.length,6);
-assert.equal(new Set(fallback.originals.map(r=>r.id)).size,7);
-assert.equal(new Set(fallback.originals.map(r=>r.source_url)).size,7);
+assert.equal(new Set(fallback.originals.map(r=>r.id)).size,6);
+assert.equal(new Set(fallback.originals.map(r=>r.source_url)).size,6);
 assert(fallback.originals.every(r=>held.resolutions.some(h=>h.source_id===r.source_id)));
 assert(fallback.originals.every(r=>r.source_url.startsWith('https://')&&r.original_url.startsWith('https://')&&r.source_url!==r.original_url));
 assert(fallback.originals.every(r=>r.original_source_deleted===false&&r.original_source_automatically_recovered===false&&r.same_document_version_equivalence_proven===false));
