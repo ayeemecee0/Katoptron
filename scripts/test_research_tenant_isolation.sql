@@ -26,6 +26,7 @@ grant select,insert,delete on storage.objects to authenticated;
 \i supabase/migrations/160_fix_original_source_url_check.sql
 \i supabase/migrations/161_research_pilot_task_measurements.sql
 \i supabase/migrations/162_research_team_audit_ledger.sql
+\i supabase/migrations/163_research_intelligence_follows.sql
 insert into public.flock_original_page_versions(source_id,source_url,locality_key,source_date,text_sha256,anchor_context_sha256)
  values('official-frankfort-version-test',
  'https://www.frankfort.ky.gov/m/NewsFlash/Home/Detail/274',
@@ -188,3 +189,35 @@ select 1/(case when (select count(*) from public.research_team_activity where ev
 delete from public.research_workspace_invites where workspace_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 select 1/(case when (select count(*) from public.research_team_activity where event_type='invite_revoked')=1 then 1 else 0 end) as owner_invite_revocation_audited;
 reset role;
+
+-- Private research-feed follows: owner isolated, first-follow timestamp immutable,
+-- no anonymous visibility, no ability to forge another user's interest.
+set role authenticated;
+set request.jwt.claim.sub='11111111-1111-1111-1111-111111111111';
+insert into public.research_intelligence_follows(user_id,locality_key,topics,research_question)
+values('11111111-1111-1111-1111-111111111111','sacramento county|CA',array['contract','policy'],'Flock renewal');
+select 1/(case when (select count(*) from public.research_intelligence_follows)=1 then 1 else 0 end) as owner_sees_single_follow;
+update public.research_intelligence_follows set topics=array['policy']::text[]
+ where locality_key='sacramento county|CA';
+select 1/(case when (select topics[1] from public.research_intelligence_follows)='policy' then 1 else 0 end) as owner_can_edit_topic;
+select 1/(case when not has_column_privilege('authenticated','public.research_intelligence_follows','opted_in_at','update') then 1 else 0 end) as baseline_not_editable;
+select 1/(case when not has_table_privilege('anon','public.research_intelligence_follows','select') then 1 else 0 end) as anonymous_cannot_read_follows;
+set request.jwt.claim.sub='33333333-3333-3333-3333-333333333333';
+select 1/(case when (select count(*) from public.research_intelligence_follows)=0 then 1 else 0 end) as other_user_cannot_read_private_follows;
+delete from public.research_intelligence_follows where locality_key='sacramento county|CA';
+select 1/(case when (select count(*) from public.research_intelligence_follows)=0 then 1 else 0 end) as other_user_cannot_delete_private_follows;
+do $$
+begin
+ begin
+  insert into public.research_intelligence_follows(user_id,locality_key,topics)
+   values('11111111-1111-1111-1111-111111111111','houston|TX',array['policy']);
+  raise exception 'Foreign research follow forged';
+ exception when others then
+  if sqlerrm='Foreign research follow forged' then raise;end if;
+ end;
+end $$;
+set request.jwt.claim.sub='11111111-1111-1111-1111-111111111111';
+delete from public.research_intelligence_follows where locality_key='sacramento county|CA';
+select 1/(case when (select count(*) from public.research_intelligence_follows)=0 then 1 else 0 end) as owner_can_erase_private_follow;
+reset role;
+select 'RESEARCH_INTELLIGENCE_FOLLOW_RLS_PASS' as result;

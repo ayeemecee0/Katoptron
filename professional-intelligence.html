@@ -1,0 +1,87 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>Katoptron | Professional investigative intelligence</title><meta name="description" content="Original-government research leads, source comparisons, editable records requests, private watch feeds and investigation packages.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{color-scheme:dark;background:#09151f;color:#e7f1f6;font:15px/1.6 system-ui,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0}a{color:#a1e3ee}button,select,input,textarea{font:inherit;background:#1c3545;border:1px solid #66899c;border-radius:7px;color:inherit;padding:.6rem;max-width:100%}
+button{cursor:pointer}button:hover{background:#315669}button:disabled{opacity:.6}a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #b5f3fc;outline-offset:3px}
+header{background:#132938;display:flex;flex-wrap:wrap;gap:1rem;padding:1rem max(1rem,4vw)}main{max-width:1250px;margin:auto;padding:1.5rem 1rem 4rem}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:.2rem 0}h2{font-size:1.25rem}h3{font-size:1.06rem}
+p{color:#bfd3df}.panel,.card{background:#132939;border:1px solid #3c6275;padding:1rem;border-radius:10px;margin:.75rem 0;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:1rem}.scroll{max-height:470px;overflow-y:auto}.row{display:flex;flex-wrap:wrap;align-items:center;gap:.65rem}
+button.primary{background:#b6e6ed;color:#0b202c;font-weight:700}button.primary:hover{background:#d6f8fc}.muted,small{color:#b5cbd7}.label{font-size:.78rem;letter-spacing:.03em}
+.note{border-left:3px solid #86c9dc;padding:.8rem;background:#203847}textarea{width:100%;min-height:200px}
+fieldset{border:1px solid #436478}fieldset label{display:inline-flex;align-items:center;margin:.35rem}.top-space{margin-top:1rem}
+#leadCards button{display:block;text-align:left;width:100%;margin:.35rem 0}.selected{border-color:#b3e8f3;background:#274353}
+#leadDetail p{overflow-wrap:anywhere}[hidden]{display:none!important}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+@media print{header,.no-print,button,.scroll{display:none!important}body,main,.panel{color:#111;background:#fff;border:0}#leadDetail{display:block!important}}
+</style></head><body><a href="#main" class="skip-link">Skip to research intelligence</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./pilot-dossiers.html">Research dossiers</a><a href="./research-workspace.html">Private cases</a><a href="./surveillance-changes.html">Reviewed document changes</a><a href="./government-watch.html">Government Watch</a></header>
+<main id="main"><h1>Professional investigation intelligence</h1>
+<p>Original-government leads, qualified source differences, missing-records requests, opt-in in-app research feeds and portable investigation packages. Review sources before publication.</p>
+<p class="note">Evidence standards: a historical record is not a newly detected event; a government statement is not independently audited operation; a proposal is not enacted policy; missing evidence is UNKNOWN, not evidence of misconduct. Source-version changes remain privately held until editorial review. No personal vehicle searches or location histories.</p>
+<p id="evidenceStatus" role="status" aria-live="polite">Validating original-government evidence…</p>
+<div class="grid">
+<section class="panel" aria-labelledby="leadHeading"><h2 id="leadHeading">1. Investigative Lead Engine</h2>
+<p>Read already-reviewed original-government records. Newly published items appear only after publication through the existing Watch editorial pipeline.</p>
+<div class="row"><label>Jurisdiction <select id="jurisdiction"><option value="">All available</option></select></label>
+<label>Subject <select id="leadTopic"><option value="all">All subjects</option><option value="contract">Contracts</option><option value="policy">Policies</option><option value="oversight">Oversight</option><option value="sharing">Access/sharing</option><option value="procurement">Procurement</option></select></label></div>
+<p id="leadStatus" class="muted"></p><div id="leadCards" class="scroll" aria-label="Source-qualified leads"></div>
+</section>
+<section class="panel" id="leadDetail" aria-labelledby="detailHeading"><h2 id="detailHeading">Selected source lead</h2>
+<p id="selectedStatus" role="status">Choose a documented lead to see what matters and what's unresolved.</p>
+<div id="selectedSummary"></div><h3>What remains unverified</h3><ol id="unknowns"></ol>
+<h3>Next verification steps</h3><ol id="verifySteps"></ol>
+<p><a id="selectedOriginal" href="./pilot-dossiers.html" target="_blank" rel="noopener noreferrer">Original source</a></p>
+</section></div>
+<div class="grid">
+<section class="panel" aria-labelledby="compareHeading"><h2 id="compareHeading">2. Contradiction and Evidence-Gap Finder</h2>
+<p>Classifies original-source gaps, potentially inconsistent dated disclosures and page-pinned confirmed wording differences. Cross-agency records are context, not automatic contradictions.</p>
+<label>Cross-agency topic <select id="compareTopic"><option value="policy">Policy and retention</option><option value="contract">Contracts</option><option value="sharing">Access/sharing</option><option value="procurement">Procurement</option><option value="oversight">Oversight</option></select></label>
+<p id="comparisonStatus" role="status"></p><div id="comparisonList" class="scroll"></div>
+<h3>Cross-agency source comparison</h3><div id="crossAgency"></div>
+</section>
+<section class="panel" aria-labelledby="acquisitionHeading"><h2 id="acquisitionHeading">3. Missing-Evidence Acquisition Engine</h2>
+<p>Checks the selected lead against indexed original documents, identifies likely official custodian roles and prepares an editable request. No request is ever transmitted automatically.</p>
+<p id="acquisitionStatus" role="status"></p>
+<div id="existingSources"></div>
+<label for="draftBody">Editable public-records request</label><textarea id="draftBody" aria-label="Editable records request" maxlength="18000"></textarea>
+<div class="row"><button id="copyRequest" type="button">Copy draft</button><a id="privateCaseLink" href="./research-workspace.html">Open private case and track request</a></div>
+</section></div>
+<section class="panel no-print" aria-labelledby="feedHeading"><h2 id="feedHeading">4. Personal Research Intelligence Feed</h2>
+<p>Follow specific jurisdictions, topics and an optional research question. Your follows are private and in-app only. Email notifications remain <strong>disabled</strong> unless separately enabled in Government Watch. Prior records are never backdated as newly discovered.</p>
+<p id="feedAuthStatus" role="status">Checking confirmed-account access…</p>
+<form id="signin" class="row" hidden><label>Email <input id="email" type="email" autocomplete="email" required></label>
+<label>Password <input id="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button>
+<a href="./research-workspace.html">Create confirmed account</a></form>
+<div id="feedControls" hidden>
+<div class="row"><label>Follow jurisdiction <select id="followJurisdiction"></select></label>
+<label>Research question or keyword <input id="researchQuestion" type="text" maxlength="160" placeholder="Optional, e.g. renewal"></label></div>
+<fieldset><legend>Topics to include</legend><label><input type="checkbox" class="followTopic" value="contract" checked>Contracts</label>
+<label><input type="checkbox" class="followTopic" value="policy" checked>Policies</label>
+<label><input type="checkbox" class="followTopic" value="oversight" checked>Oversight</label>
+<label><input type="checkbox" class="followTopic" value="sharing" checked>Sharing</label>
+<label><input type="checkbox" class="followTopic" value="procurement" checked>Procurement</label></fieldset>
+<div class="row"><button id="saveFollow" type="button" class="primary">Follow and start new-event baseline</button><button id="deleteFollow" type="button">Unfollow selected jurisdiction</button><button id="logout" type="button">Sign out</button></div>
+<p id="feedStatus" role="status"></p><div id="followList"></div>
+<h3>Genuinely new since your follow</h3><div id="newFeed"></div>
+<h3>Previously published reviewed evidence</h3><div id="reviewedFeed"></div>
+<h3>Historical research opportunities</h3><div id="historicalFeed"></div></div>
+</section>
+<section class="panel" aria-labelledby="packageHeading"><h2 id="packageHeading">5. Ready-to-Use Investigation Package</h2>
+<p>Includes a source-dated timeline and references, gaps and qualified differences, verification checklist, likely official contact roles and an unsent records-request draft.</p>
+<div class="row"><button id="downloadPackage" type="button" class="primary" disabled>Download printable evidence package (HTML)</button><button id="printPackage" type="button" disabled>Print / Save as PDF</button></div>
+<p id="packageStatus" role="status">Choose a source-qualified lead above.</p>
+</section>
+</main>
+<script src="./config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="./government-source-docket.js"></script><script src="./professional-intelligence.js"></script>
+<script src="./okc-original-contracts.js"></script><script src="./nebraska-original-aggregate.js"></script>
+<script src="./ri-sd-original-policies.js"></script><script src="./wa-kittitas-draft-review.js"></script>
+<script src="./national-primary-documents.js"></script><script src="./verified-agency-dossiers.js"></script>
+<script src="./wa-reviewed-flock-sources.js"></script><script src="./wa-original-policies.js"></script>
+<script src="./wa-original-agency-dossiers.js"></script><script src="./agency-original-loader.js"></script>
+<script src="./verified-version-diffs.js"></script><script src="./agency-intelligence-v2.js"></script>
+<script src="./agency-change-tracker.js"></script>
+<script src="./professional-intelligence-app.js"></script>
+</body></html>
