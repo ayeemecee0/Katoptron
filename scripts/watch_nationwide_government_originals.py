@@ -19,6 +19,7 @@ AGENCY_DEPTH=ROOT/"data"/"nationwide-targeted-agency-original-depth-2026-10-29.j
 REVIEWED_ADDITIONS=ROOT/"data"/"nationwide-reviewed-original-monitor-additions-2026-10-29.json"
 QUALIFIED_DOCKET=ROOT/"data"/"qualified-original-government-docket-2026-10-29.json"
 NATIONAL_REVIEWED=ROOT/"data"/"nationwide-original-research-leads-expanded-2026-10-29.json"
+PAGE_REVIEW=ROOT/"data"/"manual-original-evidence-review-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
@@ -106,7 +107,7 @@ def agency_depth_sources():
  return out
 
 def reviewed_addition_sources():
- """18 exact government originals already separately source-attributed in published research.
+ """22 exact government originals, four independently page-reviewed, for safe monitoring.
 
  Added to *monitoring*, not newly discovered or independently confirmed new facts.
  A source's prior editorial ID, issuer, state, URL and source date must match.
@@ -114,29 +115,37 @@ def reviewed_addition_sources():
  data=json.loads(REVIEWED_ADDITIONS.read_text(encoding="utf8"))
  dossier=json.loads(QUALIFIED_DOCKET.read_text(encoding="utf8"))
  national=json.loads(NATIONAL_REVIEWED.read_text(encoding="utf8"))
- if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=18 or
+ page_review=json.loads(PAGE_REVIEW.read_text(encoding="utf8"))
+ if (data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=33 or
      dossier.get("schema_version")!=1 or national.get("schema_version")!=1):
   raise ValueError("Reviewed original additions not source-qualified")
  indexed={("qualified_original_government_docket",x["id"]):x for x in dossier["sources"]}
  indexed.update({("source_attributed_national_original_government_leads",x["id"]):x for x in national["leads"]})
+ indexed.update({("manually_verified_original_document",x["id"]):x for x in page_review["discovery_candidates"] if x.get("status")=="original_pdf_page_visually_verified"})
  out=[];ids=set();urls=set()
  for row in data["sources"]:
   src=indexed.get((row.get("record_origin"),row.get("record_id")))
   if (not src or row.get("id") in ids or not re.fullmatch(r"reviewed-[0-9]{2}-[a-z]{2}",str(row.get("id",""))) or
       row.get("state") not in STATES or row.get("source_url") in urls or
-      row.get("state")!=src.get("state") or row.get("source_url")!=src.get("source_url") or
-      row.get("publisher")!=src.get("agency") or row.get("source_date")!=src.get("source_date") or
+      row.get("state")!=src.get("state") or row.get("source_url")!=src.get("source_url",src.get("url")) or
+      row.get("publisher")!=src.get("agency",src.get("original_publisher")) or
+      row.get("source_date")!=src.get("source_date",src.get("source_date_note")) or
       row.get("origin_role")!="original_government_historical_publication_monitor_only" or
       row.get("kind") not in ("html","pdf") or
-      (row["kind"]=="pdf") != urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf") or
+      (row.get("record_origin")!="manually_verified_original_document" and
+        (row["kind"]=="pdf") != urllib.parse.urlsplit(row["source_url"]).path.lower().endswith(".pdf")) or
       not exact(row.get("source_url")) or
       row.get("individual_document_facts_verified_by_monitor") is not False or
       row.get("operational_camera_verified_by_monitor") is not False or
       row.get("policy_change_verified_by_monitor") is not False):
-   raise ValueError("New monitored original lacks independent prior source citation")
+   raise ValueError("New monitored original lacks independent prior source citation: "+str(row.get("id","?")))
   if row["record_origin"]=="qualified_original_government_docket":
    if src.get("watch_category")!="historical_research_only" or not src.get("source_type","").startswith("government_"):
     raise ValueError("Docket source lacks original-government provenance")
+  elif row["record_origin"]=="manually_verified_original_document":
+   if (row["kind"]!="pdf" or not isinstance(src.get("page"),int) or src.get("page")<1 or
+       src.get("status")!="original_pdf_page_visually_verified"):
+    raise ValueError("Independently page-inspected original PDF required")
   elif not src.get("source_issuer_review_status","").startswith("source_attributed_"):
    raise ValueError("National original not source-attributed")
   ids.add(row["id"]);urls.add(row["source_url"])
@@ -251,7 +260,7 @@ def policy_candidates(original,raw):
  except (ValueError,TypeError):
   return []
 
-def inspect(src,fetcher=fetch):
+def inspect(src,fetcher=fetch,capture_dir=None):
  record={"source_id":src["id"],"state":src["state"],"publisher":src["publisher"],
   "source_url":src["source_url"],"kind":src["kind"],"status":None,
   "original_sha256":None,"original_bytes":None,"pdf_pages":None,
@@ -290,8 +299,14 @@ def inspect(src,fetcher=fetch):
   record["status"]="original_government_pdf_accessible"
  record["original_sha256"]=hashlib.sha256(raw).hexdigest()
  record["original_bytes"]=len(raw)
+ if capture_dir is not None:
+  dst=Path(capture_dir).resolve()
+  if not dst.is_relative_to(ROOT) or not re.fullmatch(r"[a-z0-9_-]{7,120}",src["id"]):
+   raise ValueError("Unsafe public original capture path")
+  dst.mkdir(parents=True,exist_ok=True)
+  (dst/(src["id"]+"."+src["kind"])).write_bytes(raw)
  return record
-def watch(obj,existing,fetcher=fetch,workers=5):
+def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
  jurisdictions,seeds,existing_states=catalog(obj,existing)
  legacy=legacy_sources(existing)
  recovery=recovery_sources()
@@ -303,11 +318,11 @@ def watch(obj,existing,fetcher=fetch,workers=5):
      not 100<=len(existing_urls)<=MAX_MONITORED_SOURCES):
   raise ValueError("Missing, duplicate or excessive original-government monitoring inventory")
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
-  receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
-  legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
-  recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher),recovery))
-  depth_receipts=list(pool.map(lambda s:inspect(s,fetcher),depth))
-  reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher),reviewed))
+  receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),seeds))
+  legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),legacy))
+  recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),recovery))
+  depth_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),depth))
+  reviewed_receipts=list(pool.map(lambda s:inspect(s,fetcher,capture_dir),reviewed))
  all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts+reviewed_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
@@ -356,10 +371,12 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "verified_policy_adoptions_published":0}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
+ p.add_argument("--capture-originals",action="store_true")
  p.add_argument("--out",type=Path,default=OUTPUT)
  args=p.parse_args()
  if not 1<=args.workers<=8:raise ValueError("Rate limit exceeded")
- result=watch(json.loads(REGISTRY.read_text(encoding="utf8")),json.loads(EXISTING.read_text(encoding="utf8")),workers=args.workers)
+ result=watch(json.loads(REGISTRY.read_text(encoding="utf8")),json.loads(EXISTING.read_text(encoding="utf8")),workers=args.workers,
+  capture_dir=(ROOT/'.katoptron-ci/nationwide-original-current') if args.capture_originals else None)
  path=args.out.resolve()
  if not path.is_relative_to(ROOT):raise ValueError("Unsafe output")
  path.parent.mkdir(parents=True,exist_ok=True)

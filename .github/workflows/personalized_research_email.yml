@@ -1,0 +1,86 @@
+name: Separate personalized research email safety and dispatch
+on:
+  pull_request:
+    paths:
+      - 'scripts/send_personalized_research_emails.py'
+      - 'scripts/test_personalized_research_emails.py'
+      - 'research-email.js'
+      - 'professional-intelligence.html'
+      - 'supabase/migrations/164_research_email_optin_delivery.sql'
+      - '.github/workflows/personalized_research_email.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/send_personalized_research_emails.py'
+      - 'scripts/test_personalized_research_emails.py'
+      - 'research-email.js'
+      - 'professional-intelligence.html'
+      - 'supabase/migrations/164_research_email_optin_delivery.sql'
+      - '.github/workflows/personalized_research_email.yml'
+  schedule:
+    - cron: '10 16 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: katoptron-separate-research-email-outbox
+  cancel-in-progress: false
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test strict original-government evidence, consent baselines and at-most-once outbox
+        run: |
+          python -m unittest discover -s scripts -p 'test_personalized_research_emails.py' -v
+          python -m py_compile scripts/send_personalized_research_emails.py
+          node --check research-email.js
+          node - <<'JS'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const ui=fs.readFileSync('professional-intelligence.html','utf8');
+          const app=fs.readFileSync('research-email.js','utf8');
+          const sql=fs.readFileSync('supabase/migrations/164_research_email_optin_delivery.sql','utf8');
+          for(const id of ['researchEmailConsent','researchEmailEnable','researchEmailDisable','researchEmailReceipts'])
+            assert(ui.includes('id="'+id+'"'));
+          assert(app.includes('research_email_subscriptions'));
+          assert(app.includes('research_email_send_claims'));
+          assert(app.includes('researchEmailConsent'));
+          for(const text of ['enable row level security','research_email_delivery_candidates','revoke all','grant update(topics,keyword,enabled)'])
+            assert(sql.includes(text));
+          assert(!/grant update on public.research_email_subscriptions/.test(sql));
+          console.log('RESEARCH_EMAIL_UI_SQL_BOUNDARIES_PASS');
+          JS
+  send:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SB_SECRET_KEY }}
+      WATCH_SMTP_HOST: ${{ secrets.WATCH_SMTP_HOST }}
+      WATCH_SMTP_PORT: ${{ secrets.WATCH_SMTP_PORT }}
+      WATCH_SMTP_USER: ${{ secrets.WATCH_SMTP_USER }}
+      WATCH_SMTP_PASSWORD: ${{ secrets.WATCH_SMTP_PASSWORD }}
+      WATCH_SMTP_FROM: ${{ secrets.WATCH_SMTP_FROM }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Require private Supabase worker credential
+        run: test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Send only independently opted-in research email and write accepted-SMTP receipts
+        run: python scripts/send_personalized_research_emails.py

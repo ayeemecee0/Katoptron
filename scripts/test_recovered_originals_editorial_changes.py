@@ -36,8 +36,8 @@ class Recovery(unittest.TestCase):
   self.assertEqual(len(data["legacy_receipts"]),14)
   self.assertEqual(len(data["recovery_receipts"]),11)
   self.assertEqual(len(data["depth_receipts"]),12)
-  self.assertEqual(len(data["reviewed_addition_receipts"]),18)
-  self.assertEqual(data["monitored_sources_total"],100)
+  self.assertEqual(len(data["reviewed_addition_receipts"]),33)
+  self.assertEqual(data["monitored_sources_total"],115)
   self.assertEqual(data["verified_policy_adoptions_published"],0)
   self.assertTrue(all(x["camera_coverage_claimed"] is False for x in data["jurisdictions"]))
  def test_review_requires_actual_changed_page_and_two_original_documents(self):

@@ -91,7 +91,7 @@ def prioritize(discovery,registry,legacy,recovery,depth,reviewed,watch=None):
     if watch is not None:
         receipts=watch.get("all_source_receipts")
         if (watch.get("schema_version")!=1 or watch.get("jurisdictions_total")!=51 or
-            not isinstance(receipts,list) or not 100<=len(receipts)<=125 or
+            not isinstance(receipts,list) or len(receipts)!=len(known) or
             len({r.get("source_id") for r in receipts})!=len(receipts)):
             raise ValueError("Complete source-monitor receipt required for direct-link acquisition")
         for record in receipts:

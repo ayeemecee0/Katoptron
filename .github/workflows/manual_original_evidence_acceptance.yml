@@ -1,0 +1,36 @@
+name: Manual original evidence review acceptance
+on:
+  pull_request:
+    paths:
+      - 'data/manual-original-evidence-review-2026-10-29.json'
+      - 'data/nationwide-reviewed-original-monitor-additions-2026-10-29.json'
+      - 'original-evidence-review.html'
+      - 'source-evidence-review.js'
+      - 'scripts/test_manual_original_evidence_review.cjs'
+      - '.github/workflows/manual_original_evidence_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/manual-original-evidence-review-2026-10-29.json'
+      - 'data/nationwide-reviewed-original-monitor-additions-2026-10-29.json'
+      - 'original-evidence-review.html'
+      - 'source-evidence-review.js'
+      - 'scripts/test_manual_original_evidence_review.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cited_sources:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source citations, disposition classification and publication boundaries
+        run: |
+          node --check source-evidence-review.js
+          node scripts/test_manual_original_evidence_review.cjs
