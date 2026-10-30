@@ -14,8 +14,8 @@ The supplemental original-source registry is `data/nationwide-recovery-governmen
 | MI | Michigan government Flock procurement catalog | State contract listing not a purchaser invoice or city-specific use |
 | MS | Mississippi public procurement notice | Flock proposal/solicitation, not awarded contract or payment |
 | NC | Hillsborough town government Flock termination update | Town source statement; no independent completion audit |
-| NV | Nevada legislative interim recommendation report | Proposal for future legislation, not an enacted ALPR statute |
-| NY | State criminal justice model policy index | Model policy not a local agency adoption |
+| NV | Las Vegas Metropolitan Police Department government transparency page | Agency-authored public index linking Flock information; not independent confirmation of current operations |
+| NY | New York Attorney General 2025 law-enforcement oversight report | Recommendations on ALPR/AI disclosures are not enacted law or a local agency Flock contract |
 | UT | Utah DPS SIAC technology transparency | State ALPR explanations do not prove that Flock supplied every system |
 | WV | West Virginia legislature traffic-camera law | Legal context, not evidence of an agency buying Flock |
 
