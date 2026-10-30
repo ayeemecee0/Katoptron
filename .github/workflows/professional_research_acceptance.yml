@@ -8,6 +8,10 @@ on:
       - 'supabase/migrations/162_research_team_audit_ledger.sql'
       - 'scripts/test_research_pro_workflows.cjs'
       - 'research-templates.js'
+      - 'records-copilot.js'
+      - 'scripts/test_records_copilot.cjs'
+      - 'scripts/test_navigation_audit.cjs'
+      - 'index.html'
       - 'research-workspace.js'
       - 'research-workspace.html'
       - 'research-plans.html'
@@ -22,13 +26,14 @@ on:
       - 'supabase/migrations/157_research_collaborator_roles.sql'
       - 'supabase/migrations/158_research_request_audit_lifecycle.sql'
       - 'supabase/migrations/159_prevent_research_orphan_storage.sql'
-      - 'supabase/migrations/160_fix_original_source_url_check.sql'
       - '.github/workflows/professional_research_acceptance.yml'
   push:
     branches: [main]
     paths:
       - 'scripts/watch_original_government_versions.py'
       - 'research-workspace.js'
+      - 'records-copilot.js'
+      - 'index.html'
       - 'research-plans.html'
       - '.github/workflows/professional_research_acceptance.yml'
   workflow_dispatch:
@@ -54,9 +59,14 @@ jobs:
         run: node scripts/test_research_pro_workflows.cjs
       - name: Verify research workspace existing export, invites, and private files
         run: node scripts/test_research_workspace.cjs
+      - name: Test source-scoped public records copilot and verified response-handling boundaries
+        run: node scripts/test_records_copilot.cjs
+      - name: Check minimal homepage navigation with historical evidence routes preserved
+        run: node scripts/test_navigation_audit.cjs
       - name: Reject malformed Javascript and inline client scripts
         run: |
           node --check research-templates.js
+          node --check records-copilot.js
           node --check research-workspace.js
           node --check research-pilot.js
           node --check watch-email.js
