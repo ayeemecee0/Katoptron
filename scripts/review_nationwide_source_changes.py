@@ -76,10 +76,11 @@ def review(snapshot,approval):
     raise ValueError("Complete original-source claim review is required: "+field)
   if item["before_excerpt"]==item["after_excerpt"] or len(item["unverified_questions"])<30:
    raise ValueError("Material documentary difference not established")
+  if item.get("category") not in TYPES:raise ValueError("Unsupported original documentary-difference claim category")
   if not item.get("editorial_approved") is True or item.get("not_proof_of_misconduct") is not True:
    raise ValueError("Human editorial verification and uncertainty safeguards required")
   accepted.append({"id":"approved_docdiff:"+ident+":"+row["current_observation_sha256"][:12],
-   "state":row["state"],"source_id":ident,"title":item["title"],
+   "state":row["state"],"source_id":ident,"title":item["title"],"category":item["category"],
    "evidence_classification":"reviewer_confirmed_original_document_wording_difference",
    "before":{"government_url":item["before_original_url"]+"#page="+str(item["before_pdf_page"]),
      "source_quote":item["before_excerpt"],"sha256_of_observed_publisher_page":item["before_sha256"]},
