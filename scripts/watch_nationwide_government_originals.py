@@ -429,6 +429,8 @@ def inspect(src,fetcher=fetch,capture_dir=None):
  return record
 def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
  jurisdictions,seeds,existing_states=catalog(obj,existing)
+ # The Iowa judicial original returns application/pdf despite an old HTML registry label.
+ seeds=[{**x,"kind":"pdf"} if x["id"]=="ia-judicial-original-opinion" else x for x in seeds]
  legacy=legacy_sources(existing)
  recovery=recovery_sources()
  depth=agency_depth_sources()
