@@ -1,0 +1,127 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>Katoptron | Find your first verified research lead</title>
+<meta name="description" content="Choose your reporting beat and jurisdiction to receive original-government starting sources, verification questions and a printable research package without signup.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font:16px/1.6 system-ui,Arial,sans-serif;color-scheme:dark;color:#e9f3f8;background:#081722}
+*{box-sizing:border-box}body{margin:0}header{padding:1rem max(1rem,4vw);display:flex;gap:1rem;flex-wrap:wrap;background:#132c3a;border-bottom:1px solid #476575}
+a{color:#9fe5f1}main{max-width:1100px;margin:0 auto;padding:1.5rem 1rem 4rem}h1{font-size:clamp(1.8rem,4vw,2.6rem)}h2{font-size:1.3rem}
+.panel,.card{background:#132b3b;border:1px solid #4a6c80;border-radius:9px;padding:1rem;margin:1rem 0;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:1rem}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:.7rem}label{display:flex;flex-direction:column;gap:.25rem;min-width:min(210px,100%);flex:1}
+select,input,button{font:inherit;border:1px solid #668b9c;border-radius:6px;padding:.6rem;background:#193746;color:#e9f3f8;max-width:100%}
+button{cursor:pointer}button:hover{background:#315c6e}button.primary{background:#b7e9f1;color:#14252f;font-weight:700}button.primary:hover{background:#e0f8fb}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.muted,small{color:#bed0dc}.notice{padding:.8rem 1rem;border-left:4px solid #8dcde0;background:#203d4b}
+#recommendations .card{margin:0}#recommendations button{text-align:left}
+ol li{margin:.4rem 0}[hidden]{display:none!important}
+@media print{header,.no-print{display:none!important}body,.card,.panel{background:#fff;color:#111;border:0}}
+</style></head><body><a class="skip-link" href="#main">Skip to investigations</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./professional-intelligence.html">Professional intelligence</a><a href="./pilot-dossiers.html">Original-source dossiers</a><a href="./research-workspace.html">Private workspace</a></header>
+<main id="main">
+<h1>Your first research leads, already sourced</h1>
+<p>Select the research you actually do. Katoptron ranks historically reviewed original-government documents by reporting relevance, supplies unresolved questions and generates a source-cited starting package. No account is required to preview or download.</p>
+<p class="notice">Rankings estimate <strong>fit to your chosen research topic</strong>, never proof of wrongdoing, authenticity probability or urgency. Records remain dated historical evidence. A proposed action, fund entry or agenda does not independently prove a signed agreement, paid expenditure or installed camera.</p>
+<section class="panel no-print" aria-labelledby="focusHeading"><h2 id="focusHeading">Choose your investigation focus</h2>
+<div class="row"><label>Reporting beat<select id="researchFocus"></select></label>
+<label>Jurisdiction<select id="researchAgency"><option value="">Find useful leads across all indexed jurisdictions</option></select></label></div>
+<label style="margin-top:.6rem">Optional question or theme
+<input id="researchQuestion" maxlength="160" placeholder="e.g. contract renewal, data-sharing policy, invoices" autocomplete="off"></label>
+<div class="row" style="margin-top:.75rem"><button id="refreshLeads" class="primary" type="button">Find source-backed investigations</button><button id="shareResearchLink" type="button">Copy selected public research link</button></div>
+<p id="privacyNote" class="muted">No names, emails, search history or research questions are stored. Shared URLs include only the reporting beat and selected jurisdiction, not private research questions.</p>
+</section>
+<p id="recommendationStatus" role="status" aria-live="polite">Validating original government records…</p>
+<section aria-label="Research starting recommendations"><h2>Research opportunities</h2><div id="recommendations" class="grid"></div></section>
+<section id="dossier" class="panel" hidden aria-labelledby="dossierHeading">
+<h2 id="dossierHeading">Selected original-government investigation</h2>
+<p id="dossierStatus" role="status"></p>
+<div class="row no-print">
+<button id="downloadPacket" type="button" class="primary">Download sourced investigation package</button>
+<a id="inspectAgency" href="./professional-intelligence.html">Open intelligence tools</a>
+<a id="openSourceDossier" href="./pilot-dossiers.html" hidden>Open full original-source dossier</a>
+</div>
+<h3>Documents to inspect first</h3><div id="sourceItems"></div>
+<h3>Unresolved research questions</h3><ol id="openQuestions"></ol>
+<p class="muted">These are verification tasks, not allegations. Original URL and historical status remain with each record.</p>
+</section>
+</main>
+<script src="./government-source-docket.js"></script>
+<script src="./pilot-relevance.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),P=window.KatoptronPilotResearch;
+const el=(tag,value)=>{const x=document.createElement(tag);if(value!==undefined)x.textContent=String(value);return x};
+const previewSlugs=Object.freeze({'woodland|CA':'woodland','san diego|CA':'san-diego','houston|TX':'houston',
+'louisville|KY':'louisville','new hanover county|NC':'new-hanover','los angeles|CA':'los-angeles','sacramento county|CA':'sacramento','pasadena|CA':'pasadena'});
+let docket=null,ranked=[],current=null;
+for(const preset of P.PRESETS){const o=el('option',preset.label);o.value=preset.id;$('researchFocus').append(o)}
+function openDossier(d){
+ current=d;$('dossier').hidden=false;
+ $('dossierHeading').textContent=d.locality_key.replace('|',', ')+' · '+P.byId(d.preset_id).label;
+ $('dossierStatus').textContent=d.records.length+' individually reviewed original document(s); '+d.selected.length+' prioritized first. '+d.limitation;
+ $('sourceItems').replaceChildren();
+ for(const entry of d.selected){
+  const r=entry.source,item=el('article');item.className='card';
+  item.append(el('h3',r.title),el('p',r.summary),el('p','Date: '+r.source_date+' · publisher: '+r.provider+' · documentary status: '+r.status));
+  const a=el('a','Inspect original government source');a.href=r.source_url;a.target='_blank';a.rel='noopener noreferrer';item.append(a);
+  item.append(el('p','Why selected: '+entry.reasons.join('; ')));$('sourceItems').append(item);
+ }
+ $('openQuestions').replaceChildren();for(const q of d.questions)$('openQuestions').append(el('li',q));
+ const dest=new URL('./professional-intelligence.html',location.href);
+ dest.searchParams.set('agency',d.locality_key);dest.searchParams.set('focus',d.preset_id);
+ $('inspectAgency').href=dest.href;
+ const slug=previewSlugs[d.locality_key];
+ $('openSourceDossier').hidden=!slug;
+ if(slug){const url=new URL('./pilot-dossiers.html',location.href);url.searchParams.set('dossier',slug);$('openSourceDossier').href=url.href}
+}
+function recalc(){
+ if(!docket)return;
+ try{
+  ranked=P.rank(docket,$('researchFocus').value,$('researchAgency').value,$('researchQuestion').value);
+  $('recommendations').replaceChildren();
+  for(const result of ranked.slice(0,10)){
+   const card=el('article');card.className='card';
+   card.append(el('h3',result.locality_key.replace('|',', ')),
+    el('p',result.selected.length+' starting source(s), '+result.records.length+' original documents indexed'),
+    el('p',result.selected[0]?.source.title||'No original verified sources'),
+    el('p',result.limitation));
+   const button=el('button','Review evidence and next questions');button.type='button';button.addEventListener('click',()=>openDossier(result));card.append(button);
+   $('recommendations').append(card);
+  }
+  $('recommendationStatus').textContent='Showing '+Math.min(ranked.length,10)+' of '+ranked.length+
+   ' jurisdiction-specific research starting points. Relevance score reflects your selected topic, not urgency or misconduct.';
+  if(ranked.length)openDossier(ranked[0]);
+  else{$('dossier').hidden=true;$('recommendationStatus').textContent='No matching reviewed original-government documents. Unknown is not proof that no system exists.'}
+ }catch(err){$('recommendationStatus').textContent='Research preview withheld: '+err.message;$('dossier').hidden=true;}
+}
+$('refreshLeads').addEventListener('click',recalc);
+$('downloadPacket').addEventListener('click',()=>{
+ if(!current)return;try{
+  const output=P.pack(current),blob=new Blob([output],{type:'text/html'}),url=URL.createObjectURL(blob);
+  const a=el('a');a.href=url;a.download='katoptron-research-'+current.locality_key.replace(/[^a-z0-9]/gi,'-')+'.html';
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),12000);
+  $('dossierStatus').textContent='Complete sourced starting package exported. Original dates and limitations preserved.';
+ }catch(err){$('dossierStatus').textContent='Package withheld: '+err.message}
+});
+$('shareResearchLink').addEventListener('click',async()=>{
+ try{
+  if(!current)throw Error('Select a validated jurisdiction first');
+  const path=P.sharePath($('researchFocus').value,current.locality_key);
+  const url=new URL(path,location.href).href;await navigator.clipboard.writeText(url);
+  $('privacyNote').textContent='Public research link copied. No personal name, email or research question included.';
+ }catch(err){$('privacyNote').textContent='Copy unavailable: '+err.message+'. You can share the browser URL after selecting a jurisdiction.'}
+});
+(async()=>{
+ try{
+  const response=await fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!response.ok)throw Error('Source dossier index HTTP '+response.status);
+  docket=window.KatoptronGovernmentDocket.build(await response.json());
+  const keys=P.group(docket).map(d=>d.locality_key).sort();
+  for(const key of keys){const opt=el('option',key.replace('|',', '));opt.value=key;$('researchAgency').append(opt)}
+  const params=new URL(location.href).searchParams;
+  if(P.byId(params.get('focus')))$('researchFocus').value=params.get('focus');
+  if(keys.includes(params.get('agency')))$('researchAgency').value=params.get('agency');
+  recalc();
+ }catch(err){$('recommendationStatus').textContent='Original government verification unavailable: '+err.message+'. No leads displayed.'}
+})();
+</script></body></html>
