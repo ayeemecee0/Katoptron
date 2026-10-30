@@ -15,11 +15,12 @@ ROOT=Path(__file__).resolve().parents[1]
 REGISTRY=ROOT/"data"/"nationwide-government-jurisdiction-registry.json"
 EXISTING=ROOT/"data"/"national-government-audit-source-portals.json"
 RECOVERY=ROOT/"data"/"nationwide-recovery-government-originals-2026-10-29.json"
+AGENCY_DEPTH=ROOT/"data"/"nationwide-targeted-agency-original-depth-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
 MAX_PAGES=120
-LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.co.routt.co.us","www.leg.state.nv.us","www.lvmpd.com"}
+LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.co.routt.co.us","www.leg.state.nv.us","www.lvmpd.com","www.senate.state.oh.us","www.house.state.oh.us"}
 MAX_MONITORED_SOURCES=100
 MAX_PAGES=200  # bounded 159-page Nevada legislative report; only first 8 text pages sampled
 STATES=("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC").split()
@@ -82,6 +83,24 @@ def recovery_sources(original=None):
     "source_url":r["source_url"],"kind":r["kind"],
     "origin_role":"supplemental_government_publisher_individual_claims_unverified"})
  return sources
+
+def agency_depth_sources():
+ """Issuer-attributed supplemental originals, never new verified Flock facts."""
+ data=json.loads(AGENCY_DEPTH.read_text(encoding="utf8"))
+ if data.get("schema_version")!=1 or not isinstance(data.get("sources"),list) or len(data["sources"])!=11:
+  raise ValueError("Multi-document issuer registry incomplete")
+ ids=set();out=[]
+ for x in data["sources"]:
+  if (x.get("id") in ids or not re.fullmatch(r"[a-z]{2}-[a-z0-9-]{10,100}",x.get("id","")) or
+   x.get("state") not in STATES or x.get("kind") not in ("html","pdf") or
+   x.get("origin_role")!="original_government_publisher_metadata_secondary_source" or
+   x.get("individual_contract_status_verified") is not False or
+   not x.get("government_source_confirmed_by_public_publisher_page") is True or
+   not exact(x.get("source_url")) or not x.get("publisher") or not x.get("locality_key")):
+   raise ValueError("Non-original source or unreviewed agency claim in depth registry")
+  ids.add(x["id"]);out.append({"id":x["id"],"state":x["state"],"publisher":x["publisher"],
+    "source_url":x["source_url"],"kind":x["kind"],"origin_role":x["origin_role"]})
+ return out
 
 def catalog(obj,existing):
  if (not isinstance(obj,dict) or obj.get("schema_version")!=1 or
@@ -234,11 +253,13 @@ def watch(obj,existing,fetcher=fetch,workers=5):
  jurisdictions,seeds,existing_states=catalog(obj,existing)
  legacy=legacy_sources(existing)
  recovery=recovery_sources()
+ depth=agency_depth_sources()
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
   receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
   legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
   recovery_receipts=list(pool.map(lambda s:inspect(s,fetcher),recovery))
- all_receipts=receipts+legacy_receipts+recovery_receipts
+  depth_receipts=list(pool.map(lambda s:inspect(s,fetcher),depth))
+ all_receipts=receipts+legacy_receipts+recovery_receipts+depth_receipts
  original_seed_states={r["state"] for r in all_receipts if r["status"].startswith("original_")}
  planned={r["state"] for r in seeds}|existing_states
  by_state=[]
@@ -247,7 +268,8 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   r=[x for x in receipts if x["state"]==code]
   old=[x for x in legacy_receipts if x["state"]==code]
   extra=[x for x in recovery_receipts if x["state"]==code]
-  combined=r+old+extra
+  deep=[x for x in depth_receipts if x["state"]==code]
+  combined=r+old+extra+deep
   accessible=sum(x["status"].startswith("original_") for x in combined)
   held=sum(x["status"].startswith("held_") for x in combined)
   source_gap=("no_monitored_government_original_accessible" if accessible==0 else
@@ -273,7 +295,7 @@ def watch(obj,existing,fetcher=fetch,workers=5):
   "jurisdictions_total":51,
   "states_with_existing_or_new_official_seed_sources":len(planned),
   "states_without_official_sources_seeded":sorted(set(STATES)-planned),
-  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,
+  "seed_receipts":receipts,"legacy_receipts":legacy_receipts,"recovery_receipts":recovery_receipts,"depth_receipts":depth_receipts,
   "monitored_sources_total":len(all_receipts),
   "monitored_original_accessible":sum(x["status"].startswith("original_") for x in all_receipts),
   "monitored_original_held":sum(x["status"].startswith("held_") for x in all_receipts),
@@ -297,6 +319,8 @@ def main():
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,
   "all_government_urls_monitored":result["monitored_sources_total"],
   "supplemental_sources_monitored":len(result["recovery_receipts"]),
+  "agency_depth_sources_monitored":len(result["depth_receipts"]),
+  "agency_depth_sources_accessible":sum(x["status"].startswith("original_") for x in result["depth_receipts"]),
   "supplemental_accessible":sum(x["status"].startswith("original_") for x in result["recovery_receipts"]),
   "all_originals_accessible":result["monitored_original_accessible"],
   "all_originals_held":result["monitored_original_held"],
