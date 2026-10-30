@@ -9,6 +9,27 @@ begin
  if not has_function_privilege('anon',
     'public.flock_public_osm_exact_render_snapshot()'::regprocedure,'EXECUTE')
  then raise exception 'OSM all-zoom coordinate reader inaccessible';end if;
+ if has_function_privilege('anon',
+    'public.katoptron_refresh_osm_exact_snapshot_cache()'::regprocedure,'EXECUTE')
+ then raise exception 'Unauthenticated source snapshot refresh permitted';end if;
+ if not has_function_privilege('service_role',
+    'public.katoptron_refresh_osm_exact_snapshot_cache()'::regprocedure,'EXECUTE')
+ then raise exception 'Trusted importer snapshot refresh unavailable';end if;
+ if not (select relrowsecurity from pg_class
+    where oid='public.flock_osm_exact_snapshot_cache'::regclass)
+ then raise exception 'Cached coordinate snapshot lacks RLS';end if;
+ if (select count(*) from public.flock_osm_community_points
+        where evidence_tier='community_osm' and latitude between 17 and 72
+          and longitude between -180 and -64)>=90000 then
+   if (select count(*) from public.flock_osm_exact_snapshot_cache)<>1
+   then raise exception 'Expected one authenticated cached source snapshot';end if;
+ else
+   if exists (select 1 from public.flock_osm_exact_snapshot_cache)
+   then raise exception 'Incomplete community sources cannot populate public cache';end if;
+ end if;
+ if pg_get_functiondef('public.flock_public_osm_exact_render_snapshot()'::regprocedure)
+    ilike '%string_agg%'
+ then raise exception 'Public OSM reader still recomputes 116k coordinates per visit';end if;
  select point_count,source_snapshot_date,coordinates_base64
  into n,stamp,payload from public.flock_public_osm_exact_render_snapshot();
  select count(*) into source_n from public.flock_osm_community_points
