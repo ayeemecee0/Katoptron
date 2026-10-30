@@ -37,8 +37,8 @@ try{
   policy.changes.length!==10||policy.count_distinct_document_pairs!==1||
   policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6||alternateReceipts.receipts.length!==6||alternateReceipts.original_held_recovered!==0||requests.requests.length!==6||approvals.items.length!==10||approvals.independent_editor_approved!==0||priorities.current_monitored_unique_urls!==134||
   historicalSnapshot.original_historical_count!==19||historicalSnapshot.cases.length!==19||
-  historicalSnapshot.original_historical_recovered!==4||
-  historicalSnapshot.original_historical_held!==15||
+  historicalSnapshot.original_historical_recovered!==12||
+  historicalSnapshot.original_historical_held!==7||
   historicalLeads.research_leads.length!==8||
   historicalLeads.number_of_editorially_approved_new_source_version_differences!==0)
 
