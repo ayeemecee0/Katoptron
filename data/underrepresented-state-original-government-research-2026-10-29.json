@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "review_on": "2026-10-29",
-  "scope": "three_original_government_documents_in_two_underrepresented_states_no_vendor_claims_misclassified_as_adopted_technology",
+  "scope": "one_RI_original_government_document_actually_retrieved_two_CT_government_pdfs_held_in_editorial_backlog_without_false_monitor_coverage",
   "government_originals": [
     {
       "id": "underrepresented-ct-01",
@@ -14,7 +14,11 @@
       "grounded_finding": "Flock's government-filed testimony explains proposed or existing audit logging functionality and the distinction between network searches and result-producing queries.",
       "unknown": "Agency-wide adoption, effectiveness of audits, and third-party claims cannot be established from vendor testimony alone.",
       "next_step": "Compare the vendor assertion with adopted government agency records and published audit methods; do not publish individual search data.",
-      "no_adoption_inferred": true
+      "no_adoption_inferred": true,
+      "monitor_eligible": false,
+      "observed_original_status": "held_timeout_or_network",
+      "monitor_evidence_run": 41003911570,
+      "editorial_hold_reason": "Original government PDF metadata and text indexed, but direct bounded fetch to publisher times out from monitor; do not count as reliably acquired until retrieval succeeds"
     },
     {
       "id": "underrepresented-ct-02",
@@ -27,7 +31,11 @@
       "grounded_finding": "A Connecticut Freedom of Information Commission-related submission discusses the public-records and sharing implications of proposed HB 5552 ALPR rules.",
       "unknown": "Testimony is a stakeholder position, not enacted bill text or proof of individual incidents.",
       "next_step": "Compare sponsor bill text, committee actions, signed public law and government implementation guidance.",
-      "no_adoption_inferred": true
+      "no_adoption_inferred": true,
+      "monitor_eligible": false,
+      "observed_original_status": "held_timeout_or_network",
+      "monitor_evidence_run": 41003911570,
+      "editorial_hold_reason": "Original government PDF metadata and text indexed, but direct bounded fetch to publisher times out from monitor; do not count as reliably acquired until retrieval succeeds"
     },
     {
       "id": "underrepresented-ri-01",
@@ -40,11 +48,16 @@
       "grounded_finding": "The Secretary of State's official registration lists Flock Group Inc. dba Flock Safety among 2025 lobbying clients with reported lobbyist contracts.",
       "unknown": "Lobbying registration is not a state, city or police procurement contract, camera deployment or grant payment.",
       "next_step": "Match lobbying filings against officially reported state legislation and enacted agency procurement decisions; preserve reported periods.",
-      "no_adoption_inferred": true
+      "no_adoption_inferred": true,
+      "monitor_eligible": true,
+      "observed_original_status": "original_government_html_accessible",
+      "monitor_evidence_run": 41003911570
     }
   ],
-  "qualified_source_claims": 3,
+  "qualified_source_claims": 1,
   "confirmed_government_operational_installations": 0,
   "confirmed_adopted_laws_from_testimony": 0,
-  "documented_usable_investigative_tasks": 3
+  "documented_usable_investigative_tasks": 3,
+  "verified_original_documents_monitored": 1,
+  "pending_original_documents": 2
 }
