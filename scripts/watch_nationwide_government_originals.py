@@ -328,6 +328,16 @@ def fetch(src):
      loc=exc.headers.get("Location","")
      target=urllib.parse.urljoin(url,loc) if loc else ""
      if target==url or not trusted_redirect(src,url,target):
+      # Only the 2021 New York MPTC model policy may be retried using
+      # the exact original file path at the same issuer's HTTPS apex host.
+      # This is a direct original government file request, not a redirect to a new edition.
+      if (src["id"]=="ny-state-model-policy-not-agency-adoption" and url==initial):
+       parsed=urllib.parse.urlsplit(initial)
+       canonical="https://criminaljustice.ny.gov"+parsed.path
+       if parsed.query:canonical+="?"+parsed.query
+       if canonical!=url and trusted_redirect(src,url,canonical):
+        url=canonical
+        break
       candidate=target if exact(target) else None
       raise SourceTransportError("original_redirect",http_status=exc.code,redirect_location=candidate) from None
      url=target
@@ -448,6 +458,12 @@ def inspect(src,fetcher=fetch,capture_dir=None):
    pdf=PdfReader(io.BytesIO(raw),strict=src["id"]!="mi-state-procurement-meeting-minutes")
    if pdf.is_encrypted or not 1<=len(pdf.pages)<=MAX_PAGES:raise ValueError("invalid_pdf")
    record["pdf_pages"]=len(pdf.pages)
+   # Verify the exact New York 2021 LPR *model* policy file path did not
+   # accidentally resolve to an unrelated policy, HTML WAF page, or 2022 revision.
+   if src["id"]=="ny-state-model-policy-not-agency-adoption" and record["verified_same_publisher_redirect"]:
+    model_text=" ".join((page.extract_text() or "") for page in pdf.pages[:min(len(pdf.pages),8)]).casefold()
+    if not ("license plate reader" in model_text and "model policy" in model_text and "2021" in model_text):
+     raise ValueError("new_york_model_policy_document_identity_not_confirmed")
    # For a changed Nevada publisher PDF URL, match the same named grant document,
    # not an unrelated public attachment merely served by the same .gov authority.
    if src["id"]=="nv-county-alpr-grant-application-not-installation" and record["verified_same_publisher_redirect"]:
