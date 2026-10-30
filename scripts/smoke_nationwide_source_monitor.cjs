@@ -20,6 +20,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   await page.locator('#states button').first().click();
   assert((await page.locator('#sourceDetails article').count())>0);
   assert.match(await page.locator('#sourceDetails').textContent(),/not independently verified|No archived retrieval/);
+  const leading=await page.goto(new URL('nationwide-research-leads.html',process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/').href,{waitUntil:'domcontentloaded',timeout:25000});
+  assert.equal(leading.status(),200);
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('3 independently reviewed original-source'),null,{timeout:15000});
+  assert.equal(await page.locator('#leads article').count(),3);
+  const urls=await page.locator('#leads a').evaluateAll(all=>all.map(x=>x.href));
+  assert(urls.every(x=>x.startsWith('https://')));
+  assert.match(await page.locator('#leads').textContent(),/unresolved|Unresolved/i);
   assert.deepEqual(errors,[]);
   console.log('NATIONWIDE_SOURCE_MONITOR_BROWSER_PASS: 51 rows, 59 curated URLs, archived vs unobserved sources, no false statewide coverage');
  }catch(e){
