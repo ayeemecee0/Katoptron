@@ -77,7 +77,7 @@ comment on function public.flock_public_osm_exact_render_snapshot()
 
 -- Seed only when an authenticated complete source exists. Fresh/CI databases
 -- have no imported OSM rows, and must never publish an empty pseudo-snapshot.
-do $
+do $seed$
 begin
  if (select count(*) from public.flock_osm_community_points
      where evidence_tier='community_osm'
@@ -85,4 +85,4 @@ begin
      between 90000 and 200000 then
    perform public.katoptron_refresh_osm_exact_snapshot_cache();
  end if;
-end $;
+end $seed$;
