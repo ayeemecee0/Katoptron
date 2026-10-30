@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const V=require('../government-source-docket.js');
 const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/qualified-original-government-docket-2026-10-29.json')));
 const result=V.build(raw);
-assert.equal(result.rows.length,51);
+assert.equal(result.rows.length,53);
 assert.equal(result.states.length,19);
 assert.equal(result.issuers.length,46);
 assert.equal(result.agencies.length,45);
@@ -73,6 +73,16 @@ assert.match(filing.status,/not_operational_verification/);
 const allentown=result.get('allentown-pa-ipvm-15-8653');
 assert.equal(allentown.amount_usd,10000);
 assert.match(allentown.amount_basis,/NOT a Flock vendor agreement/);
+for (const id of ['houston-tx-flock-contract-ceiling-amendment-agenda-2022','louisville-ky-district20-flock-camera-fund-allocation-2026']){
+ const s=result.get(id);assert.ok(s,'Missing reviewed pilot record '+id);
+ assert.equal(s.watch_category,'historical_research_only');
+ assert.equal(s.flock_specific,true);
+ assert.ok(s.open_questions.length>=2);
+ assert.ok(!('latitude' in s)&&!('longitude' in s));
+}
+assert.equal(result.get('louisville-ky-district20-flock-camera-fund-allocation-2026').amount_usd,6650);
+assert.match(result.get('louisville-ky-district20-flock-camera-fund-allocation-2026').amount_basis,/NOT audited payment/);
+
 const grand=result.get('south-san-francisco-ca-grand-jury-response-26-2219');
 assert.match(grand.summary,/audit data were not archived/);
 assert.match(grand.status,/not_final_adoption_verified/);
@@ -106,4 +116,4 @@ assert.match(html,/government-source-docket\.js/);
 assert.match(html,/renderExactGovSources\(group\.key\)/);
 const page=fs.readFileSync(path.join(__dirname,'../government-evidence.html'),'utf8');
 assert.match(page,/qualified-original-government-docket-2026-10-29\.json/);
-console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 51 original issuer records, 45 exact locality profiles, 19 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
+console.log('GOVERNMENT_SOURCE_DOCKET_PASS: 53 original issuer records, 45 exact locality profiles, 19 states, historical-vs-adoption boundaries, protected ALPR GPS and email-event boundaries.');
