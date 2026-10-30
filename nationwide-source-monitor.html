@@ -1,0 +1,110 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Katoptron | Nationwide original-source monitoring health</title>
+<meta name="description" content="Government original-source monitoring and documented evidence gaps for all 50 US states and Washington, DC. No statewide Flock coverage claimed.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font:15px/1.6 system-ui,Arial,sans-serif;color-scheme:dark;background:#0a1721;color:#eaf3f7}
+*{box-sizing:border-box}body{margin:0}header{display:flex;gap:1.2rem;flex-wrap:wrap;padding:1rem max(1rem,4vw);background:#142b39;border-bottom:1px solid #45677b}
+a{color:#9fdfed;overflow-wrap:anywhere}main{max-width:1200px;margin:0 auto;padding:1.5rem 1rem 5rem}h1{font-size:clamp(1.8rem,4vw,2.5rem);margin:.5rem 0}
+h2{font-size:1.3rem}.note{background:#183646;border-left:4px solid #8bc7d8;padding:1rem}
+.row{display:flex;flex-wrap:wrap;gap:1rem}.metric{flex:1;min-width:135px;border:1px solid #45697a;border-radius:9px;padding:1rem;background:#142d3b}
+.metric strong{display:block;font-size:1.8rem}.metric span{font-size:.85rem;color:#c2d6e0}
+input{font:inherit;color:inherit;background:#1b3a4a;border:1px solid #7799ab;border-radius:6px;padding:.6rem;width:min(390px,100%)}
+input:focus-visible,a:focus-visible{outline:3px solid white;outline-offset:3px}
+.tableWrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:680px}th,td{text-align:left;padding:.65rem .6rem;border-bottom:1px solid #416070}th{position:sticky;top:0;background:#1b3b4b}
+td.num{text-align:right}button{font:inherit;background:#23536b;color:inherit;border:1px solid #659fb0;padding:.4rem .65rem;border-radius:5px;cursor:pointer}
+.details{background:#142d3c;border:1px solid #466b7e;padding:1rem;border-radius:9px;margin:.8rem 0}.muted{color:#b9cfd9}[hidden]{display:none!important}
+</style></head><body><a href="#main" class="skip-link">Skip to source coverage</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./nationwide-policy.html">National research inventory</a><a href="./professional-intelligence.html">Professional intelligence</a><a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/watch_nationwide_government_originals.yml" rel="noopener noreferrer">Latest monitoring runs</a></header>
+<main id="main"><h1>50-state original-government monitoring health</h1>
+<p class="note"><strong>Original-source monitoring is not 50-state Flock verification.</strong> This operational index covers all 50 states and D.C. and their currently curated government publisher URLs. It does not represent all agencies, contracts, policies, camera locations or access arrangements in any state. A held source is unknown, never evidence of no deployment.</p>
+<p id="status" role="status" aria-live="polite">Validating historical source-monitoring baseline…</p>
+<p class="muted">The matrix below shows the <strong>archived source-health baseline</strong>, dated <span id="baselineDate">unknown</span>. The daily scheduled watcher produces newer, separately downloadable receipt and change reports in <a href="https://github.com/ayeemecee0/Katoptron/actions/workflows/watch_nationwide_government_originals.yml" rel="noopener noreferrer">GitHub Actions</a>. Those files do not automatically upgrade evidence or the archived baseline; consult the latest completed run for current reachability.</p>
+<div class="row" id="metrics"></div>
+<h2>Documented jurisdiction gaps</h2>
+<label for="filter">Filter state, source or gap</label>
+<input id="filter" placeholder="e.g. KY, unavailable, no archived receipt">
+<div class="tableWrap"><table><thead><tr><th>State</th><th>Curated original URLs</th><th>Accessible in archive</th><th>Held in archive</th><th>Not yet archived</th><th>Coverage limitation</th></tr></thead><tbody id="states"></tbody></table></div>
+<section id="details" aria-labelledby="sourceHeading"><h2 id="sourceHeading">Source details</h2><p class="muted">Select a state to inspect its original government URLs and latest archived receipt classifications.</p><div id="sourceDetails"></div></section>
+<p>All hash changes, first observations, unavailability and redirects are <strong>editorial review tasks</strong>. The daily job never publishes signed-contract assertions, enacted-policy status, live camera coordinates, personal plate reads, current data-sharing links or source-derived allegations.</p>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),el=(tag,txt)=>{const e=document.createElement(tag);if(txt!==undefined)e.textContent=String(txt);return e;};
+const STATES='AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC'.split(' ');
+let rows=[];
+function metric(label,value){const div=el('div');div.className='metric';div.append(el('strong',value),el('span',label));$('metrics').append(div)}
+function show(state){
+ const row=rows.find(x=>x.state===state);if(!row)return;
+ $('sourceHeading').textContent=row.name+' ('+state+') · archived original-source details';
+ $('sourceDetails').replaceChildren();
+ for(const s of row.sources){
+  const box=el('article');box.className='details';
+  box.append(el('strong',s.publisher),el('p','Source: '+s.id+' · '+s.status));
+  const a=el('a','Open original government publisher');a.href=s.url;a.rel='noopener noreferrer';a.target='_blank';box.append(a);
+  box.append(el('p',s.hasReceipt?'Historical retrieval only; document claims not independently verified.':
+   'No archived retrieval of this URL. Scheduled national monitoring should check the URL; consult its latest workflow artifact.'));
+  $('sourceDetails').append(box);
+ }
+}
+function display(){
+ $('states').replaceChildren();const q=$('filter').value.trim().toLowerCase();
+ for(const r of rows){
+  if(q&&!([r.name,r.state,r.gap,...r.sources.flatMap(s=>[s.publisher,s.id,s.status])].join(' ').toLowerCase().includes(q)))continue;
+  const tr=el('tr');
+  const button=el('button',r.name+' ('+r.state+')');button.type='button';button.addEventListener('click',()=>show(r.state));
+  const first=el('td');first.append(button);tr.append(first);
+  for(const v of [r.sources.length,r.accessible,r.held,r.pending]){const td=el('td',v);td.className='num';tr.append(td)}
+  tr.append(el('td',r.gap));$('states').append(tr);
+ }
+}
+$('filter').addEventListener('input',display);
+(async()=>{
+ try{
+  const docs=await Promise.all(['./data/nationwide-government-jurisdiction-registry.json',
+    './data/national-government-audit-source-portals.json',
+    './data/nationwide-original-government-source-receipts.json'].map(async url=>{
+      const res=await fetch(url,{cache:'no-store',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(16000)});
+      if(!res.ok)throw Error('Source registry unavailable HTTP '+res.status);return res.json();
+    }));
+  const [registry,legacy,baseline]=docs;
+  if(registry.schema_version!==1||legacy.schema_version!==1||baseline.schema_version!==1||
+    !Array.isArray(registry.jurisdictions)||registry.jurisdictions.length!==51||
+    !Array.isArray(registry.official_seed_sources)||registry.official_seed_sources.length!==45||
+    !Array.isArray(legacy.sources)||legacy.sources.length!==14||
+    !Array.isArray(baseline.receipts)||baseline.receipts.length!==43)
+    throw Error('Original-government source ledger structure changed; review publication');
+  const receipts=new Map(baseline.receipts.map(r=>[r.source_id,r]));
+  if(receipts.size!==baseline.receipts.length)throw Error('Duplicate archived source');
+  rows=registry.jurisdictions.map(state=>{
+   const candidates=[...registry.official_seed_sources.filter(s=>s.state===state.state).map(s=>({id:s.id,publisher:s.publisher,url:s.source_url})),
+    ...legacy.sources.filter(s=>s.state===state.state).map(s=>({id:'legacy-'+s.id,publisher:s.agency,url:s.url}))];
+   if(!candidates.length)throw Error('A state has no monitored government publisher');
+   const sources=candidates.map(s=>{
+    const rec=receipts.get(s.id);
+    if(rec&&(rec.state!==state.state||rec.source_url!==s.url))throw Error('Archived original provenance changed');
+    return {...s,status:rec?.status||'no_archived_observation',hasReceipt:!!rec};
+   });
+   const accessible=sources.filter(s=>s.status.startsWith('original_government_')).length;
+   const held=sources.filter(s=>s.status.startsWith('held_')).length;
+   const pending=sources.filter(s=>!s.hasReceipt).length;
+   const gap=accessible===0?'No accessible original in archived observations':
+     held?'Some monitored sources held; statewide evidence incomplete':
+     pending?'New or legacy original requires first observation; statewide evidence incomplete':
+     'Curated sources accessible in archive; statewide agency coverage unverified';
+   return {...state,sources,accessible,held,pending,gap};
+  });
+  if(new Set(rows.map(s=>s.state)).size!==51||
+    rows.reduce((a,r)=>a+r.sources.length,0)!==59)throw Error('National original sources incomplete');
+  $('baselineDate').textContent=baseline.inspected_on;
+  metric('U.S. states and D.C. enrolled',51);
+  metric('Curated original-government URLs',59);
+  metric('Accessible in archived observations',rows.reduce((n,r)=>n+r.accessible,0));
+  metric('Held in archived observations',rows.reduce((n,r)=>n+r.held,0));
+  metric('Awaiting first archived receipt',rows.reduce((n,r)=>n+r.pending,0));
+  metric('Complete statewide agency inventories',0);
+  $('status').textContent='Verified 51-state source registry and 59 publisher URLs. These are historical monitoring observations, not verified Flock programs.';
+  display();
+ }catch(e){$('status').textContent='Source-health verification failed: '+e.message+'. No statewide conclusions can be drawn.';$('states').replaceChildren()}
+})();
+</script></body></html>
