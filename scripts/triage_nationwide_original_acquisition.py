@@ -31,6 +31,7 @@ def existing_urls(registry,legacy,recovery,depth,reviewed,alternates=None,unders
     result={}
     for group in groups:
         for row in group:
+            if row.get('monitor_eligible') is False:continue
             url=row.get("source_url") or row.get("url")
             if not url:raise ValueError("Curated URL missing")
             url=allowed_link(url) or url
@@ -47,6 +48,7 @@ def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None
         {x.get("state") for x in states}!=all_states or len(all_states)!=51):
         raise ValueError("Complete 50-state/DC search receipt required")
     known=existing_urls(registry,legacy,recovery,depth,reviewed,alternates,underserved)
+    editorial_held_urls={x['source_url'] for x in (underserved or {}).get('government_originals',[]) if x.get('monitor_eligible') is False}
     per_state={code:sum(code==s for s in known.values()) for code in all_states}
     seen=set();queue=[];diagnostics=[]
     for state in states:
@@ -67,7 +69,7 @@ def prioritize(discovery,registry,legacy,recovery,depth,reviewed,alternates=None
                 hit.get("flock_equipment_confirmed") is not False or
                 hit.get("state_relevance_confirmed") is not False):
                 held+=1;continue
-            if url in seen or url in known:held+=1;continue
+            if url in seen or url in known or url in editorial_held_urls:held+=1;continue
             seen.add(url);accepted+=1
             # Priority measures acquisition need only, NOT newsworthiness or claim accuracy.
             score=(70 if per_state[code]==0 else 45 if per_state[code]==1 else 20)+(
