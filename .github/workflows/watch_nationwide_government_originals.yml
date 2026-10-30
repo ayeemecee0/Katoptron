@@ -130,6 +130,7 @@ jobs:
           path: |
             .katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json
             .katoptron-ci/historical-19-originals-retrieval-recovery.json
+            .katoptron-ci/historical-19-originals-recovery-continuity.json
             .katoptron-ci/nationwide-monitor-snapshot.json
             .katoptron-ci/nationwide-public-health.json
             .katoptron-ci/nationwide-documentary-difference-review.json
