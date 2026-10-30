@@ -40,7 +40,9 @@ def substantive(before,after,kind):
  a=paragraphs(before,kind);b=paragraphs(after,kind);out=[]
  for i in range(min(len(a),len(b),200)):
   earlier,later=a[i][1],b[i][1]
-  if earlier==later:continue
+  # Filter generated site timing markers. Raw checksums can differ even if the government-authored text does not.
+  dynamic=lambda t:re.sub(r"\bLoading Articles\s+\d+(?:\.\d+)?", "Loading Articles [runtime]",t)
+  if dynamic(earlier)==dynamic(later):continue
   opcodes=difflib.SequenceMatcher(None,earlier,later,autojunk=True).get_opcodes()
   candidates=[(x,y,z,w) for tag,x,y,z,w in opcodes if tag!="equal"]
   if not candidates:continue
@@ -48,7 +50,8 @@ def substantive(before,after,kind):
   out.append({"page":i+1,
    "before_excerpt":earlier[max(0,x-140):min(len(earlier),max(y,x+1)+180)],
    "after_excerpt":later[max(0,z-140):min(len(later),max(w,z+1)+180)],
-   "machine_text_difference_only":True,"human_review_required":True})
+   "machine_text_difference_only":True,"human_review_required":True,
+   "citation_kind":"pdf_page" if kind=="pdf" else "unpaginated_html_text_not_page_citation"})
   if len(out)>=12:break
  return out
 
@@ -87,7 +90,7 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
        hashlib.sha256(archive.read_bytes()).hexdigest()==previous_sha):
     try:
      candidate["machine_page_candidates"]=substantive(archive.read_bytes(),observed.read_bytes(),kind)
-     candidate["editorial_status"]="original_byte_pairs_verified_human_page_review_required"
+     candidate["editorial_status"]=("machine_text_difference_requires_editorial_check" if candidate["machine_page_candidates"] else "authenticated_byte_pair_no_substantive_text_difference_identified")
     except Exception:
      candidate["editorial_status"]="held_unreadable_original_pair"
    else:candidate["editorial_status"]="held_missing_authentic_prior_document_bytes"
@@ -101,7 +104,8 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
  return {"schema_version":1,"observed_on":snapshot.get("observed_on"),
    "source_bytes_verified_and_archived":saved,
    "source_hash_changes_checked":len(out),
-   "machine_differences_for_human_review":sum(x["editorial_status"]=="original_byte_pairs_verified_human_page_review_required" for x in out),
+   "authenticated_before_after_original_byte_pairs":sum(x["editorial_status"] in ("machine_text_difference_requires_editorial_check","authenticated_byte_pair_no_substantive_text_difference_identified") for x in out),
+   "machine_differences_for_human_review":sum(x["editorial_status"]=="machine_text_difference_requires_editorial_check" for x in out),
    "original_version_pairs":out,
    "automatic_editorial_approvals":0,"automatic_watch_emails":0,
    "caveat":"The diff engine preserves original publisher bytes and page hints. No machine diff alone establishes a contract or policy change."}
@@ -119,6 +123,6 @@ def main():
  a.out.parent.mkdir(parents=True,exist_ok=True)
  a.out.write_text(json.dumps(result,indent=2)+"\n",encoding="utf8")
  print("ORIGINAL_BYTES_ARCHIVAL",json.dumps({k:result[k] for k in (
-  "source_bytes_verified_and_archived","source_hash_changes_checked","machine_differences_for_human_review",
+  "source_bytes_verified_and_archived","source_hash_changes_checked","authenticated_before_after_original_byte_pairs","machine_differences_for_human_review",
   "automatic_editorial_approvals")},sort_keys=True))
 if __name__=="__main__":main()
