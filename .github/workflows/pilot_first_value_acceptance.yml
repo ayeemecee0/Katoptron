@@ -1,0 +1,70 @@
+name: Pilot immediate-value first-session acceptance
+on:
+  pull_request:
+    paths:
+      - 'pilot-dossiers.html'
+      - 'pilot-dossiers.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'government-source-docket.js'
+      - 'research-workspace.html'
+      - 'research-workspace.js'
+      - 'research-templates.js'
+      - 'scripts/test_pilot_dossiers.cjs'
+      - 'scripts/smoke_pilot_first_value.cjs'
+      - 'scripts/pilot_test_supabase_mock.js'
+      - '.github/workflows/pilot_first_value_acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilot-dossiers.html'
+      - 'pilot-dossiers.js'
+      - 'data/qualified-original-government-docket-2026-10-29.json'
+      - 'government-source-docket.js'
+      - 'research-workspace.html'
+      - 'research-workspace.js'
+      - 'research-templates.js'
+      - 'scripts/test_pilot_dossiers.cjs'
+      - 'scripts/smoke_pilot_first_value.cjs'
+      - 'scripts/pilot_test_supabase_mock.js'
+      - '.github/workflows/pilot_first_value_acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source-gated dossier payloads, notes and escaped printable briefs
+        run: |
+          node --check pilot-dossiers.js
+          node --check research-workspace.js
+          node --check scripts/smoke_pilot_first_value.cjs
+          node --check scripts/pilot_test_supabase_mock.js
+          node scripts/test_government_source_docket.cjs
+          node scripts/test_pilot_dossiers.cjs
+          node scripts/test_research_workspace.cjs
+          node scripts/test_research_pro_workflows.cjs
+  browser:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Playwright client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Serve public and private pages locally
+        run: python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/katoptron-pilot-first-value.log 2>&1 &
+      - name: Verify first source-linked result and complete private import/export
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: node scripts/smoke_pilot_first_value.cjs

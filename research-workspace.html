@@ -19,7 +19,7 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 @media print{header,.no-print,#signin,.panel:first-of-type{display:none}body,main,.panel{background:white;color:#111;border:0}}
 </style></head><body>
 <a href="#main" class="skip-link">Skip to workspace</a>
-<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a><a href="./surveillance-changes.html">Contract and policy comparisons</a><a href="./research-plans.html">Professional pilot plans</a></header>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./government-watch.html">Government Watch</a><a href="./government-evidence.html">Public original evidence</a><a href="./surveillance-changes.html">Contract and policy comparisons</a><a href="./pilot-dossiers.html">Original-source starting dossiers</a><a href="./research-plans.html">Professional pilot plans</a></header>
 <main id="main"><h1>Private research workspace</h1>
 <p class="muted">Save agency investigations, track records requests and due dates, attach government responses, collaborate by expiring invite links, and export case files. Public source evidence stays freely available. Workspace notes and attachments are private and require an authenticated account.</p>
 <p class="panel">Do not upload individual license-plate reads, private vehicle locations, driver data, account passwords or unredacted sensitive law-enforcement records. A government publication is not proof of current device operation or legal compliance.</p>
@@ -30,12 +30,12 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 </section>
 <section id="workspaceApp" hidden>
 <section class="panel no-print" aria-labelledby="pilotQuickstartHeading">
-<h2 id="pilotQuickstartHeading">Start a source-backed investigation</h2>
-<p>Choose one government agency with reviewed original evidence. Katoptron prepares a private case and editable request; it never sends requests automatically. Official statements are source-dated, not proof of current equipment or legal compliance.</p>
+<h2 id="pilotQuickstartHeading">Import an original-source starting dossier</h2>
+<p>Choose a reviewed government dossier, then import <strong>all</strong> its dated, cited findings and open questions into a private case together with an editable public-records request. Preview everything <a href="./pilot-dossiers.html">publicly without an account</a> first. No request is sent automatically.</p>
 <div class="row"><label>Government-source dossier<select id="pilotAgency"><option value="">Loading reviewed sources…</option></select></label>
 <label>Research workflow<select id="pilotRole"><option value="journalist">Journalist</option><option value="nonprofit">Nonprofit</option><option value="legal_researcher">Legal researcher</option></select></label>
-<button type="button" id="pilotStart">Create private investigation</button></div>
-<p id="pilotQuickstartStatus" class="muted" role="status" aria-live="polite">Only verified original government-source records appear in this quickstart. You can also create a custom case below.</p>
+<button type="button" id="pilotStart">Import original sources into a private case</button><a id="pilotPreviewLink" href="./pilot-dossiers.html">Preview selected original sources</a></div>
+<p id="pilotQuickstartStatus" class="muted" role="status" aria-live="polite">Only previously reviewed original-government source records are imported. Existing private research and manually created cases remain separate.</p>
 </section>
 <div class="row no-print"><strong id="account"></strong><button id="signout" type="button">Sign out</button></div>
 <div class="grid">
@@ -99,6 +99,7 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
 <script src="./government-source-docket.js"></script>
+<script src="./pilot-dossiers.js"></script>
 <script src="./research-templates.js"></script>
 <script src="./research-workspace.js"></script>
 </body></html>

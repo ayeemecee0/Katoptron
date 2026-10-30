@@ -1,0 +1,93 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>Katoptron | Original-source research starting dossiers</title>
+<meta name="description" content="Start with original government records, source-dated findings and unresolved questions. Read without an account; privately save only after authentication.">
+<link rel="stylesheet" href="./a11y.css">
+<style>
+:root{font-family:system-ui,Arial,sans-serif;color-scheme:dark;color:#eaf3f8;background:#09151f}
+*{box-sizing:border-box}body{margin:0;line-height:1.55}a{color:#9adfeb}header{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;padding:1rem max(1rem,4vw);background:#132734;border-bottom:1px solid #425f70}
+header>a:first-child{font-weight:800;color:#eaf3f8;text-decoration:none;letter-spacing:.1em}
+main{max-width:1150px;margin:auto;padding:1.3rem 1rem 4rem}h1{font-size:clamp(1.7rem,4vw,2.5rem)}h2{font-size:1.3rem}h3{font-size:1.1rem}
+p,small{color:#c7d7e1}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:.85rem}
+.panel,.card{background:#142b3a;border:1px solid #426375;border-radius:9px;padding:1rem;margin:1rem 0;overflow-wrap:anywhere}
+.card{margin:0}.card h2{font-size:1.1rem;margin:.2rem 0}.muted{font-size:.85rem;color:#b7cedc}
+.notice{border-left:4px solid #93cedb;padding:.8rem 1rem;background:#203746}
+.row{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+button,.button{display:inline-block;font:inherit;cursor:pointer;background:#b6e8ef;border:1px solid #b6e8ef;border-radius:6px;color:#13202a;padding:.65rem .9rem;text-decoration:none;font-weight:700}
+button:hover,.button:hover{background:#e2f9fc}.button.secondary{background:#1d3c4c;color:#eaf3f8}
+button:focus-visible,a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#sourceList article{border-top:1px solid #456678;padding:.85rem 0}#sourceList article:first-child{border:0}
+#sourceList strong,#sourceList small{display:block}#questions li{margin:.45rem 0}
+[hidden]{display:none!important}@media print{header,.no-print,#catalog,.notice{display:none!important}body,main,.panel{color:#111;background:#fff;border:0}#sourceList article{break-inside:avoid}a{color:#111}}
+</style></head><body><a class="skip-link" href="#main">Skip to evidence</a>
+<header><a href="./index.html">KATOPTRON</a><a href="./agency-xray.html">Agency X-Ray</a><a href="./surveillance-changes.html">Government changes</a><a href="./research-workspace.html">Private research cases</a></header>
+<main id="main"><h1>Start with original government evidence</h1>
+<p>Eight curated starting points for journalists, legal researchers and oversight organizations. Every finding is dated, attributed to its government publisher and paired with unresolved questions. Read the sources <strong>without signing in</strong>. A private account is needed only to save an investigation.</p>
+<p class="notice">These records are historical or source-attributed government disclosures, not an independent confirmation of camera operation, a signed procurement document, actual expenditure or an enacted policy. Review every original before publishing. Missing evidence means <strong>unknown</strong>, not zero.</p>
+<p id="loadStatus" role="status" aria-live="polite">Validating original government research records…</p>
+<section id="catalog" class="no-print" aria-labelledby="catalogHeading"><h2 id="catalogHeading">Choose your research area</h2><div id="dossierList" class="grid"></div></section>
+<section id="detail" hidden class="panel" aria-labelledby="dossierTitle">
+<p class="muted" id="dossierAudience"></p><h2 id="dossierTitle"></h2><p id="focus"></p>
+<p class="muted" id="provenance"></p>
+<div class="row no-print"><a class="button" id="importLink" href="./research-workspace.html">Save a sourced private investigation</a><button type="button" id="downloadBrief">Download complete evidence brief (HTML)</button><button type="button" class="button secondary" id="printBrief">Print / Save PDF</button></div>
+<p class="muted no-print">Saving requires a confirmed account. Source-cited notes and an editable records-request draft are created in your private workspace. Nothing is sent to an agency.</p>
+<h3>Original-government findings</h3><div id="sourceList"></div>
+<h3>Unresolved questions</h3><ol id="questions"></ol>
+<p class="muted">A proposal, rejected ordinance, procurement request or government statement is not automatically an executed contract or verified current camera system. Use the original source and its date to assess each claim.</p>
+</section>
+</main>
+<script src="./government-source-docket.js"></script>
+<script src="./pilot-dossiers.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const elem=(tag,txt)=>{const a=document.createElement(tag);if(txt!==undefined)a.textContent=String(txt);return a};
+let chosen=null, compiledOn=null;
+function sourceLink(url){
+ const a=elem('a','Inspect original government document');a.href=url;a.rel='noopener noreferrer';a.target='_blank';return a;
+}
+function show(d){
+ chosen=d;
+ const u=new URL(window.location.href);u.searchParams.set('dossier',d.id);history.replaceState(null,'',u);
+ $('detail').hidden=false;$('dossierTitle').textContent=d.title;$('dossierAudience').textContent=d.audience;
+ $('focus').textContent='Research focus: '+d.focus;
+ $('provenance').textContent=d.records.length+' individually reviewed original-government source record(s). Index compiled '+compiledOn+'. No current-use verification is implied.';
+ const dest=new URL('./research-workspace.html',window.location.href);dest.searchParams.set('dossier',d.id);
+ $('importLink').href=dest.href;
+ $('sourceList').replaceChildren();
+ for(const r of d.records){
+  const item=elem('article');item.append(elem('strong',r.title),
+   elem('small',r.source_date+' · '+r.provider+' · '+r.kind+' · '+r.status),
+   elem('p',r.summary),elem('p','Verification basis: '+r.proof));
+  if(r.amount_usd!==null)item.append(elem('p','Document amount $'+r.amount_usd+' · '+r.amount_basis));
+  item.append(sourceLink(r.source_url));$('sourceList').append(item);
+ }
+ $('questions').replaceChildren();
+ for(const q of d.questions)$('questions').append(elem('li',q));
+ $('loadStatus').textContent='Original-government dossier ready. No signup required to inspect the evidence.';
+}
+$('downloadBrief').addEventListener('click',()=>{
+ if(!chosen)return;
+ const html=window.KatoptronPilotDossiers.exportHtml(chosen,compiledOn);
+ const url=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+ const a=elem('a');a.download='katoptron-original-evidence-'+chosen.id+'.html';a.href=url;document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),15000);
+});
+$('printBrief').addEventListener('click',()=>window.print());
+(async()=>{
+ try{
+  const response=await fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'});
+  if(!response.ok)throw Error('Source index HTTP '+response.status);
+  const raw=await response.json(),docket=window.KatoptronGovernmentDocket.build(raw);
+  const all=window.KatoptronPilotDossiers.build(docket);
+  compiledOn=raw.compiled_on;
+  for(const d of all){
+   const card=elem('article');card.className='card';card.append(elem('h2',d.title),elem('p',d.focus),
+     elem('p',d.records.length+' source record(s) · '+d.questions.length+' unresolved questions'));
+   const button=elem('button','View original-source dossier');button.type='button';button.dataset.dossier=d.id;button.addEventListener('click',()=>show(d));
+   card.append(button);$('dossierList').append(card);
+  }
+  const requested=new URL(location.href).searchParams.get('dossier');
+  show(all.find(x=>x.id===requested)||all[0]);
+ }catch(error){$('loadStatus').textContent='Source evidence unavailable: '+error.message+'. No findings are displayed without validation.';$('detail').hidden=true;}
+})();
+</script></body></html>

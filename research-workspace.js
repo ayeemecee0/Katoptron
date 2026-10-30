@@ -58,7 +58,7 @@ async function start(win,U){
   const session=await sb.auth.getUser();
   if(session.error && session.error.name!=='AuthSessionMissingError')throw Error(session.error.message);
   user=session.data?.user||null;
-  if(!user){$('signin').hidden=false;$('workspaceApp').hidden=true;status('Sign in to access private investigations.');return;}
+  if(!user){$('signin').hidden=false;$('workspaceApp').hidden=true;status(new URL(win.location.href).searchParams.has('dossier')?'Preview selected. Sign in or create a confirmed account to import the source-backed private investigation.':'Sign in to access private investigations.');return;}
   if(!user.email_confirmed_at){$('signin').hidden=false;$('workspaceApp').hidden=true;status('Email confirmation required before using the research workspace.');return;}
   $('signin').hidden=true;$('workspaceApp').hidden=false;$('account').textContent=user.email||'Confirmed account';
   const token=new URL(win.location.href).searchParams.get('invite');
@@ -72,48 +72,83 @@ async function start(win,U){
   await loadWorkspaces();
   await loadPilotDossiers();
  }
- const quickstartKeys=new Set(['sacramento county|CA','woodland|CA','san diego|CA','houston|TX','pasadena|CA','new hanover county|NC','louisville|KY','los angeles|CA']);
- const pilotDossiers=new Map();
+ let curatedDossiers=new Map();
+ const dossierIdFromUrl=()=>new URL(win.location.href).searchParams.get('dossier');
+ const previewLink=()=>{const id=$('pilotAgency').value;const url=new URL('./pilot-dossiers.html',win.location.href);
+   if(id)url.searchParams.set('dossier',id);$('pilotPreviewLink').href=url.href;};
  async function loadPilotDossiers(){
-  if(pilotDossiers.size)return;
+  if(curatedDossiers.size)return;
   const select=$('pilotAgency');
   try{
    const response=await win.fetch('./data/qualified-original-government-docket-2026-10-29.json',{cache:'no-store'});
-   if(!response.ok)throw Error('Public original-government research index unavailable');
+   if(!response.ok)throw Error('Public original-government source index HTTP '+response.status);
    const raw=await response.json();
    const docket=win.KatoptronGovernmentDocket?.build(raw);
-   if(!docket)throw Error('Source verification library unavailable');
-   for(const key of quickstartKeys){
-    const records=docket.byLocality(key);
-    if(!records.length)continue;
-    pilotDossiers.set(key,records.find(row=>row.flock_specific && /Sheriff/i.test(row.agency))||records.find(row=>row.flock_specific)||records[0]);
-   }
-   select.replaceChildren(new Option('Choose a researched jurisdiction',''));
-   for(const [key,record] of pilotDossiers)select.append(new Option(record.agency+' · '+record.state+' ('+docket.byLocality(key).length+' sourced item(s))',key));
-   $('pilotQuickstartStatus').textContent='These dossiers contain historical original-government evidence and unresolved questions, not certified current operations.';
+   const all=win.KatoptronPilotDossiers?.build(docket);
+   if(!Array.isArray(all)||!all.length)throw Error('Curated government-source review unavailable');
+   curatedDossiers=new Map(all.map(d=>[d.id,d]));
+   select.replaceChildren(new Option('Choose a reviewed dossier',''));
+   for(const d of all)select.append(new Option(d.title+' · '+d.records.length+' source(s)',d.id));
+   const requested=dossierIdFromUrl();
+   if(requested&&curatedDossiers.has(requested))select.value=requested;
+   previewLink();
+   $('pilotQuickstartStatus').textContent=requested&&!curatedDossiers.has(requested)?
+     'Requested dossier is not reviewed. Select a validated original-government dossier.':
+     'Choose a dossier to import all vetted source notes into your private case. No government request is sent.';
   }catch(err){
-   select.replaceChildren(new Option('Source list unavailable — use manual case form',''));
-   $('pilotQuickstartStatus').textContent='Dossier lookup unavailable: '+err.message+'. Manual case creation remains available.';
+   select.replaceChildren(new Option('Source review unavailable — use manual case form',''));
+   $('pilotQuickstartStatus').textContent='Dossier unavailable: '+err.message+'. No unreviewed records can be imported.';
   }
  }
+ $('pilotAgency').addEventListener('change',previewLink);
  $('pilotStart').addEventListener('click',async()=>{
   const btn=$('pilotStart');if(btn.disabled)return;btn.disabled=true;
+  let created=null;
   try{
-   if(!user||!user.email_confirmed_at)throw Error('Sign in with a confirmed account');
-   const key=$('pilotAgency').value,record=pilotDossiers.get(key);
-   if(!record)throw Error('Select a source-verified agency from the list');
-   if(!selectedW){
+   if(!user||!user.email_confirmed_at)throw Error('A confirmed account is required for private cases');
+   const dossier=curatedDossiers.get($('pilotAgency').value);
+   if(!dossier)throw Error('Select a previously verified original-government dossier');
+   if(!selectedW||!writable()){
+    // A collaborator's viewer workspace must never receive an imported case.
     const w=unwrap(await sb.from('research_workspaces').insert({owner_id:user.id,title:'Pilot investigations'}).select('id').single());
     await loadWorkspaces();$('workspaceSelect').value=w.id;await chooseWorkspace();
    }
-   if(!writable())throw Error('Choose a workspace where you can create cases');
-   $('templateRole').value=$('pilotRole').value;
-   $('agencyKey').value=key;$('caseTitle').value=record.agency+' · original-source investigation';
-   $('noteSource').value=record.source_url;
-   $('templatePreview').click();
-   $('pilotQuickstartStatus').textContent='Saving a private source-linked case and editable request. The government document is a starting point, not independently verified current activity.';
-   $('createCase').requestSubmit();
-  }catch(err){btn.disabled=false;$('pilotQuickstartStatus').textContent='Case not started: '+err.message;}
+   if(!writable())throw Error('Private workspace editor authorization is required');
+   const template=win.KatoptronResearchTemplates?.draft($('pilotRole').value,
+    dossier.records[0].agency,dossier.records[0].source_url);
+   if(!template)throw Error('Verified research workflow unavailable');
+   const title=dossier.title+' · original-government source investigation';
+   created=unwrap(await sb.from('research_cases').insert({workspace_id:selectedW.id,created_by:user.id,
+    title,agency_key:dossier.key}).select('id').single());
+   try{
+    const notes=dossier.records.map(record=>({
+     case_id:created.id,author_id:user.id,
+     note:win.KatoptronPilotDossiers.recordNote(record),
+     source_url:record.source_url
+    }));
+    // Every source is persisted as a separately cited note under existing RLS.
+    const saved=unwrap(await sb.from('research_case_notes').insert(notes).select('id,source_url'));
+    if(saved.length!==notes.length||!notes.every(n=>saved.some(s=>s.source_url===n.source_url)))
+     throw Error('Not all source citations were saved');
+    unwrap(await sb.from('research_case_requests').insert({
+     case_id:created.id,created_by:user.id,subject:template.subject,
+     recipient:'',body:template.body,status:'draft'
+    }));
+   }catch(error){
+    // Roll back a partial import, never report an incomplete dossier as complete.
+    const rollback=await sb.from('research_cases').delete().eq('id',created.id).select('id');
+    if(rollback.error||rollback.data?.length!==1)
+     throw Error('Import incomplete. Partial private case '+created.id+' needs manual deletion: '+error.message);
+    created=null;throw Error('Import rejected and incomplete private case rolled back: '+error.message);
+   }
+   await chooseWorkspace();$('caseSelect').value=created.id;await chooseCase();
+   if(detail.notes.length!==dossier.records.length||detail.requests.length<1)
+    throw Error('Case saved but source verification readback is incomplete; inspect case before exporting');
+   $('pilotQuickstartStatus').textContent='Imported '+dossier.records.length+' source-cited government records and one editable request into this private case.';
+   status('Verified import: '+dossier.records.length+' dated original-government source notes and an unsent request. Recheck each citation before publication.');
+   $('caseDetail').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){msg(err);$('pilotQuickstartStatus').textContent=err.message;}
+  finally{btn.disabled=false;}
  });
  async function loadWorkspaces(){
   workspaces=unwrap(await sb.from('research_workspaces').select('id,owner_id,title,created_at').order('created_at',{ascending:false}).limit(100));
