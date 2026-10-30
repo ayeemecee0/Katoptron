@@ -148,11 +148,26 @@ function acquisition(lead,existing){
  return {custodian_role:'Agency records custodian / city clerk / procurement officer (confirm jurisdiction)',
   agency:custodian,questions,existing:related,body:content,subject:'Public government records follow-up: '+lead.title,submitted:false};
 }
+function assemblePackage(lead,docket){
+ if(!lead||!validUrl(lead.original_url)||!docket||!Array.isArray(docket.rows))throw Error('Verified original-government source index required');
+ const relevant=docket.rows.filter(r=>r.locality_key===lead.locality_key&&r.watch_category==='historical_research_only'&&validUrl(r.source_url));
+ const originals=new Map();
+ for(const row of lead.originals||[])if(validUrl(row.url))originals.set(row.url+'|'+row.date,{...row});
+ for(const r of relevant){
+  const key=r.source_url+'|'+r.source_date;
+  if(!originals.has(key))originals.set(key,{title:r.title,url:r.source_url,date:r.source_date,status:r.status,proof:r.proof,summary:r.summary});
+ }
+ const timeline=[...originals.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ return {...lead,originals:timeline,
+  unknown:[...new Set([...lead.unknown,...relevant.flatMap(r=>r.open_questions)])].slice(0,22),
+  steps:[...new Set([...lead.steps,
+   'Reconcile contract, policy, council and department sources by agency identity and publication date before inferring a change.'])]};
+}
 function packageHtml(lead,comparison,request){
  if(!lead||!validUrl(lead.original_url)||!Array.isArray(lead.originals)||!lead.originals.length)throw Error('Verified lead required');
  const refs=lead.originals.map((x,i)=>'<li><strong>['+(i+1)+'] '+esc(x.title)+'</strong> ('+esc(x.date)+
   ', '+esc(x.status)+') <a rel="noopener noreferrer" href="'+esc(x.url)+'">'+esc(x.url)+'</a>'+
-  '<p>Verification basis: '+esc(x.proof)+'</p></li>').join('');
+  '<p>Verification basis: '+esc(x.proof)+'</p>'+ (x.summary?'<p>Source-attributed government finding: '+esc(x.summary)+'</p>':'')+'</li>').join('');
  const related=(comparison||[]).filter(x=>x.locality_key===lead.locality_key).slice(0,7);
  const differences=related.map(x=>'<li><strong>'+esc(x.type)+'</strong>: '+esc(x.interpretation)+
   '<p>Source(s): '+x.original_refs.map(r=>'<a rel="noopener noreferrer" href="'+esc(r.url)+'">'+esc(r.title)+'</a>').join(' · ')+'</p></li>').join('');
@@ -170,5 +185,5 @@ function packageHtml(lead,comparison,request){
   '<h2>Unsent editable records request</h2><p>Suggested custodian: '+esc(request?.custodian_role||'Confirm appropriate records custodian')+'</p><pre>'+esc(request?.body||'')+'</pre>'+
   '<p>Katoptron does not file this request, provide legal advice, or guarantee that an unpublished document exists. This package contains only public-source material, no private case notes.</p></body></html>';
 }
-return Object.freeze({TOPICS,validUrl,topics,leadFromDocket,leadFromWatch,personalize,compare,crossAgency,acquisition,packageHtml});
+return Object.freeze({TOPICS,validUrl,topics,leadFromDocket,leadFromWatch,personalize,compare,crossAgency,acquisition,assemblePackage,packageHtml});
 });
