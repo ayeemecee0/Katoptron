@@ -18,8 +18,15 @@ begin
  if not (select relrowsecurity from pg_class
     where oid='public.flock_osm_exact_snapshot_cache'::regclass)
  then raise exception 'Cached coordinate snapshot lacks RLS';end if;
- if (select count(*) from public.flock_osm_exact_snapshot_cache)<>1
- then raise exception 'Expected one authenticated cached source snapshot';end if;
+ if (select count(*) from public.flock_osm_community_points
+        where evidence_tier='community_osm' and latitude between 17 and 72
+          and longitude between -180 and -64)>=90000 then
+   if (select count(*) from public.flock_osm_exact_snapshot_cache)<>1
+   then raise exception 'Expected one authenticated cached source snapshot';end if;
+ else
+   if exists (select 1 from public.flock_osm_exact_snapshot_cache)
+   then raise exception 'Incomplete community sources cannot populate public cache';end if;
+ end if;
  if pg_get_functiondef('public.flock_public_osm_exact_render_snapshot()'::regprocedure)
     ilike '%string_agg%'
  then raise exception 'Public OSM reader still recomputes 116k coordinates per visit';end if;
