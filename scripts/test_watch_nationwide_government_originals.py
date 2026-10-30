@@ -112,6 +112,17 @@ class StateSources(unittest.TestCase):
   self.assertFalse(M.trusted_redirect(src,original,"http://www.elgintexas.gov/a"))
   self.assertFalse(M.trusted_redirect(src,original,"https://www.elgintexas.gov/private"))
   self.assertFalse(M.trusted_redirect({"id":"reviewed-02-wi","source_url":original},original,archived))
+  nv_start="https://serc.nv.gov/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf"
+  nv_target="https://www.serc.nv.gov/siteassets/serc.nv.gov/content/meetings/2024/Douglas_County_-_UWS_Application_FY25.pdf"
+  nv_src={"id":"nv-county-alpr-grant-application-not-installation","source_url":nv_start}
+  self.assertTrue(M.trusted_redirect(nv_src,nv_start,nv_target))
+  self.assertFalse(M.trusted_redirect(nv_src,nv_start,nv_target.replace("Douglas_County","Clark_County")))
+  self.assertFalse(M.trusted_redirect({"id":"co-police-technology-disclosure"},nv_start,nv_target))
+  ny_old="https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/MPTC%20LPR%20Model%20Policy%202021.pdf"
+  ny_apex=ny_old.replace("https://www.","https://",1)
+  self.assertTrue(M.trusted_redirect({"id":"ny-state-model-policy-not-agency-adoption"},ny_old,ny_apex))
+  self.assertFalse(M.trusted_redirect({"id":"ny-state-model-policy-not-agency-adoption"},ny_old,ny_apex.replace("2021","2022")))
+
   self.assertTrue(M.trusted_redirect(src,"https://www.criminaljustice.ny.gov/a.pdf","https://criminaljustice.ny.gov/a.pdf"))
   sample=b"<html><body>Archived - Pausing City of Elgin FLOCK Safety Camera Program</body></html>"*3
   result=M.inspect({"id":"reviewed-23-tx","state":"TX","publisher":"City of Elgin","kind":"html","source_url":original},
