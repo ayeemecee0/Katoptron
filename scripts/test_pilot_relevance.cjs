@@ -61,8 +61,8 @@ assert(!share.includes('question=')&&!share.includes('@'));
 assert.throws(()=>P.sharePath('fake','san diego|CA'),/Invalid/);
 assert.throws(()=>P.sharePath('civil_liberties','none<script>|CA'),/Invalid/);
 const base=P.rank(docket,'technology','houston|TX')[0];
-const malicious={...base,records:[{...base.records[0],title:'<img src=x onerror=alert(1)>',
- summary:'<script>alert(1)</script>',proof:'" onclick="evil()'}]};
+const malicious={...base,records:base.records.map((record,i)=>i?record:{...record,title:'<img src=x onerror=alert(1)>',
+ summary:'<script>alert(1)</script>',proof:'" onclick="evil()'})};
 const escaped=P.pack(malicious);
 assert(!escaped.includes('<img'));assert(!escaped.includes('<script>alert(1)</script>'));
 assert(escaped.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
