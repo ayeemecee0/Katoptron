@@ -39,14 +39,21 @@ try{
   historicalSnapshot.original_historical_count!==19||historicalSnapshot.cases.length!==19||
   historicalSnapshot.original_historical_recovered!==12||
   historicalSnapshot.original_historical_held!==7||
+  historicalSnapshot.cumulative_authenticated_originals_across_two_runs!==13||
+  historicalSnapshot.latest_observed_full_run.accessible_historical!==11||
   historicalLeads.research_leads.length!==8||
   historicalLeads.number_of_editorially_approved_new_source_version_differences!==0)
 
   throw Error('Evidence inventory incomplete or changed without review');
- $('summary').textContent='14 original-issuer research opportunities from the initial docket · '+historicalSnapshot.original_historical_recovered+' of 19 original historical URLs recovered as of '+historicalSnapshot.verified_at.slice(0,10)+' · '+historicalLeads.research_leads.length+' additional source-attributed research leads · 0 new independent source-version approvals';
- $('historicalRecoverySummary').textContent='Historical verification '+historicalSnapshot.verified_at.slice(0,10)+': '+historicalSnapshot.original_historical_recovered+' recovered, '+historicalSnapshot.original_historical_held+' held. '+historicalSnapshot.accessible_urls_at_observation+'/'+historicalSnapshot.monitored_urls_at_observation+' overall original URL retrievals accessible in that snapshot.';
+ $('summary').textContent='14 original-issuer research opportunities from the initial docket · '+historicalSnapshot.original_historical_recovered+' of 19 original historical URLs reachable in the peak '+historicalSnapshot.verified_at.slice(0,10)+' run (13 ever verified across runs)'+' · '+historicalLeads.research_leads.length+' additional source-attributed research leads · 0 new independent source-version approvals';
+ $('historicalRecoverySummary').textContent='Across two authentic original-source runs: '+historicalSnapshot.cumulative_authenticated_originals_across_two_runs+'/19 historical source PDFs/pages ever SHA-256 verified, '+historicalSnapshot.cumulative_never_authenticated_originals_across_two_runs+' never authenticated. Peak single run '+historicalSnapshot.original_historical_recovered+'/19, latest separate run '+historicalSnapshot.latest_observed_full_run.accessible_historical+'/19. Historical byte availability is not a current-access guarantee.';
  const latestRun=el($('historicalRecoveryItems'),'p');
- src(latestRun,historicalSnapshot.source_run,'Inspect the exact government-source retrieval CI run and hashes');
+ src(latestRun,historicalSnapshot.source_run,'Inspect peak complete-run source hashes');
+ const recentRun=el($('historicalRecoveryItems'),'p');
+ src(recentRun,historicalSnapshot.latest_observed_full_run.url,'Inspect later Nevada issuer PDF and 11 live recoveries');
+ const nv=el($('historicalRecoveryItems'),'p','Nevada Douglas County original PDF recovered in the later run: 31 pages; SHA-256 '+historicalSnapshot.additional_publisher_authentication.sha256+'.');
+ const x=el($('historicalRecoveryItems'),'p');
+ src(x,historicalSnapshot.additional_publisher_authentication.run,'Verify Nevada publisher PDF retrieval');
  for(const item of historicalSnapshot.cases){
   const d=el($('historicalRecoveryItems'),'details');
   el(d,'summary',item.state+' · '+item.source_id+' · '+(item.verified_original_bytes?'Original retrieved':'Not yet retrieved'));
