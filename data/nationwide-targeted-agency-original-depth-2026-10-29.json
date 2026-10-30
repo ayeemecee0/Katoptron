@@ -156,6 +156,20 @@
       "source_bytes_archived": false,
       "individual_contract_status_verified": false,
       "government_evidence_limit": "This publisher URL is a source to review. Flock installation, payments, adopted effective law, document version differences and wrongdoing cannot be inferred from URL reachability alone."
+    },
+    {
+      "id": "pa-office-open-records-alpr-appeal-2026",
+      "state": "PA",
+      "publisher": "Pennsylvania Office of Open Records",
+      "locality_key": "erie|PA",
+      "source_url": "https://www.openrecords.pa.gov/Appeals/DocketGetFile.cfm?id=271249",
+      "kind": "pdf",
+      "source_role": "official_right_to_know_final_determination_about_ALPR_contract_record_requests_not_deployment_proof",
+      "origin_role": "original_government_publisher_metadata_secondary_source",
+      "government_source_confirmed_by_public_publisher_page": true,
+      "source_bytes_archived": false,
+      "individual_contract_status_verified": false,
+      "government_evidence_limit": "State adjudicative original relates to an ALPR records request; not proof of executed vendor contract, operational cameras, policy enactment or court finding of misconduct."
     }
   ]
 }
