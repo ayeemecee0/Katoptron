@@ -23,10 +23,10 @@ try{
   get('nationwide-19-held-original-government-source-recovery-2026-10-29.json'),
   get('current-source-version-hash-review-workplan-2026-10-29.json')]);
  if(sources.schema_version!==1||sources.sources.length!==14||
-  held.resolutions.length!==19||diffs.sources.length!==34||
+  held.resolutions.length!==19||diffs.sources.length!==39||
   diffs.approved_substantive_document_version_differences!==0)
   throw Error('Evidence inventory incomplete or changed without review');
- $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 34 hash-change candidates · 0 approved prior/new source-version wording differences';
+ $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 39 authenticated source-byte pairs · 0 approved prior/new source-version wording differences';
  function showLeads(){
   const q=$('searchLeads').value.trim().toLowerCase();
   $('leadCards').replaceChildren();
