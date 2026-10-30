@@ -73,8 +73,8 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
   new_sha=row.get("current_observation_sha256")
   previous_sha=row.get("previous_usable_sha256")
   if row.get("status","").startswith("original_"):
-   if not SHA.fullmatch(str(new_sha)) or not observed.is_file() or
-      hashlib.sha256(observed.read_bytes()).hexdigest()!=new_sha:
+   if (not SHA.fullmatch(str(new_sha)) or not observed.is_file() or
+      hashlib.sha256(observed.read_bytes()).hexdigest()!=new_sha):
     raise ValueError("Source bytes failed receipt-hash verification")
   if row.get("change")=="source_bytes_changed_review_required":
    candidate={"source_id":sid,"state":row.get("state"),"government_source_url":row.get("source_url"),
