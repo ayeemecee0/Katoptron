@@ -104,7 +104,7 @@
       "state": "IA",
       "monitor_status": "held_wrong_format",
       "verified_alternative_url": "https://www.iowacourts.gov/courtcases/24589/embed/CourtAppealsOpinion",
-      "disposition": "Original court opinion readable as indexed web text; monitor expects PDF and rejects actual format",
+      "disposition": "Original court opinion independently readable via official court web index; monitor received content not matching the expected HTML document format, so automated capture remains held.",
       "monitor_recovered": false,
       "source_identity_not_deleted": true,
       "status": "alternate_government_evidence_located_manual_review_required"
