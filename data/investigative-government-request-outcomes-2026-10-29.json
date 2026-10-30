@@ -41,29 +41,36 @@
       "lead_id": "roseville-mn-alpr-independent-audit",
       "agency": "Roseville Police Department, MN",
       "requested_records": "Independent ALPR audit response, subsequent policy and aggregate retention tests",
-      "status": "sent",
+      "status": "acknowledged",
       "sent_date": "2026-10-29",
-      "government_acknowledgment_received": false,
+      "government_acknowledgment_received": true,
       "records_received": false,
       "resolution_verified": false,
       "source_citations_required_for_any_future_claim": true,
       "private_message_id": "not_published",
       "followup_needed": "Check separately received government correspondence before advancing status",
-      "research_time_saved_minutes": null
+      "research_time_saved_minutes": null,
+      "acknowledgment_kind": "automatic_email_reply",
+      "acknowledgment_recorded_on": "2026-10-29",
+      "acknowledgment_summary": "Roseville Police Records confirms request received and says processing can take up to ten business days; no documents supplied."
     },
     {
       "lead_id": "texas-comptroller-alpr-grants-ban",
       "agency": "Texas Comptroller of Public Accounts",
       "requested_records": "October 2026 signed order, covered grant program list and final implementation guidance",
-      "status": "sent",
+      "status": "acknowledged",
       "sent_date": "2026-10-29",
-      "government_acknowledgment_received": false,
+      "government_acknowledgment_received": true,
       "records_received": false,
       "resolution_verified": false,
       "source_citations_required_for_any_future_claim": true,
       "private_message_id": "not_published",
       "followup_needed": "Check separately received government correspondence before advancing status",
-      "research_time_saved_minutes": null
+      "research_time_saved_minutes": null,
+      "acknowledgment_kind": "open_records_office_received_notice",
+      "acknowledgment_recorded_on": "2026-10-29",
+      "acknowledgment_summary": "Texas Comptroller Open Records confirms receipt, expects status contact within ten business days and names CRRS portal for document retrieval; no records supplied.",
+      "official_portal": "https://crrs.cpa.texas.gov/auth/login"
     },
     {
       "lead_id": "los-altos-hills-termination-jan2026",
@@ -94,5 +101,11 @@
       "research_time_saved_minutes": null
     }
   ],
-  "public_disclosure_note": "No private email addresses, draft bodies, Gmail message IDs, protected plate data or subject identities published in this repository."
+  "public_disclosure_note": "No private email addresses, draft bodies, Gmail message IDs, protected plate data or subject identities published in this repository.",
+  "request_counts": {
+    "submitted": 6,
+    "acknowledged": 2,
+    "responses_with_original_documents": 0,
+    "independently_completed": 0
+  }
 }
