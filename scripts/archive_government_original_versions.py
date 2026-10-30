@@ -17,6 +17,10 @@ OUT=ROOT/".katoptron-ci/nationwide-before-after-document-candidates.json"
 VALID_ID=re.compile(r"^[a-z0-9_-]{7,120}$")
 SHA=re.compile(r"^[a-f0-9]{64}$")
 
+def pair_id(source_id,before_sha,after_sha):
+ """Stable identity across outages or a source reverting to prior bytes."""
+ return hashlib.sha256((source_id+"\x00"+before_sha+"\x00"+after_sha).encode("utf8")).hexdigest()
+
 class Plain(HTMLParser):
  def __init__(self):super().__init__();self.parts=[];self.ignore=0
  def handle_starttag(self,tag,attrs):
@@ -71,7 +75,9 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
  old=json.loads(manifest_path.read_text()) if manifest_path.exists() else {"sources":{}}
  if old.get("schema_version",1)!=1 or not isinstance(old.get("sources"),dict):
   raise ValueError("Untrusted source-byte archive manifest")
- out=[];saved=0
+ seen=old.setdefault("seen_pairs",{})
+ if not isinstance(seen,dict):raise ValueError("Invalid archived original version-pair ledger")
+ out=[];saved=0;new_pairs=0;version_pairs_archived=0
  for row in rows:
   sid=row.get("source_id");kind=row.get("kind")
   if not VALID_ID.fullmatch(str(sid)) or kind not in ("html","pdf"):
@@ -81,6 +87,13 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
   prior=old["sources"].get(sid)
   new_sha=row.get("current_observation_sha256")
   previous_sha=row.get("previous_usable_sha256")
+  if prior:
+   if prior.get("source_url") and prior["source_url"]!=row.get("source_url"):
+    raise ValueError("Original publisher identity changed without reviewed migration")
+   if archive.is_file() and (prior.get("kind")!=kind or
+       not SHA.fullmatch(str(prior.get("sha256"))) or
+       hashlib.sha256(archive.read_bytes()).hexdigest()!=prior["sha256"]):
+    raise ValueError("Previously authenticated original bytes corrupted")
   if row.get("status","").startswith("original_"):
    if (not SHA.fullmatch(str(new_sha)) or not observed.is_file() or
       hashlib.sha256(observed.read_bytes()).hexdigest()!=new_sha):
@@ -100,10 +113,32 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
     except Exception:
      candidate["editorial_status"]="held_unreadable_original_pair"
    else:candidate["editorial_status"]="held_missing_authentic_prior_document_bytes"
+   if candidate["editorial_status"] in (
+       "machine_text_difference_requires_editorial_check",
+       "authenticated_byte_pair_no_substantive_text_difference_identified"):
+    identity=pair_id(sid,previous_sha,new_sha)
+    candidate["document_version_pair_id"]=identity
+    candidate["newly_observed_fingerprint_pair"]=identity not in seen
+    if identity not in seen:
+     seen[identity]={"source_id":sid,"before_sha256":previous_sha,
+      "after_sha256":new_sha,"first_observed_on":snapshot["observed_on"]}
+     new_pairs+=1
+    # Keep publisher bytes under immutable content-addressed filenames.
+    # Byte preservation does not establish enacted policy or contract execution.
+    version_dir=baseline/"versions"/sid
+    version_dir.mkdir(parents=True,exist_ok=True)
+    for fingerprint,raw in ((previous_sha,archive.read_bytes()),(new_sha,observed.read_bytes())):
+     destination=version_dir/(fingerprint+"."+kind)
+     if destination.is_file():
+      if hashlib.sha256(destination.read_bytes()).hexdigest()!=fingerprint:
+       raise ValueError("Content-addressed government original archive corrupted")
+     else:destination.write_bytes(raw)
+    version_pairs_archived+=1
    out.append(candidate)
   if row.get("status","").startswith("original_"):
    shutil.copyfile(observed,archive)
-   old["sources"][sid]={"kind":kind,"sha256":new_sha,"observed_on":snapshot["observed_on"]}
+   old["sources"][sid]={"kind":kind,"sha256":new_sha,"observed_on":snapshot["observed_on"],
+    "source_url":row.get("source_url"),"retrieved_url":row.get("retrieved_url")}
    saved+=1
  old["schema_version"]=1
  manifest_path.write_text(json.dumps(old,indent=2)+"\n",encoding="utf8")
@@ -112,6 +147,9 @@ def reconcile(snapshot,current= CURRENT,baseline=BASELINE):
    "source_hash_changes_checked":len(out),
    "authenticated_before_after_original_byte_pairs":sum(x["editorial_status"] in ("machine_text_difference_requires_editorial_check","authenticated_byte_pair_no_substantive_text_difference_identified") for x in out),
    "machine_differences_for_human_review":sum(x["editorial_status"]=="machine_text_difference_requires_editorial_check" for x in out),
+   "new_authentic_document_version_pairs":new_pairs,
+   "previously_seen_document_pairs_not_new_findings":sum(x.get("newly_observed_fingerprint_pair") is False for x in out),
+   "immutable_version_pairs_archived":version_pairs_archived,
    "original_version_pairs":out,
    "automatic_editorial_approvals":0,"automatic_watch_emails":0,
    "caveat":"The diff engine preserves original publisher bytes and page hints. No machine diff alone establishes a contract or policy change."}
