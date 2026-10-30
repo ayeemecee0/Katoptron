@@ -44,6 +44,12 @@ small{color:#c2d3db}.danger{border-color:#b16b6b}[hidden]{display:none!important
 <label for="workspaceSelect">Current workspace</label><select id="workspaceSelect"></select><button id="deleteWorkspace" type="button" class="danger no-print">Delete workspace and all private case files</button>
 <div class="row no-print" id="collaboration"><label>Invite role<select id="inviteRole"><option value="editor">Editor</option><option value="viewer">Viewer</option></select></label><button id="shareInvite" type="button">Create 7-day one-use invite link</button></div>
 <p id="inviteResult" class="muted" role="status"></p><div id="members" class="no-print" aria-label="Workspace collaborators"></div>
+<section id="teamSecurity" class="no-print" hidden aria-label="Owner team security">
+<h3>Pending invitations</h3><p class="muted">Only workspace owners can issue or revoke these single-use, 7-day links. Never post invitation URLs publicly.</p>
+<div id="pendingInvites"></div>
+<h3>Team security activity</h3><p class="muted">Private membership and invitation events. No invitation tokens, emails or case contents are logged here.</p>
+<div id="teamActivity" aria-live="polite"></div>
+</section>
 </section>
 <section class="panel"><h2>Case files</h2>
 <div class="panel no-print"><h3>Start with a professional research workflow</h3>
