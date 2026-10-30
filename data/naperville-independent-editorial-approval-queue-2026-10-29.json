@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "source_policy": "Naperville Police General Order 41.16",
+  "before_original_url": "https://www.naperville.il.us/DocumentCenter/View/1305/Automated-License-Plate-Reader-Policy---10-08-2025-PDF",
+  "after_original_url": "https://www.naperville.il.us/DocumentCenter/View/1304/Automated-License-Plate-Reader-Policy---09-08-2026-PDF",
+  "before_revision_date": "2025-10-08",
+  "after_revision_date": "2026-09-08",
+  "scope": "external_independent_editor_signoff_only_not_ai_review_or_automatic_approval",
+  "total_clauses": 10,
+  "independent_editor_approved": 0,
+  "independent_editor_declined": 0,
+  "records_request_submitted_for_revision_history": true,
+  "records_received_from_issuer": false,
+  "items": [
+    {
+      "comparison_id": "monthly-audit-frequency",
+      "before_pdf_page": 2,
+      "after_pdf_page": 9,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "monthly-audit-specific-scope",
+      "before_pdf_page": 2,
+      "after_pdf_page": 9,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "persistent-sharing-network-review",
+      "before_pdf_page": 2,
+      "after_pdf_page": 4,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "historical-search-documentation",
+      "before_pdf_page": 4,
+      "after_pdf_page": 7,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "emergency-search-exception",
+      "before_pdf_page": 4,
+      "after_pdf_page": 7,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "advanced-query-scope",
+      "before_pdf_page": 4,
+      "after_pdf_page": 6,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "manual-alert-metadata",
+      "before_pdf_page": 3,
+      "after_pdf_page": 7,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "manual-alert-expiry",
+      "before_pdf_page": 3,
+      "after_pdf_page": 7,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "manual-alert-removal",
+      "before_pdf_page": 3,
+      "after_pdf_page": 7,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    },
+    {
+      "comparison_id": "expanded-initial-training",
+      "before_pdf_page": 5,
+      "after_pdf_page": 8,
+      "source_quote_check": "pending_independent_editor",
+      "original_effective_date_document_check": "pending_official_government_response",
+      "reviewer_identity": "unassigned_external",
+      "reviewer_independence_verified": false,
+      "reviewer_approved": false,
+      "reviewer_approved_at": null,
+      "requires": [
+        "Read and confirm the exact sentence wording on both original PDF pages",
+        "Confirm document revision date and whether the new text was adopted/effective",
+        "Record section heading and independent reviewer attribution",
+        "Check unverified exceptions before releasing a public approved finding"
+      ]
+    }
+  ]
+}

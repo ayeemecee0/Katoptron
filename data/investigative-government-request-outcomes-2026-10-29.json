@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-29",
+  "scope": "six_government_records_requests_sent_from_connected_mailbox_no_responses_verified",
+  "status_definitions": {
+    "sent": "Gmail provider accepted outgoing message; government acknowledgment not yet verified",
+    "acknowledged": "A separately received government acknowledgment was examined",
+    "records_received": "Government records were actually supplied and reviewed",
+    "completed": "Evidence question independently resolved or closed with documented limitation"
+  },
+  "requests": [
+    {
+      "lead_id": "naperville-policy-review",
+      "agency": "City of Naperville, IL",
+      "requested_records": "2025 and 2026 ALPR policy signed versions, effective dates and change memos",
+      "status": "sent",
+      "sent_date": "2026-10-29",
+      "government_acknowledgment_received": false,
+      "records_received": false,
+      "resolution_verified": false,
+      "source_citations_required_for_any_future_claim": true,
+      "private_message_id": "not_published",
+      "followup_needed": "Check separately received government correspondence before advancing status",
+      "research_time_saved_minutes": null
+    },
+    {
+      "lead_id": "green-bay-flock-annual-audit-2025",
+      "agency": "Green Bay Police Department, WI",
+      "requested_records": "Dated 2025 aggregate sharing authorization, audit and purge policy records",
+      "status": "sent",
+      "sent_date": "2026-10-29",
+      "government_acknowledgment_received": false,
+      "records_received": false,
+      "resolution_verified": false,
+      "source_citations_required_for_any_future_claim": true,
+      "private_message_id": "not_published",
+      "followup_needed": "Check separately received government correspondence before advancing status",
+      "research_time_saved_minutes": null
+    },
+    {
+      "lead_id": "roseville-mn-alpr-independent-audit",
+      "agency": "Roseville Police Department, MN",
+      "requested_records": "Independent ALPR audit response, subsequent policy and aggregate retention tests",
+      "status": "sent",
+      "sent_date": "2026-10-29",
+      "government_acknowledgment_received": false,
+      "records_received": false,
+      "resolution_verified": false,
+      "source_citations_required_for_any_future_claim": true,
+      "private_message_id": "not_published",
+      "followup_needed": "Check separately received government correspondence before advancing status",
+      "research_time_saved_minutes": null
+    },
+    {
+      "lead_id": "texas-comptroller-alpr-grants-ban",
+      "agency": "Texas Comptroller of Public Accounts",
+      "requested_records": "October 2026 signed order, covered grant program list and final implementation guidance",
+      "status": "sent",
+      "sent_date": "2026-10-29",
+      "government_acknowledgment_received": false,
+      "records_received": false,
+      "resolution_verified": false,
+      "source_citations_required_for_any_future_claim": true,
+      "private_message_id": "not_published",
+      "followup_needed": "Check separately received government correspondence before advancing status",
+      "research_time_saved_minutes": null
+    },
+    {
+      "lead_id": "los-altos-hills-termination-jan2026",
+      "agency": "Town of Los Altos Hills, CA",
+      "requested_records": "Signed Flock termination notice, vendor acknowledgment and aggregate deactivation milestones",
+      "status": "sent",
+      "sent_date": "2026-10-29",
+      "government_acknowledgment_received": false,
+      "records_received": false,
+      "resolution_verified": false,
+      "source_citations_required_for_any_future_claim": true,
+      "private_message_id": "not_published",
+      "followup_needed": "Check separately received government correspondence before advancing status",
+      "research_time_saved_minutes": null
+    },
+    {
+      "lead_id": "alexandria-flock-disclosure-oct2026",
+      "agency": "Alexandria Police Department, VA",
+      "requested_records": "2026 adopted policy, 30-day ALPR audit procedures and aggregate audit reports",
+      "status": "sent",
+      "sent_date": "2026-10-29",
+      "government_acknowledgment_received": false,
+      "records_received": false,
+      "resolution_verified": false,
+      "source_citations_required_for_any_future_claim": true,
+      "private_message_id": "not_published",
+      "followup_needed": "Check separately received government correspondence before advancing status",
+      "research_time_saved_minutes": null
+    }
+  ],
+  "public_disclosure_note": "No private email addresses, draft bodies, Gmail message IDs, protected plate data or subject identities published in this repository."
+}

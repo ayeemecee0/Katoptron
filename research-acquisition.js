@@ -18,21 +18,37 @@ const get=async name=>{
  return r.json();
 };
 try{
- const [sources,held,diffs,policy,workflows,alternates,alternateReceipts]=await Promise.all([
+ const [sources,held,diffs,policy,workflows,alternates,alternateReceipts,requests,approvals,priorities]=await Promise.all([
   get('editorial-originals-intelligence-batch-2026-10-29.json'),
   get('nationwide-19-held-original-government-source-recovery-2026-10-29.json'),
   get('current-source-version-hash-review-workplan-2026-10-29.json'),
   get('naperville-paired-policy-clause-revisions-2026-10-29.json'),
   get('investigation-original-source-workflow-verification-2026-10-29.json'),
   get('nationwide-original-government-recovery-alternates-2026-10-29.json'),
-  get('nationwide-alternate-source-retrieval-receipts-2026-10-29.json')]);
+  get('nationwide-alternate-source-retrieval-receipts-2026-10-29.json'),
+  get('investigative-government-request-outcomes-2026-10-29.json'),
+  get('naperville-independent-editorial-approval-queue-2026-10-29.json'),
+  get('source-value-acquisition-priorities-2026-10-29.json')]);
  if(sources.schema_version!==1||sources.sources.length!==14||
   held.resolutions.length!==19||diffs.sources.length!==38||
   diffs.approved_substantive_document_version_differences!==0||
   policy.changes.length!==10||policy.count_distinct_document_pairs!==1||
-  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6||alternateReceipts.receipts.length!==6||alternateReceipts.original_held_recovered!==0)
+  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6||alternateReceipts.receipts.length!==6||alternateReceipts.original_held_recovered!==0||requests.requests.length!==6||approvals.items.length!==10||approvals.independent_editor_approved!==0||priorities.current_monitored_unique_urls!==134)
   throw Error('Evidence inventory incomplete or changed without review');
  $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 38 authenticated source-byte pairs · 0 approved prior/new source-version wording differences';
+ $('editorialApprovalStatus').textContent=approvals.total_clauses+' original-source clauses queued for human independent review; '+approvals.independent_editor_approved+' independently approved. Naperville records request sent; official response pending.';
+ for(const q of requests.requests){
+  const art=el($('requestOutcomes'),'article');
+  el(art,'h3',q.agency);
+  el(art,'p',q.requested_records);
+  el(art,'small','Submitted: '+q.sent_date+' · Status: '+q.status+' · Agency response verified: '+(q.records_received?'yes':'no')+' · Research time saved: unmeasured');
+ }
+ $('sourceValueSummary').textContent=priorities.highest_priority_states.length+' underrepresented jurisdictions with just one original monitored government URL. Baseline '+priorities.current_baseline.accessible_urls+'/'+priorities.current_baseline.source_urls+' accessible.';
+ for(const st of priorities.highest_priority_states){
+  const p=el($('sourceValuePriorities'),'details');
+  el(p,'summary',st.state+': '+st.current_original_publisher_urls+' original monitored; priority to acquire two qualified new documents');
+  const list=el(p,'ol');for(const check of st.qualification_steps)el(list,'li',check);
+ }
  for(const entry of policy.changes){
   const c=el($('policyPairs'),'article');
   el(c,'h3',entry.title);
