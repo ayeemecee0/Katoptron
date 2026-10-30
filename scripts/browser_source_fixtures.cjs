@@ -20,8 +20,8 @@ function bounded(rows,searchParams){
 function narrowedBox(query){
  for(const [dimension,value] of [['latitude',communityPoint.latitude],['longitude',communityPoint.longitude]]){
   for(const clause of query.getAll(dimension)){
-   const [operator,bound]=clause.split('.');
-   if(operator==='gte'&&value<Number(bound)||operator==='lte'&&value>Number(bound))return false;
+   const operator=clause.slice(0,4),bound=Number(clause.slice(4));
+   if(!Number.isFinite(bound)||operator==='gte.'&&value<bound||operator==='lte.'&&value>bound)return false;
   }
  }
  return true;
