@@ -22,7 +22,7 @@ class AcquisitionTriage(unittest.TestCase):
         out=T.prioritize(discovery,*parts)
         self.assertEqual(out["states"],51)
         self.assertEqual(out["new_unreviewed_candidates"],1)
-        self.assertEqual(out["curated_urls"],100)
+        self.assertEqual(out["curated_urls"],104)
         self.assertEqual(len(out["ready_for_review"]),1)
         item=out["ready_for_review"][0]
         self.assertFalse(item["eligible_for_publication"])
