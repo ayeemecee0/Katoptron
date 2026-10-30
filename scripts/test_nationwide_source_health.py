@@ -12,6 +12,7 @@ M=load("nationwide_source_health");G=load("watch_nationwide_government_originals
 R=json.loads(G.REGISTRY.read_text());OLD=json.loads(G.EXISTING.read_text())
 BASE=json.loads(M.BUILTIN.read_text())
 j,seeds,_=G.catalog(R,OLD)
+seeds=[{**x,"kind":"pdf"} if x["id"]=="ia-judicial-original-opinion" else x for x in seeds]
 all_sources=seeds+G.legacy_sources(OLD)+G.recovery_sources()+G.agency_depth_sources()+G.reviewed_addition_sources()+G.independent_issuer_alternatives(seeds+G.legacy_sources(OLD)+G.recovery_sources()+G.agency_depth_sources()+G.reviewed_addition_sources())+G.underrepresented_government_originals()+G.original_value_sources()
 def fake(status="original_government_html_accessible"):
  rows=[]
