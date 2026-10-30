@@ -129,7 +129,7 @@
    'I do not request individual license-plate records, private movement histories or restricted operational data.',
    'Please provide existing, reasonably segregable public records if held. This follow-up does not assume any legal violation, right to appeal or statutory deadline.',
    'Thank you.'
-  ].filter(x=>x!==''||x===undefined?x!==undefined:true).join('\n');
+  ].join('\n');
   return Object.freeze({subject:('Follow-up: '+subject).slice(0,200),recipient,body:content,
    category:outcome,check_before_sending:[
     'Review the actual agency response. Classification is selected by the researcher, not automatically verified.',
