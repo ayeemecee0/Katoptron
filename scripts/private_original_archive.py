@@ -151,10 +151,14 @@ def restore(gateway,baseline=BASELINE,snapshot=SNAPSHOT,require=False):
     receipts={r["source_id"]:r for r in snap["receipts"]}
     if len(receipts)!=snap.get("monitored_urls") or len(receipts)<100:raise ValueError("Incomplete restore index")
     restored={}
-    for item in index["archives"]:
+    def acquire(item):
         sid=item["source_id"];sha=item["sha256"];kind=item["kind"]
         valid_file(sid,kind,sha)
-        restored[(sid,kind,sha)]=gateway.download(source_id=sid,kind=kind,sha256=sha)
+        return (sid,kind,sha),gateway.download(source_id=sid,kind=kind,sha256=sha)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+        for key,blob in pool.map(acquire,index["archives"]):
+            if key in restored: raise ValueError("Duplicate private original identity")
+            restored[key]=blob
     for sid,meta in manifest.get("sources",{}).items():
         key=(sid,meta["kind"],meta["sha256"])
         if key not in restored or receipts.get(sid,{}).get("last_usable_sha256")!=meta["sha256"]:
