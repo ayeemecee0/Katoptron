@@ -2,420 +2,482 @@
   "schema_version": 1,
   "monitor_run_id": 40999367165,
   "reviewed_on": "2026-10-29",
-  "observed_changes": 34,
-  "scope": "hash_changed_original_publisher_pages_needing_review_not_source_pinned_wording_differences",
+  "observed_changes": 39,
+  "scope": "39_authenticated_before_after_source_byte_pairs_machine_text_screened_pending_true_substantive_page_citation_not_39_verified_changes",
   "sources": [
     {
       "source_id": "az-government-oversight-announcement",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ga-government-investigation-announcement",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "id-police-technology-disclosure",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ks-police-other-vendor-disclosure",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "mn-police-technology-disclosure",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "mo-government-public-consultation",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ok-police-technology-disclosure",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ri-police-technology-disclosure",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "mt-state-alpr-statute",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "vt-state-alpr-statute-index",
       "priority": "P0",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ak-unadopted-alpr-prohibition-amendment",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "legacy-ca-palo-alto-transparency",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "legacy-wi-green-bay-police-reports",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "legacy-va-richmond-flock-updates",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "legacy-tx-austin-public-safety-audits",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ms-flock-university-medical-procurement-notice",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "nc-hillsborough-flock-contract-cancel-notice",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "nv-legislature-2026-alpr-recommendations",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "wv-code-photo-monitoring-traffic-law",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "il-naperville-2026-alpr-policy-history",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "il-naperville-police-transparency",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "mo-columbia-alpr-operations",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "ga-gbi-september-misuse-investigation",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "vt-act-135-enacted-original",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "mn-robbinsdale-2026-policy-discussion",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-01-ca",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-05-mn",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-06-wa",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-10-mo",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-14-ut",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-15-ca",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-16-wa",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-17-wa",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     },
     {
       "source_id": "reviewed-18-id",
       "priority": "P1",
-      "status": "hold_earlier_authenticated_source_bytes_missing",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
       "review_actions": [
-        "Retrieve dated old and new source originals from original government issuer or an authenticated archive",
-        "Hash both documents, preserve immutable originals and locate exact page and paragraph positions",
-        "Confirm whether a meaningful difference is in agency-authored policy/contract, rather than unrelated dynamic page content",
-        "Have reviewer sign off source identity, adoption status, dates, legal limits and potential significance"
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "legacy-ca-san-mateo-grand-jury",
+      "priority": "P1",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
+      "review_actions": [
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-25-va",
+      "priority": "P1",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
+      "review_actions": [
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-26-va",
+      "priority": "P1",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
+      "review_actions": [
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-27-ca",
+      "priority": "P1",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
+      "review_actions": [
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
+      ],
+      "human_approved_page_cited_difference": false
+    },
+    {
+      "source_id": "reviewed-31-ca",
+      "priority": "P1",
+      "status": "authenticated_original_byte_pair_available_but_no_editorial_substantive_diff_approved",
+      "review_actions": [
+        "Both original source byte hashes and archived copies matched the monitored publisher receipt; inspect normalized human-readable content and reject generated HTML/timers",
+        "If a meaningful agency-authored wording difference exists, verify original publisher date and document adoption or proposal status",
+        "For PDFs preserve genuine page numbers; for HTML cite dated original sections or distinct archived publisher URLs, not invented #page=1",
+        "Seek independent editorial sign-off before changing a public finding or publishing a Watch event"
       ],
       "human_approved_page_cited_difference": false
     }
   ],
   "approved_substantive_document_version_differences": 0,
   "target": 10,
-  "reason": "Retained fingerprints do not substitute for authentic prior government PDF/HTML bytes. Current version archives are now enabled for future monitoring.",
-  "research_only": true
+  "reason": "The latest saved original byte pairs have matching publisher hashes. Most changed raw HTML bytes without changing normalized human-visible text; the observed West Virginia Loading Articles timer difference is dynamic page noise, not substantive policy wording. No authenticated page-cited policy/contract wording change is independently verified.",
+  "research_only": true,
+  "authenticated_before_after_original_byte_pairs": 39,
+  "machine_text_candidates_after_dynamic_noise_filter": 0
 }
