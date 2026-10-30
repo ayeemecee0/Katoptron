@@ -24,7 +24,7 @@ MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
 MAX_PAGES=120
 LEGACY_GOV_HOSTS={"www.moline.il.us","www.naperville.il.us","www.darien.il.us","www.co.routt.co.us","www.leg.state.nv.us","www.lvmpd.com","www.senate.state.oh.us","www.house.state.oh.us"}
-MAX_MONITORED_SOURCES=100
+MAX_MONITORED_SOURCES=125
 MAX_PAGES=200  # bounded 159-page Nevada legislative report; only first 8 text pages sampled
 STATES=("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC").split()
 STATUS={"original_government_html_accessible","original_government_pdf_accessible",
@@ -300,8 +300,8 @@ def watch(obj,existing,fetcher=fetch,workers=5):
  existing_urls=[s["source_url"] for s in seeds+legacy+recovery+depth+reviewed]
  existing_ids=[s["id"] for s in seeds+legacy+recovery+depth+reviewed]
  if (len(existing_urls)!=len(set(existing_urls)) or len(existing_ids)!=len(set(existing_ids)) or
-     len(existing_urls)!=MAX_MONITORED_SOURCES):
-  raise ValueError("Missing or duplicate 100-original-government monitoring inventory")
+     not 100<=len(existing_urls)<=MAX_MONITORED_SOURCES):
+  raise ValueError("Missing, duplicate or excessive original-government monitoring inventory")
  with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
   receipts=list(pool.map(lambda s:inspect(s,fetcher),seeds))
   legacy_receipts=list(pool.map(lambda s:inspect(s,fetcher),legacy))
