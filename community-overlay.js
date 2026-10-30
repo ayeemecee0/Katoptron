@@ -51,7 +51,7 @@
   function display(){
    if(!enabled||!source)return;
    if(!layer)layer=C.install(map,source,inspect);
-   note(source.count.toLocaleString()+' original OSM report coordinates visible as dots at all zooms. Unverified.');
+   note(source.count.toLocaleString()+' original OSM report coordinates visible as dots at all zooms. Unverified. Source snapshot: '+source.date+'.');
   }
   async function load(){
    if(loading)return loading;
