@@ -459,6 +459,74 @@ async function start(win,U){
   unwrap(await sb.from('research_cases').update({status:$('caseStatus').value,updated_at:new Date().toISOString()}).eq('id',selectedC.id));
   await chooseWorkspace();status('Case stage saved.');
  }catch(err){msg(err)}});
+ // Copilot stages drafts locally. The existing private request table remains the
+ // only store for deliberately saved drafts; it never sends email or portal forms.
+ const copilot=win.KatoptronRecordsCopilot;
+ function stageCopilot(d){
+  if(!writable()||!selectedC)throw Error('Open a writable private case');
+  if(!copilot)throw Error('Records copilot module unavailable');
+  stagedCopilotCaseId=selectedC.id;
+  $('copilotSubject').value=d.subject;
+  $('copilotRecipient').value=d.custodian||d.recipient||'';
+  $('copilotBody').value=d.body;
+  $('copilotChecklist').replaceChildren();
+  for(const item of d.check_before_sending)$('copilotChecklist').append(el('li',item));
+  $('copilotPreview').hidden=false;
+  $('copilotStatus').textContent='Unsent draft prepared. Review the original source, actual receiving office, fee limits and every requested item.';
+  $('copilotPreview').scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ $('copilotSourcePick').addEventListener('change',()=>{
+  if($('copilotSourcePick').value)$('copilotSource').value=$('copilotSourcePick').value;
+ });
+ $('copilotPrep').addEventListener('click',()=>{
+  try{
+   if(!copilot)throw Error('Copilot module unavailable');
+   if(!selectedC)throw Error('Select a case');
+   stageCopilot(copilot.draft({
+    agency:selectedC.agency_key,subject:selectedC.title,
+    topic:$('copilotTopic').value,custodian:$('copilotCustodian').value,
+    source_url:$('copilotSource').value.trim(),start_date:$('copilotStart').value,
+    end_date:$('copilotEnd').value,fee_cap:$('copilotFee').value,
+    format:$('copilotFormat').value
+   }));
+  }catch(err){msg(err)}
+ });
+ $('copilotFollowupPrep').addEventListener('click',()=>{
+  try{
+   if(!copilot)throw Error('Copilot module unavailable');
+   const request=detail.requests.find(x=>x.id===$('copilotPrior').value);
+   if(!request)throw Error('Select an existing saved request first');
+   stageCopilot(copilot.followUp(request,$('copilotOutcome').value,$('copilotSummary').value));
+  }catch(err){msg(err)}
+ });
+ $('copilotCopy').addEventListener('click',async()=>{
+  try{
+   if(!selectedC||stagedCopilotCaseId!==selectedC.id)throw Error('Prepare a draft in the current case');
+   if(!win.navigator.clipboard?.writeText)throw Error('Clipboard unavailable; select and copy the editable draft manually');
+   await win.navigator.clipboard.writeText($('copilotSubject').value+'\n\n'+$('copilotBody').value);
+   $('copilotStatus').textContent='Draft copied. No correspondence sent and no request status changed.';
+  }catch(err){msg(err)}
+ });
+ $('copilotSave').addEventListener('click',async()=>{
+  const saveButton=$('copilotSave');
+  try{
+   if(!writable()||!selectedC||stagedCopilotCaseId!==selectedC.id)
+    throw Error('Prepare a draft in the active writable case');
+   const subject=$('copilotSubject').value.trim(),body=$('copilotBody').value.trim();
+   if(subject.length<5||subject.length>200||body.length<50||body.length>18000)
+    throw Error('Review and provide a descriptive subject and substantive request text');
+   saveButton.disabled=true;
+   unwrap(await sb.from('research_case_requests').insert({
+    case_id:selectedC.id,created_by:user.id,recipient:$('copilotRecipient').value.trim().slice(0,250),
+    subject,body,status:'draft'
+   }));
+   stagedCopilotCaseId=null;
+   $('copilotPreview').hidden=true;
+   await chooseCase();
+   status('Copilot draft saved to this private case. No email, portal submission or legal deadline triggered.');
+   $('copilotStatus').textContent='Draft saved. Mark it sent only after actual authorized submission, then set your own follow-up date.';
+  }catch(err){msg(err)}finally{saveButton.disabled=false}
+ });
  $('createRequest').addEventListener('submit',async e=>{e.preventDefault();try{
   if(!writable())throw Error('Editor access required');
   unwrap(await sb.from('research_case_requests').insert({case_id:selectedC.id,created_by:user.id,
