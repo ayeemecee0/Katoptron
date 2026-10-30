@@ -111,6 +111,42 @@ function leadFromNational(sets){
 }
 /* Personalization is editorial topical relevance, never a probability of
  * misconduct, newsworthiness, verified truth or source completeness. */
+/* Original-government investigation leads are editorial research starting points.
+ * A policy proposal, a source change, or a budget statement is never silently
+ * promoted into an adopted rule, an executed contract or a new Watch event. */
+function leadFromEditorial(batch){
+ if(!batch||batch.schema_version!==1||!Array.isArray(batch.sources)||batch.sources.length<10||batch.sources.length>30)
+  throw Error('Missing complete independently reviewed government investigation registry');
+ const ids=new Set(),out=[];
+ for(const s of batch.sources){
+  if(!s.id||ids.has(s.id)||!validUrl(s.source_url)||!s.source_date||!s.agency||
+    !/^[A-Z]{2}$/.test(s.state||'')||!s.title||!s.claim||!s.unresolved_question||
+    !s.next_verification_action||!s.next_records_request||
+    s.independently_verified_original_publisher!==true||
+    s.legal_violation_verified!==false||s.new_watch_event!==false||
+    s.source_version_change_verified!==false||
+    !['official_html_reviewed','official_pdf_page_inspected','official_pdf_text_inspected'].includes(s.evidence_tier)||
+    (s.evidence_tier==='official_pdf_page_inspected'&&!Number.isInteger(s.source_page)))
+   throw Error('Unreviewed investigative claim cannot be published');
+  ids.add(s.id);
+  const key=s.agency.toLowerCase().replace(/[^a-z0-9 -]/g,'').replace(/\s+/g,' ').trim().slice(0,115)+'|'+s.state;
+  const topicList=topics({kind:s.topic,title:s.title,summary:s.claim,status:s.document_status});
+  const steps=[s.next_verification_action,s.next_records_request,
+    'Check original status and publication date; do not infer misconduct, camera installation or signed agreement.'];
+  out.push(Object.freeze({
+   id:'independent-original:'+s.id,locality_key:key,agency:s.agency,title:s.title,
+   summary:s.claim,source_date:s.source_date,observed_at:null,status:s.document_status,
+   kind:'original_government_research_only',original_url:s.source_url,source_ids:[s.id],
+   originals:[{title:s.title,url:s.source_url,date:s.source_date,status:s.document_status,
+    proof:'Official publisher source; '+s.evidence_tier+(s.source_page?'; cited PDF page '+s.source_page:'')}],
+   topics:topicList,why:'Source-dated government disclosure requiring specific further verification.',
+   unknown:[s.unresolved_question],steps,label:'Actionable original-government research lead (historical)',
+   fresh:false,verified_scope:'source_attributed_original_only_not_authenticated_prior_document_version',
+   amount:null,amount_basis:null}));
+ }
+ return out;
+}
+
 function rankForResearch(leads,topic='all',question='',jurisdiction=''){
  if(!Array.isArray(leads)||typeof question!=='string'||question.length>160||
     !(['all',...TOPICS].includes(topic)))throw Error('Invalid research ranking inputs');
@@ -292,5 +328,5 @@ function packageHtml(lead,comparison,request){
   '<h2>Unsent editable records request</h2><p>Suggested custodian: '+esc(request?.custodian_role||'Confirm appropriate records custodian')+'</p><pre>'+esc(request?.body||'')+'</pre>'+
   '<p>Katoptron does not file this request, provide legal advice, or guarantee that an unpublished document exists. This package contains only public-source material, no private case notes.</p></body></html>';
 }
-return Object.freeze({TOPICS,validUrl,topics,leadFromDocket,leadFromWatch,leadFromNational,rankForResearch,digest,personalize,compare,crossAgency,acquisition,acquisitionBacklog,assemblePackage,packageHtml});
+return Object.freeze({TOPICS,validUrl,topics,leadFromDocket,leadFromWatch,leadFromNational,leadFromEditorial,rankForResearch,digest,personalize,compare,crossAgency,acquisition,acquisitionBacklog,assemblePackage,packageHtml});
 });
