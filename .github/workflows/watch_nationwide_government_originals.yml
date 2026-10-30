@@ -20,6 +20,9 @@ on:
       - 'scripts/watch_nationwide_government_originals.py'
       - 'scripts/archive_government_original_versions.py'
       - 'scripts/test_archive_government_original_versions.py'
+      - 'scripts/private_original_archive.py'
+      - 'scripts/test_private_original_archive.py'
+      - 'supabase/functions/private-original-archive/index.ts'
       - 'scripts/triage_nationwide_original_acquisition.py'
       - 'scripts/test_triage_nationwide_original_acquisition.py'
       - 'scripts/nationwide_source_health.py'
@@ -32,6 +35,9 @@ on:
       - '.github/workflows/watch_nationwide_government_originals.yml'
   pull_request:
     paths:
+      - 'scripts/private_original_archive.py'
+      - 'scripts/test_private_original_archive.py'
+      - 'supabase/functions/private-original-archive/index.ts'
       - 'scripts/archive_government_original_versions.py'
       - 'scripts/test_archive_government_original_versions.py'
       - 'scripts/watch_nationwide_government_originals.py'
@@ -45,6 +51,7 @@ on:
     - cron: '11 19 * * *'
 permissions:
   contents: read
+  id-token: write
 concurrency:
   group: katoptron-nationwide-original-government-source-watch
   cancel-in-progress: false
@@ -68,6 +75,7 @@ jobs:
           python -m unittest discover -s scripts -p 'test_recovered_originals_editorial_changes.py' -v
           python -m unittest discover -s scripts -p 'test_triage_nationwide_original_acquisition.py' -v
           python -m unittest discover -s scripts -p 'test_archive_government_original_versions.py' -v
+          python -m unittest discover -s scripts -p 'test_private_original_archive.py' -v
           node scripts/test_nationwide_evidence_depth.cjs
       - name: Restore last successful fingerprint receipt baseline
         uses: actions/cache/restore@v4
@@ -84,6 +92,11 @@ jobs:
           key: katoptron-original-document-bytes-v1-${{ github.run_id }}
           restore-keys: |
             katoptron-original-document-bytes-v1-
+      - name: Restore private originals after complete CI cache eviction
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+        run: python scripts/private_original_archive.py restore-if-missing
       - name: Retrieve 138 original-government URLs including original publisher accountability indexes in CT, NE, and SC
         run: python scripts/watch_nationwide_government_originals.py --workers 6 --capture-originals
       - name: Turn same-host government document links into 25 bounded editorial acquisition tasks
@@ -94,6 +107,11 @@ jobs:
         run: python scripts/archive_government_original_versions.py
       - name: Qualify changed government originals for page-specific editorial review
         run: python scripts/review_nationwide_source_changes.py
+      - name: Back up every verified original into private durable storage and read it back
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SUPABASE_URL: https://bpvkapswslmgfazbzpsv.supabase.co
+        run: python scripts/private_original_archive.py backup
       - name: Publish status counts to workflow summary
         run: |
           python - <<'PY'
