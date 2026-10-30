@@ -589,6 +589,14 @@ def main():
  historical=historical_recovery_receipts(result)
  HISTORICAL_RESULT.write_text(json.dumps(historical,indent=2)+"\n",encoding="utf8")
  print("HISTORICAL_ORIGINAL_SOURCE_RECOVERY",json.dumps({"recovered":historical["recovered"],"remaining":historical["remaining"],"total":historical["historical_total"]},sort_keys=True))
+ for case in historical["cases"]:
+  print("HISTORICAL_GOVERNMENT_RETRIEVAL_DIAGNOSTIC",json.dumps({
+   "source_id":case["source_id"],"state":case["state"],
+   "current_retrieval_status":case["current_retrieval_status"],
+   "http_status":case["transport_http_status"],
+   "failure_reason":case["transport_failure_reason"],
+   "publisher_redirect_candidate":case["transport_redirect_candidate"],
+   "historical_original_retrieved":case["historical_original_retrieved"]},sort_keys=True))
  n=sum(x["status"].startswith("original_") for x in result["seed_receipts"])
  print("NATIONWIDE_ORIGINAL_GOVERNMENT_SOURCE_WATCH",json.dumps({"jurisdictions":51,"states_with_seed_or_existing":result["states_with_existing_or_new_official_seed_sources"],
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,
