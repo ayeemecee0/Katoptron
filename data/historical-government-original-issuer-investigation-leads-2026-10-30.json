@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-30",
+  "evidence_class": "dated_original_government_publisher_statements_web_retrieved_not_automated_sha_authenticated",
+  "research_leads": [
+    {
+      "source_id": "oh-state-procurement-flock-subscription",
+      "state": "OH",
+      "publisher": "Ohio Controlling Board",
+      "source_url": "https://controllingboard.obm.ohio.gov/Print/PrintCBRequest?id=511a4ceb-9a1e-420f-b949-2257330dbf4a",
+      "source_date": "2024-06-03",
+      "title": "Ohio State Highway Patrol Flock network subscription approval",
+      "issuer_stated_fact": "Controlling Board request DPS0105268 lists approved waiver of competitive selection with $90,000 for FY2024 and $90,000 for FY2025 for a Flock Group subscription supporting unlimited users.",
+      "what_remains_unknown": "Approval does not prove invoices paid, term actually performed, real account enablement or additional camera installation. Original HTML response not retrieved by Katoptron's automated monitor.",
+      "next_government_original": "Executed vendor contract DPS020262, payment ledger and subsequent renewal decision; compare to request FY and actual delivery.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "co-police-technology-disclosure",
+      "state": "CO",
+      "publisher": "City of Lafayette",
+      "source_url": "https://www.lafayetteco.gov/m/newsflash/home/detail/10277",
+      "source_date": "2026-10-20",
+      "title": "Lafayette announces Flock suspension and removal process",
+      "issuer_stated_fact": "City statement says its 2027 budget removed Flock funding, it decided to end use, begin early termination and cover the 30 cameras under its city contract pending removal.",
+      "what_remains_unknown": "The announcement does not itself prove vendor-accepted termination, completion of every removal, or the status of non-city cameras. The old original Program webpage is still held.",
+      "next_government_original": "Signed termination and vendor acknowledgment, camera-removal completion receipts, and data deletion certification if available.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "fl-police-operational-status-statement",
+      "state": "FL",
+      "publisher": "Panama City Beach Police Department",
+      "source_url": "https://www.pcbfl.gov/m/NewsFlash/Home/Detail/38",
+      "source_date": "2026-09-01",
+      "title": "Panama City Beach announces immediate Flock use suspension",
+      "issuer_stated_fact": "Police chief's September 1 statement says PCBPD suspended Flock ALPR use effective immediately and would coordinate camera removal with Flock.",
+      "what_remains_unknown": "Statement is not physical camera-removal proof or executed contract cancellation, and original article cannot yet be fetched automatically.",
+      "next_government_original": "Dated camera-removal completion memo, vendor cancellation and access deactivation report without individual plate data.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "nc-police-technology-disclosure",
+      "state": "NC",
+      "publisher": "City of Raleigh Police Department",
+      "source_url": "https://raleighnc.gov/services/how-does-raleigh-use-flock-cameras",
+      "source_date": "2026-09-10",
+      "title": "Raleigh discloses ALPR monthly audits and 30-day data retention",
+      "issuer_stated_fact": "City's September 10 update states LPR use audits are conducted monthly and RPD's Flock data is deleted after 30 days unless preserved in an investigation.",
+      "what_remains_unknown": "City disclosure is not independent proof that every audit occurred or all purge processes operated as described.",
+      "next_government_original": "2026 monthly aggregate audit completion reports, adopted policy version history, and retention control documentation.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "hi-state-alpr-technology-disclosure",
+      "state": "HI",
+      "publisher": "Hawaii Department of Law Enforcement",
+      "source_url": "https://law.hawaii.gov/safety-via-technology/automated-license-plate-recognition-alpr/",
+      "source_date": null,
+      "title": "Hawaii DLE describes general ALPR retention and access controls",
+      "issuer_stated_fact": "DLE's official public ALPR page says retention is 90 days absent lawful preservation and search activity is logged for accountability.",
+      "what_remains_unknown": "The webpage is not dated; vendor, Flock manufacturer identity and the effective date of adopted policy are not established by this disclosure.",
+      "next_government_original": "Signed dated DLE ALPR policy, vendor contract, privacy impact assessment, and aggregate audit or retention-control results.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "reviewed-02-wi",
+      "state": "WI",
+      "publisher": "City of Sheboygan Police Department",
+      "source_url": "https://www.sheboyganwi.gov/m/newsflash/Home/Detail/94",
+      "source_date": "2026-08-25",
+      "title": "Sheboygan police seeks Flock contract termination",
+      "issuer_stated_fact": "City's August 25 announcement says police leadership would ask the Common Council on September 8 to end Flock's contract and cover 15 city Flock cameras.",
+      "what_remains_unknown": "A proposed termination request does not establish council approval, executed cancellation, or eventual physical removal.",
+      "next_government_original": "September 8 council minutes and vote, signed contract termination, vendor acknowledgment, and camera-removal report.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "reviewed-07-tx",
+      "state": "TX",
+      "publisher": "City of Liberty Hill",
+      "source_url": "https://www.libertyhilltx.gov/m/newsflash/Home/Detail/395",
+      "source_date": "2026-09-17",
+      "title": "Liberty Hill announces Flock termination vote and city-camera removal",
+      "issuer_stated_fact": "City's September 17 release says council voted 7-0 on September 9 to end city Flock use and that city staff removed city-program cameras September 15.",
+      "what_remains_unknown": "The city announcement is not an independently audited removal inventory; privately operated or other-agency equipment lies outside the city's action.",
+      "next_government_original": "Adopted council action, executed vendor notice, and municipal camera-removal completion records.",
+      "original_document_hash_verified": false
+    },
+    {
+      "source_id": "reviewed-08-in",
+      "state": "IN",
+      "publisher": "Fort Wayne Police Department",
+      "source_url": "https://www.cityoffortwayne.in.gov/m/newsflash/home/detail/716",
+      "source_date": "2026-08-31",
+      "title": "Fort Wayne chief announces decision to discontinue Flock",
+      "issuer_stated_fact": "Chief's August 31 statement says the city decided to discontinue its Flock program following a council contract vote and early federal grant closeout authorization.",
+      "what_remains_unknown": "Statement does not provide the executed vendor termination agreement, actual access cutoff date or independently verified camera-removal dates.",
+      "next_government_original": "Grant closeout approval, signed contract cancellation, implementation or equipment removal receipts.",
+      "original_document_hash_verified": false
+    }
+  ],
+  "number_of_source_attributed_questions": 8,
+  "number_of_editorially_approved_new_source_version_differences": 0,
+  "number_of_verified_system_camera_locations": 0,
+  "government_issuer_statements_are_not_implementation_audits": true,
+  "record_of_original_bytes": false,
+  "notes": "All claims explicitly scoped to source issuer statements and cited government URLs; external web-based inspection does not satisfy the automated original URL SHA-256 monitor. Never create a Watch event solely from this dataset."
+}

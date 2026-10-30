@@ -69,6 +69,39 @@ assert(altReceipts.receipts.every(r=>fallback.originals.some(x=>x.id===r.source_
 assert(altReceipts.receipts.every(r=>r.replaces_historical_original===false));
 assert(altReceipts.receipts.every(r=>r.status.startsWith('held_')?r.sha256===null:/^[a-f0-9]{64}$/.test(r.sha256)));
 
+const latestHistorical=load('historical-source-verified-snapshot-2026-10-30.json');
+const issuerResearch=load('historical-government-original-issuer-investigation-leads-2026-10-30.json');
+assert.equal(latestHistorical.original_historical_count,19);
+assert.equal(latestHistorical.cases.length,19);
+assert.equal(latestHistorical.original_historical_recovered,12);
+assert.equal(latestHistorical.original_historical_held,7);
+assert.equal(latestHistorical.original_historical_recovered+latestHistorical.original_historical_held,19);
+assert.equal(latestHistorical.cumulative_authenticated_originals_across_two_runs,13);
+assert.equal(latestHistorical.cumulative_never_authenticated_originals_across_two_runs,6);
+assert.equal(latestHistorical.latest_observed_full_run.accessible_historical,11);
+assert.equal(latestHistorical.latest_observed_full_run.held_historical,8);
+assert.equal(latestHistorical.additional_publisher_authentication.source_id,'nv-county-alpr-grant-application-not-installation');
+assert(/^[a-f0-9]{64}$/.test(latestHistorical.additional_publisher_authentication.sha256));
+assert.equal(latestHistorical.additional_publisher_authentication.pdf_pages,31);
+assert(!latestHistorical.cases.find(x=>x.source_id==='nv-county-alpr-grant-application-not-installation').verified_original_bytes);
+assert(issuerResearch.research_leads.every(x=>x.original_document_hash_verified===false));
+assert(latestHistorical.status_is_fixed_historical_snapshot_not_live);
+assert.equal(new Set(latestHistorical.cases.map(x=>x.source_id)).size,19);
+assert(latestHistorical.cases.every(x=>held.resolutions.some(y=>y.source_id===x.source_id)));
+assert(latestHistorical.cases.filter(x=>x.verified_original_bytes).every(x=>/^[a-f0-9]{64}$/.test(x.sha256)&&x.original_publisher_url_preserved));
+assert(latestHistorical.cases.filter(x=>!x.verified_original_bytes).every(x=>x.sha256===null&&x.status==='held_as_of_observation'));
+assert.equal(issuerResearch.research_leads.length,8);
+assert.equal(issuerResearch.number_of_editorially_approved_new_source_version_differences,0);
+assert.equal(issuerResearch.number_of_verified_system_camera_locations,0);
+assert(issuerResearch.government_issuer_statements_are_not_implementation_audits);
+assert.equal(new Set(issuerResearch.research_leads.map(x=>x.source_id)).size,8);
+assert(issuerResearch.research_leads.every(x=>
+ held.resolutions.some(y=>y.source_id===x.source_id)&&
+ /^https:\/\//.test(x.source_url)&&x.original_document_hash_verified===false&&
+ x.what_remains_unknown.length>65&&x.next_government_original.length>45));
+assert(html.includes('id="historicalRecoverySummary"')&&html.includes('id="historicalResearchLeads"'));
+assert(js.includes('historical-source-verified-snapshot-2026-10-30.json'));
+assert(js.includes('historical-government-original-issuer-investigation-leads-2026-10-30.json'));
 assert.equal(new Set(fallback.originals.map(r=>r.id)).size,6);
 assert.equal(new Set(fallback.originals.map(r=>r.source_url)).size,6);
 assert(fallback.originals.every(r=>held.resolutions.some(h=>h.source_id===r.source_id)));

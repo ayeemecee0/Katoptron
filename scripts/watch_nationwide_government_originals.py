@@ -278,6 +278,10 @@ def trusted_redirect(src,current,target):
  host=lambda x:x.lower().removeprefix("www.")
  if host(a.hostname)!=host(b.hostname):return False
  if a.path==b.path and a.query==b.query:return True
+ if src["id"]=="nv-county-alpr-grant-application-not-installation":
+  return (a.path=="/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf" and
+   b.path=="/siteassets/serc.nv.gov/content/meetings/2024/Douglas_County_-_UWS_Application_FY25.pdf" and
+   b.query=="")
  return (src["id"]=="reviewed-23-tx" and
   a.path.lower()=="/m/newsflash/home/detail/1824" and
   b.path.lower()=="/m/newsflash/archive/item/1824" and b.query=="arcId=2451")
@@ -285,35 +289,72 @@ def trusted_redirect(src,current,target):
 def pdf_limit(src):
  return MAX_EXCEPTIONAL_PDF if src["id"] in LARGE_PDF_ORIGINALS else MAX_BYTES_PDF
 
+class SourceTransportError(ValueError):
+ """Safe metadata for original-source triage, never an editorial claim."""
+ def __init__(self,kind,http_status=None,redirect_location=None):
+  super().__init__(kind)
+  self.http_status=http_status
+  self.redirect_location=redirect_location
+
 def fetch(src):
- """Bounded original or validated same-document publisher redirect. Never follow external redirects."""
+ """Bounded exact original fetch; one targeted retry for transient government transport errors.
+ Cross-authority redirects are prohibited. Never conceal a blocked URL behind a related issuer index.
+ """
+ import time
  url=src["source_url"];initial=url
- if not exact(url):raise ValueError("unsafe_source")
+ if not exact(url):raise SourceTransportError("unsafe_source")
  cap=pdf_limit(src) if src["kind"]=="pdf" else MAX_BYTES_HTML
  opener=urllib.request.build_opener(NoRedirect())
- for _ in range(3):
-  if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):raise ValueError("unsafe_dns")
+ for hop in range(3):
+  if not exact(url) or not public_dns(urllib.parse.urlsplit(url).hostname):
+   raise SourceTransportError("unsafe_dns")
   req=urllib.request.Request(url,headers={
    "Accept":"text/html,application/pdf;q=0.9,*/*;q=0.5",
    "Accept-Language":"en-US,en;q=0.8","Accept-Encoding":"identity",
    "User-Agent":"Mozilla/5.0 (compatible; KatoptronSourceReader/1.0; +https://ayeemecee0.github.io/Katoptron/)"})
-  try:
-   with opener.open(req,timeout=22) as res:
-    if res.status!=200 or res.geturl()!=url:raise ValueError("unexpected_response")
-    length=res.headers.get("Content-Length")
-    if length and length.isdecimal() and int(length)>cap:raise ValueError("oversized_original")
-    data=res.read(cap+1)
-    if len(data)>cap:raise ValueError("oversized_original")
-    if url!=initial and src["id"]=="reviewed-23-tx" and b"Pausing City of Elgin" not in data:
-     raise ValueError("archive_document_identity_unconfirmed")
-    return (data,url)
-  except urllib.error.HTTPError as exc:
-   if exc.code in (301,302,303,307,308):
-    target=urllib.parse.urljoin(url,exc.headers.get("Location",""))
-    if target==url or not trusted_redirect(src,url,target):raise ValueError("original_redirect") from None
-    url=target;continue
-   raise ValueError("http_error") from None
- raise ValueError("original_redirect")
+  for attempt in range(2):
+   try:
+    with opener.open(req,timeout=20) as res:
+     if res.status!=200 or res.geturl()!=url:raise SourceTransportError("unexpected_response")
+     length=res.headers.get("Content-Length")
+     if length and length.isdecimal() and int(length)>cap:raise SourceTransportError("oversized_original")
+     data=res.read(cap+1)
+     if len(data)>cap:raise SourceTransportError("oversized_original")
+     if url!=initial and src["id"]=="reviewed-23-tx" and b"Pausing City of Elgin" not in data:
+      raise SourceTransportError("archive_document_identity_unconfirmed")
+     return data,url
+   except urllib.error.HTTPError as exc:
+    if exc.code in (301,302,303,307,308):
+     loc=exc.headers.get("Location","")
+     target=urllib.parse.urljoin(url,loc) if loc else ""
+     if target==url or not trusted_redirect(src,url,target):
+      # Only the 2021 New York MPTC model policy may be retried using
+      # the exact original file path at the same issuer's HTTPS apex host.
+      # This is a direct original government file request, not a redirect to a new edition.
+      if (src["id"]=="ny-state-model-policy-not-agency-adoption" and url==initial):
+       parsed=urllib.parse.urlsplit(initial)
+       canonical="https://criminaljustice.ny.gov"+parsed.path
+       if parsed.query:canonical+="?"+parsed.query
+       if canonical!=url and trusted_redirect(src,url,canonical):
+        url=canonical
+        break
+      candidate=target if exact(target) else None
+      raise SourceTransportError("original_redirect",http_status=exc.code,redirect_location=candidate) from None
+     url=target
+     break
+    if exc.code in (429,500,502,503,504) and attempt==0:
+     time.sleep(0.4);continue
+    raise SourceTransportError("http_error",http_status=exc.code) from None
+   except (TimeoutError,ConnectionError,urllib.error.URLError,OSError):
+    if attempt==0:
+     time.sleep(0.4);continue
+    raise SourceTransportError("network_error") from None
+  else:
+   raise SourceTransportError("network_error")
+  # A validated redirect advances to the next bounded government-origin hop.
+  continue
+ raise SourceTransportError("original_redirect")
+
 
 class PolicyLinks(HTMLParser):
  """Bounded original government href discovery, never source fact promotion."""
@@ -384,7 +425,9 @@ def inspect(src,fetcher=fetch,capture_dir=None):
   "publisher_flock_keyword_seen":False,"published_facts_verified":False,
   "device_status_verified":False,"camera_coordinates_published":False,
   "unreviewed_same_host_policy_candidates":[],"retrieved_url":None,
-  "verified_same_publisher_redirect":False}
+  "verified_same_publisher_redirect":False,
+  "transport_http_status":None,"transport_redirect_candidate":None,
+  "transport_failure_reason":None}
  try:
   item=fetcher(src)
   raw,final_url=item if isinstance(item,tuple) and len(item)==2 else (item,src["source_url"])
@@ -393,6 +436,9 @@ def inspect(src,fetcher=fetch,capture_dir=None):
   record["verified_same_publisher_redirect"]=final_url!=src["source_url"]
  except Exception as err:
   reason=str(err)
+  record["transport_failure_reason"]=reason if reason in ("http_error","network_error","original_redirect","oversized_original","unsafe_dns","archive_document_identity_unconfirmed","unsafe_source","unexpected_response") else "unclassified_transport_error"
+  record["transport_http_status"]=getattr(err,"http_status",None)
+  record["transport_redirect_candidate"]=getattr(err,"redirect_location",None)
   record["status"]="held_redirect" if reason in ("original_redirect","archive_document_identity_unconfirmed") else (
    "held_oversized" if reason=="oversized_original" else ("held_http_error" if reason=="http_error" else "held_timeout_or_network"))
   return record
@@ -412,6 +458,19 @@ def inspect(src,fetcher=fetch,capture_dir=None):
    pdf=PdfReader(io.BytesIO(raw),strict=src["id"]!="mi-state-procurement-meeting-minutes")
    if pdf.is_encrypted or not 1<=len(pdf.pages)<=MAX_PAGES:raise ValueError("invalid_pdf")
    record["pdf_pages"]=len(pdf.pages)
+   # Verify the exact New York 2021 LPR *model* policy file path did not
+   # accidentally resolve to an unrelated policy, HTML WAF page, or 2022 revision.
+   if src["id"]=="ny-state-model-policy-not-agency-adoption" and record["verified_same_publisher_redirect"]:
+    model_text=" ".join((page.extract_text() or "") for page in pdf.pages[:min(len(pdf.pages),8)]).casefold()
+    if not ("license plate reader" in model_text and "model policy" in model_text and "2021" in model_text):
+     raise ValueError("new_york_model_policy_document_identity_not_confirmed")
+   # For a changed Nevada publisher PDF URL, match the same named grant document,
+   # not an unrelated public attachment merely served by the same .gov authority.
+   if src["id"]=="nv-county-alpr-grant-application-not-installation" and record["verified_same_publisher_redirect"]:
+    lead_text=" ".join((page.extract_text() or "") for page in pdf.pages[:min(len(pdf.pages),10)]).casefold()
+    if not (25<=len(pdf.pages)<=40 and "douglas county" in lead_text and
+            "2025" in lead_text and ("uws" in lead_text or "united we stand" in lead_text)):
+     raise ValueError("redirected_nevada_pdf_identity_not_confirmed")
    # A source could mention Flock in one of many government agenda pages.
    # Do not treat a keyword match as evidence of an approved agreement.
    for page in pdf.pages[:min(8,len(pdf.pages))]:
@@ -527,6 +586,9 @@ def historical_recovery_receipts(result):
     "original_sha256":row["original_sha256"] if eligible else None,
     "pdf_pages":row.get("pdf_pages") if eligible else None,
     "historical_original_retrieved":bool(eligible),
+    "transport_http_status":row.get("transport_http_status"),
+    "transport_failure_reason":row.get("transport_failure_reason"),
+    "transport_redirect_candidate":row.get("transport_redirect_candidate"),
     "same_publisher_redirect_verified":bool(eligible and final!=source),
     "new_equipment_or_policy_claim_verified":False,
     "evidence_limit":prior["evidence_limit"]})
@@ -534,7 +596,10 @@ def historical_recovery_receipts(result):
   "historical_total":19,"recovered":sum(x["historical_original_retrieved"] for x in cases),
   "remaining":sum(not x["historical_original_retrieved"] for x in cases),
   "historical_source_urls_deleted":0,"camera_operations_claimed":0,
-  "cases":cases,"note":"Only original issuer bytes from the exact original or narrow proven same-document redirect count. Pubisher-related indexes, other agencies, and stale search results never clear a historical original hold."}
+  "cases":cases,
+  "by_failure_reason":{k:sum(x.get("transport_failure_reason")==k for x in cases) for k in
+   ("original_redirect","http_error","network_error","oversized_original","unclassified_transport_error")},
+  "note":"Only original issuer bytes from the exact original or narrow proven same-document redirect count. Publisher-related indexes, other agencies, and stale search results never clear a historical original hold."}
 
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
@@ -551,6 +616,14 @@ def main():
  historical=historical_recovery_receipts(result)
  HISTORICAL_RESULT.write_text(json.dumps(historical,indent=2)+"\n",encoding="utf8")
  print("HISTORICAL_ORIGINAL_SOURCE_RECOVERY",json.dumps({"recovered":historical["recovered"],"remaining":historical["remaining"],"total":historical["historical_total"]},sort_keys=True))
+ for case in historical["cases"]:
+  print("HISTORICAL_GOVERNMENT_RETRIEVAL_DIAGNOSTIC",json.dumps({
+   "source_id":case["source_id"],"state":case["state"],
+   "current_retrieval_status":case["current_retrieval_status"],
+   "http_status":case["transport_http_status"],
+   "failure_reason":case["transport_failure_reason"],
+   "publisher_redirect_candidate":case["transport_redirect_candidate"],
+   "historical_original_retrieved":case["historical_original_retrieved"]},sort_keys=True))
  n=sum(x["status"].startswith("original_") for x in result["seed_receipts"])
  print("NATIONWIDE_ORIGINAL_GOVERNMENT_SOURCE_WATCH",json.dumps({"jurisdictions":51,"states_with_seed_or_existing":result["states_with_existing_or_new_official_seed_sources"],
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,

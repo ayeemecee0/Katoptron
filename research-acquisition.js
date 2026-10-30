@@ -18,7 +18,7 @@ const get=async name=>{
  return r.json();
 };
 try{
- const [sources,held,diffs,policy,workflows,alternates,alternateReceipts,requests,approvals,priorities]=await Promise.all([
+ const [sources,held,diffs,policy,workflows,alternates,alternateReceipts,requests,approvals,priorities,historicalSnapshot,historicalLeads]=await Promise.all([
   get('editorial-originals-intelligence-batch-2026-10-29.json'),
   get('nationwide-19-held-original-government-source-recovery-2026-10-29.json'),
   get('current-source-version-hash-review-workplan-2026-10-29.json'),
@@ -28,14 +28,56 @@ try{
   get('nationwide-alternate-source-retrieval-receipts-2026-10-29.json'),
   get('investigative-government-request-outcomes-2026-10-29.json'),
   get('naperville-independent-editorial-approval-queue-2026-10-29.json'),
-  get('source-value-acquisition-priorities-2026-10-29.json')]);
+  get('source-value-acquisition-priorities-2026-10-29.json'),
+  get('historical-source-verified-snapshot-2026-10-30.json'),
+  get('historical-government-original-issuer-investigation-leads-2026-10-30.json')]);
  if(sources.schema_version!==1||sources.sources.length!==14||
   held.resolutions.length!==19||diffs.sources.length!==38||
   diffs.approved_substantive_document_version_differences!==0||
   policy.changes.length!==10||policy.count_distinct_document_pairs!==1||
-  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6||alternateReceipts.receipts.length!==6||alternateReceipts.original_held_recovered!==0||requests.requests.length!==6||approvals.items.length!==10||approvals.independent_editor_approved!==0||priorities.current_monitored_unique_urls!==134)
+  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6||alternateReceipts.receipts.length!==6||alternateReceipts.original_held_recovered!==0||requests.requests.length!==6||approvals.items.length!==10||approvals.independent_editor_approved!==0||priorities.current_monitored_unique_urls!==134||
+  historicalSnapshot.original_historical_count!==19||historicalSnapshot.cases.length!==19||
+  historicalSnapshot.original_historical_recovered!==12||
+  historicalSnapshot.original_historical_held!==7||
+  historicalSnapshot.cumulative_authenticated_originals_across_two_runs!==13||
+  historicalSnapshot.latest_observed_full_run.accessible_historical!==11||
+  historicalLeads.research_leads.length!==8||
+  historicalLeads.number_of_editorially_approved_new_source_version_differences!==0)
+
   throw Error('Evidence inventory incomplete or changed without review');
- $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 38 authenticated source-byte pairs · 0 approved prior/new source-version wording differences';
+ $('summary').textContent='14 original-issuer research opportunities from the initial docket · '+historicalSnapshot.original_historical_recovered+' of 19 original historical URLs reachable in the peak '+historicalSnapshot.verified_at.slice(0,10)+' run (13 ever verified across runs)'+' · '+historicalLeads.research_leads.length+' additional source-attributed research leads · 0 new independent source-version approvals';
+ $('historicalRecoverySummary').textContent='Across two authentic original-source runs: '+historicalSnapshot.cumulative_authenticated_originals_across_two_runs+'/19 historical source PDFs/pages ever SHA-256 verified, '+historicalSnapshot.cumulative_never_authenticated_originals_across_two_runs+' never authenticated. Peak single run '+historicalSnapshot.original_historical_recovered+'/19, latest separate run '+historicalSnapshot.latest_observed_full_run.accessible_historical+'/19. Historical byte availability is not a current-access guarantee.';
+ const latestRun=el($('historicalRecoveryItems'),'p');
+ src(latestRun,historicalSnapshot.source_run,'Inspect peak complete-run source hashes');
+ const recentRun=el($('historicalRecoveryItems'),'p');
+ src(recentRun,historicalSnapshot.latest_observed_full_run.url,'Inspect later Nevada issuer PDF and 11 live recoveries');
+ const nv=el($('historicalRecoveryItems'),'p','Nevada Douglas County original PDF recovered in the later run: 31 pages; SHA-256 '+historicalSnapshot.additional_publisher_authentication.sha256+'.');
+ const x=el($('historicalRecoveryItems'),'p');
+ src(x,historicalSnapshot.additional_publisher_authentication.run,'Verify Nevada publisher PDF retrieval');
+ for(const item of historicalSnapshot.cases){
+  const d=el($('historicalRecoveryItems'),'details');
+  el(d,'summary',item.state+' · '+item.source_id+' · '+(item.verified_original_bytes?'Original retrieved':'Not yet retrieved'));
+  el(d,'p','Initial failure: '+item.historical_failure);
+  if(item.verified_original_bytes){
+   el(d,'p','Source SHA-256: '+item.sha256+(item.pdf_pages?' · '+item.pdf_pages+' PDF pages':''));
+  }else{
+   el(d,'p','Reason not cleared: '+item.remaining_evidence_limit);
+  }
+  el(d,'small','Government historical original identity preserved; no equipment operation, contract performance or legal conclusion inferred.');
+ }
+ $('historicalLeadSummary').textContent=historicalLeads.research_leads.length+' government-issuer statements located through independent original-source review, requiring separate approval and further evidence.';
+ for(const lead of historicalLeads.research_leads){
+  const art=el($('historicalResearchLeads'),'article');
+  el(art,'h3',lead.title);
+  el(art,'small',lead.state+' · '+lead.publisher+' · '+(lead.source_date?'Publication date '+lead.source_date:'Original publication date not established'));
+  el(art,'p',lead.issuer_stated_fact);
+  const link=el(art,'p');src(link,lead.source_url,'Open government issuer publication');
+  el(art,'strong','Not yet established');
+  el(art,'p',lead.what_remains_unknown);
+  el(art,'strong','Next primary evidence');
+  el(art,'p',lead.next_government_original);
+  el(art,'small','Research-only source attribution. Automated original-byte hash: not verified. No automated Watch event.');
+ }
  $('editorialApprovalStatus').textContent=approvals.total_clauses+' original-source clauses queued for human independent review; '+approvals.independent_editor_approved+' independently approved. Naperville records request sent; official response pending.';
  for(const q of requests.requests){
   const art=el($('requestOutcomes'),'article');
@@ -70,9 +112,9 @@ try{
   const l=el(c,'p');src(l,entry.source_url,'Government publisher evidence',entry.source_pdf_page);
   el(c,'strong','Next validation');
   el(c,'p',entry.next_check);
-  el(c,'small','Requests submitted: no · Compliance or wrongdoing established: no');
+  el(c,'small','Source verification is not proof that a case was resolved. Related correspondence should be reconciled using the request tracker.');
  }
- $('workflowStatus').textContent='10 original sources checked and research tasks advanced; no records requests filed.';
+ $('workflowStatus').textContent='10 source-check workflows; '+requests.requests.length+' related government requests sent, '+requests.requests.filter(x=>x.status==='acknowledged').length+' acknowledgments at the dated record review. No substantive responses or independently closed findings verified.';
  function showLeads(){
   const q=$('searchLeads').value.trim().toLowerCase();
   $('leadCards').replaceChildren();
@@ -106,11 +148,12 @@ try{
   const box=el(d,'p');src(box,alt.source_url,'Inspect alternate original-government publisher page');
   el(d,'small','Original source remains held and preserved; alternate subject equivalence NOT independently confirmed.');
  }
- $('alternateStatus').textContent=alternateReceipts.alternate_sources_accessible+' of '+alternates.originals.length+' official issuer alternative URLs accessible; original 19 held URLs remain held.';
+ $('alternateStatus').textContent=alternateReceipts.alternate_sources_accessible+' of '+alternates.originals.length+' official issuer alternate URLs in the original dated review accessible; '+historicalSnapshot.original_historical_recovered+' original historical sources were subsequently recovered in the source-monitor verification.';
  for(const item of held.resolutions){
   const d=el($('heldCards'),'details');el(d,'summary',item.state+' · '+item.source_id+' · '+item.monitor_status);
   el(d,'p',item.next_action);el(d,'p','Evidence limit: '+item.evidence_limit);
-  el(d,'small','Automatic monitor still held; original source retained.');
+  const verified=historicalSnapshot.cases.find(c=>c.source_id===item.source_id);
+  el(d,'small',verified?.verified_original_bytes?'Recovered since the initial historical hold as of '+historicalSnapshot.verified_at.slice(0,10):'Original remained unresolved at the last verified recovery snapshot.');
   if(item.alternate_url){const p=el(d,'p');src(p,item.alternate_url,'Official alternative/source link')}
  }
  for(const c of diffs.sources){

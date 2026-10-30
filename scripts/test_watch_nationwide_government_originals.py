@@ -57,6 +57,24 @@ class StateSources(unittest.TestCase):
    for x in links))
   missing=M.inspect(src,fetcher=lambda _:(_ for _ in ()).throw(ValueError("original_redirect")))
   self.assertEqual(missing["unreviewed_same_host_policy_candidates"],[])
+ def test_safe_government_transport_diagnostics_do_not_verify_content(self):
+  src={"id":"co-police-technology-disclosure","state":"CO","publisher":"Lafayette Police",
+   "kind":"html","source_url":"https://www.lafayetteco.gov/4282/Flock-Safety-ALPR-Program"}
+  def rejected(_):
+   raise M.SourceTransportError("original_redirect",http_status=302,
+    redirect_location="https://www.lafayetteco.gov/2592/Police-Transparency")
+  r=M.inspect(src,fetcher=rejected)
+  self.assertEqual(r["status"],"held_redirect")
+  self.assertEqual(r["transport_http_status"],302)
+  self.assertEqual(r["transport_redirect_candidate"],"https://www.lafayetteco.gov/2592/Police-Transparency")
+  self.assertIsNone(r["original_sha256"])
+  self.assertIsNone(r["retrieved_url"])
+  def blocked(_):raise M.SourceTransportError("http_error",http_status=403)
+  no=M.inspect(src,fetcher=blocked)
+  self.assertEqual(no["transport_http_status"],403)
+  self.assertEqual(no["transport_failure_reason"],"http_error")
+  self.assertIsNone(no["transport_redirect_candidate"])
+  self.assertIsNone(no["original_sha256"])
  def test_all_nineteen_historical_cases_are_preserved_and_verdicts_are_verifiable(self):
   held=M.watch(R,OLD,fetcher=lambda _:(_ for _ in ()).throw(ValueError("http_error")),workers=4)
   report=M.historical_recovery_receipts(held)
@@ -94,6 +112,17 @@ class StateSources(unittest.TestCase):
   self.assertFalse(M.trusted_redirect(src,original,"http://www.elgintexas.gov/a"))
   self.assertFalse(M.trusted_redirect(src,original,"https://www.elgintexas.gov/private"))
   self.assertFalse(M.trusted_redirect({"id":"reviewed-02-wi","source_url":original},original,archived))
+  nv_start="https://serc.nv.gov/uploadedFiles/sercnvgov/content/Meetings/2024/Douglas%20County%20-%20UWS%20Application%20FY25.pdf"
+  nv_target="https://www.serc.nv.gov/siteassets/serc.nv.gov/content/meetings/2024/Douglas_County_-_UWS_Application_FY25.pdf"
+  nv_src={"id":"nv-county-alpr-grant-application-not-installation","source_url":nv_start}
+  self.assertTrue(M.trusted_redirect(nv_src,nv_start,nv_target))
+  self.assertFalse(M.trusted_redirect(nv_src,nv_start,nv_target.replace("Douglas_County","Clark_County")))
+  self.assertFalse(M.trusted_redirect({"id":"co-police-technology-disclosure"},nv_start,nv_target))
+  ny_old="https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/MPTC%20LPR%20Model%20Policy%202021.pdf"
+  ny_apex=ny_old.replace("https://www.","https://",1)
+  self.assertTrue(M.trusted_redirect({"id":"ny-state-model-policy-not-agency-adoption"},ny_old,ny_apex))
+  self.assertFalse(M.trusted_redirect({"id":"ny-state-model-policy-not-agency-adoption"},ny_old,ny_apex.replace("2021","2022")))
+
   self.assertTrue(M.trusted_redirect(src,"https://www.criminaljustice.ny.gov/a.pdf","https://criminaljustice.ny.gov/a.pdf"))
   sample=b"<html><body>Archived - Pausing City of Elgin FLOCK Safety Camera Program</body></html>"*3
   result=M.inspect({"id":"reviewed-23-tx","state":"TX","publisher":"City of Elgin","kind":"html","source_url":original},
