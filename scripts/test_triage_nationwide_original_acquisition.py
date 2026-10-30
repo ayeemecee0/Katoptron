@@ -54,6 +54,39 @@ class AcquisitionTriage(unittest.TestCase):
         self.assertEqual(T.prioritize(discovery,*parts)["new_unreviewed_candidates"],0)
         discovery["states"].pop()
         with self.assertRaisesRegex(ValueError,"Complete"):T.prioritize(discovery,*parts)
+    def test_live_government_same_host_link_is_editorial_only(self):
+        from urllib.parse import urlsplit
+        discovery,parts=fixture()
+        originals=T.existing_urls(*parts)
+        receipts=[{"source_id":"test-original-"+str(i),"state":state,"source_url":url,
+            "kind":"html","status":"held_http_error","original_sha256":None,
+            "unreviewed_same_host_policy_candidates":[]} for i,(url,state) in enumerate(originals.items())]
+        source=next(x for x in receipts if (urlsplit(x["source_url"]).hostname or "").endswith(".gov"))
+        host=urlsplit(source["source_url"]).hostname
+        linked="https://"+host+"/records/Flock-ALPR-Policy-2026"
+        example={"candidate_url":linked,"anchor_text":"Flock ALPR policy and audit report",
+            "evidence_tier":"government_same_host_link_unverified_individual_document",
+            "individually_reviewed":False,"policy_adopted_verified":False,
+            "flock_vendor_verified":False,"camera_locations_verified":False,"effective_date_verified":False}
+        source["status"]="original_government_html_accessible"
+        source["original_sha256"]="a"*64
+        source["unreviewed_same_host_policy_candidates"]=[example]
+        watch={"schema_version":1,"jurisdictions_total":51,"all_source_receipts":receipts}
+        result=T.prioritize(discovery,*parts,watch=watch)
+        self.assertEqual(result["direct_same_host_candidates_unreviewed"],1)
+        self.assertEqual(result["new_unreviewed_candidates"],1)
+        found=result["ready_for_review"][0]
+        self.assertEqual(found["government_parent_original_url"],source["source_url"])
+        self.assertFalse(found["eligible_for_publication"])
+        self.assertFalse(found["source_date_verified"])
+        source["unreviewed_same_host_policy_candidates"]=[{**example,
+            "candidate_url":"https://other-city.gov/records/Flock-ALPR-Policy"}]
+        self.assertEqual(T.prioritize(discovery,*parts,watch=watch)["new_unreviewed_candidates"],0)
+        source["unreviewed_same_host_policy_candidates"]=[{**example,"policy_adopted_verified":True}]
+        self.assertEqual(T.prioritize(discovery,*parts,watch=watch)["new_unreviewed_candidates"],0)
+        watch["all_source_receipts"].pop()
+        with self.assertRaisesRegex(ValueError,"Complete source-monitor"):
+            T.prioritize(discovery,*parts,watch=watch)
     def test_provider_failure_not_zero_government_activity(self):
         discovery,parts=fixture()
         discovery["states"][0]["discovery_status"]="search_provider_unavailable_retry_needed"
