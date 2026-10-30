@@ -5,6 +5,7 @@ on:
       - 'data/nationwide-government-jurisdiction-registry.json'
       - 'data/nationwide-recovery-government-originals-2026-10-29.json'
       - 'data/nationwide-targeted-agency-original-depth-2026-10-29.json'
+      - 'data/nationwide-reviewed-original-monitor-additions-2026-10-29.json'
       - 'data/nationwide-target-agency-original-groups-2026-10-29.json'
       - 'data/nationwide-original-research-leads-expanded-2026-10-29.json'
       - 'scripts/test_nationwide_evidence_depth.cjs'
@@ -48,7 +49,7 @@ jobs:
           python-version: '3.12'
       - name: Install bounded PDF metadata reader
         run: python -m pip install 'pypdf>=5,<7'
-      - name: Unit test 51 jurisdiction enrollment, 82 original URLs and no-policy-publication safeguards
+      - name: Unit test 51 jurisdictions, 100 monitored originals and no-policy-publication safeguards
         run: |
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
@@ -62,7 +63,7 @@ jobs:
           key: katoptron-nationwide-source-health-v2-${{ github.run_id }}
           restore-keys: |
             katoptron-nationwide-source-health-v2-
-      - name: Retrieve original-government URLs, including 11 recoveries and all legacy sources
+      - name: Retrieve 100 original-government URLs including 18 additional source-dated publications
         run: python scripts/watch_nationwide_government_originals.py --workers 6
       - name: Compare against prior usable fingerprints and document every held state/source
         run: python scripts/nationwide_source_health.py
