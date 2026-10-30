@@ -260,6 +260,31 @@ def publish_quality_snapshot(item):
     print('COMMUNITY FLOCK QUALITY OSM edits older than one year',item['osm_edits_older_365d'])
 
 
+def refresh_public_osm_render_cache():
+    """Only a fully reconciled, authenticated OSM import can update public canvas bytes.
+
+    The public viewer RPC reads this existing materialization, not 116k source
+    rows for every visitor. Failed refreshes leave the previously good cache.
+    """
+    base=os.environ['SUPABASE_URL'].rstrip('/')
+    if base!='https://bpvkapswslmgfazbzpsv.supabase.co':
+        raise ValueError('Unexpected national OSM cache publisher')
+    key=os.environ['SUPABASE_SERVICE_ROLE_KEY']
+    req=urllib.request.Request(
+        base+'/rest/v1/rpc/katoptron_refresh_osm_exact_snapshot_cache',
+        data=b'{}',method='POST',
+        headers={'apikey':key,'Authorization':'Bearer '+key,
+                 'Content-Type':'application/json'})
+    with urllib.request.urlopen(req,timeout=90) as response:
+        if response.status!=200:
+            raise ValueError('Public original-coordinate cache refresh rejected')
+        raw=response.read(64)
+    count=json.loads(raw)
+    if type(count) is not int or not MIN_FLOCK<=count<=MAX_FLOCK:
+        raise ValueError('Public OSM cache lacks a fully reconciled coordinate count')
+    print('COMMUNITY FLOCK ORIGINAL CANVAS refreshed_exact_observations',count)
+
+
 def import_rows(rows,max_points,api=post_batch,run_stamp=None):
     if max_points<=0 or max_points>200_000:raise ValueError('Invalid bounded import batch size')
     if run_stamp is None:
@@ -305,6 +330,7 @@ def main():
     if whole:
         reconcile(prior,len(rows),stamp)
         publish_quality_snapshot(build_quality_snapshot(rows,stamp,day))
+        refresh_public_osm_render_cache()
     else:
         print('COMMUNITY FLOCK RECONCILE skipped: deliberately partial import')
 
