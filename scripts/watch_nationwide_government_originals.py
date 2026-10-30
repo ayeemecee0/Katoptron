@@ -25,6 +25,8 @@ UNDERREPRESENTED=ROOT/"data"/"underrepresented-state-original-government-researc
 VALUE_ORIGINALS=ROOT/"data"/"three-high-value-original-publisher-targets-2026-10-29.json"
 ADDITIONAL_EDITORIAL=ROOT/"data"/"editorial-originals-intelligence-batch-2026-10-29.json"
 OUTPUT=ROOT/".katoptron-ci"/"nationwide-51-jurisdiction-original-source-watch.json"
+HISTORICAL_AUDIT=ROOT/"data"/"19-held-original-issuer-recovery-audit-2026-10-29.json"
+HISTORICAL_RESULT=ROOT/".katoptron-ci"/"historical-19-originals-retrieval-recovery.json"
 MAX_BYTES_HTML=1_800_000
 MAX_BYTES_PDF=10_000_000
 MAX_EXCEPTIONAL_PDF=33_000_000
@@ -502,6 +504,38 @@ def watch(obj,existing,fetcher=fetch,workers=5,capture_dir=None):
   "unreviewed_same_host_policy_link_candidates":sum(
    len(x["unreviewed_same_host_policy_candidates"]) for x in all_receipts),
   "verified_policy_adoptions_published":0}
+def historical_recovery_receipts(result):
+ """Cite actual retrieved issuer bytes for all 19 holds; unrelated new URLs never count."""
+ dossier=json.loads(HISTORICAL_AUDIT.read_text(encoding="utf8"))
+ held=dossier.get("cases",[])
+ if len(held)!=19 or len({x["source_id"] for x in held})!=19:raise ValueError("Historical source cases incomplete")
+ rows={x["source_id"]:x for x in result["all_source_receipts"]}
+ cases=[]
+ for prior in held:
+  row=rows.get(prior["source_id"])
+  if row is None:raise ValueError("Historical source disappeared from monitor")
+  final=row.get("retrieved_url")
+  source=row["source_url"]
+  eligible=(row["status"].startswith("original_") and
+    bool(re.fullmatch("[0-9a-f]{64}",str(row.get("original_sha256")))) and
+    (final==source or (
+      row.get("verified_same_publisher_redirect") is True and
+      trusted_redirect({"id":row["source_id"]},source,str(final)))))
+  cases.append({"source_id":row["source_id"],"state":row["state"],
+    "historical_url":source,"publisher_retrieved_url":final if eligible else None,
+    "current_retrieval_status":row["status"],"historical_failure":prior["historical_status"],
+    "original_sha256":row["original_sha256"] if eligible else None,
+    "pdf_pages":row.get("pdf_pages") if eligible else None,
+    "historical_original_retrieved":bool(eligible),
+    "same_publisher_redirect_verified":bool(eligible and final!=source),
+    "new_equipment_or_policy_claim_verified":False,
+    "evidence_limit":prior["evidence_limit"]})
+ return {"schema_version":1,"observed_on":result["created_on"],
+  "historical_total":19,"recovered":sum(x["historical_original_retrieved"] for x in cases),
+  "remaining":sum(not x["historical_original_retrieved"] for x in cases),
+  "historical_source_urls_deleted":0,"camera_operations_claimed":0,
+  "cases":cases,"note":"Only original issuer bytes from the exact original or narrow proven same-document redirect count. Pubisher-related indexes, other agencies, and stale search results never clear a historical original hold."}
+
 def main():
  p=argparse.ArgumentParser();p.add_argument("--workers",type=int,default=5)
  p.add_argument("--capture-originals",action="store_true")
@@ -514,6 +548,9 @@ def main():
  if not path.is_relative_to(ROOT):raise ValueError("Unsafe output")
  path.parent.mkdir(parents=True,exist_ok=True)
  path.write_text(json.dumps(result,indent=2)+"\n",encoding="utf8")
+ historical=historical_recovery_receipts(result)
+ HISTORICAL_RESULT.write_text(json.dumps(historical,indent=2)+"\n",encoding="utf8")
+ print("HISTORICAL_ORIGINAL_SOURCE_RECOVERY",json.dumps({"recovered":historical["recovered"],"remaining":historical["remaining"],"total":historical["historical_total"]},sort_keys=True))
  n=sum(x["status"].startswith("original_") for x in result["seed_receipts"])
  print("NATIONWIDE_ORIGINAL_GOVERNMENT_SOURCE_WATCH",json.dumps({"jurisdictions":51,"states_with_seed_or_existing":result["states_with_existing_or_new_official_seed_sources"],
   "seed_urls":len(result["seed_receipts"]),"new_urls_accessible":n,"new_urls_held":len(result["seed_receipts"])-n,
