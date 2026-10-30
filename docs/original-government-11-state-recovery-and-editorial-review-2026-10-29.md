@@ -38,3 +38,20 @@ No private plate-read data, locations, credentials, FOIA submissions or bulk cam
 4. **P1 Research delivery:** supply 10 new, uniquely source-qualified investigation leads with private researcher filters and opt-in alerts; zero duplicates or historical alert replays.
 5. **P1 User validation:** 10 research pilot users, 5 completing a sourced task, 3 independently demonstrating willingness to pay.
 6. **P2 Agency completeness:** expand monitoring beyond one original per state and report local agency inventory by original-source provenance, not inferred statewide coverage.
+
+## October 29 evidence-depth follow-up
+
+- All 15 existing changed hash candidates are individually enumerated with prior/current SHA-256 in `data/nationwide-original-change-and-legacy-hold-triage-2026-10-29.json`. None can be certified as a text change because the 2026-10-27 baseline retained hashes without full earlier source copies. Every candidate is explicitly held for the missing original, rather than silently accepted or dismissed. Requested target of three independently verified before-and-after page-pinned differences is **not met**; the existing review approval ledger remains empty.
+- All 13 previously held original URLs have explicit failure reasons and separate issuer-sourced fallbacks. The originals are preserved. The separate alternatives are not represented as the same document or a repaired original URL.
+- Twelve new original-government sourced research starters have explicit source URLs, dated or undated provenance, possible reporting questions and limits. Three previous starters remain, for 15 total.
+- Eleven independently identified original-government source URLs are additionally monitored to deepen eight targeted exact-agency/legislative source groups with at least two distinct primary publisher pages each. These do not constitute a complete agency census or proof of current Flock use.
+- The monitoring inventory expands from 70 to 81 URLs, subject to live reachability and CI outcome. The 15 candidate statuses are historical audit records, not a stream of newly detected events.
+
+## Subsequent value-based milestones
+
+1. **P0:** Obtain retrievable archived full originals for the 15 identified hash mismatches, obtain original-page citations, independently verify the first 3 real documentary text differences if source versions can be recovered. If no previous original is available, retain evidence-specific hold.
+2. **P0:** Retest the 13 preserved failed URLs; document individually whether they redirect, reject crawler access, exceed safe size, or need a new signed original. Do not erase failure history.
+3. **P0:** Convert 15 source-attributed research starts into useful individualized packages for five pilot reporters, record source novelty and time savings only with consent.
+4. **P1:** Monitor at least two accessible original-government sources per target agency, not merely two untested URLs. Identify what original contracts/policies and effective dates are absent.
+5. **P1:** Add durable, authenticated version archives and reviewer-signature audit records so future byte changes can be independently reproduced.
+6. **P1:** Ten active pilot researchers, five useful completed investigations and three credible willingness-to-pay commitments.
