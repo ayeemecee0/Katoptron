@@ -1,10 +1,22 @@
 name: Check nationwide community Flock map
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'community-overlay.js'
+      - 'scripts/import_osm_community_flock.py'
+      - 'scripts/test_import_osm_community_flock.py'
+      - 'supabase/migrations/165_cached_osm_exact_snapshot.sql'
+      - 'scripts/test_osm_exact_snapshot_sql.sql'
+      - '.github/workflows/check_community_osm.yml'
   push:
     branches: [main]
     paths:
       - 'community-map.html'
+      - 'scripts/import_osm_community_flock.py'
+      - 'scripts/test_import_osm_community_flock.py'
+      - 'supabase/migrations/165_cached_osm_exact_snapshot.sql'
+      - 'scripts/test_osm_exact_snapshot_sql.sql'
       - 'osm-point-canvas.js'
       - 'agency-intelligence.js'
       - 'agency-network.js'
@@ -57,6 +69,8 @@ jobs:
         run: npm install --no-save --no-package-lock playwright@1.56.1
       - name: Serve public static site locally
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-map-http.log 2>&1 &
+      - name: Validate complete-source importer and cached canvas refresh safety
+        run: PYTHONPATH=scripts python3 -m unittest scripts/test_import_osm_community_flock.py -v
       - name: Verify nationwide community map renders a public Supabase camera record
         env:
           KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
