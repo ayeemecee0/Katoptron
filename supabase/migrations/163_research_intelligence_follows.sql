@@ -4,7 +4,7 @@ create table if not exists public.research_intelligence_follows(
  user_id uuid not null references auth.users(id) on delete cascade,
  locality_key text not null check(locality_key ~ '^[a-z0-9][a-z0-9 -]{1,120}\|[A-Z]{2}$'),
  topics text[] not null default array['contract','policy','oversight','sharing','procurement']::text[]
-   check (array_length(topics,1) between 1 and 5 and topics <@ array['contract','policy','oversight','sharing','procurement']::text[]),
+   check (cardinality(topics) between 1 and 5 and topics <@ array['contract','policy','oversight','sharing','procurement']::text[]),
  research_question text not null default '' check(length(research_question)<=160),
  opted_in_at timestamptz not null default now(),
  primary key(user_id,locality_key)
