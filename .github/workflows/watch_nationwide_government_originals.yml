@@ -7,6 +7,9 @@ on:
       - 'data/national-government-audit-source-portals.json'
       - 'scripts/watch_nationwide_government_originals.py'
       - 'scripts/nationwide_source_health.py'
+      - 'scripts/review_nationwide_source_changes.py'
+      - 'data/nationwide-original-document-difference-approvals.json'
+      - 'scripts/test_recovered_originals_editorial_changes.py'
       - 'scripts/test_nationwide_source_health.py'
       - 'nationwide-source-monitor.html'
       - 'scripts/test_watch_nationwide_government_originals.py'
@@ -44,6 +47,7 @@ jobs:
         run: |
           python -m unittest discover -s scripts -p 'test_watch_nationwide_government_originals.py' -v
           python -m unittest discover -s scripts -p 'test_nationwide_source_health.py' -v
+          python -m unittest discover -s scripts -p 'test_recovered_originals_editorial_changes.py' -v
       - name: Restore last successful fingerprint receipt baseline
         uses: actions/cache/restore@v4
         id: prior
@@ -56,6 +60,8 @@ jobs:
         run: python scripts/watch_nationwide_government_originals.py --workers 6
       - name: Compare against prior usable fingerprints and document every held state/source
         run: python scripts/nationwide_source_health.py
+      - name: Qualify changed government originals for page-specific editorial review
+        run: python scripts/review_nationwide_source_changes.py
       - name: Publish status counts to workflow summary
         run: |
           python - <<'PY'
@@ -89,5 +95,7 @@ jobs:
             .katoptron-ci/nationwide-51-jurisdiction-original-source-watch.json
             .katoptron-ci/nationwide-monitor-snapshot.json
             .katoptron-ci/nationwide-public-health.json
+            .katoptron-ci/nationwide-documentary-difference-review.json
+            .katoptron-ci/nationwide-approved-documentary-differences.json
           retention-days: 30
           if-no-files-found: warn
