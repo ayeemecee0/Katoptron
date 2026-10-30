@@ -112,32 +112,32 @@
     {
       "state": "NV",
       "id": "nv-legislature-2026-alpr-recommendations",
-      "publisher": "Nevada Legislative Counsel Bureau",
-      "source_url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/34392",
-      "kind": "pdf",
-      "source_scope": "committee_report_recommends_possible_future_alpr_law_not_enacted",
+      "publisher": "Las Vegas Metropolitan Police Department",
+      "source_url": "https://www.lvmpd.com/about/transparency",
+      "kind": "html",
+      "source_scope": "police_department_transparency_index_explicitly_links_flock_policy_not_verified_device",
       "origin_role": "supplemental_government_publisher_individual_claims_unverified",
       "operational_camera_verified": false,
       "executed_contract_verified": false,
       "actual_payments_verified": false,
       "original_document_version_change_verified": false,
       "evidence_limit": "no unverified contract, Flock equipment, signed agreement, policy enactment, actual payments or live camera locations can be inferred from source monitoring",
-      "discovery_basis": "Independent government-host source lookup, 2026-10-29; monitoring reachability and document claims remain separately review gated"
+      "discovery_basis": "Original Las Vegas Metropolitan Police Department official transparency page, independently located 2026-10-29; official agency website on explicitly vetted custom domain."
     },
     {
       "state": "NY",
       "id": "ny-division-model-license-plate-policy",
-      "publisher": "New York Division of Criminal Justice Services",
-      "source_url": "https://www.criminaljustice.ny.gov/crimnet/ojsa/standards/index.htm",
+      "publisher": "New York State Attorney General",
+      "source_url": "https://ag.ny.gov/lemio-2025-annual-report",
       "kind": "html",
-      "source_scope": "state_model_policy_directory_not_local_adoption",
+      "source_scope": "state_attorney_general_recommends_ai_and_alpr_transparency_legislation_not_enacted",
       "origin_role": "supplemental_government_publisher_individual_claims_unverified",
       "operational_camera_verified": false,
       "executed_contract_verified": false,
       "actual_payments_verified": false,
       "original_document_version_change_verified": false,
       "evidence_limit": "no unverified contract, Flock equipment, signed agreement, policy enactment, actual payments or live camera locations can be inferred from source monitoring",
-      "discovery_basis": "Independent government-host source lookup, 2026-10-29; monitoring reachability and document claims remain separately review gated"
+      "discovery_basis": "New York Attorney General original government Law Enforcement Misconduct Investigative Office annual report; original publisher date 2025, reviewed link 2026-10-29."
     },
     {
       "state": "UT",
