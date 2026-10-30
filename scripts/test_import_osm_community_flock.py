@@ -118,6 +118,31 @@ class ImportTests(unittest.TestCase):
     m.publish_quality_snapshot(item)
     self.assertEqual(request.call_args.args[0].get_method(),'POST')
     self.assertIn('flock_osm_quality_snapshots',request.call_args.args[0].full_url)
+ def test_full_reconciled_import_refreshes_public_exact_canvas_once(self):
+  response=MagicMock()
+  response.__enter__.return_value.status=200
+  response.__enter__.return_value.read.return_value=b'116340'
+  with patch.dict(m.os.environ,{
+    'SUPABASE_URL':'https://bpvkapswslmgfazbzpsv.supabase.co',
+    'SUPABASE_SERVICE_ROLE_KEY':'only-a-test-secret'
+   }):
+   with patch.object(m.urllib.request,'urlopen',return_value=response) as request:
+    m.refresh_public_osm_render_cache()
+    sent=request.call_args.args[0]
+    self.assertEqual(sent.get_method(),'POST')
+    self.assertIn('rpc/katoptron_refresh_osm_exact_snapshot_cache',sent.full_url)
+    self.assertNotIn('only-a-test-secret',sent.full_url)
+ def test_bad_public_canvas_refresh_receipt_is_rejected(self):
+  response=MagicMock()
+  response.__enter__.return_value.status=200
+  response.__enter__.return_value.read.return_value=b'2'
+  with patch.dict(m.os.environ,{
+    'SUPABASE_URL':'https://bpvkapswslmgfazbzpsv.supabase.co',
+    'SUPABASE_SERVICE_ROLE_KEY':'only-a-test-secret'
+   }):
+   with patch.object(m.urllib.request,'urlopen',return_value=response):
+    with self.assertRaisesRegex(ValueError,'fully reconciled'):
+     m.refresh_public_osm_render_cache()
  def test_unexpected_count_held(self):
   with self.assertRaisesRegex(ValueError,'outside bounds'):
    m.prepare_rows([f()],DAY)
