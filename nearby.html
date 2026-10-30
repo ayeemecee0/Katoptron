@@ -79,8 +79,11 @@ const sourceKey=key=>/^(node|way)\/[1-9][0-9]{0,17}$/.test(key)?'https://www.ope
 async function source(table,query,signal,count=false){
  if(!config?.supabaseUrl||!config?.supabasePublishableKey)throw Error('Public data configuration missing');
  const url=config.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+table+'?'+query.toString();
+ // A stalled public source must become explicit UNKNOWN rather than leave old
+ // results displayed indefinitely. Honor caller cancellation and a deadline.
+ const bounded=signal?AbortSignal.any([signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000);
  const res=await fetch(url,{headers:{apikey:config.supabasePublishableKey,...(count?{Prefer:'count=exact'}:{})},
-   signal,cache:'no-store',referrerPolicy:'no-referrer'});
+   signal:bounded,cache:'no-store',referrerPolicy:'no-referrer'});
  if(!res.ok)throw Error('Published candidate source HTTP '+res.status);
  const rows=await res.json();
  if(!Array.isArray(rows))throw Error('Malformed public candidate response');
