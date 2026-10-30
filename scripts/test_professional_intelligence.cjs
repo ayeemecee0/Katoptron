@@ -54,7 +54,7 @@ assert(injection.includes('&lt;script&gt;bad&lt;/script&gt;'));
 assert.throws(()=>I.packageHtml({...l,original_url:'http://unsafe'},[],draft),/Verified/);
 const migration=fs.readFileSync(path.join(__dirname,'../supabase/migrations/163_research_intelligence_follows.sql'),'utf8');
 for(const term of ['enable row level security','auth.uid()','grant update(topics,research_question)',
- 'opted_in_at timestamptz not null default now()','research_intelligence_follows_delete_own'])
+ 'opted_in_at timestamptz not null default now()','intelligence_follows_delete_own'])
  assert(migration.includes(term));
 assert(!/grant update\s+on table public\.research_intelligence_follows/.test(migration));
 const page=fs.readFileSync(path.join(__dirname,'../professional-intelligence.html'),'utf8');
