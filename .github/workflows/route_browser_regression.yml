@@ -1,0 +1,52 @@
+name: Route and nearby browser regression contract
+on:
+  pull_request:
+    paths:
+      - 'scripts/browser_source_fixtures.cjs'
+      - 'scripts/smoke_nearby.cjs'
+      - 'scripts/smoke_community_route.cjs'
+      - 'community-route.js'
+      - 'map.js'
+      - 'nearby.html'
+      - '.github/workflows/route_browser_regression.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/browser_source_fixtures.cjs'
+      - 'scripts/smoke_nearby.cjs'
+      - 'scripts/smoke_community_route.cjs'
+      - 'community-route.js'
+      - 'map.js'
+      - 'nearby.html'
+      - '.github/workflows/route_browser_regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser_contract:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned browser test client
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Check script syntax and complete-corridor safety unit contracts
+        run: |
+          node --check community-route.js
+          node --check map.js
+          node --check scripts/browser_source_fixtures.cjs
+          node --check scripts/smoke_nearby.cjs
+          node --check scripts/smoke_community_route.cjs
+          node scripts/test_community_route.js
+      - name: Serve pull request application locally
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/katoptron-route-contract.log 2>&1 &
+      - name: Exercise nearby search and source-separated routing against deterministic API contracts
+        env:
+          KATOPTRON_SMOKE_BASE: http://127.0.0.1:8765/
+        run: |
+          node scripts/smoke_nearby.cjs
+          node scripts/smoke_community_route.cjs

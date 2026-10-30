@@ -3,11 +3,13 @@
  */
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
+const fixtures=require('./browser_source_fixtures.cjs');
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1280,height:900}});
  const base=process.env.KATOPTRON_SMOKE_BASE||'http://127.0.0.1:8765/';
  const errors=[];page.on('pageerror',err=>errors.push(err.message));
+ const sourceRequests=await fixtures.install(page);
  try{
   const r=await page.goto(new URL('nearby.html',base).href,{waitUntil:'domcontentloaded',timeout:45000});
   assert.equal(r?.status(),200);
@@ -47,7 +49,9 @@ const assert=require('node:assert/strict');
    assert.ok(parseFloat(s)<=5,'Distance band filtering not applied');
   }
   assert.deepEqual(errors,[]);
-  console.log('NATIONWIDE PERSISTENT OSM NEARBY SEARCH PASS: '+total+' published possible pairs, fully read-only and ODbL-linked');
- }catch(err){console.error('NATIONWIDE PERSISTENT OSM NEARBY SEARCH FAILED:',err.message);process.exitCode=1}
+  assert(sourceRequests.some(x=>x.table==='flock_public_osm_nearby_search'&&x.total===1200));
+  assert.equal(total,1200,'Fixture source-count and table rows must reconcile');
+  console.log('NEARBY_BROWSER_FIXTURE_PASS: '+total+' deterministically simulated OSM source pairs, exact-count filters and pagination. Not a live-source check.');
+ }catch(err){console.error('NEARBY_BROWSER_FIXTURE_FAILED:',err.message,'Status:',await page.locator('#resultStatus').textContent().catch(()=>'?'),'Requests:',JSON.stringify(sourceRequests.slice(-8)));process.exitCode=1}
  finally{await browser.close()}
 })().catch(e=>{console.error(e.message);process.exitCode=1});

@@ -140,7 +140,8 @@
    const response=await fetch(cfg.supabaseUrl.replace(/\/$/,'')+
     '/rest/v1/'+SOURCE_TABLE+'?'+q.toString(),{
      headers:{apikey:cfg.supabasePublishableKey,Prefer:'count=exact'},
-     signal,cache:'no-store',referrerPolicy:'no-referrer'
+     signal:signal?AbortSignal.any([signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000),
+     cache:'no-store',referrerPolicy:'no-referrer'
    });
    if(!response.ok)throw Error('Community source HTTP '+response.status);
    const rows=await response.json();
