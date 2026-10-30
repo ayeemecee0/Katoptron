@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "compiled_on": "2026-10-29",
+  "scope": "curated_multiple_distinct_original_government_publications_per_exact_agency_or_legislative_issuer_not_current_evidence_completeness",
+  "verification_method": "Original government page identified; per-source HTTP and format reachability must be established by monitoring receipts; original document claims require independent editorial review.",
+  "groups": [
+    {
+      "agency_key": "lafayette|CO",
+      "issuer": "Lafayette Police and City",
+      "state": "CO",
+      "independently_identified_originals": [
+        {
+          "source_id": "co-lafayette-transparency-2026",
+          "original_url": "https://lafayetteco.gov/2592/Police-Transparency",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "co-lafayette-budget-funding-2026",
+          "original_url": "https://www.lafayetteco.gov/m/newsflash/home/detail/10277",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "naperville|IL",
+      "issuer": "Naperville Police Department",
+      "state": "IL",
+      "independently_identified_originals": [
+        {
+          "source_id": "il-naperville-2026-alpr-policy-history",
+          "original_url": "https://www.naperville.il.us/589/Automated-License-Plate-Readers",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "il-naperville-police-transparency",
+          "original_url": "https://www.naperville.il.us/419/Police-Transparency",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "columbia|MO",
+      "issuer": "Columbia Police and City",
+      "state": "MO",
+      "independently_identified_originals": [
+        {
+          "source_id": "mo-government-public-consultation",
+          "original_url": "https://beheard.como.gov/safety-cameras-review",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "mo-columbia-alpr-operations",
+          "original_url": "https://www.como.gov/police/automated-license-plate-readers/",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "ohio legislature|OH",
+      "issuer": "Ohio State Legislature",
+      "state": "OH",
+      "independently_identified_originals": [
+        {
+          "source_id": "oh-senate-2026-alpr-proposed-regulation",
+          "original_url": "https://www.senate.state.oh.us/members/al-cutrona/news/senator-cutrona-submits-bill-for-introduction-to-restrict-the-use-of-flock-cameras",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "oh-house-2026-alpr-proposal",
+          "original_url": "https://www.house.state.oh.us/news/republican/state-rep-gary-click-introduces-the-1984-no-more-act-148198",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "idaho falls|ID",
+      "issuer": "Idaho Falls Police Department",
+      "state": "ID",
+      "independently_identified_originals": [
+        {
+          "source_id": "id-police-technology-disclosure",
+          "original_url": "https://www.idahofallsidaho.gov/2113/Automatic-License-Plate-Readers",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "id-idaho-falls-alpr-policy-2026",
+          "original_url": "https://idahofallsidaho.gov/DocumentCenter/View/20519/Automated-License-Plate-Readers",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "robbinsdale|MN",
+      "issuer": "Robbinsdale Police Department",
+      "state": "MN",
+      "independently_identified_originals": [
+        {
+          "source_id": "mn-police-technology-disclosure",
+          "original_url": "https://www.robbinsdalemn.gov/389/4240/Automated-License-Plate-Readers-ALPR",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "mn-robbinsdale-2026-policy-discussion",
+          "original_url": "https://www.robbinsdalemn.gov/389/4241/Automated-License-Plate-Readers-ALPR",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "vermont legislature|VT",
+      "issuer": "Vermont Legislature",
+      "state": "VT",
+      "independently_identified_originals": [
+        {
+          "source_id": "vt-state-alpr-statute-index",
+          "original_url": "https://legislature.vermont.gov/statutes/fullchapter/23/015",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "vt-act-135-enacted-original",
+          "original_url": "https://legislature.vermont.gov/bill/status/2024/S.184",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    },
+    {
+      "agency_key": "georgia state investigators|GA",
+      "issuer": "Georgia Bureau of Investigation",
+      "state": "GA",
+      "independently_identified_originals": [
+        {
+          "source_id": "ga-government-investigation-announcement",
+          "original_url": "https://gbi.georgia.gov/press-releases/2026-08-21/gbi-arrests-four-former-savannah-police-department-employees-misuse",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        },
+        {
+          "source_id": "ga-gbi-september-misuse-investigation",
+          "original_url": "https://gbi.georgia.gov/press-releases/2026-09-01/gbi-arrests-gdc-special-agent-charge-misuse-license-plate-reader-system",
+          "issuer_original_source_metadata_reviewed": true,
+          "live_retrieval_success_not_assumed": true,
+          "individual_contract_policy_comparison_not_yet_approved": true
+        }
+      ],
+      "documentary_difference_verified": false,
+      "comprehensive_agency_records_inventory": false,
+      "unresolved_gaps": [
+        "Original signed procurement/contract or adopted policy, where relevant, remains to be compared against these originals.",
+        "Document effective dates and subsequent amendments are not proven by publisher URL reachability."
+      ]
+    }
+  ]
+}
