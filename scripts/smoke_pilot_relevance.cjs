@@ -19,6 +19,14 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert(links.some(x=>x.includes('Aug1622.pdf')));
   assert(links.some(x=>x.includes('Sep2722.pdf')));
   assert.match(await page.locator('#openQuestions').textContent(),/amendment|invoices|payments/i);
+  const request=await page.locator('#requestDraft').textContent();
+  assert(request.includes('UNSENT PUBLIC-RECORDS REQUEST DRAFT'));
+  assert(request.includes('houston|TX')&&request.includes('2022-09-28'));
+  assert(request.includes('invoices or payment registers')&&request.includes('Aug1622.pdf'));
+  assert(request.includes('no')||request.includes('non-exempt'));
+  assert.equal(await page.locator('#copyRequestDraft').count(),1);
+  assert.match(await page.locator('#copyRequestStatus').textContent(),/No request has been sent/);
+  assert.match(await page.locator('#dossier').textContent(),/Record whether this saved research time/);
   const dl=page.waitForEvent('download');await page.locator('#downloadPacket').click();
   const f=await dl,c=fs.readFileSync(await f.path(),'utf8');
   assert.match(c,/2022-09-28/);assert.match(c,/2022-08-17/);
@@ -37,7 +45,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   await page.locator('#refreshLeads').click();
   assert((await page.locator('#recommendations article').count())>=3);
   assert.deepEqual(errors,[]);
-  console.log('PILOT_RELEVANCE_BROWSER_PASS: verified Houston two-doc packet, dated sources and claims, single-record NC honesty, research filters and no-account access');
+  console.log('PILOT_RELEVANCE_BROWSER_PASS: Houston cited unsent request, linked pilot measurement, source-complete packet, NC honesty and no-account access');
  }catch(e){
   console.error('PILOT_RELEVANCE_BROWSER_FAILED:',e.stack||e.message);
   console.error('STATUS:',await page.locator('#recommendationStatus').textContent().catch(()=>'?'),'ERRORS:',errors);
