@@ -73,8 +73,8 @@ const latestHistorical=load('historical-source-verified-snapshot-2026-10-30.json
 const issuerResearch=load('historical-government-original-issuer-investigation-leads-2026-10-30.json');
 assert.equal(latestHistorical.original_historical_count,19);
 assert.equal(latestHistorical.cases.length,19);
-assert.equal(latestHistorical.original_historical_recovered,4);
-assert.equal(latestHistorical.original_historical_held,15);
+assert.equal(latestHistorical.original_historical_recovered,12);
+assert.equal(latestHistorical.original_historical_held,7);
 assert.equal(latestHistorical.original_historical_recovered+latestHistorical.original_historical_held,19);
 assert(latestHistorical.status_is_fixed_historical_snapshot_not_live);
 assert.equal(new Set(latestHistorical.cases.map(x=>x.source_id)).size,19);
