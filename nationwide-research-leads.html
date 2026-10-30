@@ -9,7 +9,7 @@ main{max-width:1050px;margin:0 auto;padding:1.7rem 1rem 4rem}h1{font-size:clamp(
 button:focus-visible,a:focus-visible{outline:3px solid white;outline-offset:3px}li{margin:.3rem 0}[hidden]{display:none!important}
 </style></head><body><a class="skip-link" href="#main">Skip to leads</a><header><a href="./index.html">KATOPTRON</a><a href="./nationwide-source-monitor.html">Nationwide source health</a><a href="./professional-intelligence.html">Professional investigation tools</a></header>
 <main id="main"><h1>Original-government research leads</h1>
-<p class="notice"><strong>These are source-attributed government document findings, not automatically certified changed contracts or policies.</strong> A publisher's statement does not independently establish that equipment was removed, payments were made, any individual agency purchased equipment, or a legal requirement took effect. Newly changed source hashes remain in the editorial queue until two original versions are independently reviewed.</p>
+<p class="notice"><strong>These are source-attributed government document findings, not automatically certified changed contracts or policies.</strong> A publisher's statement does not independently establish that equipment was removed, payments were made, any individual agency purchased equipment, or a legal requirement took effect. Newly changed source hashes remain in the editorial queue until two original versions are independently reviewed. <a href="./nationwide-document-review.html">Inspect the 15 change holds and 13 legacy-source resolutions.</a></p>
 <p id="status" role="status" aria-live="polite">Validating original publisher evidence…</p><div id="leads" class="cards"></div>
 <p>To independently check the original source, use each card's government link. Individual research cases and notes remain private in the <a href="./research-workspace.html">research workspace</a>.</p>
 </main>
@@ -18,10 +18,11 @@ button:focus-visible,a:focus-visible{outline:3px solid white;outline-offset:3px}
 const $=id=>document.getElementById(id),el=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);return e};
 const safe=url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password&&u.hostname.length>5}catch{return false}};
 (async()=>{try{
- const res=await fetch('./data/nationwide-original-source-research-leads-2026-10-29.json',{cache:'no-store',referrerPolicy:'no-referrer'});
- if(!res.ok)throw Error('Original-source research lead registry HTTP '+res.status);
- const j=await res.json();
- if(j.schema_version!==1||!Array.isArray(j.leads)||j.leads.length!==3)throw Error('Unreviewed lead registry');
+ const files=['./data/nationwide-original-source-research-leads-2026-10-29.json','./data/nationwide-original-research-leads-expanded-2026-10-29.json'];
+ const payload=await Promise.all(files.map(async path=>{const res=await fetch(path,{cache:'no-store',referrerPolicy:'no-referrer'});
+  if(!res.ok)throw Error('Original source research lead index HTTP '+res.status);return res.json()}));
+ if(payload.some(x=>x.schema_version!==1||!Array.isArray(x.leads))||payload[0].leads.length!==3||payload[1].leads.length!==12)throw Error('Unreviewed lead registries');
+ const j={leads:payload.flatMap(x=>x.leads)};
  const ids=new Set();
  for(const d of j.leads){
   if(ids.has(d.id)||!safe(d.source_url)||!d.source_issuer_review_status.startsWith('source_attributed_')||
