@@ -58,11 +58,11 @@ $('filter').addEventListener('input',render);
  const values=await Promise.all(paths.map(async path=>{const r=await fetch(path,{cache:'no-store',referrerPolicy:'no-referrer'});if(!r.ok)throw Error('Ledger HTTP '+r.status);return r.json()}));
  const [audit,multi,recovery,groups]=values;
  if(audit.schema_version!==1||audit.changed_candidates_count!==15||audit.held_originals_count!==13||
-    multi.sources.length!==11||recovery.original_source_recovery_candidates.length!==11||
+    multi.sources.length!==12||recovery.original_source_recovery_candidates.length!==11||
     groups.schema_version!==1||!Array.isArray(groups.groups)||groups.groups.length!==8||
     audit.changed_candidates.some(x=>x.material_documentary_difference_verified!==false))throw Error('Publisher evidence review gate failed');
  changed=audit.changed_candidates;held=audit.held_originals;depth=multi.sources;alternative=recovery.original_source_recovery_candidates;agencyGroups=groups.groups;
- $('status').textContent='15 changed-source candidates triaged and held for archived originals; 13 failed source URLs preserved with alternate research publishers; 11 additional agency-depth URLs indexed across 8 multi-source jurisdiction groups. No original-document wording change automatically approved.';
+ $('status').textContent='15 changed-source candidates triaged and held for archived originals; 13 failed source URLs preserved with alternate research publishers; 12 additional original-government resilience/depth URLs indexed across 8 multi-source jurisdiction groups. No original-document wording change automatically approved.';
  render();
 }catch(e){$('status').textContent='Evidence withheld: '+e.message;for(const id of ['changed','held','depth'])$(id).replaceChildren()}})();
 </script></body></html>
