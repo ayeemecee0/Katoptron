@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "verified_on": "2026-10-29",
-  "source_originals_preserved": 7,
-  "scope": "official_same_publisher_alternates_not_automated_recovery_or_independently_signed_off_original_equivalence",
+  "source_originals_preserved": 6,
+  "scope": "six_unique_official_same_publisher_alternates_not_automated_recovery_or_independently_signed_off_original_equivalence; Naperville already_monitored and not duplicated",
   "originals": [
     {
       "id": "gov-alternate-01",
@@ -82,23 +82,6 @@
       "kind": "pdf",
       "publisher_review": "official_original_issuer_document_index_or_related_government_publication",
       "why_relevant": "subsequent original issuer's June 2022 model LPR policy; old June 2021 historical version remains separately held; no agency adoption inferred",
-      "original_source_deleted": false,
-      "original_source_automatically_recovered": false,
-      "same_document_version_equivalence_proven": false,
-      "camera_operation_inferred": false,
-      "policy_adoption_inferred": false,
-      "individual_person_tracking_published": false
-    },
-    {
-      "id": "gov-alternate-06",
-      "source_id": "legacy-il-naperville-alpr-transparency",
-      "state": "IL",
-      "publisher": "Naperville Police Department",
-      "original_url": "https://www.naperville.il.us/services/naperville-police-department/about-the-police-department/police-transparency/automated-license-plate-readers/",
-      "source_url": "https://www.naperville.il.us/589/Automated-License-Plate-Readers",
-      "kind": "html",
-      "publisher_review": "official_original_issuer_document_index_or_related_government_publication",
-      "why_relevant": "city's canonical ALPR program page links both October 2025 and September 2026 policy PDF originals",
       "original_source_deleted": false,
       "original_source_automatically_recovered": false,
       "same_document_version_equivalence_proven": false,
