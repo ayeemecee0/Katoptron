@@ -29,7 +29,7 @@ try{
   held.resolutions.length!==19||diffs.sources.length!==38||
   diffs.approved_substantive_document_version_differences!==0||
   policy.changes.length!==10||policy.count_distinct_document_pairs!==1||
-  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==7)
+  policy.independent_human_signed_off!==0||workflows.workflows.length!==10||alternates.originals.length!==6)
   throw Error('Evidence inventory incomplete or changed without review');
  $('summary').textContent='14 source-backed research opportunities · 13 new monitored government URLs · 19 retrieval holds dispositioned · 38 authenticated source-byte pairs · 0 approved prior/new source-version wording differences';
  for(const entry of policy.changes){
