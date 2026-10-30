@@ -17,7 +17,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Obtain the Arizona AG's eventual statewide ALPR review report; confirm report issue date and whether the original August 2026 announcement language actually changed.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ga-government-investigation-announcement",
@@ -29,7 +31,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Compare the GBI Savannah arrest announcement with prosecution filings and any subsequent official correction; charges remain allegations.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "id-police-technology-disclosure",
@@ -41,7 +45,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Check whether Idaho Falls ALPR retention and agency-sharing statements were amended; compare signed policy and department PDF.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ks-police-other-vendor-disclosure",
@@ -53,7 +59,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Separate references to other ALPR vendors from evidence of Flock procurement; check government publication history before changing vendor classification.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ky-police-technology-disclosure",
@@ -65,7 +73,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Compare Lexington police license-plate reader retention and partner-sharing statements with dated department policy originals.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ma-city-operational-status-statement",
@@ -77,7 +87,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Identify the precise municipal ALPR decision item on Salem's changing news category listing; index-page reordering alone cannot prove new policy.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "mn-police-technology-disclosure",
@@ -89,7 +101,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Compare Robbinsdale August 2026 public-work-session FAQ and independently published Policy 427 for access/sharing dates.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "mo-government-public-consultation",
@@ -101,7 +115,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Separate Columbia public consultation comments and page updates from final council action; obtain Nov 2026 minutes after hearing.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ok-police-technology-disclosure",
@@ -113,7 +129,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Check August 18, 2026 Oklahoma City Flock renewal memorandum and signed amendment against the city's public FAQ, with exact dates and page citations.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "tn-police-technology-disclosure",
@@ -125,7 +143,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Determine whether Gallatin's public notice contains a material dated policy revision rather than template or index navigation changes.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ri-police-technology-disclosure",
@@ -137,7 +157,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Compare Providence's general order 350.05 November 2025 with any separately archived predecessor policy before claiming changed retention or access rules.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "mt-state-alpr-statute",
@@ -149,7 +171,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Compare Montana's versioned statutory text and amendments at the exact section; page hash changes may reflect statutory-site template.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "vt-state-alpr-statute-index",
@@ -161,7 +185,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Cross-check each Vermont ALPR provision's conditional effective dates against Act 135; statute page can include multiple mutually exclusive future versions.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "wy-unadopted-state-bill",
@@ -173,7 +199,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Verify Wyoming HB0181 bill status and committee actions; a changed bill page does not mean bill enactment.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     },
     {
       "source_id": "ak-unadopted-alpr-prohibition-amendment",
@@ -185,7 +213,9 @@
       "material_documentary_difference_verified": false,
       "original_before_pdf_pages_verified": false,
       "review_status": "historical_hash_discrepancy_only",
-      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct."
+      "action": "Retrieve independent publisher-authenticated prior and later versions with exact citations and preserve bytes; if unavailable, maintain hold. A hash mismatch alone does not establish changed legal terms or conduct.",
+      "specific_editorial_review_task": "Review the Alaska House Journal's original amendments and votes, preserving legislative chamber, page, and bill identity.",
+      "disposition_evidence_status": "triaged_unverified_byte_difference_no_original_before_copy"
     }
   ],
   "held_originals_count": 13,
